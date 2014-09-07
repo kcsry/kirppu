@@ -8,7 +8,7 @@
 
     function ItemReceiptTable() {
       ItemReceiptTable.__super__.constructor.apply(this, arguments);
-      this.head.append(['<th class="receipt_index">#</th>', '<th class="receipt_code">code</th>', '<th class="receipt_item">item</th>', '<th class="receipt_price">price</th>'].map($));
+      this.head.append(['<th class="receipt_index">#</th>', '<th class="receipt_code">' + gettext('code') + '</th>', '<th class="receipt_item">' + gettext('item') + '</th>', '<th class="receipt_price">' + gettext('price') + '</th>'].map($));
     }
 
     return ItemReceiptTable;

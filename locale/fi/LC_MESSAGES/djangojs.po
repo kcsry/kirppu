@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-30 21:49+0300\n"
+"POT-Creation-Date: 2014-09-07 21:33+0300\n"
 "PO-Revision-Date: 2014-08-30 23:46+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
@@ -21,13 +21,65 @@ msgid ""
 "This will mark all items as printed so they won't be printed again "
 "accidentally. Continue?"
 msgstr ""
-"Tämä merkitsee kaikki laput tulostetuiksi, jolloin niitä ei tulosteta uudestaan. Jatka?"
+"Tämä merkitsee kaikki laput tulostetuiksi, jolloin niitä ei tulosteta "
+"uudestaan. Jatka?"
 
 msgid "Click to edit..."
 msgstr "Klikkaa muokataksesi…"
 
 msgid "<em>Click to edit</em>"
 msgstr "<em>Klikkaa muokataksesi</em>"
+
+msgid "code"
+msgstr "koodi"
+
+msgid "item"
+msgstr "tavara"
+
+msgid "price"
+msgstr "hinta"
+
+msgid "status"
+msgstr "tila"
+
+msgid "Total"
+msgstr "Yhteensä"
+
+msgid "Vendor"
+msgstr "Myyjä"
+
+msgid "sold"
+msgstr "myyty"
+
+msgid "on display"
+msgstr "näytillä"
+
+msgid "about to be sold"
+msgstr "kassatapahtumassa"
+
+msgid "missing"
+msgstr "kadoksissa"
+
+msgid "returned to the vendor"
+msgstr "palautettu myyjälle"
+
+msgid "sold and compensated to the vendor"
+msgstr "myyty ja hyvitetty myyjälle"
+
+msgid "not brought to the event"
+msgstr "ei tuotu tapahtumaan"
+
+msgid "Compensable Items"
+msgstr "Myydyt tavarat"
+
+msgid "Returnable Items"
+msgstr "Myymättömät tavarat"
+
+msgid "Other Items"
+msgstr "Muut tavarat"
+
+msgid "Item Report"
+msgstr "Raportti myyjän tavaroista"
 
 #~ msgid "Disable mark button"
 #~ msgstr "Poista merkintäpainike käytöstä"

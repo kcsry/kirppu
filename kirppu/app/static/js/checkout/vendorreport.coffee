@@ -1,28 +1,28 @@
 states =
   compensable:
-    SO: 'sold'
+    SO: gettext('sold')
 
   returnable:
-    BR: 'on display'
-    ST: 'about to be sold'
+    BR: gettext('on display')
+    ST: gettext('about to be sold')
 
   other:
-    MI: 'missing'
-    RE: 'returned to the vendor'
-    CO: 'sold and compensated to the vendor'
-    AD: 'not brought to the event'
+    MI: gettext('missing')
+    RE: gettext('returned to the vendor')
+    CO: gettext('sold and compensated to the vendor')
+    AD: gettext('not brought to the event')
 
 tables = [
-  [states.compensable,'Compensable Items']
-  [states.returnable, 'Returnable Items']
-  [states.other,      'Other Items']
+  [states.compensable, gettext('Compensable Items')]
+  [states.returnable,  gettext('Returnable Items')]
+  [states.other,       gettext('Other Items')]
 ]
 
 # Create a new class for the report mode of the vendor.
 @vendorReport = (vendor) ->
   class VendorReport extends CheckoutMode
 
-    title: -> "Item Report"
+    title: -> gettext("Item Report")
 
     actions: -> [[
       "", (query) =>

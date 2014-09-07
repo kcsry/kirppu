@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-30 21:49+0300\n"
+"POT-Creation-Date: 2014-09-07 21:33+0300\n"
 "PO-Revision-Date: 2014-08-30 23:46+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
@@ -30,3 +30,53 @@ msgstr "Click to edit…"
 msgid "<em>Click to edit</em>"
 msgstr "<em>Click to edit</em>"
 
+msgid "code"
+msgstr "code"
+
+msgid "item"
+msgstr "item"
+
+msgid "price"
+msgstr "price"
+
+msgid "status"
+msgstr "status"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Vendor"
+msgstr "Vendor"
+
+msgid "sold"
+msgstr "sold"
+
+msgid "on display"
+msgstr "on display"
+
+msgid "about to be sold"
+msgstr "about to be sold"
+
+msgid "missing"
+msgstr "missing"
+
+msgid "returned to the vendor"
+msgstr "returned to the vendor"
+
+msgid "sold and compensated to the vendor"
+msgstr "sold and compensated to the vendor"
+
+msgid "not brought to the event"
+msgstr "not brought to the event"
+
+msgid "Compensable Items"
+msgstr "Compensable Items"
+
+msgid "Returnable Items"
+msgstr "Returnable Items"
+
+msgid "Other Items"
+msgstr "Other Items"
+
+msgid "Item Report"
+msgstr "Item Report"

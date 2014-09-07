@@ -7,21 +7,21 @@
 
   states = {
     compensable: {
-      SO: 'sold'
+      SO: gettext('sold')
     },
     returnable: {
-      BR: 'on display',
-      ST: 'about to be sold'
+      BR: gettext('on display'),
+      ST: gettext('about to be sold')
     },
     other: {
-      MI: 'missing',
-      RE: 'returned to the vendor',
-      CO: 'sold and compensated to the vendor',
-      AD: 'not brought to the event'
+      MI: gettext('missing'),
+      RE: gettext('returned to the vendor'),
+      CO: gettext('sold and compensated to the vendor'),
+      AD: gettext('not brought to the event')
     }
   };
 
-  tables = [[states.compensable, 'Compensable Items'], [states.returnable, 'Returnable Items'], [states.other, 'Other Items']];
+  tables = [[states.compensable, gettext('Compensable Items')], [states.returnable, gettext('Returnable Items')], [states.other, gettext('Other Items')]];
 
   this.vendorReport = function(vendor) {
     var VendorReport;
@@ -34,7 +34,7 @@
       }
 
       VendorReport.prototype.title = function() {
-        return "Item Report";
+        return gettext("Item Report");
       };
 
       VendorReport.prototype.actions = function() {
