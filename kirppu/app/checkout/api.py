@@ -479,3 +479,45 @@ def receipt_activate(request):
     data = _get_receipt_data_with_items(pk=receipt_id, clerk__id=clerk, status=Receipt.PENDING)
     request.session["receipt"] = receipt_id
     return data
+
+
+@ajax_func('^stats/all$')
+def get_stats(request):
+    """Get data for drawing a graph about what's been happening."""
+
+    data = {
+        'unsold': [
+            (735000, 100),
+            (735100, 300),
+            (735200, 600),
+            (735300, 300),
+            (735400, 100),
+            (735500, 0),
+        ],
+        'money': [
+            (735000, 200),
+            (735100, 200),
+            (735200, 200),
+            (735300, 500),
+            (735400, 700),
+            (735500, 200),
+        ],
+        'paid_out': [
+            (735000, 0),
+            (735100, 0),
+            (735200, 0),
+            (735300, 0),
+            (735400, 0),
+            (735500, 500),
+        ],
+        'returned': [
+            (735000, 0),
+            (735100, 0),
+            (735200, 0),
+            (735300, 0),
+            (735400, 0),
+            (735500, 100),
+        ],
+    }
+
+    return data

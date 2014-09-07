@@ -225,6 +225,10 @@ PIPELINE_JS = {
             "js/checkout/vendorcompensation.coffee",
             "js/checkout/vendorreport.coffee",
             "js/checkout/vendorfindmode.coffee",
+            "js/checkout/statusmode.coffee",
+
+            "js/jquery.flot.js",
+            "js/jquery.flot.time.js",
 
             "js/number_test.coffee",
             "js/jquery.cookie-1.4.1-0.js",
