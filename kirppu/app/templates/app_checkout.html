@@ -5,6 +5,7 @@
 {% block title %}Kirppu - Checkout{% endblock %}
 
 {% block head %}
+    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
     {% compressed_css "general" %}
     {% compressed_css "checkout" %}
     {% compressed_js "general" %}
