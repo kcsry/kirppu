@@ -6,6 +6,7 @@ from django.core.exceptions import (
     PermissionDenied,
     ValidationError,
 )
+from django.views.decorators.cache import never_cache
 from .checkout_api import clerk_logout_fn
 from . import ajax_util
 from .forms import ItemRemoveForm
@@ -594,32 +595,35 @@ def vendor_view(request):
     return render(request, "kirppu/app_frontpage.html", context)
 
 
-def login_view(request):
-    """
-    Redirect to Kompassi login page.
-    """
+def _get_login_destination(request, url):
     destination = request.REQUEST.get('next')
     if not is_safe_url(destination, request.get_host()):
         destination = request.build_absolute_uri(url.reverse('kirppu:vendor_view'))
     login_url = '{0}?{1}'.format(
-        settings.LOGIN_URL,
+        url,
         urllib.urlencode({'next': destination}),
     )
+    return login_url
+
+
+@require_setting("KIRPPU_USE_SSO", True)
+@never_cache
+def login_view(request):
+    """
+    Redirect to SSO login page.
+    """
+    login_url = _get_login_destination(request, settings.LOGIN_URL)
     return redirect(login_url)
 
 
+@require_setting("KIRPPU_USE_SSO", True)
+@never_cache
 def logout_view(request):
     """
-    Log out user and redirect to Kompassi logout page.
+    Log out user and redirect to SSO logout page.
     """
     logout(request)
-    destination = request.REQUEST.get('next')
-    if not is_safe_url(destination, request.get_host()):
-        destination = request.build_absolute_uri(url.reverse('kirppu:vendor_view'))
-    logout_url = '{0}?{1}'.format(
-        settings.LOGOUT_URL,
-        urllib.urlencode({'next': destination}),
-    )
+    logout_url = _get_login_destination(request, settings.LOGOUT_URL)
     return redirect(logout_url)
 
 

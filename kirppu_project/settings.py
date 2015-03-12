@@ -213,12 +213,18 @@ KOMPASSI_API_URL = 'https://kompassidev.tracon.fi/api/v1'
 KOMPASSI_API_APPLICATION_NAME = KOMPASSI_CROWD_APPLICATION_NAME
 KOMPASSI_API_APPLICATION_PASSWORD = KOMPASSI_CROWD_APPLICATION_PASSWORD
 
+# These can be left to default if kirppuauth module is installed. If these
+# point to external URL, KIRPPU_USE_SSO should be set to True.
 # LOGIN_URL = 'https://kompassidev.tracon.fi/crowd'
 # LOGOUT_URL = 'https://kompassidev.tracon.fi/logout'
-PROFILE_URL = 'https://kompassidev.tracon.fi/profile'
+
+# Absolute URL for user "Profile". Leave None if the link should not be displayed.
+PROFILE_URL = None  # 'https://kompassidev.tracon.fi/profile'
 
 # Whether to use Login/Logout-URLs directly (False), or via "wrapper" for SSO use (True).
 KIRPPU_USE_SSO = False
+
+# Whether checkout functionality is active or not.
 KIRPPU_CHECKOUT_ACTIVE = False
 
 # Automatic checkout login. May not be enabled in non-dev environments!

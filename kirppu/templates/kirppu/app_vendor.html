@@ -20,7 +20,9 @@
                 <b class="caret"></b>
             </a>
             <ul class="dropdown-menu">
+                {% if profile_url %}
                 <li><a href="{{ profile_url }}" target="_blank">{% trans "Profile" %}</a></li>
+                {% endif %}
                 <li><a href="{% kirppu_logout_url %}">{% trans "Log out" %}</a></li>
             </ul>
         </li>

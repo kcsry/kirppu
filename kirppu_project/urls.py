@@ -8,11 +8,11 @@ js_info_dict = {
     'packages': ('kirppu',),
 }
 
-urlpatterns = patterns('',
-    # Examples:
+urlpatterns = patterns(
+    '',
     url(r'^$', 'kirppu.views.index', name='home'),
     url(r'^kirppu/', include('kirppu.urls', app_name="kirppu", namespace="kirppu")),
-    url(r'^auth/', include('kirppuauth.urls', app_name="kirppuauth", namespace="kirppuauth")),
+    url(r'^accounts/', include('kirppuauth.urls', app_name="kirppuauth", namespace="kirppuauth")),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
