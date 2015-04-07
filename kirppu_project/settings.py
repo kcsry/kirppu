@@ -219,7 +219,7 @@ PROFILE_URL = 'https://kompassidev.tracon.fi/profile'
 
 # Whether to use Login/Logout-URLs directly (False), or via "wrapper" for SSO use (True).
 KIRPPU_USE_SSO = False
-KIRPPU_CHECKOUT_ACTIVE = True
+KIRPPU_CHECKOUT_ACTIVE = False
 
 KIRPPU_COPY_ITEM_WHEN_UNPRINTED = False
 KIRPPU_MAX_ITEMS_PER_VENDOR = 1000
