@@ -13,12 +13,14 @@ from django.core.exceptions import (
 )
 import django.core.urlresolvers as url
 from django.db.models import Sum
+from django.db import transaction
 from django.http.response import (
     HttpResponse,
     HttpResponseBadRequest,
     HttpResponseForbidden,
     HttpResponseRedirect,
 )
+from django.http import Http404
 from django.shortcuts import (
     redirect,
     render,
@@ -35,6 +37,7 @@ from . import ajax_util
 from .forms import ItemRemoveForm
 from .fields import ItemPriceField
 from .models import (
+    Box,
     Clerk,
     Item,
     Vendor,
@@ -274,6 +277,83 @@ def all_to_print(request):
 
     return HttpResponse()
 
+@login_required
+@require_http_methods(["POST"])
+@require_vendor_open
+def box_add(request):
+    vendor = Vendor.get_vendor(request.user)
+    description = request.POST.get("description", u"").strip()
+    item_title = request.POST.get("item_title", "uu").strip()
+    count_str = request.POST.get("count", u"")
+    price = request.POST.get("price")
+    item_type = request.POST.get("itemtype", u"")
+    adult = request.POST.get("adult", "no")
+
+    if not item_type:
+        return HttpResponseBadRequest(_(u"Item must have a type."))
+
+    # Format price
+    try:
+        price = ItemPriceField().clean(price)
+    except ValidationError as error:
+        return HttpResponseBadRequest(u' '.join(error.messages))
+
+    # Verify that user doesn't exceed his/hers item quota with the box.
+    max_items = settings.KIRPPU_MAX_ITEMS_PER_VENDOR
+    item_cnt = Item.objects.filter(vendor=vendor).count()
+    count = int(count_str)
+    if item_cnt >= max_items:
+        error_msg = _(u"You have %(max_items)s items, which is the maximum. No more items can be registered.")
+        return HttpResponseBadRequest(error_msg % {'max_items': max_items})
+    elif max_items < count + item_cnt:
+        error_msg = _(u"You have %(item_cnt)s items. "
+                      u"Creating this box would cause the items to exceed the maximum number of allowed items.")
+        return HttpResponseBadRequest(error_msg % {'max_items': max_items})
+
+    # Create the box and items. and construct a response containing box and all the items that have been added.
+    box = Box.new(
+        description=description,
+        count=count,
+        item_title=item_title,
+        price=str(price),
+        vendor=vendor,
+        state=Item.ADVERTISED,
+        itemtype=item_type,
+        adult=adult)
+
+    box_dict = {
+        'vendor_id': vendor.id,
+        'box_id': box.id,
+        'description': box.description,
+        'item_price': str(box.get_price_fmt()),
+        'item_count': box.get_item_count(),
+        'item_type': box.get_item_type_for_display(),
+        'item_adult': box.get_item_adult()
+    }
+    response = box_dict
+
+    return HttpResponse(json.dumps(response), 'application/json')
+
+
+@login_required
+@require_http_methods(["POST"])
+def box_hide(request, box_id):
+
+    with transaction.atomic():
+
+        vendor = Vendor.get_vendor(request.user)
+        box = get_object_or_404(Box.objects, id=box_id)
+        box_vendor = box.get_vendor()
+        if box_vendor.id != vendor.id:
+            raise Http404()
+
+        items = box.get_items()
+        for item in items:
+            item.hidden = True
+            item.save()
+
+    return HttpResponse()
+
 
 def _vendor_menu_contents(request):
     """
@@ -293,6 +373,7 @@ def _vendor_menu_contents(request):
     items = [
         fill(_(u"Home"), "kirppu:vendor_view"),
         fill(_(u"Item list"), "kirppu:page"),
+        fill(_(u"Box list"), "kirppu:vendor_boxes"),
     ]
 
     manage_sub = []
@@ -327,7 +408,7 @@ def get_items(request, bar_type):
         return HttpResponseBadRequest(u"Tag type not supported")
 
     vendor = Vendor.get_vendor(user)
-    vendor_items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True )
+    vendor_items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)
     items = vendor_items.filter(printed=False)
     printed_items = vendor_items.filter(printed=True)
 
@@ -350,6 +431,48 @@ def get_items(request, bar_type):
     }
 
     return render(request, "kirppu/app_items.html", render_params)
+
+
+@login_required
+@require_http_methods(["GET"])
+@barcode_view
+def get_boxes(request, bar_type):
+    """
+    Get a page containing all boxes for vendor.
+
+    :param request: HttpRequest object.
+    :type request: django.http.request.HttpRequest
+    :return: HttpResponse or HttpResponseBadRequest
+    """
+
+    user = request.user
+    if user.is_staff and "user" in request.GET:
+        user = get_object_or_404(get_user_model(), username=request.GET["user"])
+    tag_type = request.GET.get("tag", "short").lower()
+    if tag_type not in ('short', 'long'):
+        return HttpResponseBadRequest(u"Tag type not supported")
+
+    vendor = Vendor.get_vendor(user)
+    boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()
+    printed_boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False, item__printed=True).distinct()
+
+    # Order from newest to oldest, because that way new boxes are added
+    # to the top and the user immediately sees them without scrolling
+    # down.
+    boxes = boxes.order_by('-id')
+
+    render_params = {
+        'boxes': boxes,
+        'printed_boxes': printed_boxes,
+        'vendor_id_param': vendor.id,
+
+        'profile_url': settings.PROFILE_URL,
+
+        'is_registration_open': is_vendor_open(),
+        'menu': _vendor_menu_contents(request),
+    }
+
+    return render(request, "kirppu/app_boxes.html", render_params)
 
 
 def get_barcode(request, data, ext):
@@ -625,7 +748,7 @@ def vendor_view(request):
         'items': items,
 
         'total_price': sum(i.price for i in items),
-        'num_total':   len(items),
+        'num_total': len(items),
         'num_printed': len(filter(lambda i: i.printed, items)),
 
         'profile_url': settings.PROFILE_URL,

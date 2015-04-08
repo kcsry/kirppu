@@ -18,6 +18,9 @@ from .views import (
     item_update_type,
     item_update_price,
     remove_item_from_receipt,
+    get_boxes,
+    box_add,
+    box_hide,
     login_view,
     logout_view,
     stats_view,
@@ -46,6 +49,9 @@ _urls = [
     url(r'^vendor/item/(?P<code>\w+?)/hide$', item_hide, name='item_hide'),
     url(r'^remove_item', remove_item_from_receipt, name='remove_item_from_receipt'),
     url(r'^lost_and_found/$', lost_and_found_list, name='lost_and_found'),
+    url(r'^vendor/boxes/$', get_boxes, name='vendor_boxes'),
+    url(r'^vendor/box/$', box_add, name='box_add'),
+    url(r'^vendor/box/(?P<box_id>\w+?)/hide$', box_hide, name='box_hide'),
 ]
 
 if settings.KIRPPU_USE_SSO:

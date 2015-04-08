@@ -1,0 +1,144 @@
+{% extends "kirppu/app_vendor.html" %}{% load kirppu_tags %}{% load i18n %}
+
+{% load static %}
+
+{% block head %}
+
+    <link href="{% static "kirppu/css/general.css" %}" rel="stylesheet">
+    <link href="{% static "kirppu/css/boxes.css" %}" rel="stylesheet">
+    <script src="{% static "kirppu/js/general.js" %}"></script>
+    <script src="{% static "kirppu/js/jeditable.js" %}"></script>
+    <script src="{% static "kirppu/js/boxes.js" %}"></script>
+{% endblock %}
+
+{% block body %}
+    {% if is_registration_open %}
+    <form id="box-add-form" method="POST" class="form-horizontal">
+        {% csrf_token %}
+        <p class="help-block">
+            {% load_text "box_info1" %}
+        </p>
+        <p class="help-block">
+            {% load_text "box_info2" %}
+        </p>
+        <p class="help-block">
+            {% load_text "box_info3" %}
+        </p>
+        <p class="help-block">
+            {% blocktrans %}After you have printed your price tags, you should mark them as
+            having already been printed with the 'Mark all as printed' button. Doing so moves them
+            to the bottom of the page and they are no longer printed when you print the page.{% endblocktrans %}
+        </p>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{% trans "Add new box" %}</h3>
+            </div>
+            <div class="panel-body">
+
+                <div class="form-group">
+                    <label for="box-add-description" class="col-sm-2 control-label">{% trans "Description:" %}</label>
+                    <div class="col-sm-10">
+                        <input id="box-add-description" type="text" class="form-control" placeholder="{% trans "Box full of Ranma" %}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="box-add-itemtitle" class="col-sm-2 control-label">{% trans "Item prefix:" %}</label>
+                    <div class="col-sm-6">
+                        <input id="box-add-itemtitle" type="text" class="form-control" placeholder="{% trans "Ranma" %}" />
+                    </div>
+                    <label for="box-add-count" class="col-sm-2 control-label">{% trans "Items #:" %}</label>
+                    <div class="col-sm-2 ">
+                        <input id="box-add-count" type="text" class="form-control" placeholder="{% trans "10" %}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="box-add-price" class="col-sm-2 control-label">{% trans "Price:" %}</label>
+                    <div class="col-sm-2">
+                        <input id="box-add-price" type="text" class="form-control" placeholder="5" />
+                    </div>
+                    <label class="control-label">&euro;</label>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">{% trans "Type:" %}</label>
+                    <div class="col-sm-6">
+                        <select id="box-add-itemtype" name="box-add-itemtype" class="form-control">
+                            <option></option>
+                            <option value="manga-finnish">{% trans "Manga (Finnish)" %}</option>
+                            <option value="manga-english">{% trans "Manga (English)" %}</option>
+                            <option value="manga-other">{% trans "Manga (other language)" %}</option>
+                            <option value="book">{% trans "Book" %}</option>
+                            <option value="magazine">{% trans "Magazine" %}</option>
+                            <option value="movie-tv">{% trans "Movie/TV-series" %}</option>
+                            <option value="game">{% trans "Game" %}</option>
+                            <option value="figurine-plushie">{% trans "Figurine/Plushie" %}</option>
+                            <option value="clothing">{% trans "Clothing" %}</option>
+                            <option value="other">{% trans "Other" %}</option>
+                        </select>
+                    </div>
+
+                    <label class="col-sm-1 control-label">{% trans "Adult:" %}</label>
+                    <div class="col-sm-3">
+                        <label class="radio-inline">
+                            <input name="box-add-adult" value="yes" type="radio" />{% trans "Yes" %}
+                        </label>
+                        <label class="radio-inline">
+                            <input name="box-add-adult" value="no" type="radio" checked="checked" />{% trans "No" %}
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-1 col-sm-11">
+                        <div id="form-errors" class="text-danger"></div>
+                        <button id="add_short_box" type="submit" class="btn btn-primary">{% trans "Add box" %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>{# panel-body, panel #}
+    </form>
+    {% endif %}
+
+    <form id="box-add-form" method="POST" class="form-horizontal">
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button id="delete_all" type="button" class="btn btn-default">{% trans "Mark all as printed" %}</button>
+            </div>
+        </div>
+    </form>
+
+    {# Output a single box_container as a template for javascript. #}
+    {% include 'kirppu/app_boxes_box.html' with box_type="template" description="" price="0" id="" vendor_id="" adult="" locked=False %}
+
+    <div id="boxes">
+        {# Output a template container for every non-printed box user has. #}
+        {% for b in boxes %}
+            {% include 'kirppu/app_boxes_box.html' with box_type="normal" box_id=b.id description=b.description price=b.get_price_fmt item_count=b.get_item_count item_type=b.get_item_type_for_display item_adult=b.get_item_adult %}
+        {% endfor %}
+    </div>
+    <div style="margin-top: 1cm" id="printed_boxes">
+        {# Output a template container for every printed box user has. #}
+        {% for b in printed_boxes %}
+            {% include 'kirppu/app_boxes_box.html' with id=b.id description=b.description price=b.get_price_fmt item_count=b.get_item_count %}
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block tail %}
+
+    <script>
+        boxesConfig.url_args.box_id = '__placeholder__';
+        boxesConfig.urls.box_add = "{% url 'kirppu:box_add' %}";
+        boxesConfig.urls.box_hide = "{% url 'kirppu:box_hide' '__placeholder__' %}";
+        boxesConfig.urls.roller = "{% static "img/roller.gif" %}";
+        {% if not is_registration_open %}boxesConfig.enabled = false;{% endif %}
+
+        $(document).ready(function() {
+            setupAjax();
+
+            bindFormEvents();
+
+            bindBoxEvents($('#boxes > .box_editable'));
+            // bindListTagEvents($('#printed_boxs > .box_container'));
+        });
+    </script>
+{% endblock %}

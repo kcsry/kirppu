@@ -19,6 +19,12 @@ module.exports.css = {
         ],
         "output_filename": "price_tags.css",
     },
+    'boxes': {
+        "source_filenames": [
+            "css/boxes.css",
+        ],
+        "output_filename": "boxes.css",
+    },
     'checkout': {
         "source_filenames": [
             "css/checkout.css",
@@ -44,6 +50,13 @@ module.exports.js = {
             "js/price_tags.coffee",
         ],
         "output_filename": "price_tags.js",
+        "compress": true,
+    },
+    'boxes': {
+        "source_filenames": [
+            "js/boxes.coffee",
+        ],
+        "output_filename": "boxes.js",
         "compress": true,
     },
     'checkout': {
