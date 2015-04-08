@@ -8,6 +8,7 @@ class @ItemSearchForm
 
     @searchInput = $('<input type="text" id="item_search_input" class="form-control">')
     @searchCodeInput = $('<input type="text" id="item_code_search_input" class="form-control">')
+    @searchVendorInput = $('<input type="number" step="any" min="1" id="vendor_search_input" class="form-control">')
     @minPriceInput = $('<input type="number" step="any" min="0" id="item_search_min_price" class="form-control">')
     @maxPriceInput = $('<input type="number" step="any" min="0" id="item_search_max_price" class="form-control">')
     @typeInput = $('<select multiple class="form-control" id="item_search_type">').append(
@@ -25,6 +26,10 @@ class @ItemSearchForm
       $('<div class="form-group">').append([
         $('<label for="item_code_search_input" class="control-label col-sm-2">Bar code</label>')
         $('<div class="input-group col-sm-10">').append(@searchCodeInput)
+      ])
+      $('<div class="form-group">').append([
+        $('<label for="vendor_search_input" class="control-label col-sm-2">Vendor ID</label>')
+        $('<div class="input-group col-sm-2">').append(@searchVendorInput)
       ])
       $('<div class="form-group">').append([
         $('<label for="item_search_min_price" class="control-label col-sm-2">Minimum price</label>')
@@ -63,6 +68,7 @@ class @ItemSearchForm
     @action(
       @searchInput.val()
       @searchCodeInput.val()
+      @searchVendorInput.val()
       @minPriceInput.val()
       @maxPriceInput.val()
       @typeInput.val()

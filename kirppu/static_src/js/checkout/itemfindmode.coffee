@@ -15,10 +15,11 @@ class @ItemFindMode extends CheckoutMode
   glyph: -> "search"
   title: -> "Item Search"
 
-  doSearch: (query, code, min_price, max_price, type, state) =>
+  doSearch: (query, code, vendor, min_price, max_price, type, state) =>
     Api.item_search(
       query: query
       code: code
+      vendor: vendor
       min_price: min_price
       max_price: max_price
       item_type: if type? then type.join(' ') else ''
