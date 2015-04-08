@@ -140,120 +140,57 @@
     </script>
 
 
+
     <h2>Number of items:</h2>
     <table class="table table-striped">
         <tr>
             <th></th>
-            <th>Registered</th>
+            <th>Advertized</th>
             <th>Brought</th>
+            <th>Staged</th>
             <th>Sold</th>
+            <th>Missing</th>
             <th>Returned</th>
-            <th>Lost</th>
-            <th>Left</th>
+            <th>Compensated</th>
         </tr>
-        <tr>
-            <th>Manga</th>
-            <td>300</td>
-            <td>200</td>
-            <td>150</td>
-            <td>0</td>
-            <td>0</td>
-            <td>50</td>
-        </tr>
-        <tr>
-            <th>Clothes</th>
-            <td>2</td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td>1</td>
-            <td>0</td>
-        </tr>
-        <tr>
-            <th>Toys</th>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-        </tr>
-        <tr>
-            <th>Animals</th>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-        </tr>
-        <tr>
-            <th>Sum</th>
-            <td>302</td>
-            <td>201</td>
-            <td>150</td>
-            <td>0</td>
-            <td>1</td>
-            <td>50</td>
-        </tr>
+        {% for row in number_of_items %}
+            <tr>
+                <th>{{ row.type }}</th>
+                <td>{{ row.advertized }}</td>
+                <td>{{ row.brought }}</td>
+                <td>{{ row.staged }}</td>
+                <td>{{ row.sold }}</td>
+                <td>{{ row.missing }}</td>
+                <td>{{ row.returned }}</td>
+                <td>{{ row.compensated }}</td>
+            </tr>
+        {% endfor %}
     </table>
 
     <h2>Number of euros:</h2>
     <table class="table table-striped">
         <tr>
             <th></th>
-            <th>Registered</th>
+            <th>Advertized</th>
             <th>Brought</th>
+            <th>Staged</th>
             <th>Sold</th>
+            <th>Missing</th>
             <th>Returned</th>
-            <th>Lost</th>
-            <th>Left</th>
+            <th>Compensated</th>
         </tr>
-        <tr>
-            <th>Manga</th>
-            <td>300 €</td>
-            <td>200 €</td>
-            <td>150 €</td>
-            <td>0 €</td>
-            <td>0 €</td>
-            <td>50 €</td>
-        </tr>
-        <tr>
-            <th>Clothes</th>
-            <td>2 €</td>
-            <td>1 €</td>
-            <td>0 €</td>
-            <td>0 €</td>
-            <td>1 €</td>
-            <td>0 €</td>
-        </tr>
-        <tr>
-            <th>Toys</th>
-            <td>0 €</td>
-            <td>0 €</td>
-            <td>0 €</td>
-            <td>0 €</td>
-            <td>0 €</td>
-            <td>0 €</td>
-        </tr>
-        <tr>
-            <th>Animals</th>
-            <td>0 €</td>
-            <td>0 €</td>
-            <td>0 €</td>
-            <td>0 €</td>
-            <td>0 €</td>
-            <td>0 €</td>
-        </tr>
-        <tr>
-            <th>Sum</th>
-            <td>302 €</td>
-            <td>201 €</td>
-            <td>150 €</td>
-            <td>0 €</td>
-            <td>1 €</td>
-            <td>50 €</td>
-        </tr>
+        {% for row in number_of_euros %}
+            <tr>
+                <th>{{ row.type }}</th>
+                <td>{{ row.advertized }}</td>
+                <td>{{ row.brought }}</td>
+                <td>{{ row.staged }}</td>
+                <td>{{ row.sold }}</td>
+                <td>{{ row.missing }}</td>
+                <td>{{ row.returned }}</td>
+                <td>{{ row.compensated }}</td>
+            </tr>
+        {% endfor %}
     </table>
 
     <ul>

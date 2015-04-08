@@ -21,6 +21,7 @@ from django.shortcuts import (
     redirect,
     get_object_or_404,
 )
+from django.db.models import Sum
 from django.conf import settings
 import django.core.urlresolvers as url
 from django.utils.http import is_safe_url
@@ -445,8 +446,58 @@ def stats_view(request):
         ajax_util.require_clerk_login(lambda _: None)(request)
     except ajax_util.AjaxError:
         return redirect('kirppu:checkout_view')
-    else:
-        return render(request, 'kirppu/app_stats.html', {})
+
+    class ItemStats(object):
+        """Interface for app_stats.html template."""
+        __error_msg = 'NOT IMPLEMENTED'
+        type = __error_msg
+        advertized = __error_msg
+        brought = __error_msg
+        staged = __error_msg
+        sold = __error_msg
+        missing = __error_msg
+        compensated = __error_msg
+
+    class ItemCounts(ItemStats):
+        def __init__(self, item_type, type_name):
+            items = Item.objects.filter(itemtype=item_type)
+
+            def count_items(state):
+                return items.filter(state=state).count()
+
+            self.type = type_name
+            self.advertized = count_items(Item.ADVERTISED)
+            self.brought = count_items(Item.BROUGHT)
+            self.staged = count_items(Item.STAGED)
+            self.sold = count_items(Item.SOLD)
+            self.missing = count_items(Item.MISSING)
+            self.returned = count_items(Item.RETURNED)
+            self.compensated = count_items(Item.COMPENSATED)
+
+    class ItemEuros(ItemStats):
+        def __init__(self, item_type, type_name):
+            items = Item.objects.filter(itemtype=item_type)
+
+            def count_euros(state):
+                query = items.filter(state=state).aggregate(Sum('price'))
+                price = query['price__sum'] or 0
+                return price
+
+            self.type = type_name
+            self.advertized = count_euros(Item.ADVERTISED)
+            self.brought = count_euros(Item.BROUGHT)
+            self.staged = count_euros(Item.STAGED)
+            self.sold = count_euros(Item.SOLD)
+            self.missing = count_euros(Item.MISSING)
+            self.returned = count_euros(Item.RETURNED)
+            self.compensated = count_euros(Item.COMPENSATED)
+
+    context = {
+        'number_of_items': [ItemCounts(item_type, type_name) for item_type, type_name in Item.ITEMTYPE],
+        'number_of_euros': [ItemEuros(item_type, type_name) for item_type, type_name in Item.ITEMTYPE],
+    }
+
+    return render(request, 'kirppu/app_stats.html', context)
 
 
 def vendor_view(request):
