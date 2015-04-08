@@ -212,7 +212,7 @@ def item_find(request, code):
 
 
 @ajax_func('^item/search$', method='GET')
-def item_search(request, query, min_price, max_price, item_type, item_state):
+def item_search(request, query, code, min_price, max_price, item_type, item_state):
     if not get_clerk(request).user.has_perm('kirppu.oversee'):
         raise AjaxError(RET_FORBIDDEN, _i(u"Access denied."))
 
@@ -221,6 +221,10 @@ def item_search(request, query, min_price, max_price, item_type, item_state):
     types = item_type.split()
     if types:
         clauses.append(Q(itemtype__in=types))
+
+    code = code.strip()
+    if code:
+        clauses.append(Q(code__contains=code))
 
     states = item_state.split()
     if states:
