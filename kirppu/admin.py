@@ -16,7 +16,7 @@ from .forms import (
     ClerkSSOForm,
 )
 
-from .models import Clerk, Item, Vendor, Counter, Receipt, ReceiptItem, UIText
+from .models import Clerk, Item, Vendor, Counter, Receipt, ReceiptItem, UIText, ItemStateLog
 
 __author__ = 'jyrkila'
 
@@ -210,3 +210,13 @@ class ReceiptAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 admin.site.register(Receipt, ReceiptAdmin)
+
+
+class ItemStateLogAdmin(admin.ModelAdmin):
+    model = ItemStateLog
+    ordering = ["-id"]
+    search_fields = ['item__code']
+    list_display = ['id', 'time', 'item', 'old_state', 'new_state']
+
+admin.site.register(ItemStateLog, ItemStateLogAdmin)
+
