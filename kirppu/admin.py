@@ -88,7 +88,7 @@ class ClerkAdmin(admin.ModelAdmin):
 
     def _gen_clerk_code(self, request, queryset):
         for clerk in queryset:
-            if not clerk.access_key:
+            if not clerk.is_enabled:
                 clerk.generate_access_key()
                 clerk.save(update_fields=["access_key"])
     _gen_clerk_code.short_description = ugettext(u"Generate missing Clerk access codes")
