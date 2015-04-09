@@ -536,3 +536,16 @@ class Receipt(models.Model):
 
     def __unicode__(self):
         return unicode(self.start_time) + u" / " + unicode(self.clerk)
+
+
+class ItemStateLog(models.Model):
+    item = models.ForeignKey(Item)
+    time = models.DateTimeField(auto_now_add=True)
+    old_state = models.CharField(
+        choices=Item.STATE,
+        max_length=2,
+    )
+    new_state = models.CharField(
+        choices=Item.STATE,
+        max_length=2,
+    )
