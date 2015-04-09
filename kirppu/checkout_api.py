@@ -22,6 +22,7 @@ from .models import (
     ReceiptItem,
     Vendor,
     UserAdapter,
+    ItemStateLog,
 )
 
 from . import ajax_util
@@ -116,6 +117,7 @@ def item_mode_change(code, from_, to, message_if_not_first=None):
             # users list. The same probably applies to any interaction with the item.
             item.hidden = False
 
+        ItemStateLog.objects.log_state(item=item, new_state=to)
         old_state = item.state
         item.state = to
         item.save()
@@ -332,6 +334,7 @@ def item_reserve(request, code):
 
     message = raise_if_item_not_available(item)
     if item.state in (Item.ADVERTISED, Item.BROUGHT, Item.MISSING):
+        ItemStateLog.objects.log_state(item, Item.STAGED)
         item.state = Item.STAGED
         item.save()
 
@@ -374,8 +377,10 @@ def item_release(request, code):
     receipt.calculate_total()
     receipt.save()
 
-    item.state = Item.BROUGHT
-    item.save()
+    if item.state != Item.BROUGHT:
+        ItemStateLog.objects.log_state(item=item, new_state=Item.BROUGHT)
+        item.state = Item.BROUGHT
+        item.save()
 
     return removal_entry.as_dict()
 
@@ -391,7 +396,10 @@ def receipt_finish(request):
     receipt.status = Receipt.FINISHED
     receipt.save()
 
-    Item.objects.filter(receipt=receipt, receiptitem__action=ReceiptItem.ADD).update(state=Item.SOLD)
+    receipt_items = Item.objects.filter(receipt=receipt, receiptitem__action=ReceiptItem.ADD)
+    for item in receipt_items:
+        ItemStateLog.objects.log_state(item=item, new_state=Item.SOLD)
+    receipt_items.update(state=Item.SOLD)
 
     del request.session["receipt"]
     return receipt.as_dict()
@@ -412,8 +420,10 @@ def receipt_abort(request):
 
         ReceiptItem(item=item, receipt=receipt, action=ReceiptItem.REMOVE).save()
 
-        item.state = Item.BROUGHT
-        item.save()
+        if item.state != Item.BROUGHT:
+            ItemStateLog.objects.log_state(item=item, new_state=Item.BROUGHT)
+            item.state = Item.BROUGHT
+            item.save()
 
     # Update ADDed items to be REMOVED_LATER. This must be done after the real Items have
     # been updated, and the REMOVE-entries added, as this will change the result set of

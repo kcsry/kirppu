@@ -376,6 +376,8 @@ class Item(models.Model):
         obj.full_clean()
         obj.save()
 
+        ItemStateLog.objects.create(item=obj, old_state="", new_state=obj.state)
+
         return obj
 
     @staticmethod
@@ -538,7 +540,15 @@ class Receipt(models.Model):
         return unicode(self.start_time) + u" / " + unicode(self.clerk)
 
 
+class ItemStateLogManager(models.Manager):
+    def log_state(self, item, new_state):
+        log_entry = self.create(item=item, old_state=item.state, new_state=new_state)
+        return log_entry
+
+
 class ItemStateLog(models.Model):
+    objects = ItemStateLogManager()
+
     item = models.ForeignKey(Item)
     time = models.DateTimeField(auto_now_add=True)
     old_state = models.CharField(
