@@ -456,16 +456,41 @@ def stats_view(request):
         staged = __error_msg
         sold = __error_msg
         missing = __error_msg
+        returned = __error_msg
         compensated = __error_msg
+        properties = ['advertized', 'brought', 'staged', 'sold', 'missing', 'returned', 'compensated']
+
+        @property
+        def sum(self):
+            """Get the sum of all properties."""
+            property_sum = 0
+            for property_name in self.properties:
+                property_sum += getattr(self, property_name)
+            return property_sum
+
+        @classmethod
+        def sum_stats(cls, list_of_stats):
+            """Return a new instance with all properties the sum of the input stats properties."""
+            new_stats = cls(None, 'Sum')
+
+            for stats in list_of_stats:
+                for property_name in new_stats.properties:
+                    value = getattr(stats, property_name)
+                    setattr(new_stats, property_name, value)
+
+            return new_stats
 
     class ItemCounts(ItemStats):
         def __init__(self, item_type, type_name):
+            self.type = type_name
+            if item_type is None:
+                return
+
             items = Item.objects.filter(itemtype=item_type)
 
             def count_items(state):
                 return items.filter(state=state).count()
 
-            self.type = type_name
             self.advertized = count_items(Item.ADVERTISED)
             self.brought = count_items(Item.BROUGHT)
             self.staged = count_items(Item.STAGED)
@@ -476,6 +501,10 @@ def stats_view(request):
 
     class ItemEuros(ItemStats):
         def __init__(self, item_type, type_name):
+            self.type = type_name
+            if item_type is None:
+                return
+
             items = Item.objects.filter(itemtype=item_type)
 
             def count_euros(state):
@@ -483,7 +512,6 @@ def stats_view(request):
                 price = query['price__sum'] or 0
                 return price
 
-            self.type = type_name
             self.advertized = count_euros(Item.ADVERTISED)
             self.brought = count_euros(Item.BROUGHT)
             self.staged = count_euros(Item.STAGED)
@@ -492,8 +520,11 @@ def stats_view(request):
             self.returned = count_euros(Item.RETURNED)
             self.compensated = count_euros(Item.COMPENSATED)
 
+    number_of_items = [ItemCounts(item_type, type_name) for item_type, type_name in Item.ITEMTYPE]
+    number_of_items.append(ItemCounts.sum_stats(number_of_items))
+
     context = {
-        'number_of_items': [ItemCounts(item_type, type_name) for item_type, type_name in Item.ITEMTYPE],
+        'number_of_items': number_of_items,
         'number_of_euros': [ItemEuros(item_type, type_name) for item_type, type_name in Item.ITEMTYPE],
     }
 
