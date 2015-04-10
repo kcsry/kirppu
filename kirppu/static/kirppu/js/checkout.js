@@ -2240,7 +2240,11 @@
       if (r) {
         Api.items_abandon({
           vendor: this.vendor.id
-        }).done(this.switcher.switchTo(VendorCompensation, this.vendor));
+        }).done((function(_this) {
+          return function() {
+            return _this.switcher.switchTo(VendorReport, _this.vendor);
+          };
+        })(this));
       }
     };
 

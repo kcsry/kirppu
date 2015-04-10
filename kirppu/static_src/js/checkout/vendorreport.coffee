@@ -62,6 +62,6 @@ class @VendorReport extends CheckoutMode
     if r
       Api.items_abandon(
         vendor: @vendor.id
-      ).done(@switcher.switchTo(VendorCompensation, @vendor))
+      ).done(=> @switcher.switchTo(VendorReport, @vendor))
     return
 
