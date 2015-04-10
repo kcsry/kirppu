@@ -224,6 +224,9 @@ PROFILE_URL = None  # 'https://kompassidev.tracon.fi/profile'
 # Whether to use Login/Logout-URLs directly (False), or via "wrapper" for SSO use (True).
 KIRPPU_USE_SSO = False
 
+# If True, admin can change identity.
+KIRPPU_SU_AS_USER = "kirppuauth" in INSTALLED_APPS
+
 # Whether checkout functionality is active or not.
 KIRPPU_CHECKOUT_ACTIVE = False
 

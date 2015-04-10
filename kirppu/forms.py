@@ -9,8 +9,9 @@ from .models import (
     Receipt,
     Item,
     UIText,
+    Vendor,
 )
-from .utils import StaticText
+from .utils import StaticText, ButtonWidget
 
 
 class ClerkGenerationForm(forms.ModelForm):
@@ -311,3 +312,33 @@ class ItemRemoveForm(forms.Form):
         self.item.state = Item.BROUGHT
         self.item.save()
 
+
+class VendorSetSelfForm(forms.ModelForm):
+
+    set_user = StaticText(
+        u"Set self as this user.",
+        label="",
+        widget=ButtonWidget,
+    )
+    username = forms.CharField(
+        label="",
+        widget=forms.HiddenInput,
+    )
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get("instance", None)
+        """:type: Vendor"""
+
+        kwargs["initial"] = {
+            "username": instance.user.username,
+        }
+
+        super(VendorSetSelfForm, self).__init__(*args, **kwargs)
+
+        from django.core.urlresolvers import reverse
+        url = reverse("kirppuauth:local_admin_login")
+        click = u"""document.forms[0].action='{0}'; document.forms[0].submit();""".format(url)
+        self.fields["set_user"].widget.set_click(click)
+
+    class Meta:
+        model = Vendor

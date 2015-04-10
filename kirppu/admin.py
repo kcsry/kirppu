@@ -14,6 +14,7 @@ from .forms import (
     UITextForm,
     ClerkEditForm,
     ClerkSSOForm,
+    VendorSetSelfForm,
 )
 
 from .models import Clerk, Item, Vendor, Counter, Receipt, ReceiptItem, UIText, ItemStateLog
@@ -74,7 +75,15 @@ class VendorAdmin(admin.ModelAdmin):
     ordering = ('user__first_name', 'user__last_name')
     search_fields = ['user__first_name', 'user__last_name', 'user__username']
     list_display = ['id', _user_link]
-    readonly_fields = ['user']
+
+    def get_form(self, request, obj=None, **kwargs):
+        if obj is not None and request.user.is_superuser and not obj.user.is_superuser and settings.KIRPPU_SU_AS_USER:
+            kwargs["form"] = VendorSetSelfForm
+        return super(VendorAdmin, self).get_form(request, obj, **kwargs)
+
+    def get_readonly_fields(self, request, obj=None):
+        return ["user"] if obj is not None else []
+
 admin.site.register(Vendor, VendorAdmin)
 
 
