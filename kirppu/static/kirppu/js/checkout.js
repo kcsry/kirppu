@@ -2198,7 +2198,7 @@
       compensateButton = $('<input type="button">').addClass('btn btn-primary').attr('value', gettext('Compensate')).click(this.onCompensate);
       checkoutButton = $('<input type="button">').addClass('btn btn-primary').attr('value', gettext('Return Items')).click(this.onReturn);
       abandonButton = $('<input type="button">').addClass('btn btn-primary').attr('value', gettext('Abandon All Items Currently On Display')).click(this.onAbandon);
-      this.cfg.uiRef.body.append($('<form class="hidden-print">').append(compensateButton, checkoutButton, abandonButton));
+      this.cfg.uiRef.body.append($('<form class="hidden-print">').append(compensateButton, " ", checkoutButton, " ", abandonButton));
       return Api.item_list({
         vendor: this.vendor.id
       }).done(this.onGotItems);

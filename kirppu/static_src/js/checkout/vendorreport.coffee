@@ -37,7 +37,9 @@ class @VendorReport extends CheckoutMode
     @cfg.uiRef.body.append(
       $('<form class="hidden-print">').append(
         compensateButton,
+        " ",
         checkoutButton,
+        " ",
         abandonButton,
       )
     )
