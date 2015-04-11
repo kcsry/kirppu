@@ -1504,11 +1504,16 @@
     };
 
     VendorCheckoutMode.prototype.onCheckedOut = function(item) {
+      var returnable_item;
       if (item._message != null) {
         safeWarning(item._message);
       }
-      this.receipt.body.prepend($('tr', this.lastItem.body));
-      return this.lastItem.body.prepend($('#' + item.code, this.remainingItems.body));
+      returnable_item = $('#' + item.code, this.remainingItems.body);
+      if (returnable_item.size() === 0) {
+        returnable_item = this.createRow("", item.code, item.name, item.price);
+      }
+      this.receipt.body.prepend(returnable_item.clone());
+      this.lastItem.body.empty().append(returnable_item);
     };
 
     return VendorCheckoutMode;

@@ -78,6 +78,14 @@ class @VendorCheckoutMode extends ItemCheckoutMode
   onCheckedOut: (item) =>
     if item._message?
       safeWarning(item._message)
-    @receipt.body.prepend($('tr', @lastItem.body))
 
-    @lastItem.body.prepend($('#' + item.code, @remainingItems.body))
+    # Move just returned item to "Last returned item" part from "remaining items" list.
+    returnable_item = $('#' + item.code, @remainingItems.body)
+    if returnable_item.size() == 0
+      # Item was not in "remaining" list, but it was still returned. (Transition from state AD.)
+      returnable_item = @createRow("", item.code, item.name, item.price)
+    @receipt.body.prepend(returnable_item.clone())
+
+    # Add the just returned item to "last item" list.
+    @lastItem.body.empty().append(returnable_item)
+    return
