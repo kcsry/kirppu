@@ -130,7 +130,10 @@ def item_mode_change(code, from_, to, message_if_not_first=None):
         # Item not in expected state.
         raise AjaxError(
             RET_CONFLICT,
-            _i(u"Unexpected item state: {state}").format(state=item.state),
+            _i(u"Unexpected item state: {state_name} ({state})").format(
+                state=item.state,
+                state_name=item.get_state_display()
+            ),
         )
 
 
