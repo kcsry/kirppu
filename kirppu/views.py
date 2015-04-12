@@ -564,33 +564,6 @@ def stats_view(request):
         'vendor_items': vendor_items,
     }
 
-    context['vendors_registered'] = Vendor.objects.count()
-    context['items_uncollected'] = (
-        Item.objects
-        .filter(state__in=(Item.BROUGHT, Item.STAGED))
-        .count()
-    )
-    context['moneys_uncollected'] = (
-        Item.objects
-        .filter(state=Item.SOLD)
-        .aggregate(Sum('price'))
-        ['price__sum'] or 0
-    )
-    context['vendors_have_uncollected'] = (
-        Item.objects
-        .filter(state__in=(Item.BROUGHT, Item.STAGED, Item.SOLD))
-        .aggregate(Count('vendor', distinct=True))
-        ['vendor__count'] or 0
-    )
-    context['vendors_brought'] = (
-        Item.objects
-        .exclude(state=(Item.ADVERTISED))
-        .aggregate(Count('vendor', distinct=True))
-        ['vendor__count'] or 0
-    )
-
-
-
     return render(request, 'kirppu/app_stats.html', context)
 
 
