@@ -60,6 +60,19 @@ tr.receipt_tr_clickable:hover {
     background-color: #ffccff;
 }
 
+.vendor-info-box {
+    margin: 0.5em;
+    padding: 0.5em;
+    border: 1px solid black;
+    background: white;
+}
+.vendor-info-box > h3 {
+    margin: 0px;
+}
+.vendor-info-box > dl {
+    margin: 0px;
+}
+
 .alert-blink {
     /* Container class when blinking. */
     background-color: deeppink;
