@@ -484,10 +484,12 @@ def stats_view(request):
             """Return a new instance with all properties the sum of the input stats properties."""
             new_stats = cls(None, 'Sum')
 
-            for stats in list_of_stats:
-                for property_name in new_stats.properties:
-                    value = getattr(stats, property_name)
-                    setattr(new_stats, property_name, value)
+            for property_name in new_stats.properties:
+                property_sum = 0
+                for stats in list_of_stats:
+                    property_sum += getattr(stats, property_name)
+
+                setattr(new_stats, property_name, property_sum)
 
             return new_stats
 
