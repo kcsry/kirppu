@@ -1278,6 +1278,7 @@
       this.onResultSuccess = bind(this.onResultSuccess, this);
       ItemCheckInMode.__super__.constructor.apply(this, arguments);
       this.currentVendor = null;
+      this.itemIndex = 1;
     }
 
     ItemCheckInMode.prototype.actions = function() {
@@ -1306,12 +1307,12 @@
             vendorInfoRow = $('<tr><td colspan="4">');
             $('td', vendorInfoRow).append(new VendorInfo(vendor).render());
             _this.receipt.body.prepend(vendorInfoRow);
-            row = _this.createRow("", data.code, data.name, data.price);
+            row = _this.createRow(_this.itemIndex++, data.code, data.name, data.price);
             return _this.receipt.body.prepend(row);
           };
         })(this));
       } else {
-        row = this.createRow("", data.code, data.name, data.price);
+        row = this.createRow(this.itemIndex++, data.code, data.name, data.price);
         return this.receipt.body.prepend(row);
       }
     };

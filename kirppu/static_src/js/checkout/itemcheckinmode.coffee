@@ -7,6 +7,7 @@ class @ItemCheckInMode extends ItemCheckoutMode
   constructor: (args..., query) ->
     super
     @currentVendor = null
+    @itemIndex = 1
 
   actions: -> [
     ['', (code) =>
@@ -25,11 +26,11 @@ class @ItemCheckInMode extends ItemCheckoutMode
         $('td', vendorInfoRow).append(new VendorInfo(vendor).render())
         @receipt.body.prepend(vendorInfoRow)
 
-        row = @createRow("", data.code, data.name, data.price)
+        row = @createRow(@itemIndex++, data.code, data.name, data.price)
         @receipt.body.prepend(row)
       )
     else
-      row = @createRow("", data.code, data.name, data.price)
+      row = @createRow(@itemIndex++, data.code, data.name, data.price)
       @receipt.body.prepend(row)
 
   onResultError: (jqXHR) =>
