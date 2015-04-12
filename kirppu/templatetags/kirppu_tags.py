@@ -10,6 +10,8 @@ from django.utils.functional import memoize
 from collections import OrderedDict
 from ..models import UIText
 import re
+from django.utils.html import format_html
+from django.utils.encoding import force_text
 
 
 class FifoDict(OrderedDict):
@@ -68,7 +70,16 @@ class KirppuBarcode(barcode.Code128):
 
 @register.simple_tag
 def load_text(id_):
-    return UIText.objects.get(identifier=id_).text
+    try:
+        return UIText.objects.get(identifier=id_).text
+    except UIText.DoesNotExist:
+        if settings.DEBUG:
+            return format_html(
+                u'<span style="background-color: lightyellow; text-color: black">Missing text {0}.</span>'.format(
+                    force_text(id_)
+                )
+            )
+        return u""
 
 
 def generate_dataurl(code, ext, expect_width=143):
