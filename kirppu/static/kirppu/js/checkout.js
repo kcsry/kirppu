@@ -429,7 +429,7 @@
         }, {
           title: gettext('status'),
           render: function(i) {
-            return displayState(i.state);
+            return i.state_display;
           },
           "class": 'receipt_status'
         }, {
@@ -501,7 +501,7 @@
     ItemFindList.prototype.append = function(item, index) {
       var row;
       row = $("<tr>");
-      row.append([$("<td>").text(index), $("<td>").text(item.code), $("<td>").text(item.name), $("<td>").text(displayPrice(item.price)), $("<td>").text(item.itemtype), $("<td>").text(item.vendor.name), $("<td>").text(item.state)]);
+      row.append([$('<td class="receipt_index numeric">').text(index), $('<td class="receipt_code">').text(item.code), $('<td class="receipt_item">').text(item.name), $('<td class="receipt_price numeric">').text(displayPrice(item.price)), $('<td class="receipt_type">').text(item.itemtype_display), $('<td class="receipt_name">').text(item.vendor.name), $('<td class="receipt_status">').text(item.state_display)]);
       return this.body.append(row);
     };
 

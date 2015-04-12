@@ -20,7 +20,7 @@ class @ItemReportTable extends ResultTable
       class: 'receipt_price numeric'
     ,
       title: gettext('status')
-      render: (i) -> displayState(i.state)
+      render: (i) -> i.state_display
       class: 'receipt_status'
     ,
       title: gettext('abandoned')
