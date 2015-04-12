@@ -1,49 +1,21 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014.
+# Jyrki Launonen, 2014, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-07 23:45+0300\n"
-"PO-Revision-Date: 2014-08-30 23:46+0300\n"
+"POT-Creation-Date: 2015-04-12 19:59+0300\n"
+"PO-Revision-Date: 2015-04-12 18:49+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.5\n"
-
-msgid ""
-"This will mark all items as printed so they won't be printed again "
-"accidentally. Continue?"
-msgstr ""
-"This will mark all items as printed so they won't be printed again "
-"accidentally. Continue?"
-
-msgid "Click to edit..."
-msgstr "Click to edit…"
-
-msgid "<em>Click to edit</em>"
-msgstr "<em>Click to edit</em>"
-
-msgid "code"
-msgstr "code"
-
-msgid "item"
-msgstr "item"
-
-msgid "price"
-msgstr "price"
-
-msgid "status"
-msgstr "status"
-
-msgid "Total"
-msgstr "Total"
 
 msgid "sold"
 msgstr "sold"
@@ -66,6 +38,33 @@ msgstr "sold and compensated to the vendor"
 msgid "not brought to the event"
 msgstr "not brought to the event"
 
+msgid "code"
+msgstr "code"
+
+msgid "item"
+msgstr "item"
+
+msgid "price"
+msgstr "price"
+
+msgid "#"
+msgstr "#"
+
+msgid "status"
+msgstr "status"
+
+msgid "abandoned"
+msgstr "abandoned"
+
+msgid "Total:"
+msgstr "Total:"
+
+msgid "type"
+msgstr "type"
+
+msgid "vendor"
+msgstr "vendor"
+
 msgid "Vendor"
 msgstr "Vendor"
 
@@ -78,6 +77,9 @@ msgstr "Returnable Items"
 msgid "Other Items"
 msgstr "Other Items"
 
+msgid "Not brought to event"
+msgstr "Not brought to event"
+
 msgid "Item Report"
 msgstr "Item Report"
 
@@ -86,3 +88,26 @@ msgstr "Compensate"
 
 msgid "Return Items"
 msgstr "Return Items"
+
+msgid "Abandon All Items Currently On Display"
+msgstr "Abandon All Items Currently On Display"
+
+msgid ""
+"1) Have you asked for the vendor's signature AND 2) Are you sure you want to "
+"mark all items on display or missing abandoned?"
+msgstr ""
+"1) Have you asked for the vendors signature AND 2) Are you sure you want to "
+"mark all items on display or missing abandoned?"
+
+msgid ""
+"This will mark all items as printed so they won't be printed again "
+"accidentally. Continue?"
+msgstr ""
+"This will mark all items as printed so they won't be printed again "
+"accidentally. Continue?"
+
+msgid "Click to edit..."
+msgstr "Click to edit…"
+
+msgid "<em>Click to edit</em>"
+msgstr "<em>Click to edit</em>"

@@ -1,27 +1,21 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014.
+# Jyrki Launonen, 2014, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-06 16:39+0300\n"
-"PO-Revision-Date: 2014-09-06 16:41+0300\n"
+"POT-Creation-Date: 2015-04-12 19:59+0300\n"
+"PO-Revision-Date: 2015-04-12 19:13+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.5\n"
-
-msgid "Finnish"
-msgstr "Suomi"
-
-msgid "English"
-msgstr "English"
 
 msgid "Generate bar codes for items missing it"
 msgstr "Luo viivakoodit tuotteille joilta se puuttuu"
@@ -31,6 +25,9 @@ msgstr "Poista luodut viivakoodit"
 
 msgid "Re-generate bar codes for items"
 msgstr "Luo tavaroiden viivakoodit uudelleen"
+
+msgid "User"
+msgstr "Käyttäjä"
 
 msgid "Generate missing Clerk access codes"
 msgstr "Luo puuttuvat kassatätien käyttötunnisteet"
@@ -51,17 +48,11 @@ msgstr "Käyttötunniste asetettu '{0}':lle"
 msgid "Move unused access code to existing Clerk."
 msgstr "Siirrä käyttämätön tunniste olemassaolevalle kassatädille"
 
-msgid "Logout"
-msgstr "Kirjaudu ulos"
-
-msgid "Abort"
-msgstr "Keskeytä"
-
 msgid "Access key value"
 msgstr "Käyttötunnisteen arvo"
 
-msgid "Access code assigned to the clerk."
-msgstr "Kassatädin käyttötunniste"
+msgid "Access code assigned to the clerk. 14 hexlets."
+msgstr "Käyttötunnisteen arvo"
 
 msgid "Value cannot be negative"
 msgstr "Arvo ei voi olla negatiivinen"
@@ -96,14 +87,56 @@ msgstr "Lyhyt hintalappu"
 msgid "Long price tag"
 msgstr "Pitkä hintalappu"
 
+msgid "Finnish manga book"
+msgstr "Manga (suomeksi)"
+
+msgid "English manga book"
+msgstr "Manga (englanniksi)"
+
+msgid "Manga book in another language"
+msgstr "Manga (muu kieli)"
+
+msgid "Non-manga book"
+msgstr "Kirja"
+
+msgid "Magazine"
+msgstr "Lehti"
+
+msgid "Movie or TV-series"
+msgstr "Elokuva/TV-sarja"
+
+msgid "Game"
+msgstr "Peli"
+
+msgid "Figurine or a stuffed toy"
+msgstr "Figuuri/pehmolelu"
+
+msgid "Clothing"
+msgstr "Vaate"
+
+msgid "Other item"
+msgstr "Muu"
+
+msgid "Item allowed only to adult shoppers, contains porn etc."
+msgstr "Vain aikuisille sallittu tavara, sisältää pornoa tms."
+
+msgid "Item allowed to all shoppers"
+msgstr "Kaikille sallittu tavara"
+
 msgid "Barcode content of the product"
 msgstr "Tuotteen viivakoodisisältö"
 
-msgid "Identifier of the counter"
-msgstr "Kassan tunniste"
+msgid "Identifier of the textitem"
+msgstr "Tekstin tunniste"
 
-msgid "Name of the counter"
-msgstr "Kassan nimi"
+msgid "Textitem in UI"
+msgstr "Teksti"
+
+msgid "Registration identifier of the counter"
+msgstr "Kassan rekisteröintitunniste"
+
+msgid "Common name of the counter"
+msgstr "Kassan yleinen nimi"
 
 msgid "Added to receipt"
 msgstr "Lisätty kuittiin"
@@ -128,6 +161,9 @@ msgstr "Rekisteröinti on suljettu"
 
 msgid "Image extension not supported"
 msgstr "Kuvatyyppi ei ole tuettu"
+
+msgid "Item must have a type."
+msgstr "Tavaralla täytyy olla tyyppi."
 
 msgid "Item must have a price."
 msgstr "Tavaralla täytyy olla hinta."
@@ -195,54 +231,8 @@ msgstr "%(num_printed)s&nbsp; / &nbsp;%(num_total)s"
 msgid "No registered items."
 msgstr "Ei rekisteröityjä tavaroita."
 
-msgid ""
-"Set the name and price of your item and press 'Add item'.\n"
-"            Name and price can be modified later."
-msgstr ""
-"Kirjoita tuotteen nimi ja hinta, ja paina 'Lisää tuote'-painiketta. Nimeä ja "
-"hintaa voi muokata myöhemmin."
-
-msgid ""
-"Modify the size of the price tags by setting size.\n"
-"            Size can be modified later by pressing the arrow button on the "
-"price tag."
-msgstr ""
-"Lisättävän lapun koon voi valita koko-valitsimella. Kokoa voi muuttaa "
-"myöhemmin painamalla <span class=\"glyphicon glyphicon-resize-horizontal\"></"
-"span> painiketta."
-
-msgid ""
-"Register more than one similar items at once by adding a suffix.\n"
-"            Name 'Manga' and suffix '1-3' would create items 'Manga 1', "
-"'Manga 2' and 'Manga 3'.\n"
-"            Suffix 'Blue Red' would create items 'Manga Blue' and 'Manga "
-"Red'."
-msgstr ""
-"Lisää useampi samankaltainen tuote kerralla lisäämällä pääte. Esim. nimellä "
-"'Manga' ja päätteellä '1-3' lisättäisiin tuotteet 'Manga 1', 'Manga 2' ja "
-"'Manga 3'. Pääte 'Blue Red' lisäisi tuotteet 'Manga Blue' ja 'Manga Red'."
-
-msgid ""
-"Print the price tags for your items by printing this page.\n"
-"            Tips on attaching the tags can be found on here:"
-msgstr ""
-"Tulosta hintalaput tulostamalla tämä sivu. Vinkkejä hintalappujen "
-"kiinnittämiseen löytyy täältä:"
-
-msgid "price tag guide"
-msgstr "hintalapun kiinnitysohje"
-
-msgid ""
-"After you have printed your price tags, you should mark them as\n"
-"            having already been printed with the 'Mark all as printed' "
-"button. Doing so moves them\n"
-"            to the bottom of the page and they are no longer printed when "
-"you print the page."
-msgstr ""
-"Kun olet tulostatun hintalaput, ne kannattaa merkitä tulostetuiksi "
-"painamalla 'Merkitse kaikki tulostetuiksi nappia'.Niin tekemisen siirtää "
-"hintalaput sivun alalaidan listaan, jolloin ne eivät enään tulostu "
-"tulostettaessa tämä sivu."
+msgid "Add new item"
+msgstr "Lisää uusi tavara"
 
 msgid "Name:"
 msgstr "Nimi:"
@@ -271,14 +261,35 @@ msgstr "9 cm"
 msgid "Long"
 msgstr "18 cm (kirjanmerkki)"
 
+msgid "Type:"
+msgstr "Tyyppi:"
+
+msgid "Select…"
+msgstr "Valitse…"
+
+msgid "Adult:"
+msgstr "K18:"
+
+msgid "Yes"
+msgstr "Kyllä"
+
+msgid "No"
+msgstr "Ei"
+
 msgid "Add item"
 msgstr "Lisää tavara"
+
+msgid "Print"
+msgstr "Tulosta"
 
 msgid "Toggle List View"
 msgstr "Vaihda listanäkymä"
 
 msgid "Mark all as printed"
 msgstr "Merkitse kaikki tulostetuiksi"
+
+msgid "Permanently remove the item."
+msgstr "Poista tavara pysyvästi."
 
 msgid "Switch item between printed and not printed lists."
 msgstr "Siirrä tavara tulostettujen listaan tai sieltä takaisin."
@@ -295,9 +306,79 @@ msgstr "Kirjaudu ulos"
 msgid "Log in"
 msgstr "Kirjaudu sisään"
 
+msgid "Finnish"
+msgstr "Suomi"
+
+msgid "English"
+msgstr "English"
+
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Lisää irrallinen %(name)s"
+
+#~ msgid "price tag guide"
+#~ msgstr "hintalapun kiinnitysohje"
+
+#, fuzzy
+#~ msgid "Manga (Finnish)"
+#~ msgstr "Suomi"
+
+#, fuzzy
+#~ msgid "Manga (English)"
+#~ msgstr "English"
+
+#~ msgid ""
+#~ "After you have printed your price tags, you should mark them as\n"
+#~ "            having already been printed with the 'Mark all as printed' "
+#~ "button. Doing so moves them\n"
+#~ "            to the bottom of the page and they are no longer printed when "
+#~ "you print the page."
+#~ msgstr ""
+#~ "Kun olet tulostatun hintalaput, ne kannattaa merkitä tulostetuiksi "
+#~ "painamalla 'Merkitse kaikki tulostetuiksi nappia'.Niin tekemisen siirtää "
+#~ "hintalaput sivun alalaidan listaan, jolloin ne eivät enään tulostu "
+#~ "tulostettaessa tämä sivu."
+
+#~ msgid "Logout"
+#~ msgstr "Kirjaudu ulos"
+
+#~ msgid "Abort"
+#~ msgstr "Keskeytä"
+
+#~ msgid ""
+#~ "Set the name and price of your item and press 'Add item'.\n"
+#~ "            Name and price can be modified later."
+#~ msgstr ""
+#~ "Kirjoita tuotteen nimi ja hinta, ja paina 'Lisää tuote'-painiketta. Nimeä "
+#~ "ja hintaa voi muokata myöhemmin."
+
+#~ msgid ""
+#~ "Modify the size of the price tags by setting size.\n"
+#~ "            Size can be modified later by pressing the arrow button on "
+#~ "the price tag."
+#~ msgstr ""
+#~ "Lisättävän lapun koon voi valita koko-valitsimella. Kokoa voi muuttaa "
+#~ "myöhemmin painamalla <span class=\"glyphicon glyphicon-resize-horizontal"
+#~ "\"></span> painiketta."
+
+#~ msgid ""
+#~ "Register more than one similar items at once by adding a suffix.\n"
+#~ "            Name 'Manga' and suffix '1-3' would create items 'Manga 1', "
+#~ "'Manga 2' and 'Manga 3'.\n"
+#~ "            Suffix 'Blue Red' would create items 'Manga Blue' and 'Manga "
+#~ "Red'."
+#~ msgstr ""
+#~ "Lisää useampi samankaltainen tuote kerralla lisäämällä pääte. Esim. "
+#~ "nimellä 'Manga' ja päätteellä '1-3' lisättäisiin tuotteet 'Manga 1', "
+#~ "'Manga 2' ja 'Manga 3'. Pääte 'Blue Red' lisäisi tuotteet 'Manga Blue' ja "
+#~ "'Manga Red'."
+
+#~ msgid ""
+#~ "Print the price tags for your items by printing this page.\n"
+#~ "            Tips on attaching the tags can be found on here:"
+#~ msgstr ""
+#~ "Tulosta hintalaput tulostamalla tämä sivu. Vinkkejä hintalappujen "
+#~ "kiinnittämiseen löytyy täältä:"
 
 #~ msgid "Forbidden"
 #~ msgstr "Kielletty"

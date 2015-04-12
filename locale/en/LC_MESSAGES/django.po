@@ -1,27 +1,21 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014.
+# Jyrki Launonen, 2014, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-06 16:39+0300\n"
-"PO-Revision-Date: 2014-09-06 16:41+0300\n"
+"POT-Creation-Date: 2015-04-12 19:59+0300\n"
+"PO-Revision-Date: 2015-04-12 19:12+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.5\n"
-
-msgid "Finnish"
-msgstr "Suomi"
-
-msgid "English"
-msgstr "English"
 
 msgid "Generate bar codes for items missing it"
 msgstr "Generate bar codes for items missing it"
@@ -31,6 +25,9 @@ msgstr "Delete generated bar codes"
 
 msgid "Re-generate bar codes for items"
 msgstr "Re-generate bar codes for items"
+
+msgid "User"
+msgstr "User "
 
 msgid "Generate missing Clerk access codes"
 msgstr "Generate missing Clerk access codes"
@@ -50,16 +47,10 @@ msgstr "Access code set for '{0}'"
 msgid "Move unused access code to existing Clerk."
 msgstr "Move unused access code to existing Clerk."
 
-msgid "Logout"
-msgstr "Logout"
-
-msgid "Abort"
-msgstr "Abort"
-
 msgid "Access key value"
 msgstr "Access key value"
 
-msgid "Access code assigned to the clerk."
+msgid "Access code assigned to the clerk. 14 hexlets."
 msgstr "Access code assigned to the clerk."
 
 msgid "Value cannot be negative"
@@ -95,14 +86,56 @@ msgstr "Short price tag"
 msgid "Long price tag"
 msgstr "Long price tag"
 
+msgid "Finnish manga book"
+msgstr "Manga (Finnish)"
+
+msgid "English manga book"
+msgstr "Manga (English)"
+
+msgid "Manga book in another language"
+msgstr "Manga (other language)"
+
+msgid "Non-manga book"
+msgstr "Book"
+
+msgid "Magazine"
+msgstr "Magazine"
+
+msgid "Movie or TV-series"
+msgstr "Movie/TV-series"
+
+msgid "Game"
+msgstr "Game"
+
+msgid "Figurine or a stuffed toy"
+msgstr "Figurine/Plushie"
+
+msgid "Clothing"
+msgstr "Clothing"
+
+msgid "Other item"
+msgstr "Other"
+
+msgid "Item allowed only to adult shoppers, contains porn etc."
+msgstr "Item allowed only to adult shoppers, contains porn etc."
+
+msgid "Item allowed to all shoppers"
+msgstr "Item allowed to all shoppers"
+
 msgid "Barcode content of the product"
 msgstr "Barcode content of the product"
 
-msgid "Identifier of the counter"
-msgstr "Identifier of the counter"
+msgid "Identifier of the textitem"
+msgstr "Identifier of the text item"
 
-msgid "Name of the counter"
-msgstr "Name of the counter"
+msgid "Textitem in UI"
+msgstr "Text item in UI"
+
+msgid "Registration identifier of the counter"
+msgstr "Registration identifier of the counter"
+
+msgid "Common name of the counter"
+msgstr "Common name of the counter"
 
 msgid "Added to receipt"
 msgstr "Added to receipt"
@@ -127,6 +160,9 @@ msgstr "Registration is closed"
 
 msgid "Image extension not supported"
 msgstr "Image extension not supported"
+
+msgid "Item must have a type."
+msgstr "Item must have a type."
 
 msgid "Item must have a price."
 msgstr "Item must have a price."
@@ -194,54 +230,8 @@ msgstr "%(num_printed)s&nbsp;of&nbsp;%(num_total)s"
 msgid "No registered items."
 msgstr "No registered items."
 
-msgid ""
-"Set the name and price of your item and press 'Add item'.\n"
-"            Name and price can be modified later."
-msgstr ""
-"Set the name and price of your item and press 'Add item'.Name and price can "
-"be modified later."
-
-msgid ""
-"Modify the size of the price tags by setting size.\n"
-"            Size can be modified later by pressing the arrow button on the "
-"price tag."
-msgstr ""
-"Modify the size of the price tags by setting size.Size can be modified later "
-"by pressing the arrow button on the price tag."
-
-msgid ""
-"Register more than one similar items at once by adding a suffix.\n"
-"            Name 'Manga' and suffix '1-3' would create items 'Manga 1', "
-"'Manga 2' and 'Manga 3'.\n"
-"            Suffix 'Blue Red' would create items 'Manga Blue' and 'Manga "
-"Red'."
-msgstr ""
-"Register more than one similar items at once by adding a suffix. Name "
-"'Manga' and suffix '1-3' would create items 'Manga 1', 'Manga 2' and 'Manga "
-"3'.Suffix 'Blue Red' would create items 'Manga Blue' and 'Manga Red'."
-
-msgid ""
-"Print the price tags for your items by printing this page.\n"
-"            Tips on attaching the tags can be found on here:"
-msgstr ""
-"Print the price tags for your items by printing this page.\n"
-"            Tips on attaching the tags can be found on here:"
-
-msgid "price tag guide"
-msgstr "Tiny price tag"
-
-msgid ""
-"After you have printed your price tags, you should mark them as\n"
-"            having already been printed with the 'Mark all as printed' "
-"button. Doing so moves them\n"
-"            to the bottom of the page and they are no longer printed when "
-"you print the page."
-msgstr ""
-"After you have printed your price tags, you should mark them as\n"
-"            having already been printed with the 'Mark all as printed' "
-"button. Doing so moves them\n"
-"            to the bottom of the page and they are no longer printed when "
-"you print the page."
+msgid "Add new item"
+msgstr "Add new item"
 
 msgid "Name:"
 msgstr "Name:"
@@ -270,14 +260,35 @@ msgstr "9 cm"
 msgid "Long"
 msgstr "18 cm (bookmark)"
 
+msgid "Type:"
+msgstr "Type:"
+
+msgid "Select…"
+msgstr ""
+
+msgid "Adult:"
+msgstr "Adult:"
+
+msgid "Yes"
+msgstr "Yes"
+
+msgid "No"
+msgstr "No"
+
 msgid "Add item"
 msgstr "Add item"
+
+msgid "Print"
+msgstr "Print"
 
 msgid "Toggle List View"
 msgstr "Toggle List View"
 
 msgid "Mark all as printed"
 msgstr "Mark all as printed"
+
+msgid "Permanently remove the item."
+msgstr "Permanently remove the item."
 
 msgid "Switch item between printed and not printed lists."
 msgstr "Switch item between printed and not printed lists."
@@ -294,9 +305,92 @@ msgstr "Log out"
 msgid "Log in"
 msgstr "Log in"
 
+msgid "Finnish"
+msgstr "Suomi"
+
+msgid "English"
+msgstr "English"
+
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Add unbound %(name)s"
+
+#~ msgid "price tag guide"
+#~ msgstr "Tiny price tag"
+
+#~ msgid "Manga (Finnish)"
+#~ msgstr "Manga (Finnish)"
+
+#~ msgid "Manga (English)"
+#~ msgstr "Manga (English)"
+
+#~ msgid "Manga (other language)"
+#~ msgstr "Manga (other language)"
+
+#~ msgid "Book"
+#~ msgstr "Book"
+
+#~ msgid "Movie/TV-series"
+#~ msgstr "Movie/TV-series"
+
+#~ msgid "Figurine/Plushie"
+#~ msgstr "Figurine/Plushie"
+
+#~ msgid "Other"
+#~ msgstr "Other"
+
+#~ msgid ""
+#~ "After you have printed your price tags, you should mark them as\n"
+#~ "            having already been printed with the 'Mark all as printed' "
+#~ "button. Doing so moves them\n"
+#~ "            to the bottom of the page and they are no longer printed when "
+#~ "you print the page."
+#~ msgstr ""
+#~ "After you have printed your price tags, you should mark them as\n"
+#~ "            having already been printed with the 'Mark all as printed' "
+#~ "button. Doing so moves them\n"
+#~ "            to the bottom of the page and they are no longer printed when "
+#~ "you print the page."
+
+#~ msgid "Logout"
+#~ msgstr "Logout"
+
+#~ msgid "Abort"
+#~ msgstr "Abort"
+
+#~ msgid ""
+#~ "Set the name and price of your item and press 'Add item'.\n"
+#~ "            Name and price can be modified later."
+#~ msgstr ""
+#~ "Set the name and price of your item and press 'Add item'.Name and price "
+#~ "can be modified later."
+
+#~ msgid ""
+#~ "Modify the size of the price tags by setting size.\n"
+#~ "            Size can be modified later by pressing the arrow button on "
+#~ "the price tag."
+#~ msgstr ""
+#~ "Modify the size of the price tags by setting size.Size can be modified "
+#~ "later by pressing the arrow button on the price tag."
+
+#~ msgid ""
+#~ "Register more than one similar items at once by adding a suffix.\n"
+#~ "            Name 'Manga' and suffix '1-3' would create items 'Manga 1', "
+#~ "'Manga 2' and 'Manga 3'.\n"
+#~ "            Suffix 'Blue Red' would create items 'Manga Blue' and 'Manga "
+#~ "Red'."
+#~ msgstr ""
+#~ "Register more than one similar items at once by adding a suffix. Name "
+#~ "'Manga' and suffix '1-3' would create items 'Manga 1', 'Manga 2' and "
+#~ "'Manga 3'.Suffix 'Blue Red' would create items 'Manga Blue' and 'Manga "
+#~ "Red'."
+
+#~ msgid ""
+#~ "Print the price tags for your items by printing this page.\n"
+#~ "            Tips on attaching the tags can be found on here:"
+#~ msgstr ""
+#~ "Print the price tags for your items by printing this page.\n"
+#~ "            Tips on attaching the tags can be found on here:"
 
 #~ msgid "Forbidden"
 #~ msgstr "Forbidden"

@@ -1,49 +1,21 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014.
+# Jyrki Launonen, 2014, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-07 23:45+0300\n"
-"PO-Revision-Date: 2014-08-30 23:46+0300\n"
+"POT-Creation-Date: 2015-04-12 19:59+0300\n"
+"PO-Revision-Date: 2015-04-12 18:54+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.5\n"
-
-msgid ""
-"This will mark all items as printed so they won't be printed again "
-"accidentally. Continue?"
-msgstr ""
-"Tämä merkitsee kaikki laput tulostetuiksi, jolloin niitä ei tulosteta "
-"uudestaan. Jatka?"
-
-msgid "Click to edit..."
-msgstr "Klikkaa muokataksesi…"
-
-msgid "<em>Click to edit</em>"
-msgstr "<em>Klikkaa muokataksesi</em>"
-
-msgid "code"
-msgstr "koodi"
-
-msgid "item"
-msgstr "tavara"
-
-msgid "price"
-msgstr "hinta"
-
-msgid "status"
-msgstr "tila"
-
-msgid "Total"
-msgstr "Yhteensä"
 
 msgid "sold"
 msgstr "myyty"
@@ -66,6 +38,33 @@ msgstr "myyty ja hyvitetty myyjälle"
 msgid "not brought to the event"
 msgstr "ei tuotu tapahtumaan"
 
+msgid "code"
+msgstr "koodi"
+
+msgid "item"
+msgstr "tavara"
+
+msgid "price"
+msgstr "hinta"
+
+msgid "#"
+msgstr "#"
+
+msgid "status"
+msgstr "tila"
+
+msgid "abandoned"
+msgstr "hylätty"
+
+msgid "Total:"
+msgstr "Yhteensä:"
+
+msgid "type"
+msgstr "tyyppi"
+
+msgid "vendor"
+msgstr "myyjä"
+
 msgid "Vendor"
 msgstr "Myyjä"
 
@@ -78,6 +77,9 @@ msgstr "Myymättömät tavarat"
 msgid "Other Items"
 msgstr "Muut tavarat"
 
+msgid "Not brought to event"
+msgstr "Ei tuotu tapahtumaan"
+
 msgid "Item Report"
 msgstr "Raportti myyjän tavaroista"
 
@@ -86,3 +88,26 @@ msgstr "Anna rahat"
 
 msgid "Return Items"
 msgstr "Ota vastaan tavaroita"
+
+msgid "Abandon All Items Currently On Display"
+msgstr "Hylkää kaikki näytteillä olevat tavarat"
+
+msgid ""
+"1) Have you asked for the vendor's signature AND 2) Are you sure you want to "
+"mark all items on display or missing abandoned?"
+msgstr ""
+"1) Oletko kysynyt myyjän allekirjoituksen JA 2) Oletko varma, että haluat "
+"merkitä kaikki näytteillä olevat tai hukkuneet tavarat hylätyiksi?"
+
+msgid ""
+"This will mark all items as printed so they won't be printed again "
+"accidentally. Continue?"
+msgstr ""
+"Tämä merkitsee kaikki laput tulostetuiksi, jolloin niitä ei tulosteta "
+"uudestaan. Jatka?"
+
+msgid "Click to edit..."
+msgstr "Klikkaa muokataksesi…"
+
+msgid "<em>Click to edit</em>"
+msgstr "<em>Klikkaa muokataksesi</em>"
