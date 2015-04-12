@@ -2,10 +2,14 @@ from collections import namedtuple
 from decimal import Decimal, InvalidOperation
 import decimal
 import json
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import (
+    PermissionDenied,
+    ValidationError,
+)
 from .checkout_api import clerk_logout_fn
 from . import ajax_util
 from .forms import ItemRemoveForm
+from .fields import ItemPriceField
 from kirppu.util import get_form
 import re
 import urllib
@@ -51,7 +55,7 @@ def index(request):
 def item_add(request):
     vendor = Vendor.get_vendor(request.user)
     name = request.POST.get("name", u"").strip()
-    price = request.POST.get("price", "")
+    price = request.POST.get("price")
     tag_type = request.POST.get("type", "short")
     suffix_str = request.POST.get("range", u"")
     itemtype = request.POST.get("itemtype", u"")
@@ -60,24 +64,10 @@ def item_add(request):
     if not itemtype:
         return HttpResponseBadRequest(_(u"Item must have a type."))
 
-    if not price:
-        return HttpResponseBadRequest(_(u"Item must have a price."))
-
-    price = price.replace(",", ".")
     try:
-        price = Decimal(price).quantize(Decimal('0.1'), rounding=decimal.ROUND_UP)
-    except InvalidOperation:
-        return HttpResponseBadRequest(_(u"Price must be numeric."))
-
-    # Round up to nearest 50 cents.
-    remainder = price % Decimal('.5')
-    if remainder > Decimal('0'):
-        price += Decimal('.5') - remainder
-
-    if price <= Decimal('0'):
-        return HttpResponseBadRequest(_(u"Price too low. (min 0.5 euros)"))
-    elif price > Decimal('400'):
-        return HttpResponseBadRequest(_(u"Price too high. (max 400 euros)"))
+        price = ItemPriceField().clean(price)
+    except ValidationError as error:
+        return HttpResponseBadRequest(u' '.join(error.messages))
 
     def expand_suffixes(input_str):
         """Turn 'a b 1 3-4' to ['a', 'b', '1', '3', '4']"""
@@ -198,22 +188,10 @@ def item_to_printed(request, code):
 @require_http_methods(["POST"])
 @require_vendor_open
 def item_update_price(request, code):
-    price = request.POST.get("value", "0")
-    if len(price) > 8:
-        return HttpResponseBadRequest("Invalid price.")
-    price = price.replace(",", ".")
-
-    price = Decimal(price).quantize(Decimal('.1'), rounding=decimal.ROUND_UP)
-
-    # Round up to nearest 50 cents.
-    remainder = price % Decimal('.5')
-    if remainder > Decimal('0'):
-        price += Decimal('.5') - remainder
-
-    if price <= Decimal('0'):
-        return HttpResponseBadRequest("Price too low.")
-    elif price > Decimal('400'):
-        return HttpResponseBadRequest("Price too high.")
+    try:
+        price = ItemPriceField().clean(request.POST.get('value'))
+    except ValidationError as error:
+        return HttpResponseBadRequest(u' '.join(error.messages))
 
     vendor = Vendor.get_vendor(request.user)
     item = get_object_or_404(Item.objects, code=code, vendor=vendor)
