@@ -1137,6 +1137,8 @@
 
     ModeSwitcher.registerEntryPoint("clerk_login", ClerkLoginMode);
 
+    ClerkLoginMode.autoClerk = null;
+
     ClerkLoginMode.prototype.title = function() {
       return "Locked";
     };
@@ -1147,7 +1149,10 @@
 
     ClerkLoginMode.prototype.enter = function() {
       ClerkLoginMode.__super__.enter.apply(this, arguments);
-      return this.switcher.setMenuEnabled(false);
+      this.switcher.setMenuEnabled(false);
+      if (this.constructor.autoClerk != null) {
+        return this.cfg.uiRef.codeInput.val(this.constructor.autoClerk);
+      }
     };
 
     ClerkLoginMode.prototype.actions = function() {

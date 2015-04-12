@@ -1,6 +1,6 @@
 import random
 from decimal import Decimal
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Sum
@@ -18,6 +18,10 @@ from .util import (
     unpack,
     shorten_text,
 )
+
+# Settings safety check.
+if settings.KIRPPU_AUTO_CLERK and not settings.DEBUG:
+    raise ImproperlyConfigured("Automatic clerk code usage may not be used in production!")
 
 User = settings.AUTH_USER_MODEL
 

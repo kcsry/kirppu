@@ -1,12 +1,16 @@
 class @ClerkLoginMode extends CheckoutMode
   ModeSwitcher.registerEntryPoint("clerk_login", @)
 
+  @autoClerk = null
+
   title: -> "Locked"
   subtitle: -> "Login..."
 
   enter: ->
     super
     @switcher.setMenuEnabled(false)
+    if @constructor.autoClerk?
+      @cfg.uiRef.codeInput.val(@constructor.autoClerk)
 
   actions: -> [[
     @cfg.settings.clerkPrefix,

@@ -221,6 +221,11 @@ PROFILE_URL = 'https://kompassidev.tracon.fi/profile'
 KIRPPU_USE_SSO = False
 KIRPPU_CHECKOUT_ACTIVE = False
 
+# Automatic checkout login. May not be enabled in non-dev environments!
+# If True, first enabled Clerk is automatically used.
+# If string, Clerk with that user is used, if it is enabled.
+KIRPPU_AUTO_CLERK = False
+
 KIRPPU_COPY_ITEM_WHEN_UNPRINTED = False
 KIRPPU_MAX_ITEMS_PER_VENDOR = 1000
 

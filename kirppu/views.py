@@ -417,7 +417,18 @@ def checkout_view(request):
     :rtype: HttpResponse
     """
     clerk_logout_fn(request)
-    return render(request, "kirppu/app_checkout.html")
+    context = {}
+    if settings.KIRPPU_AUTO_CLERK and settings.DEBUG:
+        if isinstance(settings.KIRPPU_AUTO_CLERK, (str, unicode)):
+            real_clerks = Clerk.objects.filter(user__username=settings.KIRPPU_AUTO_CLERK)
+        else:
+            real_clerks = Clerk.objects.filter(user__isnull=False)
+        for clerk in real_clerks:
+            if clerk.is_enabled:
+                context["auto_clerk"] = clerk.get_code()
+                break
+
+    return render(request, "kirppu/app_checkout.html", context)
 
 
 @require_setting("KIRPPU_CHECKOUT_ACTIVE", True)
