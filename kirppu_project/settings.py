@@ -228,8 +228,10 @@ KIRPPU_MAX_ITEMS_PER_VENDOR = 1000
 # The specified date is expected to be in TIME_ZONE timezone.
 KIRPPU_REGISTER_ACTIVE_UNTIL = "2024-12-31 23:59:59"
 
+
 # Load local settings that are not stored in repository. This must be last at end of settings.
 try:
-    from local_settings import *
+    from .local_settings import *
 except ImportError:
-    pass
+    if DEBUG:
+        print("Module local_settings not found.")
