@@ -70,6 +70,10 @@ tr.receipt_tr_clickable:hover {
 .vendor-info-box > dl {
     margin: 0px;
 }
+.vendor-info-key {
+    font-weight: bold;
+    text-align: right;
+}
 
 .alert-blink {
     /* Container class when blinking. */

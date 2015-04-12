@@ -614,17 +614,18 @@
 (function() {
   this.VendorInfo = (function() {
     function VendorInfo(vendor) {
-      var attr, i, len, list, ref;
+      var attr, elem, i, len, ref;
       this.dom = $('<div class="vendor-info-box">');
       this.dom.append($('<h3>').text(gettext('Vendor')));
-      list = $('<dl class="dl-horizontal">');
       ref = ['name', 'email', 'phone', 'id'];
       for (i = 0, len = ref.length; i < len; i++) {
         attr = ref[i];
-        list.append($('<dt>').text(attr));
-        list.append($('<dd>').text(vendor[attr]));
+        elem = $('<div class="row">');
+        elem.append($('<div class="col-xs-2 vendor-info-key">').text(attr));
+        elem.append($('<div class="col-xs-10">').text(vendor[attr]));
+        this.dom.append(elem);
       }
-      this.dom.append(list);
+      return;
     }
 
     VendorInfo.prototype.render = function() {
