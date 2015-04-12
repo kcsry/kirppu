@@ -460,74 +460,101 @@ def stats_view(request):
         return redirect('kirppu:checkout_view')
 
     class ItemStats(object):
-        """Interface for app_stats.html template."""
-        __error_msg = 'NOT IMPLEMENTED'
-        type = __error_msg
-        advertized = __error_msg
-        brought = __error_msg
-        staged = __error_msg
-        sold = __error_msg
-        missing = __error_msg
-        returned = __error_msg
-        compensated = __error_msg
-        properties = ['advertized', 'brought', 'staged', 'sold', 'missing', 'returned', 'compensated']
-        _items = None
+        """Interface for app_stats.html template.
+
+        Constructors:
+            __init__: fetches property values for model.
+            sum_stats: takes a list of ItemStats instances and sums their properties.
+
+        Properties:
+            property_names: Iterates over all property names.
+            property_values: Iterates over all property values.
+
+            All properties listed in property_names are also accessible through attributes.
+
+        """
+        _properties = {
+            'advertized': Item.ADVERTISED,
+            'brought': Item.BROUGHT,
+            'staged': Item.STAGED,
+            'sold': Item.SOLD,
+            'missing': Item.MISSING,
+            'returned': Item.RETURNED,
+            'compensated': Item.COMPENSATED,
+            'sum': None,
+        }
 
         def __init__(self, item_type=None, type_name=None, vendor=None):
+            for property in self._properties:
+                setattr(self, property, 'NOT IMPLEMENTED')
+
             if type_name:
                 self.type = type_name
             else:
                 self.type = 'Vendor {}'.format(vendor)
 
+            self.values = {}
+
+            # Initialize self._items for subclass.
             if not item_type and not vendor:
-                return
+                self._items = None
+            else:
+                items = Item.objects
+                if item_type:
+                    items = items.filter(itemtype=item_type)
+                if vendor:
+                    items = items.filter(vendor_id=vendor)
+                self._items = items
 
-            items = Item.objects
-            if item_type:
-                items = items.filter(itemtype=item_type)
-            if vendor:
-                items = items.filter(vendor_id=vendor)
-            self._items = items
-
-            self.init_values()
+                self.init_values()
+                self.init_properties()
 
         def init_values(self):
-            self.advertized = self.get_value(Item.ADVERTISED)
-            self.brought = self.get_value(Item.BROUGHT)
-            self.staged = self.get_value(Item.STAGED)
-            self.sold = self.get_value(Item.SOLD)
-            self.missing = self.get_value(Item.MISSING)
-            self.returned = self.get_value(Item.RETURNED)
-            self.compensated = self.get_value(Item.COMPENSATED)
+            # Call subclasses implementation of get_value to populate the property values.
+            for property_name, item_type in self._properties.items():
+                if property_name is 'sum':
+                    continue
+                self.values[property_name] = self.get_value(item_type)
+            self.values['sum'] = sum(self.values.values())
 
         def get_value(self, item_type):
             raise NotImplementedError()
 
         @property
-        def sum(self):
-            """Get the sum of all properties."""
-            property_sum = 0
-            for property_name in self.properties:
-                property_sum += getattr(self, property_name)
-            return property_sum
+        def property_values(self):
+            for property_name in self._properties:
+                yield getattr(self, property_name)
+            yield self.sum
+
+        @property
+        def property_names(self):
+            for property_name in self._properties:
+                yield property_name
+            yield 'Sum'
 
         @classmethod
         def sum_stats(cls, list_of_stats):
             """Return a new instance with all properties the sum of the input stats properties."""
             new_stats = cls(None, 'Sum')
 
-            for property_name in new_stats.properties:
+            for property_name in new_stats._properties:
                 property_sum = 0
                 for stats in list_of_stats:
-                    property_sum += getattr(stats, property_name)
+                    property_sum += stats.values[property_name]
 
-                setattr(new_stats, property_name, property_sum)
+                new_stats.values[property_name] = property_sum
 
+            new_stats.init_properties()
             return new_stats
 
     class ItemCounts(ItemStats):
         def get_value(self, item_state):
             return self._items.filter(state=item_state).count()
+
+        def init_properties(self):
+            for property in self._properties:
+                value = str(self.values[property])
+                setattr(self, property, value)
 
     class ItemEuros(ItemStats):
         def get_value(self, item_state):
@@ -535,8 +562,16 @@ def stats_view(request):
             price = query['price__sum'] or 0
             return price
 
+        def init_properties(self):
+            for property in self._properties:
+                value = "{}&nbsp;&euro;".format(self.values[property])
+                setattr(self, property, value)
+
     number_of_items = [ItemCounts(item_type, type_name) for item_type, type_name in Item.ITEMTYPE]
     number_of_items.append(ItemCounts.sum_stats(number_of_items))
+
+    number_of_euros = [ItemEuros(item_type, type_name) for item_type, type_name in Item.ITEMTYPE]
+    number_of_euros.append(ItemEuros.sum_stats(number_of_euros))
 
     vendors = Vendor.objects.all()
     vendor_items = []
@@ -546,7 +581,7 @@ def stats_view(request):
 
     context = {
         'number_of_items': number_of_items,
-        'number_of_euros': [ItemEuros(item_type, type_name) for item_type, type_name in Item.ITEMTYPE],
+        'number_of_euros': number_of_euros,
         'vendor_items': vendor_items,
     }
 

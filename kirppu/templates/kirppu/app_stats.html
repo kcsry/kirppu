@@ -32,6 +32,12 @@
    		width:10px;
    		height:10px;
    	}
+    .sum_table tr:last-child {
+        font-weight: bold;
+    }
+    .sum_table td:last-child {
+        font-weight: bold;
+    }
     </style>
 {% endblock %}
 
@@ -142,115 +148,61 @@
 
 
     <h2>Number of items:</h2>
-    <table class="table table-striped">
+    <table class="table table-striped sum_table">
         <tr>
             <th></th>
-            <th>Advertized</th>
-            <th>Brought</th>
-            <th>Staged</th>
-            <th>Sold</th>
-            <th>Missing</th>
-            <th>Returned</th>
-            <th>Compensated</th>
-            <th>Sum</th>
+            {% with number_of_items|first as row %}
+                {% for col in row.property_names %}
+                    <th>{{ col }}</th>
+                {% endfor %}
+            {% endwith %}
         </tr>
-        {% for row in number_of_items|slice:":-1" %}
+        {% for row in number_of_items %}
              <tr>
-                <th>{{ row.type }}</th>
-                <td>{{ row.advertized }}</td>
-                <td>{{ row.brought }}</td>
-                <td>{{ row.staged }}</td>
-                <td>{{ row.sold }}</td>
-                <td>{{ row.missing }}</td>
-                <td>{{ row.returned }}</td>
-                <td>{{ row.compensated }}</td>
-                <th>{{ row.sum }}</th>
+                 <th>{{ row.type }}</th>
+                 {% for col in row.property_values %}
+                    <td>{{ col|safe }}</td>
+                 {% endfor %}
             </tr>
-        {% endfor %}
-        {% for row in number_of_items|slice:"-1:" %}
-            <tfoot>
-                 <tr>
-                    <th>{{ row.type }}</th>
-                    <th>{{ row.advertized }}</th>
-                    <th>{{ row.brought }}</th>
-                    <th>{{ row.staged }}</th>
-                    <th>{{ row.sold }}</th>
-                    <th>{{ row.missing }}</th>
-                    <th>{{ row.returned }}</th>
-                    <th>{{ row.compensated }}</th>
-                    <th>{{ row.sum }}</th>
-                </tr>
-            </tfoot>
         {% endfor %}
     </table>
 
     <h2>Number of euros:</h2>
-    <table class="table table-striped">
+    <table class="table table-striped sum_table">
         <tr>
             <th></th>
-            <th>Advertized</th>
-            <th>Brought</th>
-            <th>Staged</th>
-            <th>Sold</th>
-            <th>Missing</th>
-            <th>Returned</th>
-            <th>Compensated</th>
-            <th>Sum</th>
+            {% with number_of_euros|first as row %}
+                {% for col in row.property_names %}
+                    <th>{{ col }}</th>
+                {% endfor %}
+            {% endwith %}
         </tr>
-        {% for row in number_of_euros|slice:":-1" %}
+        {% for row in number_of_euros %}
              <tr>
-                <th>{{ row.type }}</th>
-                <td>{{ row.advertized }}&nbsp;&euro;</td>
-                <td>{{ row.brought }}&nbsp;&euro;</td>
-                <td>{{ row.staged }}&nbsp;&euro;</td>
-                <td>{{ row.sold }}&nbsp;&euro;</td>
-                <td>{{ row.missing }}&nbsp;&euro;</td>
-                <td>{{ row.returned }}&nbsp;&euro;</td>
-                <td>{{ row.compensated }}&nbsp;&euro;</td>
-                <th>{{ row.sum }}&nbsp;&euro;</th>
+                 <th>{{ row.type }}</th>
+                 {% for col in row.property_values %}
+                    <td>{{ col|safe }}</td>
+                 {% endfor %}
             </tr>
-        {% endfor %}
-        {% for row in number_of_euros|slice:"-1:" %}
-            <tfoot>
-                 <tr>
-                    <th>{{ row.type }}&nbsp;&euro;</th>
-                    <th>{{ row.advertized }}&nbsp;&euro;</th>
-                    <th>{{ row.brought }}&nbsp;&euro;</th>
-                    <th>{{ row.staged }}&nbsp;&euro;</th>
-                    <th>{{ row.sold }}&nbsp;&euro;</th>
-                    <th>{{ row.missing }}&nbsp;&euro;</th>
-                    <th>{{ row.returned }}&nbsp;&euro;</th>
-                    <th>{{ row.compensated }}&nbsp;&euro;</th>
-                    <th>{{ row.sum }}&nbsp;&euro;</th>
-                </tr>
-            </tfoot>
         {% endfor %}
     </table>
 
     <h2>Vendors:</h2>
-    <table class="table table-striped">
+    <table class="table table-striped sum_table">
         <tr>
             <th></th>
-            <th>Advertized</th>
-            <th>Brought</th>
-            <th>Staged</th>
-            <th>Sold</th>
-            <th>Missing</th>
-            <th>Returned</th>
-            <th>Compensated</th>
-            <th>Sum</th>
+            {% with vendor_items|first as row %}
+                {% for col in row.property_names %}
+                    <th>{{ col }}</th>
+                {% endfor %}
+            {% endwith %}
         </tr>
         {% for row in vendor_items %}
              <tr>
-                <th>{{ row.type }}</th>
-                <td>{{ row.advertized }}&nbsp;&euro;</td>
-                <td>{{ row.brought }}&nbsp;&euro;</td>
-                <td>{{ row.staged }}&nbsp;&euro;</td>
-                <td>{{ row.sold }}&nbsp;&euro;</td>
-                <td>{{ row.missing }}&nbsp;&euro;</td>
-                <td>{{ row.returned }}&nbsp;&euro;</td>
-                <td>{{ row.compensated }}&nbsp;&euro;</td>
-                <th>{{ row.sum }}&nbsp;&euro;</th>
+                 <th>{{ row.type }}</th>
+                 {% for col in row.property_values %}
+                    <td>{{ col|safe }}</td>
+                 {% endfor %}
             </tr>
         {% endfor %}
     </table>
