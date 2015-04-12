@@ -330,6 +330,7 @@ def get_items(request, bar_type):
 
         'is_registration_open': is_vendor_open(),
         'menu': _vendor_menu_contents(request),
+        'Item': Item,
     }
 
     return render(request, "kirppu/app_items.html", render_params)

@@ -73,20 +73,13 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-1 control-label">{% trans "Type:" %}</label>
+            <label for="item-add-itemtype" class="col-sm-1 control-label">{% trans "Type:" %}</label>
             <div class="col-sm-6">
                 <select id="item-add-itemtype" name="item-add-itemtype" class="form-control">
-                    <option></option>
-                    <option value="manga-finnish">{% trans "Manga (Finnish)" %}</option>
-                    <option value="manga-english">{% trans "Manga (English)" %}</option>
-                    <option value="manga-other">{% trans "Manga (other language)" %}</option>
-                    <option value="book">{% trans "Book" %}</option>
-                    <option value="magazine">{% trans "Magazine" %}</option>
-                    <option value="movie-tv">{% trans "Movie/TV-series" %}</option>
-                    <option value="game">{% trans "Game" %}</option>
-                    <option value="figurine-plushie">{% trans "Figurine/Plushie" %}</option>
-                    <option value="clothing">{% trans "Clothing" %}</option>
-                    <option value="other">{% trans "Other" %}</option>
+                    <option selected="selected" disabled="disabled">{% trans "Select…" %}</option>
+                    {% for key, title in Item.ITEMTYPE %}
+                        <option value="{{ key }}">{{ title }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
