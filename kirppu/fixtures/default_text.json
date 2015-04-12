@@ -34,9 +34,17 @@
     {
         "fields": {
             "identifier": "item_info4",
-            "text": "Print the price tags for your items by printing this page. Tips on attaching the tags can be found on here:"
+            "text": "Print the price tags for your items by printing this page."
             },
         "model": "kirppu.uitext",
         "pk": 5
+    },
+    {
+        "fields": {
+            "identifier": "item_info5",
+            "text": "After you have printed your price tags, you should mark them as having already been printed with the 'Mark all as printed' button. Doing so moves them to the bottom of the page and they are no longer printed when you print the page."
+            },
+        "model": "kirppu.uitext",
+        "pk": 6
     }
 ]

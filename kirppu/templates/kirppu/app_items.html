@@ -15,24 +15,11 @@
     {% if is_registration_open %}
     <form id="item-add-form" method="POST" class="form-horizontal">
         {% csrf_token %}
-        <p class="help-block">
-            {% load_text "item_info1" %}
-        </p>
-        <p class="help-block">
-            {% load_text "item_info2" %}
-        </p>
-        <p class="help-block">
-            {% load_text "item_info3" %}
-        </p>
-        <p class="help-block">
-            {% load_text "item_info4" %}
-            <a href="">{% trans "price tag guide" %}</a>
-        </p>
-        <p class="help-block">
-            {% blocktrans %}After you have printed your price tags, you should mark them as
-            having already been printed with the 'Mark all as printed' button. Doing so moves them
-            to the bottom of the page and they are no longer printed when you print the page.{% endblocktrans %}
-        </p>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                {% load_texts "item_info" "p" %}
+            </div>
+        </div>
 
         <div class="panel panel-default">
             <div class="panel-heading">

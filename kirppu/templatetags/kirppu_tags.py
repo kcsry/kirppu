@@ -82,6 +82,36 @@ def load_text(id_):
         return u""
 
 
+@register.simple_tag
+def load_texts(id_, wrap=None):
+    """
+    Output multiple UIText values. If id is not found, only empty string is returned.
+
+    :param id_: Start of id string to find.
+    :type id_: str | unicode
+    :param wrap: Optional wrapping tag content (such as p). If whitespace, that is used instead.
+    :type wrap: str | unicode | None
+    :return: str | unicode
+    """
+    texts = UIText.objects.filter(identifier__startswith=id_).order_by("identifier").values_list("text", flat=True)
+    if not texts:
+        return u""
+
+    begin = u""
+    end = u""
+    joined = u""
+    if wrap is not None:
+        trimmed = wrap.strip()
+        if len(trimmed) > 0:
+            begin = format_html(u'<{0}>', trimmed)
+            end = format_html(u'</{0}>', trimmed.split(" ")[0])
+            joined = begin + end
+        else:
+            joined = wrap
+
+    return begin + joined.join(texts) + end
+
+
 def generate_dataurl(code, ext, expect_width=143):
     if not code:
         return ''
