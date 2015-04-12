@@ -21,7 +21,7 @@ from django.shortcuts import (
     redirect,
     get_object_or_404,
 )
-from django.db.models import Sum
+from django.db.models import Count, Sum
 from django.conf import settings
 import django.core.urlresolvers as url
 from django.utils.http import is_safe_url
@@ -537,10 +537,38 @@ def stats_view(request):
     number_of_items = [ItemCounts(item_type, type_name) for item_type, type_name in Item.ITEMTYPE]
     number_of_items.append(ItemCounts.sum_stats(number_of_items))
 
+
     context = {
         'number_of_items': number_of_items,
         'number_of_euros': [ItemEuros(item_type, type_name) for item_type, type_name in Item.ITEMTYPE],
     }
+
+    context['vendors_registered'] = Vendor.objects.count()
+    context['items_uncollected'] = (
+        Item.objects
+        .filter(state__in=(Item.BROUGHT, Item.STAGED))
+        .count()
+    )
+    context['moneys_uncollected'] = (
+        Item.objects
+        .filter(state=Item.SOLD)
+        .aggregate(Sum('price'))
+        ['price__sum'] or 0
+    )
+    context['vendors_have_uncollected'] = (
+        Item.objects
+        .filter(state__in=(Item.BROUGHT, Item.STAGED, Item.SOLD))
+        .aggregate(Count('vendor', distinct=True))
+        ['vendor__count'] or 0
+    )
+    context['vendors_brought'] = (
+        Item.objects
+        .exclude(state=(Item.ADVERTISED))
+        .aggregate(Count('vendor', distinct=True))
+        ['vendor__count'] or 0
+    )
+
+
 
     return render(request, 'kirppu/app_stats.html', context)
 

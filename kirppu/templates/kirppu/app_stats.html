@@ -230,12 +230,13 @@
     <ul>
         <li>Number of vendors that have:
             <ul>
-                <li>registered an item: 100</li>
-                <li>brought an item to the event: 50</li>
-                <li>have uncollected stuff: 50</li>
+                <li>registered: {{ vendors_registered }}</li>
+                <li>have at least one item: {{ vendors_registered }}</li>
+                <li>brought an item to the event: {{ vendors_brought }}</li>
+                <li>have uncollected stuff: {{ vendors_have_uncollected }}</li>
                 <ul>
-                    <li>items: 40</li>
-                    <li>moneys: 20</li>
+                    <li>items: {{ items_uncollected }}</li>
+                    <li>moneys: {{ moneys_uncollected }}</li>
                 </ul>
             </ul>
         </li>
