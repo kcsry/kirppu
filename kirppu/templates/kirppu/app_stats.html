@@ -197,7 +197,7 @@
             <th>Compensated</th>
             <th>Sum</th>
         </tr>
-        {% for row in number_of_items|slice:":-1" %}
+        {% for row in number_of_euros|slice:":-1" %}
              <tr>
                 <th>{{ row.type }}</th>
                 <td>{{ row.advertized }}&nbsp;&euro;</td>
@@ -210,7 +210,7 @@
                 <th>{{ row.sum }}&nbsp;&euro;</th>
             </tr>
         {% endfor %}
-        {% for row in number_of_items|slice:"-1:" %}
+        {% for row in number_of_euros|slice:"-1:" %}
             <tfoot>
                  <tr>
                     <th>{{ row.type }}&nbsp;&euro;</th>
@@ -224,6 +224,34 @@
                     <th>{{ row.sum }}&nbsp;&euro;</th>
                 </tr>
             </tfoot>
+        {% endfor %}
+    </table>
+
+    <h2>Vendors:</h2>
+    <table class="table table-striped">
+        <tr>
+            <th></th>
+            <th>Advertized</th>
+            <th>Brought</th>
+            <th>Staged</th>
+            <th>Sold</th>
+            <th>Missing</th>
+            <th>Returned</th>
+            <th>Compensated</th>
+            <th>Sum</th>
+        </tr>
+        {% for row in vendor_items %}
+             <tr>
+                <th>{{ row.type }}</th>
+                <td>{{ row.advertized }}&nbsp;&euro;</td>
+                <td>{{ row.brought }}&nbsp;&euro;</td>
+                <td>{{ row.staged }}&nbsp;&euro;</td>
+                <td>{{ row.sold }}&nbsp;&euro;</td>
+                <td>{{ row.missing }}&nbsp;&euro;</td>
+                <td>{{ row.returned }}&nbsp;&euro;</td>
+                <td>{{ row.compensated }}&nbsp;&euro;</td>
+                <th>{{ row.sum }}&nbsp;&euro;</th>
+            </tr>
         {% endfor %}
     </table>
 

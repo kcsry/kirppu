@@ -471,6 +471,23 @@ def stats_view(request):
         returned = __error_msg
         compensated = __error_msg
         properties = ['advertized', 'brought', 'staged', 'sold', 'missing', 'returned', 'compensated']
+        _items = None
+
+        def __init__(self, item_type=None, type_name=None, vendor=None):
+            if type_name:
+                self.type = type_name
+            else:
+                self.type = 'Vendor {}'.format(vendor)
+
+            if not item_type and not vendor:
+                return
+
+            items = Item.objects
+            if item_type:
+                items = items.filter(itemtype=item_type)
+            if vendor:
+                items = items.filter(vendor_id=vendor)
+            self._items = items
 
         @property
         def sum(self):
@@ -495,15 +512,14 @@ def stats_view(request):
             return new_stats
 
     class ItemCounts(ItemStats):
-        def __init__(self, item_type, type_name):
-            self.type = type_name
-            if item_type is None:
+        def __init__(self, item_type=None, type_name=None, vendor=None):
+            super(ItemCounts, self).__init__(item_type, type_name, vendor)
+
+            if self._items is None:
                 return
 
-            items = Item.objects.filter(itemtype=item_type)
-
             def count_items(state):
-                return items.filter(state=state).count()
+                return self._items.filter(state=state).count()
 
             self.advertized = count_items(Item.ADVERTISED)
             self.brought = count_items(Item.BROUGHT)
@@ -514,15 +530,14 @@ def stats_view(request):
             self.compensated = count_items(Item.COMPENSATED)
 
     class ItemEuros(ItemStats):
-        def __init__(self, item_type, type_name):
-            self.type = type_name
-            if item_type is None:
+        def __init__(self, item_type=None, type_name=None, vendor=None):
+            super(ItemEuros, self).__init__(item_type, type_name, vendor)
+
+            if self._items is None:
                 return
 
-            items = Item.objects.filter(itemtype=item_type)
-
             def count_euros(state):
-                query = items.filter(state=state).aggregate(Sum('price'))
+                query = self._items.filter(state=state).aggregate(Sum('price'))
                 price = query['price__sum'] or 0
                 return price
 
@@ -537,10 +552,16 @@ def stats_view(request):
     number_of_items = [ItemCounts(item_type, type_name) for item_type, type_name in Item.ITEMTYPE]
     number_of_items.append(ItemCounts.sum_stats(number_of_items))
 
+    vendors = Vendor.objects.all()
+    vendor_items = []
+    for vendor in vendors:
+        vendor_items.append(ItemCounts(vendor=vendor.id))
+        vendor_items.append(ItemEuros(vendor=vendor.id))
 
     context = {
         'number_of_items': number_of_items,
         'number_of_euros': [ItemEuros(item_type, type_name) for item_type, type_name in Item.ITEMTYPE],
+        'vendor_items': vendor_items,
     }
 
     context['vendors_registered'] = Vendor.objects.count()
