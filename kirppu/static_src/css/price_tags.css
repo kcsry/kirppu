@@ -276,7 +276,7 @@ a.item_button_printed {
     .item_price, .item_name {
         border: none;
     }
-    .item_button_printed, .item_button_toggle {
+    .item_container > button {
         display: none;
     }
     #item-add-form {
