@@ -21,7 +21,9 @@ class @ItemCheckInMode extends ItemCheckoutMode
     if data.vendor != @currentVendor
       @currentVendor = data.vendor
       Api.vendor_get(id: @currentVendor).done((vendor) =>
-        @receipt.body.prepend(new VendorInfo(vendor).render())
+        vendorInfoRow = $('<tr><td colspan="4">')
+        $('td', vendorInfoRow).append(new VendorInfo(vendor).render())
+        @receipt.body.prepend(vendorInfoRow)
 
         row = @createRow("", data.code, data.name, data.price)
         @receipt.body.prepend(row)

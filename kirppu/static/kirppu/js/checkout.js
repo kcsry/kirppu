@@ -1302,8 +1302,10 @@
           id: this.currentVendor
         }).done((function(_this) {
           return function(vendor) {
-            var row;
-            _this.receipt.body.prepend(new VendorInfo(vendor).render());
+            var row, vendorInfoRow;
+            vendorInfoRow = $('<tr><td colspan="4">');
+            $('td', vendorInfoRow).append(new VendorInfo(vendor).render());
+            _this.receipt.body.prepend(vendorInfoRow);
             row = _this.createRow("", data.code, data.name, data.price);
             return _this.receipt.body.prepend(row);
           };
