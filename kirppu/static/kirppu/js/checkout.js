@@ -785,16 +785,20 @@
       this.cfg.uiRef.container.removeClass().addClass('container').addClass('color-mode');
       this.cfg.uiRef.container.addClass('color-' + this._currentMode.constructor.name);
       this.cfg.uiRef.body.empty();
-      this.cfg.uiRef.glyph.removeClass().addClass('glyphicon');
+      this.updateHead();
+      this._currentMode.enter();
+      this.cfg.uiRef.codeInput.focus();
+    };
+
+    ModeSwitcher.prototype.updateHead = function() {
+      this.cfg.uiRef.glyph.removeClass();
       if (this._currentMode.glyph()) {
-        this.cfg.uiRef.glyph.addClass("glyphicon-" + this._currentMode.glyph());
+        this.cfg.uiRef.glyph.addClass("glyphicon glyphicon-" + this._currentMode.glyph());
         this.cfg.uiRef.glyph.addClass("hidden-print");
       }
       this.cfg.uiRef.stateText.text(this._currentMode.title());
       this.cfg.uiRef.subtitleText.text(this._currentMode.subtitle() || "");
       this.cfg.uiRef.codeInput.attr("placeholder", this._currentMode.inputPlaceholder());
-      this._currentMode.enter();
-      return this.cfg.uiRef.codeInput.focus();
     };
 
     ModeSwitcher.prototype._bindForm = function() {
@@ -1901,7 +1905,9 @@
 
     ReceiptPrintMode.strTotal = "Total";
 
-    ReceiptPrintMode.strTitle = "Find receipt";
+    ReceiptPrintMode.strTitle = "Receipt";
+
+    ReceiptPrintMode.strTitleFind = "Find receipt";
 
     ReceiptPrintMode.strSell = "%d, served by %c";
 
@@ -1909,6 +1915,7 @@
       this.onReturnToCounter = bind(this.onReturnToCounter, this);
       this.findReceipt = bind(this.findReceipt, this);
       ReceiptPrintMode.__super__.constructor.apply(this, arguments);
+      this.hasReceipt = receiptData != null;
       this.receipt = new PrintReceiptTable();
       this.initialReceipt = receiptData;
     }
@@ -1917,7 +1924,8 @@
       ReceiptPrintMode.__super__.enter.apply(this, arguments);
       this.cfg.uiRef.body.append(this.receipt.render());
       if (this.initialReceipt != null) {
-        return this.renderReceipt(this.initialReceipt);
+        this.renderReceipt(this.initialReceipt);
+        window.print();
       }
     };
 
@@ -1926,7 +1934,11 @@
     };
 
     ReceiptPrintMode.prototype.title = function() {
-      return this.constructor.strTitle;
+      if (!this.hasReceipt) {
+        return this.constructor.strTitleFind;
+      } else {
+        return this.constructor.strTitle;
+      }
     };
 
     ReceiptPrintMode.prototype.subtitle = function() {
@@ -1958,7 +1970,7 @@
     };
 
     ReceiptPrintMode.prototype.renderReceipt = function(receiptData) {
-      var i, item, j, len, len1, ref, ref1, replacer, results, row, sellFmt, sellStr;
+      var i, item, j, len, len1, ref, ref1, replacer, row, sellFmt, sellStr;
       this.receipt.body.empty();
       ref = receiptData.items;
       for (i = 0, len = ref.length; i < len; i++) {
@@ -1982,12 +1994,12 @@
       sellFmt = /%[dc%]/g;
       sellStr = this.constructor.strSell.replace(sellFmt, replacer);
       ref1 = [this.constructor.middleLine, PrintReceiptTable.createRow("", "", this.constructor.strTotal, receiptData.total, true), PrintReceiptTable.joinedLine(sellStr)].concat(this.constructor.tailLines);
-      results = [];
       for (j = 0, len1 = ref1.length; j < len1; j++) {
         row = ref1[j];
-        results.push(this.receipt.body.append(row));
+        this.receipt.body.append(row);
       }
-      return results;
+      this.hasReceipt = true;
+      this.switcher.updateHead();
     };
 
     ReceiptPrintMode.prototype.onReturnToCounter = function() {

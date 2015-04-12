@@ -2,11 +2,13 @@ class @ReceiptPrintMode extends CheckoutMode
   ModeSwitcher.registerEntryPoint("reports", @)
 
   @strTotal: "Total"
-  @strTitle: "Find receipt"
+  @strTitle: "Receipt"
+  @strTitleFind: "Find receipt"
   @strSell: "%d, served by %c"
 
   constructor: (cfg, switcher, receiptData) ->
     super
+    @hasReceipt = receiptData?
     @receipt = new PrintReceiptTable()
     @initialReceipt = receiptData
 
@@ -14,10 +16,12 @@ class @ReceiptPrintMode extends CheckoutMode
     super
     @cfg.uiRef.body.append(@receipt.render())
     if @initialReceipt?
-        @renderReceipt(@initialReceipt)
+      @renderReceipt(@initialReceipt)
+      window.print()
+    return
 
   glyph: -> "list-alt"
-  title: -> @constructor.strTitle
+  title: -> if not @hasReceipt then @constructor.strTitleFind else @constructor.strTitle
   subtitle: -> ""
   commands: ->
     print: [":print", "Print receipt / return"]
@@ -58,6 +62,10 @@ class @ReceiptPrintMode extends CheckoutMode
       PrintReceiptTable.createRow("", "", @constructor.strTotal, receiptData.total, true)
       PrintReceiptTable.joinedLine(sellStr)
     ].concat(@constructor.tailLines)
+
+    @hasReceipt = true
+    @switcher.updateHead()
+    return
 
 
   onReturnToCounter: =>

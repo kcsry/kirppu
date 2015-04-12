@@ -64,17 +64,22 @@ class @ModeSwitcher
     @cfg.uiRef.container.removeClass().addClass('container').addClass('color-mode')
     @cfg.uiRef.container.addClass('color-' + @_currentMode.constructor.name)
     @cfg.uiRef.body.empty()
-    @cfg.uiRef.glyph.removeClass().addClass('glyphicon')
-    if @_currentMode.glyph()
-      @cfg.uiRef.glyph.addClass("glyphicon-" + @_currentMode.glyph())
-      @cfg.uiRef.glyph.addClass("hidden-print")
-    @cfg.uiRef.stateText.text(@_currentMode.title())
-    @cfg.uiRef.subtitleText.text(@_currentMode.subtitle() or "")
-    @cfg.uiRef.codeInput.attr("placeholder", @_currentMode.inputPlaceholder())
+    @updateHead()
     @_currentMode.enter()
 
     # Restore focus to the input field after mode change.
     @cfg.uiRef.codeInput.focus()
+    return
+
+  updateHead: ->
+    @cfg.uiRef.glyph.removeClass()
+    if @_currentMode.glyph()
+      @cfg.uiRef.glyph.addClass("glyphicon glyphicon-" + @_currentMode.glyph())
+      @cfg.uiRef.glyph.addClass("hidden-print")
+    @cfg.uiRef.stateText.text(@_currentMode.title())
+    @cfg.uiRef.subtitleText.text(@_currentMode.subtitle() or "")
+    @cfg.uiRef.codeInput.attr("placeholder", @_currentMode.inputPlaceholder())
+    return
 
   # Bind functions to HTML elements.
   _bindForm: ->
