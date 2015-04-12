@@ -489,6 +489,20 @@ def stats_view(request):
                 items = items.filter(vendor_id=vendor)
             self._items = items
 
+            self.init_values()
+
+        def init_values(self):
+            self.advertized = self.get_value(Item.ADVERTISED)
+            self.brought = self.get_value(Item.BROUGHT)
+            self.staged = self.get_value(Item.STAGED)
+            self.sold = self.get_value(Item.SOLD)
+            self.missing = self.get_value(Item.MISSING)
+            self.returned = self.get_value(Item.RETURNED)
+            self.compensated = self.get_value(Item.COMPENSATED)
+
+        def get_value(self, item_type):
+            raise NotImplementedError()
+
         @property
         def sum(self):
             """Get the sum of all properties."""
@@ -512,42 +526,14 @@ def stats_view(request):
             return new_stats
 
     class ItemCounts(ItemStats):
-        def __init__(self, item_type=None, type_name=None, vendor=None):
-            super(ItemCounts, self).__init__(item_type, type_name, vendor)
-
-            if self._items is None:
-                return
-
-            def count_items(state):
-                return self._items.filter(state=state).count()
-
-            self.advertized = count_items(Item.ADVERTISED)
-            self.brought = count_items(Item.BROUGHT)
-            self.staged = count_items(Item.STAGED)
-            self.sold = count_items(Item.SOLD)
-            self.missing = count_items(Item.MISSING)
-            self.returned = count_items(Item.RETURNED)
-            self.compensated = count_items(Item.COMPENSATED)
+        def get_value(self, item_state):
+            return self._items.filter(state=item_state).count()
 
     class ItemEuros(ItemStats):
-        def __init__(self, item_type=None, type_name=None, vendor=None):
-            super(ItemEuros, self).__init__(item_type, type_name, vendor)
-
-            if self._items is None:
-                return
-
-            def count_euros(state):
-                query = self._items.filter(state=state).aggregate(Sum('price'))
-                price = query['price__sum'] or 0
-                return price
-
-            self.advertized = count_euros(Item.ADVERTISED)
-            self.brought = count_euros(Item.BROUGHT)
-            self.staged = count_euros(Item.STAGED)
-            self.sold = count_euros(Item.SOLD)
-            self.missing = count_euros(Item.MISSING)
-            self.returned = count_euros(Item.RETURNED)
-            self.compensated = count_euros(Item.COMPENSATED)
+        def get_value(self, item_state):
+            query = self._items.filter(state=item_state).aggregate(Sum('price'))
+            price = query['price__sum'] or 0
+            return price
 
     number_of_items = [ItemCounts(item_type, type_name) for item_type, type_name in Item.ITEMTYPE]
     number_of_items.append(ItemCounts.sum_stats(number_of_items))
