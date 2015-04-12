@@ -498,9 +498,11 @@
       this.head.append(['<th class="receipt_index">#</th>', '<th class="receipt_code">' + gettext('code') + '</th>', '<th class="receipt_item">' + gettext('item') + '</th>', '<th class="receipt_price">' + gettext('price') + '</th>', '<th class="receipt_type">' + gettext('type') + '</th>', '<th class="receipt_name">' + gettext('vendor') + '</th>', '<th class="receipt_status">' + gettext('status') + '</th>'].map($));
     }
 
-    ItemFindList.prototype.append = function(item, index) {
+    ItemFindList.prototype.append = function(item, index, action) {
       var row;
-      row = $("<tr>");
+      row = $("<tr>").addClass('receipt_tr_clickable').click(function() {
+        return action(item);
+      });
       row.append([$('<td class="receipt_index numeric">').text(index), $('<td class="receipt_code">').text(item.code), $('<td class="receipt_item">').text(item.name), $('<td class="receipt_price numeric">').text(displayPrice(item.price)), $('<td class="receipt_type">').text(item.itemtype_display), $('<td class="receipt_name">').text(item.vendor.name), $('<td class="receipt_status">').text(item.state_display)]);
       return this.body.append(row);
     };
@@ -570,7 +572,94 @@
 
 }).call(this);
 
-// ================ 10: vendorlist.coffee ================
+// ================ 10: itemeditdialog.coffee ================
+
+(function() {
+  var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  this.ItemEditDialog = (function() {
+    ItemEditDialog.prototype.html = '<div class="modal fade">\n  <div class="modal-dialog">\n    <div class="modal-content">\n      <div class="modal-header">\n        <button class="close"\n                data-dismiss="modal"\n                aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n        <h4 class="modal-title">Edit Item</h4>\n      </div>\n      <div class="modal-body">\n        <div class="container-fluid">\n          <form class="form-horizontal">\n            <div class="form-group">\n              <label for="item-edit-name-input"\n                     class="col-sm-2 control-label">\n                Name\n              </label>\n              <div class="col-sm-10">\n                <input id="item-edit-name-input"\n                       type="text"\n                       class="form-control"\n                       readonly/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-code-input"\n                     class="col-sm-2 control-label">\n                Code\n              </label>\n              <div class="col-sm-3">\n                <input id="item-edit-code-input"\n                       type="text"\n                       class="form-control receipt-code"\n                       readonly/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label class="col-sm-2 control-label">Vendor</label>\n              <div id="item-edit-vendor-info" class="col-sm-10"></div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-price-input"\n                     class="col-sm-2 control-label">\n                Price\n              </label>\n              <div class="col-sm-4">\n                <div class="input-group">\n                  <input id="item-edit-price-input"\n                         type="number"\n                         step="any"\n                         min="0"\n                         class="form-control"\n                         readonly/>\n                  <span class="input-group-addon">&euro;</span>\n                </div>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-type-input"\n                     class="col-sm-2 control-label">\n                Type\n              </label>\n              <div class="col-sm-10">\n                <select id="item-edit-type-input"\n                        class="form-control"\n                        disabled/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-state-input"\n                     class="col-sm-2 control-label">\n                State\n              </label>\n              <div class="col-sm-10">\n                <select id="item-edit-state-input"\n                        class="form-control"\n                        disabled/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-abandoned-input"\n                     class="col-sm-2 control-label">\n                Abandoned\n              </label>\n              <div class="col-sm-10">\n                <label for="item-edit-abandoned-yes"\n                       class="radio-inline">\n                  <input id="item-edit-abandoned-yes"\n                         name="item-edit-abandoned-input"\n                         type="radio"\n                         value="true"\n                         disabled/>\n                    Yes\n                </label>\n                <label for="item-edit-abandoned-no"\n                       class="radio-inline">\n                  <input id="item-edit-abandoned-no"\n                         name="item-edit-abandoned-input"\n                         type="radio"\n                         value="false"\n                         disabled/>\n                    No\n                </label>\n              </div>\n            </div>\n          </form>\n        </div>\n      </div>\n      <div class="modal-footer">\n        <button class="btn btn-default"\n                data-dismiss="modal">\n          Cancel\n        </button>\n        <button id="item-edit-save-button"\n                class="btn btn-primary">\n          Save\n        </button>\n      </div>\n    </div>\n  </div>\n</div>';
+
+    function ItemEditDialog(item, action) {
+      this.getFormState = bind(this.getFormState, this);
+      this.onSave = bind(this.onSave, this);
+      this.show = bind(this.show, this);
+      var dialog, s, t, title;
+      this.item = item;
+      this.action = action;
+      dialog = $(this.html);
+      this.typeInput = dialog.find('#item-edit-type-input');
+      this.stateInput = dialog.find('#item-edit-state-input');
+      this.nameInput = dialog.find('#item-edit-name-input');
+      this.codeInput = dialog.find('#item-edit-code-input');
+      this.priceInput = dialog.find('#item-edit-price-input');
+      this.abandonedYes = dialog.find('#item-edit-abandoned-yes');
+      this.abandonedNo = dialog.find('#item-edit-abandoned-no');
+      this.saveButton = dialog.find('#item-edit-save-button');
+      dialog.find('#item-edit-vendor-info').append(new VendorInfo(item.vendor, title = false).render());
+      this.typeInput.append((function() {
+        var i, len, ref, results;
+        ref = ItemSearchForm.itemtypes;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+          t = ref[i];
+          results.push($('<option>').attr('value', t.name).text(t.description));
+        }
+        return results;
+      })());
+      this.stateInput.append((function() {
+        var i, len, ref, results;
+        ref = ItemSearchForm.itemstates;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+          s = ref[i];
+          results.push($('<option>').attr('value', s.name).text(s.description));
+        }
+        return results;
+      })());
+      this.nameInput.val(item.name);
+      this.codeInput.val(item.code);
+      this.priceInput.val(item.price / 100);
+      this.typeInput.val(item.itemtype);
+      this.stateInput.val(item.state);
+      if (item.abandoned) {
+        this.abandonedYes.prop('checked', true);
+      } else {
+        this.abandonedNo.prop('checked', true);
+      }
+      this.saveButton.click(this.onSave);
+      dialog.on('hidden.bs.modal', function() {
+        return dialog.remove();
+      });
+      this.dialog = dialog;
+    }
+
+    ItemEditDialog.prototype.show = function() {
+      return this.dialog.modal();
+    };
+
+    ItemEditDialog.prototype.onSave = function() {
+      return this.action(this.getFormState());
+    };
+
+    ItemEditDialog.prototype.getFormState = function() {
+      return {
+        code: this.item.code,
+        name: this.nameInput.val(),
+        price: this.priceInput.val() * 100,
+        itemtype: this.typeInput.val(),
+        state: this.stateInput.val(),
+        abandoned: this.abandonedYes.prop('checked')
+      };
+    };
+
+    return ItemEditDialog;
+
+  })();
+
+}).call(this);
+
+// ================ 11: vendorlist.coffee ================
 
 (function() {
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -609,14 +698,19 @@
 
 }).call(this);
 
-// ================ 11: vendorinfo.coffee ================
+// ================ 12: vendorinfo.coffee ================
 
 (function() {
   this.VendorInfo = (function() {
-    function VendorInfo(vendor) {
+    function VendorInfo(vendor, title) {
       var attr, elem, i, len, ref;
+      if (title == null) {
+        title = true;
+      }
       this.dom = $('<div class="vendor-info-box">');
-      this.dom.append($('<h3>').text(gettext('Vendor')));
+      if (title) {
+        this.dom.append($('<h3>').text(gettext('Vendor')));
+      }
       ref = ['name', 'email', 'phone', 'id'];
       for (i = 0, len = ref.length; i < len; i++) {
         attr = ref[i];
@@ -638,7 +732,7 @@
 
 }).call(this);
 
-// ================ 12: receiptsum.coffee ================
+// ================ 13: receiptsum.coffee ================
 
 (function() {
   this.ReceiptSum = (function() {
@@ -667,7 +761,7 @@
 
 }).call(this);
 
-// ================ 13: printreceipttable.coffee ================
+// ================ 14: printreceipttable.coffee ================
 
 (function() {
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -720,7 +814,7 @@
 
 }).call(this);
 
-// ================ 14: modeswitcher.coffee ================
+// ================ 15: modeswitcher.coffee ================
 
 (function() {
   var _populateCommandRefs,
@@ -901,7 +995,7 @@
 
 }).call(this);
 
-// ================ 15: checkoutmode.coffee ================
+// ================ 16: checkoutmode.coffee ================
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -983,7 +1077,7 @@
 
 }).call(this);
 
-// ================ 16: itemcheckoutmode.coffee ================
+// ================ 17: itemcheckoutmode.coffee ================
 
 (function() {
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1025,7 +1119,7 @@
 
 }).call(this);
 
-// ================ 17: countervalidationmode.coffee ================
+// ================ 18: countervalidationmode.coffee ================
 
 (function() {
   var b64_to_utf8, utf8_to_b64,
@@ -1120,7 +1214,7 @@
 
 }).call(this);
 
-// ================ 18: clerkloginmode.coffee ================
+// ================ 19: clerkloginmode.coffee ================
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -1251,7 +1345,7 @@
 
 }).call(this);
 
-// ================ 19: itemcheckinmode.coffee ================
+// ================ 20: itemcheckinmode.coffee ================
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -1333,7 +1427,7 @@
 
 }).call(this);
 
-// ================ 20: itemfindmode.coffee ================
+// ================ 21: itemfindmode.coffee ================
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -1346,6 +1440,8 @@
     ModeSwitcher.registerEntryPoint("item_find", ItemFindMode);
 
     function ItemFindMode() {
+      this.onItemSaved = bind(this.onItemSaved, this);
+      this.onItemClick = bind(this.onItemClick, this);
       this.onItemsFound = bind(this.onItemsFound, this);
       this.doSearch = bind(this.doSearch, this);
       ItemFindMode.__super__.constructor.apply(this, arguments);
@@ -1388,11 +1484,19 @@
         item_ = items[index_];
         results.push(((function(_this) {
           return function(item, index) {
-            return _this.itemList.append(item, index + 1);
+            return _this.itemList.append(item, index + 1, _this.onItemClick);
           };
         })(this))(item_, index_));
       }
       return results;
+    };
+
+    ItemFindMode.prototype.onItemClick = function(item) {
+      return (new ItemEditDialog(item, this.onItemSaved).show)();
+    };
+
+    ItemFindMode.prototype.onItemSaved = function(item) {
+      return console.log(item);
     };
 
     return ItemFindMode;
@@ -1401,7 +1505,7 @@
 
 }).call(this);
 
-// ================ 21: vendorcheckoutmode.coffee ================
+// ================ 22: vendorcheckoutmode.coffee ================
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -1535,7 +1639,7 @@
 
 }).call(this);
 
-// ================ 22: countermode.coffee ================
+// ================ 23: countermode.coffee ================
 
 (function() {
   var ReceiptData,
@@ -1900,7 +2004,7 @@
 
 }).call(this);
 
-// ================ 23: receiptprintmode.coffee ================
+// ================ 24: receiptprintmode.coffee ================
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -2025,7 +2129,7 @@
 
 }).call(this);
 
-// ================ 24: vendorcompensation.coffee ================
+// ================ 25: vendorcompensation.coffee ================
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -2149,7 +2253,7 @@
 
 }).call(this);
 
-// ================ 25: vendorreport.coffee ================
+// ================ 26: vendorreport.coffee ================
 
 (function() {
   var tables,
@@ -2280,7 +2384,7 @@
 
 }).call(this);
 
-// ================ 26: vendorfindmode.coffee ================
+// ================ 27: vendorfindmode.coffee ================
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -2364,7 +2468,7 @@
 
 }).call(this);
 
-// ================ 27: number_test.coffee ================
+// ================ 28: number_test.coffee ================
 
 (function() {
   var NUM_PAT;

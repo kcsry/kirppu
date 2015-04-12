@@ -58,6 +58,7 @@ module.exports.js = {
             "js/checkout/itemreporttable.coffee",
             "js/checkout/itemfindlist.coffee",
             "js/checkout/itemsearchform.coffee",
+            "js/checkout/itemeditdialog.coffee",
             "js/checkout/vendorlist.coffee",
             "js/checkout/vendorinfo.coffee",
             "js/checkout/receiptsum.coffee",

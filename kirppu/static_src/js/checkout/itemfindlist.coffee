@@ -11,8 +11,10 @@ class @ItemFindList extends ResultTable
       '<th class="receipt_status">' + gettext('status') + '</th>'
     ].map($))
 
-  append: (item, index) ->
+  append: (item, index, action) ->
     row = $("<tr>")
+      .addClass('receipt_tr_clickable')
+      .click(-> action(item))
     row.append([
       $('<td class="receipt_index numeric">').text(index)
       $('<td class="receipt_code">').text(item.code)

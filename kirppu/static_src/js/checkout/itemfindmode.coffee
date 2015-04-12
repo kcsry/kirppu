@@ -33,6 +33,12 @@ class @ItemFindMode extends CheckoutMode
         @itemList.append(
           item,
           index + 1,
+          @onItemClick,
         )
       )(item_, index_)
 
+  onItemClick: (item) =>
+    do new ItemEditDialog(item, @onItemSaved).show
+
+  onItemSaved: (item) =>
+    console.log(item)

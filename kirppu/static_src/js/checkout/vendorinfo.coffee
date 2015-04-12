@@ -1,7 +1,8 @@
 class @VendorInfo
-  constructor: (vendor) ->
+  constructor: (vendor, title=true) ->
     @dom = $('<div class="vendor-info-box">')
-    @dom.append($('<h3>').text(gettext('Vendor')))
+    if title
+      @dom.append($('<h3>').text(gettext('Vendor')))
 
     for attr in ['name', 'email', 'phone', 'id']
       elem = $('<div class="row">')
