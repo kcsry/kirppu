@@ -1,50 +1,34 @@
 [
-    {
-        "fields": {
-            "identifier": "frontpage_intro",
-            "text": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed, adipiscing id dolor.  Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus In rutrum accumsan ultricies.</p>"
-        },
-        "model": "kirppu.uitext",
-        "pk": 1
-    },
-    {
-        "fields": {
-            "identifier": "item_info1",
-            "text": "Set the name and price of your item and press 'Add item'. Name and price can be modified later."
-            },
-        "model": "kirppu.uitext",
-        "pk": 2
-    },
-    {
-        "fields": {
-            "identifier": "item_info2",
-            "text": "Modify the size of the price tags by setting size. Size can be modified later by pressing the arrow button on the price tag."
-            },
-        "model": "kirppu.uitext",
-        "pk": 3
-    },
-    {
-        "fields": {
-            "identifier": "item_info3",
-            "text": "Register more than one similar items at once by adding a suffix. Name 'Manga' and suffix '1-3' would create items 'Manga 1', 'Manga 2' and 'Manga 3'. Suffix 'Blue Red' would create items 'Manga Blue' and 'Manga Red'."
-            },
-        "model": "kirppu.uitext",
-        "pk": 4
-    },
-    {
-        "fields": {
-            "identifier": "item_info4",
-            "text": "Print the price tags for your items by printing this page."
-            },
-        "model": "kirppu.uitext",
-        "pk": 5
-    },
-    {
-        "fields": {
-            "identifier": "item_info5",
-            "text": "After you have printed your price tags, you should mark them as having already been printed with the 'Mark all as printed' button. Doing so moves them to the bottom of the page and they are no longer printed when you print the page."
-            },
-        "model": "kirppu.uitext",
-        "pk": 6
+  {
+    "pk": 1,
+    "model": "kirppu.uitext",
+    "fields": {
+      "text": "<h2>Kirppu</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed, adipiscing id dolor.  Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus In rutrum accumsan ultricies.</p>",
+      "identifier": "frontpage_intro"
     }
+  },
+  {
+    "pk": 2,
+    "model": "kirppu.uitext",
+    "fields": {
+      "text": "<h3>Adding and editing</h3>\n<p>\nAdd item by filling name, price and type of your item to form below, and predd 'Add item' button. The size of the tag can be set with size-selection. The long size is meant for bookmark-like tags.\n</p>\n<p>\nMultiple similar items or even whole series can be added by using Suffix-field. For example by setting name to 'Manga' and suffix to '1-3' items named 'Manga 1', 'Manga 2' and 'Manga 3' would be added. Using the same name with suffix 'Blue Red' would add items 'Manga Blue' and 'Manga Red'.\n</p>\n<p>\nWhen you have added item, its price tag will appear in the list below form. You can edit item details by typing into the fields in the tag. By using button <span class=\"glyphicon glyphicon-resize-horizontal\"></span> within the tag you can adjust the size of the tag.\n</p>",
+      "identifier": "item_info1"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "kirppu.uitext",
+    "fields": {
+      "text": "<h3>Printing</h3>\n<p>\nYou can print price tags directly from this view by printing this page. You can do so by pressing 'Print' button. When you have printed the tags, they should be marked as printed by pressing 'Mark all as printed' button. This moves the tags to list at bottom of the page and ensures that they are not printed again if you print more later.\n</p>\n<div class=\"alert alert-danger\" role=\"alert\">Please don't copy the same tag for multiple items. Every item needs its own unique barcode!</div>\n\n<p>\nWith <span class=\"glyphicon glyphicon-sort\"></span> button you can mark a single tag to or back from printed list. Use this feature if you print tags in multiple batches, or if you print only some tags again.\n</p>",
+      "identifier": "item_info2"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "kirppu.uitext",
+    "fields": {
+      "text": "<h3>Removing</h3>\n<p>\nIf you have added excess or wrong tags, you can delete such tags by pressing <span class=\"glyphicon glyphicon-remove\"></span> button.\n</p>",
+      "identifier": "item_info3"
+    }
+  }
 ]
