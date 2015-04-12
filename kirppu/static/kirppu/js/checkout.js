@@ -2318,20 +2318,23 @@
     };
 
     VendorFindMode.prototype.onVendorsFound = function(vendors) {
-      var i, index_, len, results, vendor_;
+      var fn, i, index_, len, vendor_;
       this.vendorList.body.empty();
-      results = [];
+      if (vendors.length === 1) {
+        this.switcher.switchTo(VendorReport, vendors[0]);
+        return;
+      }
+      fn = (function(_this) {
+        return function(vendor, index) {
+          return _this.vendorList.append(vendor, index + 1, (function() {
+            return _this.switcher.switchTo(VendorReport, vendor);
+          }));
+        };
+      })(this);
       for (index_ = i = 0, len = vendors.length; i < len; index_ = ++i) {
         vendor_ = vendors[index_];
-        results.push(((function(_this) {
-          return function(vendor, index) {
-            return _this.vendorList.append(vendor, index + 1, (function() {
-              return _this.switcher.switchTo(VendorReport, vendor);
-            }));
-          };
-        })(this))(vendor_, index_));
+        fn(vendor_, index_);
       }
-      return results;
     };
 
     return VendorFindMode;

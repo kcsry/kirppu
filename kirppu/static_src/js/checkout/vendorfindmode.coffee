@@ -24,6 +24,10 @@ class @VendorFindMode extends CheckoutMode
 
   onVendorsFound: (vendors) =>
     @vendorList.body.empty()
+    if vendors.length == 1
+      @switcher.switchTo(VendorReport, vendors[0])
+      return
+
     for vendor_, index_ in vendors
       ((vendor, index) =>
         @vendorList.append(
@@ -32,4 +36,5 @@ class @VendorFindMode extends CheckoutMode
           (=> @switcher.switchTo(VendorReport, vendor)),
         )
       )(vendor_, index_)
+    return
 
