@@ -122,6 +122,8 @@ def model_dict_fn(*args, **kwargs):
                     del ret[value]
             else:
                 ret[key] = getattr(self, value)
+                if callable(ret[key]):
+                    ret[key] = ret[key]()
         return ret
     model_dict.__doc__ = model_dict.__doc__.format(", ".join(fields.keys()))
     return model_dict

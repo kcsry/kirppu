@@ -338,6 +338,8 @@ class Item(models.Model):
         "abandoned",
         price="price_cents",
         vendor="vendor_id",
+        state_display="get_state_display",
+        itemtype_display="get_itemtype_display",
     )
 
     @property
