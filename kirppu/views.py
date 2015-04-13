@@ -1,49 +1,54 @@
 from collections import namedtuple
-from decimal import Decimal, InvalidOperation
-import decimal
 import json
-from django.core.exceptions import (
-    PermissionDenied,
-    ValidationError,
-)
-from django.views.decorators.cache import never_cache
-from .checkout_api import clerk_logout_fn
-from . import ajax_util
-from .forms import ItemRemoveForm
-from .fields import ItemPriceField
-from kirppu.util import get_form
 import re
 import urllib
 
 import barcode
-
+from django.conf import settings
+from django.contrib.auth import logout, get_user_model
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import (
+    PermissionDenied,
+    ValidationError,
+)
+import django.core.urlresolvers as url
+from django.db.models import Sum
 from django.http.response import (
     HttpResponse,
     HttpResponseBadRequest,
-    HttpResponseForbidden, HttpResponseRedirect)
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+)
 from django.shortcuts import (
-    render,
     redirect,
+    render,
     get_object_or_404,
 )
-from django.db.models import Count, Sum
-from django.conf import settings
-import django.core.urlresolvers as url
 from django.utils.http import is_safe_url
+from django.utils.translation import ugettext as _
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth import logout, get_user_model
-from django.contrib.auth.decorators import login_required
-from django.utils.translation import ugettext as _
 
+from .checkout_api import clerk_logout_fn
+from . import ajax_util
+from .forms import ItemRemoveForm
+from .fields import ItemPriceField
 from .models import (
-    Item,
     Clerk,
+    Item,
     Vendor,
 )
-from .utils import require_setting, PixelWriter, require_vendor_open, is_vendor_open, barcode_view, \
-    require_test
-from templatetags.kirppu_tags import get_dataurl, KirppuBarcode
+from .util import get_form
+from .utils import (
+    barcode_view,
+    is_vendor_open,
+    PixelWriter,
+    require_setting,
+    require_test,
+    require_vendor_open,
+)
+from .templatetags.kirppu_tags import get_dataurl, KirppuBarcode
 
 
 def index(request):
@@ -71,7 +76,12 @@ def item_add(request):
         return HttpResponseBadRequest(u' '.join(error.messages))
 
     def expand_suffixes(input_str):
-        """Turn 'a b 1 3-4' to ['a', 'b', '1', '3', '4']"""
+        """
+        Turn 'a b 1 3-4' to ['a', 'b', '1', '3', '4']
+
+        :type input_str: str | unicode
+        :rtype: list
+        """
         words = input_str.split()
         result = []
 
@@ -112,7 +122,15 @@ def item_add(request):
         item_cnt += 1
 
         suffixed_name = (name + u" " + suffix).strip()
-        item = Item.new(name=suffixed_name, price=str(price), vendor=vendor, type=tag_type, state=Item.ADVERTISED, itemtype=itemtype, adult=adult)
+        item = Item.new(
+            name=suffixed_name,
+            price=str(price),
+            vendor=vendor,
+            type=tag_type,
+            state=Item.ADVERTISED,
+            itemtype=itemtype,
+            adult=adult
+        )
         item_dict = {
             'vendor_id': vendor.id,
             'code': item.code,
@@ -152,8 +170,15 @@ def item_to_not_printed(request, code):
         if not is_vendor_open():
             return HttpResponseForbidden("Registration is closed")
 
-        new_item = Item.new(name=item.name, price=item.price,
-                vendor=item.vendor, type=item.type, state=Item.ADVERTISED, itemtype=item.itemtype, adult=item.adult)
+        new_item = Item.new(
+            name=item.name,
+            price=item.price,
+            vendor=item.vendor,
+            type=item.type,
+            state=Item.ADVERTISED,
+            itemtype=item.itemtype,
+            adult=item.adult
+        )
         item.hidden = True
     else:
         item.printed = False

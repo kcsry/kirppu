@@ -1,3 +1,4 @@
+import datetime
 from functools import wraps
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -5,7 +6,6 @@ import django.forms
 from django.http.response import HttpResponseForbidden, HttpResponseBadRequest
 from django.utils.translation import ugettext as _
 from django.utils import timezone
-import datetime
 import pytz
 
 __author__ = 'jyrkila'
