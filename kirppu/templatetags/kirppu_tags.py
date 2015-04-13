@@ -75,7 +75,10 @@ def load_text(id_):
     except UIText.DoesNotExist:
         if settings.DEBUG:
             return format_html(
-                u'<span style="background-color: lightyellow; text-color: black">Missing text {0}.</span>'.format(
+                u'<span style="background-color: lightyellow;'
+                u' color: black;'
+                u' border: 1px solid gray;">'
+                u'Missing text {0}.</span>'.format(
                     force_text(id_)
                 )
             )

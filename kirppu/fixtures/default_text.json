@@ -30,5 +30,13 @@
       "text": "<h3>Removing</h3>\n<p>\nIf you have added excess or wrong tags, you can delete such tags by pressing <span class=\"glyphicon glyphicon-remove\"></span> button.\n</p>",
       "identifier": "item_info3"
     }
+  },
+  {
+    "pk": 5,
+    "model": "kirppu.uitext",
+    "fields": {
+      "text": "",
+      "identifier": "frontpage_tail"
+    }
   }
 ]

@@ -2,11 +2,11 @@
 
 {% block body %}
     <h1>Kirppu</h1>
-        {% load_text "frontpage_intro" %}
+    {% load_text "frontpage_intro" %}
 
     {% if items %}
         <table class="table table-striped table-condensed">
-            <caption><h4>{% trans "Registered items" %}</h4></caption>
+            <caption><h3>{% trans "Registered items" %}</h3></caption>
             <thead>
             <tr>
                 <th class="numeric">#</th>
@@ -41,4 +41,5 @@
     {% elif user.is_authenticated %}
         {% trans "No registered items." %}
     {% endif %}
+    {% load_text "frontpage_tail" %}
 {% endblock  %}
