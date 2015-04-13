@@ -595,12 +595,12 @@ def vendor_view(request):
     return render(request, "kirppu/app_frontpage.html", context)
 
 
-def _get_login_destination(request, url):
+def _get_login_destination(request, dest_url):
     destination = request.REQUEST.get('next')
     if not is_safe_url(destination, request.get_host()):
         destination = request.build_absolute_uri(url.reverse('kirppu:vendor_view'))
     login_url = '{0}?{1}'.format(
-        url,
+        dest_url,
         urllib.urlencode({'next': destination}),
     )
     return login_url
