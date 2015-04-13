@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-12 19:59+0300\n"
-"PO-Revision-Date: 2015-04-12 19:12+0300\n"
+"POT-Creation-Date: 2015-04-13 20:30+0300\n"
+"PO-Revision-Date: 2015-04-13 20:31+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -46,6 +46,18 @@ msgstr "Access code set for '{0}'"
 
 msgid "Move unused access code to existing Clerk."
 msgstr "Move unused access code to existing Clerk."
+
+msgid "Price must be numeric."
+msgstr "Price must be numeric."
+
+msgid "Item must have a price."
+msgstr "Item must have a price."
+
+msgid "Price too low. (min 0.5 euros)"
+msgstr "Price too low. (min 0.5 euros)"
+
+msgid "Price too high. (max 400 euros)"
+msgstr "Price too high. (max 400 euros)"
 
 msgid "Access key value"
 msgstr "Access key value"
@@ -164,18 +176,6 @@ msgstr "Image extension not supported"
 msgid "Item must have a type."
 msgstr "Item must have a type."
 
-msgid "Item must have a price."
-msgstr "Item must have a price."
-
-msgid "Price must be numeric."
-msgstr "Price must be numeric."
-
-msgid "Price too low. (min 0.5 euros)"
-msgstr "Price too low. (min 0.5 euros)"
-
-msgid "Price too high. (max 400 euros)"
-msgstr "Price too high. (max 400 euros)"
-
 msgid "Maximum of 100 items allowed by a single range statement."
 msgstr "Maximum of 100 items allowed by a single range statement."
 
@@ -264,7 +264,7 @@ msgid "Type:"
 msgstr "Type:"
 
 msgid "Select…"
-msgstr ""
+msgstr "Select…"
 
 msgid "Adult:"
 msgstr "Adult:"
@@ -310,6 +310,15 @@ msgstr "Suomi"
 
 msgid "English"
 msgstr "English"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Password"
+msgstr "Password"
 
 #, python-format
 msgid "Add unbound %(name)s"

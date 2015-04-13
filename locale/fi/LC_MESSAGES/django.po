@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-12 19:59+0300\n"
-"PO-Revision-Date: 2015-04-12 19:13+0300\n"
+"POT-Creation-Date: 2015-04-13 20:30+0300\n"
+"PO-Revision-Date: 2015-04-13 20:31+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -47,6 +47,18 @@ msgstr "Käyttötunniste asetettu '{0}':lle"
 
 msgid "Move unused access code to existing Clerk."
 msgstr "Siirrä käyttämätön tunniste olemassaolevalle kassatädille"
+
+msgid "Price must be numeric."
+msgstr "Hinnan täytyy olla numero."
+
+msgid "Item must have a price."
+msgstr "Tavaralla täytyy olla hinta."
+
+msgid "Price too low. (min 0.5 euros)"
+msgstr "Hinta on liian pieni. (minimi 0,5 euroa)"
+
+msgid "Price too high. (max 400 euros)"
+msgstr "Hinta on liian suuri. (maksimi 400 euroa)"
 
 msgid "Access key value"
 msgstr "Käyttötunnisteen arvo"
@@ -164,18 +176,6 @@ msgstr "Kuvatyyppi ei ole tuettu"
 
 msgid "Item must have a type."
 msgstr "Tavaralla täytyy olla tyyppi."
-
-msgid "Item must have a price."
-msgstr "Tavaralla täytyy olla hinta."
-
-msgid "Price must be numeric."
-msgstr "Hinnan täytyy olla numero."
-
-msgid "Price too low. (min 0.5 euros)"
-msgstr "Hinta on liian pieni. (minimi 0,5 euroa)"
-
-msgid "Price too high. (max 400 euros)"
-msgstr "Hinta on liian suuri. (maksimi 400 euroa)"
 
 msgid "Maximum of 100 items allowed by a single range statement."
 msgstr "Lukuvärimerkinnän lukuväli saa olla maksimissaan 100."
@@ -311,6 +311,15 @@ msgstr "Suomi"
 
 msgid "English"
 msgstr "English"
+
+msgid "Login"
+msgstr "Kirjaudu sisään"
+
+msgid "Username"
+msgstr "Käyttäjätunnus"
+
+msgid "Password"
+msgstr "Salasana"
 
 #, python-format
 msgid "Add unbound %(name)s"
