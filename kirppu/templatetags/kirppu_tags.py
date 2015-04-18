@@ -1,18 +1,19 @@
-from ..utils import PixelWriter
+import base64
+from collections import OrderedDict
+from cStringIO import StringIO
+import re
+
 import barcode
 from barcode.charsets import code128
 from django import template
 from django.conf import settings
-register = template.Library()
-import base64
-from cStringIO import StringIO
-from django.utils.functional import memoize
-from collections import OrderedDict
-from ..models import UIText
-import re
-from django.utils.html import format_html
 from django.utils.encoding import force_text
+from django.utils.functional import memoize
+from django.utils.html import format_html
+from ..utils import PixelWriter
+from ..models import UIText, UserAdapter
 
+register = template.Library()
 
 class FifoDict(OrderedDict):
     def __init__(self, *args, **kwargs):
@@ -181,3 +182,19 @@ def barcode_css(low=4, high=6, target=None, container=None, compress=False):
                 rule = re.sub(r'[\s]+', "", rule)
             output.append(rule)
     return "".join(output)
+
+
+@register.filter
+def user_adapter(user, getter):
+    """
+    Filter for using UserAdapter for user objects.
+
+    :param user: User to filter, class of `settings.USER_MODEL`.
+    :param getter: Getter function to apply to the user via adapter.
+    :type getter: str
+    """
+    if not isinstance(getter, (str, unicode)) or getter.startswith("_"):
+        raise AttributeError("Invalid adapter attribute.")
+
+    getter = getattr(UserAdapter, getter)
+    return getter(user)

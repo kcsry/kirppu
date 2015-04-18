@@ -8,6 +8,10 @@ table .bool {
     text-align: center;
 }
 
+td address {
+    margin-bottom: 0.2ex;
+}
+
 /* ================ 2: bootstrap.css ================ */
 
 /*!

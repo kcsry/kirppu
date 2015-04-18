@@ -300,6 +300,7 @@ def _vendor_menu_contents(request):
         manage_sub.append(fill(_(u"Checkout commands"), "kirppu:commands"))
     if request.user.is_staff:
         manage_sub.append(fill(_(u"Clerk codes"), "kirppu:clerks"))
+        manage_sub.append(fill(_(u"Lost and Found"), "kirppu:lost_and_found"))
 
     if manage_sub:
         items.append(fill(_(u"Management"), "", manage_sub))
@@ -676,4 +677,25 @@ def remove_item_from_receipt(request):
 
     return render(request, "kirppu/app_item_receipt_remove.html", {
         'form': form,
+    })
+
+
+@login_required
+@require_test(lambda request: request.user.is_staff)
+def lost_and_found_list(request):
+    items = Item.objects.select_related("vendor").filter(lost_property=True, abandoned=False).order_by("vendor", "name")
+
+    vendor_object = namedtuple("VendorItems", "vendor vendor_id items")
+
+    vendor_list = {}
+    for item in items:
+        vendor_id = item.vendor_id
+        if vendor_id not in vendor_list:
+            vendor_list[vendor_id] = vendor_object(item.vendor.user, item.vendor_id, [])
+
+        vendor_list[vendor_id].items.append(item)
+
+    return render(request, "kirppu/lost_and_found.html", {
+        'menu': _vendor_menu_contents(request),
+        'items': vendor_list,
     })

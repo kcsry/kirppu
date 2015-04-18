@@ -21,6 +21,7 @@ from .views import (
     login_view,
     logout_view,
     stats_view,
+    lost_and_found_list,
 )
 from .checkout_api import AJAX_FUNCTIONS, checkout_js
 
@@ -44,6 +45,7 @@ _urls = [
     url(r'^vendor/item/(?P<code>\w+?)/to_not_printed$', item_to_not_printed, name='item_to_not_printed'),
     url(r'^vendor/item/(?P<code>\w+?)/hide$', item_hide, name='item_hide'),
     url(r'^remove_item', remove_item_from_receipt, name='remove_item_from_receipt'),
+    url(r'^lost_and_found/$', lost_and_found_list, name='lost_and_found'),
 ]
 
 if settings.KIRPPU_USE_SSO:
