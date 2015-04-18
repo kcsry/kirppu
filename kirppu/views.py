@@ -287,13 +287,23 @@ def _vendor_menu_contents(request):
     :rtype: tuple[MenuItem,...]
     """
     active = request.resolver_match.view_name
-    menu_item = namedtuple("MenuItem", "name url active")
-    fill = lambda name, func: menu_item(name, url.reverse(func), func == active)
+    menu_item = namedtuple("MenuItem", "name url active sub_items")
+    fill = lambda name, func, sub=None: menu_item(name, url.reverse(func) if func else None, func == active, sub)
 
-    return (
+    items = [
         fill(_(u"Home"), "kirppu:vendor_view"),
         fill(_(u"Item list"), "kirppu:page"),
-    )
+    ]
+
+    manage_sub = []
+    if request.user.is_staff or UserAdapter.is_clerk(request.user):
+        manage_sub.append(fill(_(u"Checkout commands"), "kirppu:commands"))
+    if request.user.is_staff:
+        manage_sub.append(fill(_(u"Clerk codes"), "kirppu:clerks"))
+
+    if manage_sub:
+        items.append(fill(_(u"Management"), "", manage_sub))
+    return items
 
 
 @login_required

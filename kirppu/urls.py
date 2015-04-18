@@ -28,7 +28,7 @@ __author__ = 'jyrkila'
 
 _urls = [
     url(r'^clerks/$', get_clerk_codes, name='clerks'),
-    url(r'^commands/$', get_counter_commands),
+    url(r'^commands/$', get_counter_commands, name='commands'),
     url(r'^barcode/(?P<data>\w+?)\.(?P<ext>\w+)$', get_barcode, name='barcode'),
     url(r'^checkout/$', checkout_view, name='checkout_view'),
     url(r'^overseer/$', overseer_view, name='overseer_view'),
