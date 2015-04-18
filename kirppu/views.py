@@ -3,7 +3,7 @@ from collections import namedtuple, OrderedDict
 import json
 
 from django.conf import settings
-from django.contrib.auth import logout, get_user_model
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import (
     PermissionDenied,
@@ -24,10 +24,8 @@ from django.shortcuts import (
     render,
     get_object_or_404,
 )
-from django.utils.http import is_safe_url
-from django.utils.six import moves, string_types
+from django.utils.six import string_types
 from django.utils.translation import ugettext as _
-from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 
@@ -717,38 +715,6 @@ def vendor_view(request):
         'CURRENCY': settings.KIRPPU_CURRENCY,
     }
     return render(request, "kirppu/app_frontpage.html", context)
-
-
-def _get_login_destination(request, dest_url):
-    destination = request.REQUEST.get('next')
-    if not is_safe_url(destination, request.get_host()):
-        destination = request.build_absolute_uri(url.reverse('kirppu:vendor_view'))
-    login_url = '{0}?{1}'.format(
-        dest_url,
-        moves.urllib.parse.urlencode({'next': destination}),
-    )
-    return login_url
-
-
-@require_setting("KIRPPU_USE_SSO", True)
-@never_cache
-def login_view(request):
-    """
-    Redirect to SSO login page.
-    """
-    login_url = _get_login_destination(request, settings.LOGIN_URL)
-    return redirect(login_url)
-
-
-@require_setting("KIRPPU_USE_SSO", True)
-@never_cache
-def logout_view(request):
-    """
-    Log out user and redirect to SSO logout page.
-    """
-    logout(request)
-    logout_url = _get_login_destination(request, settings.LOGOUT_URL)
-    return redirect(logout_url)
 
 
 @login_required

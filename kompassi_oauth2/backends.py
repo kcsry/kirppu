@@ -1,14 +1,11 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.conf import settings
+User = get_user_model()
 
 
 def user_defaults_from_kompassi(kompassi_user):
-    return dict((django_key, kompassi_user[kompassi_key]) for (django_key, kompassi_key) in [
-        ('username', 'username'),
-        ('email', 'email'),
-        ('first_name', 'first_name'),
-        ('last_name', 'surname'),
-    ])
+    return dict((django_key, kompassi_user[kompassi_key]) for (django_key, kompassi_key) in
+                settings.KOMPASSI_USER_MAP_V2)
 
 
 class KompassiOAuth2AuthenticationBackend(object):

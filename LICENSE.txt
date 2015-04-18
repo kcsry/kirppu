@@ -3,6 +3,7 @@ The MIT License (MIT)
 Copyright (c) 2013 Jyrki Launonen
 Copyright (c) 2014 Ari Koivula, Jyrki Launonen, Elina Lukkarinen, Arttu Ylä-Outinen
 Copyright (c) 2015 Mikko Karttunen, Ari Koivula, Aarni Koskela, Jyrki Launonen, Juha Lepola, Mikael Niemelä, Arttu Ylä-Outinen
+Copyright (c) 2014–2015 Santtu Pajukanta
 Copyright (c) 2016 Jyrki Launonen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

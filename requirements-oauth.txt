@@ -1,0 +1,2 @@
+-r requirements.txt
+requests-oauthlib==0.6.0

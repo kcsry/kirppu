@@ -29,6 +29,15 @@ class CallbackView(View):
         if 'oauth_state' not in request.session or 'oauth_next' not in request.session:
             return HttpResponse('OAuth2 callback accessed outside OAuth2 authorization flow', status=400)
 
+        error = request.GET.get("error", None)
+        if error:
+            if error == "access_denied":
+                # User pressed "cancel" on authorization.
+                pass
+            # TODO: Maybe set message?
+            self._finish(request)
+            return redirect("/")
+
         session = get_session(request, state=request.session['oauth_state'])
         token = session.fetch_token(settings.KOMPASSI_OAUTH2_TOKEN_URL,
             client_secret=settings.KOMPASSI_OAUTH2_CLIENT_SECRET,
@@ -37,8 +46,7 @@ class CallbackView(View):
 
         next_url = request.session['oauth_next']
 
-        del request.session['oauth_state']
-        del request.session['oauth_next']
+        self._finish(request)
 
         user = authenticate(oauth2_session=session)
         if user is not None and user.is_active:
@@ -46,3 +54,8 @@ class CallbackView(View):
             return redirect(next_url if next_url else '/')
         else:
             return HttpResponse('OAuth2 login failed', status=403)
+
+    @staticmethod
+    def _finish(request):
+        del request.session['oauth_state']
+        del request.session['oauth_next']

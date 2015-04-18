@@ -24,8 +24,6 @@ from .views import (
     box_content,
     box_hide,
     box_print,
-    login_view,
-    logout_view,
     stats_view,
     lost_and_found_list,
 )
@@ -57,11 +55,6 @@ _urls = [
     url(r'^vendor/box/(?P<box_id>\w+?)/hide$', box_hide, name='box_hide'),
     url(r'^vendor/box/(?P<box_id>\w+?)/print', box_print, name='box_print'),
 ]
-
-if settings.KIRPPU_USE_SSO:
-    _urls.append(url(r'^login/?$', login_view, name='login_view'))
-    _urls.append(url(r'^logout/?$', logout_view, name='logout_view'))
-
 
 if settings.KIRPPU_CHECKOUT_ACTIVE:  # Only activate API when checkout is active.
     _urls.append(url('^api/checkout.js$', checkout_js, name='checkout_js'))

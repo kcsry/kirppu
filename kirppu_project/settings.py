@@ -107,8 +107,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 
-    # 'kompassi_crowd.middleware.KompassiCrowdAuthenticationMiddleware',
-
     'django.contrib.messages.middleware.MessageMiddleware',
 
     # Uncomment the next line for simple clickjacking protection:
@@ -116,7 +114,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    # 'kompassi_crowd.backends.KompassiCrowdAuthenticationBackend',
+    'kompassi_oauth2.backends.KompassiOAuth2AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -180,7 +178,7 @@ LOGGING = {
             'level': 'DEBUG' if DEBUG else 'WARNING',
             'propagate': True
         },
-        'kompassi_crowd': {
+        'kompassi_oauth2': {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'WARNING',
             'propagate': True
@@ -189,41 +187,40 @@ LOGGING = {
 }
 
 # Mapping from Kompassi user fields to Kirppu user fields.
-KOMPASSI_USER_MAP = [
-#   (u'birth_date'  ,               ),
-#   (u'display_name',               ),
-    (u'email'       , 'email'       ),
-    (u'first_name'  , 'first_name'  ),
-#   (u'full_name'   ,               ),
-#   (u'groups'      ,               ),
-#   (u'nick'        ,               ),
-    (u'phone'       , 'phone'       ),
-    (u'surname'     , 'last_name'   ),
-    (u'username'    , 'username'    ),
+KOMPASSI_USER_MAP_V2 = [
+    ('username', 'username'),
+    ('email', 'email'),
+    ('first_name', 'first_name'),
+    ('last_name', 'surname'),
+    ('phone', 'phone'),
 ]
 
-KOMPASSI_CROWD_URL = 'https://crowd.tracon.fi/crowd'
-KOMPASSI_CROWD_APPLICATION_NAME = 'kirppu'
-KOMPASSI_CROWD_APPLICATION_PASSWORD = 'fill me in'
-KOMPASSI_CROWD_SESSION_URL = '{KOMPASSI_CROWD_URL}/rest/usermanagement/1/session'.format(**locals())
-KOMPASSI_CROWD_COOKIE_NAME = 'crowd.token_key'
-KOMPASSI_CROWD_VALIDATION_FACTORS = {
-    'remote_address': lambda request: '127.0.0.1',
-    'X-Forwarded-For': lambda request: request.META['HTTP_X_FORWARDED_FOR'],
-}
-KOMPASSI_API_URL = 'https://kompassidev.tracon.fi/api/v1'
-KOMPASSI_API_APPLICATION_NAME = KOMPASSI_CROWD_APPLICATION_NAME
-KOMPASSI_API_APPLICATION_PASSWORD = KOMPASSI_CROWD_APPLICATION_PASSWORD
+KOMPASSI_API_URL = 'http://kompassi.dev:8001/api/v1'
+KOMPASSI_API_APPLICATION_NAME = 'kirppu'
+KOMPASSI_API_APPLICATION_PASSWORD = 'fill me in'
 
-# These can be left to default if kirppuauth module is installed. If these
-# point to external URL, KIRPPU_USE_SSO should be set to True.
-# LOGIN_URL = 'https://kompassidev.tracon.fi/crowd'
-# LOGOUT_URL = 'https://kompassidev.tracon.fi/logout'
+KOMPASSI_OAUTH2_AUTHORIZATION_URL = 'http://kompassi.dev:8001/oauth2/authorize'
+KOMPASSI_OAUTH2_TOKEN_URL = 'http://kompassi.dev:8001/oauth2/token'
+KOMPASSI_OAUTH2_CLIENT_ID = 'kompassi_insecure_test_client_id'
+KOMPASSI_OAUTH2_CLIENT_SECRET = 'kompassi_insecure_test_client_secret'
+KOMPASSI_OAUTH2_SCOPE = ['read']
+KOMPASSI_API_V2_USER_INFO_URL = 'http://kompassi.dev:8001/api/v2/people/me'
+
+# Kirppu authentication configurations:
+#
+# Case     | LOGIN_URL       | LOGOUT_URL       | USE_SSO | kirppuauth? |
+# ---------+-----------------+------------------+---------+-------------
+# Internal | /accounts/login | /accounts/logout | False   | Yes
+# Embed    | project url     | project url      | False   | No
+# OAUTH2   | /oauth2/login   | /accounts/logout | True    | Yes
+
+# This can be left to default if kirppuauth module is installed.
+# LOGIN_URL = '/oauth2/login'
 
 # Absolute URL for user "Profile". Leave None if the link should not be displayed.
 PROFILE_URL = None  # 'https://kompassidev.tracon.fi/profile'
 
-# Whether to use Login/Logout-URLs directly (False), or via "wrapper" for SSO use (True).
+# Whether external login and SSO clerk add are enabled (True) or not (False).
 KIRPPU_USE_SSO = False
 
 # If True, admin can change identity.
