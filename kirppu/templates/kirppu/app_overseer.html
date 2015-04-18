@@ -21,6 +21,12 @@
                 Item Search
             </a>
         </li>
+        <li>
+            <a href="javascript:void(1)" data-entrypoint="lost_and_found">
+                <span class="glyphicon glyphicon-sunglasses"></span>
+                Lost and Found
+            </a>
+        </li>
         </ul>
     </li>
 {% endblock %}
@@ -35,6 +41,16 @@
         <span id="title_text">Overseer Dashboard</span>
     </h1>
 
+    <div class="alert alert-danger alert-off" role="alert" id="error_container"></div>
+    <div class="alert alert-warning alert-off" role="alert" id="warning_container"></div>
+    <form role="form" id="code_form" class="hidden-print hidden">
+        <div class="form-group">
+            <label class="sr-only" for="code_input">Code</label>
+            <input type="text" id="code_input" class="form-control"
+                   placeholder="Barcode" autofocus="true"/>
+        </div>
+    </form>
+
     <div id="receipt_body"></div>
 {% endblock %}
 
@@ -47,15 +63,15 @@
 <script type="application/javascript"><!--
     CheckoutConfig.uiId.container = "body";
     CheckoutConfig.uiId.body = "receipt_body";
+    CheckoutConfig.uiId.errorText = "error_container";
+    CheckoutConfig.uiId.warningText = "warning_container";
     CheckoutConfig.uiId.glyph = "mode_glyph";
     CheckoutConfig.uiId.stateText = "title_text";
+    CheckoutConfig.uiId.codeInput = "code_input";
+    CheckoutConfig.uiId.codeForm = "code_form";
     CheckoutConfig.uiId.modeMenu = "modeMenu";
 
-    CheckoutConfig.uiId.errorText = "ignored";
-    CheckoutConfig.uiId.warningText = "ignored";
     CheckoutConfig.uiId.subtitleText = "ignored";
-    CheckoutConfig.uiId.codeInput = "ignored";
-    CheckoutConfig.uiId.codeForm = "ignored";
     CheckoutConfig.uiId.overseerLink= "ignored";
     CheckoutConfig.uiId.dialog = "ignored";
 

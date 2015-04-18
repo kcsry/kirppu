@@ -2376,3 +2376,108 @@
   };
 
 }).call(this);
+
+// ================ 28: lostandfound.coffee ================
+
+(function() {
+  var LostAndFound,
+    bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty,
+    slice = [].slice;
+
+  LostAndFound = (function(superClass) {
+    extend(LostAndFound, superClass);
+
+    ModeSwitcher.registerEntryPoint("lost_and_found", LostAndFound);
+
+    LostAndFound.prototype.title = function() {
+      return "Lost and found properties";
+    };
+
+    LostAndFound.prototype.glyph = function() {
+      return "sunglasses";
+    };
+
+    LostAndFound.prototype.inputPlaceholder = function() {
+      return "Barcode of Item to mark as Lost Property";
+    };
+
+    function LostAndFound() {
+      var args;
+      args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+      this.onResultError = bind(this.onResultError, this);
+      this.onMarked = bind(this.onMarked, this);
+      LostAndFound.__super__.constructor.apply(this, args);
+      this.list = new LostAndFoundTable();
+    }
+
+    LostAndFound.prototype.enter = function() {
+      LostAndFound.__super__.enter.apply(this, arguments);
+      this.cfg.uiRef.codeForm.removeClass("hidden");
+      return this.cfg.uiRef.body.append(this.list.render());
+    };
+
+    LostAndFound.prototype.exit = function() {
+      this.cfg.uiRef.codeForm.addClass("hidden");
+      return LostAndFound.__super__.exit.apply(this, arguments);
+    };
+
+    LostAndFound.prototype.actions = function() {
+      return [
+        [
+          "", (function(_this) {
+            return function(code) {
+              return Api.item_mark_lost({
+                code: code
+              }).then(_this.onMarked, _this.onResultError);
+            };
+          })(this)
+        ]
+      ];
+    };
+
+    LostAndFound.prototype.onMarked = function(item) {
+      return this.list.append(item);
+    };
+
+    LostAndFound.prototype.onResultError = function(jqXHR) {
+      if (jqXHR.status === 404) {
+        safeAlert("No such item");
+        return;
+      }
+      safeAlert("Error:" + jqXHR.responseText);
+    };
+
+    return LostAndFound;
+
+  })(CheckoutMode);
+
+}).call(this);
+
+// ================ 29: lostandfoundtable.coffee ================
+
+(function() {
+  var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
+
+  this.LostAndFoundTable = (function(superClass) {
+    extend(LostAndFoundTable, superClass);
+
+    function LostAndFoundTable() {
+      LostAndFoundTable.__super__.constructor.apply(this, arguments);
+      this.head.append(['<th class="receipt_code">' + gettext('code') + '</th>', '<th class="receipt_item">' + gettext('item') + '</th>', '<th class="receipt_item_state">' + gettext('state') + '</th>', '<th class="receipt_vendor_id">' + gettext('vendor') + '</th>'].map($));
+    }
+
+    LostAndFoundTable.prototype.append = function(item) {
+      var row;
+      row = $('<tr>');
+      row.append([$('<td>').text(item.code), $('<td>').text(item.name), $('<td>').text(item.state_display), $('<td>').text(item.vendor)]);
+      return this.body.append(row);
+    };
+
+    return LostAndFoundTable;
+
+  })(ResultTable);
+
+}).call(this);

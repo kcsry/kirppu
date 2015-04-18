@@ -517,3 +517,18 @@ def items_abandon(request, vendor):
             item.abandoned = True
             item.save()
     return
+
+
+@ajax_func('^item/mark_lost$', overseer=True)
+def item_mark_lost(request, code):
+    item = get_object_or_404(Item, code=code)
+    if item.state == Item.SOLD:
+        raise AjaxError(RET_CONFLICT, u"Item is sold!")
+    if item.state == Item.STAGED:
+        raise AjaxError(RET_CONFLICT, u"Item is staged to be sold!")
+    if item.abandoned:
+        raise AjaxError(RET_CONFLICT, u"Item is abandoned.")
+
+    item.lost_property = True
+    item.save()
+    return item.as_dict()

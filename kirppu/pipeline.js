@@ -79,6 +79,9 @@ module.exports.js = {
             "js/checkout/vendorfindmode.coffee",
 
             "js/number_test.coffee",
+
+            "js/checkout/lostandfound.coffee",
+            "js/checkout/lostandfoundtable.coffee",
         ],
         "output_filename": "checkout.js",
     },
