@@ -321,8 +321,7 @@ class VendorSetSelfForm(forms.ModelForm):
         widget=ButtonWidget,
     )
     username = forms.CharField(
-        label="",
-        widget=forms.HiddenInput,
+        widget=forms.TextInput(attrs={'readonly': 'readonly'}),
     )
 
     def __init__(self, *args, **kwargs):
@@ -342,3 +341,4 @@ class VendorSetSelfForm(forms.ModelForm):
 
     class Meta:
         model = Vendor
+        fields = ()

@@ -74,13 +74,20 @@ class VendorAdmin(admin.ModelAdmin):
     search_fields = ['user__first_name', 'user__last_name', 'user__username']
     list_display = ['id', _user_link]
 
+    @staticmethod
+    def _can_set_user(request, obj):
+        return obj is not None and\
+            request.user.is_superuser and\
+            not obj.user.is_superuser and\
+            settings.KIRPPU_SU_AS_USER
+
     def get_form(self, request, obj=None, **kwargs):
-        if obj is not None and request.user.is_superuser and not obj.user.is_superuser and settings.KIRPPU_SU_AS_USER:
+        if self._can_set_user(request, obj):
             kwargs["form"] = VendorSetSelfForm
         return super(VendorAdmin, self).get_form(request, obj, **kwargs)
 
     def get_readonly_fields(self, request, obj=None):
-        return ["user"] if obj is not None else []
+        return ["user"] if obj is not None and not self._can_set_user(request, obj) else []
 
 admin.site.register(Vendor, VendorAdmin)
 
