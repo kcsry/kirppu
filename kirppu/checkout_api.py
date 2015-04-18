@@ -32,8 +32,8 @@ from .ajax_util import (
     get_clerk,
     require_counter_validated,
     require_clerk_login,
+    require_overseer_clerk_login,
     RET_BAD_REQUEST,
-    RET_FORBIDDEN,
     RET_CONFLICT,
     RET_AUTH_FAILED,
     RET_LOCKED,
@@ -62,7 +62,7 @@ def _register_ajax_func(func):
     AJAX_FUNCTIONS[func.name] = func
 
 
-def ajax_func(url, method='POST', counter=True, clerk=True):
+def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False):
     def decorator(func):
         # Get argspec before any decoration.
         (args, _, _, _) = inspect.getargspec(func)
@@ -71,6 +71,8 @@ def ajax_func(url, method='POST', counter=True, clerk=True):
             func = require_counter_validated(func)
         if clerk:
             func = require_clerk_login(func)
+        if overseer:
+            func = require_overseer_clerk_login(func)
         return ajax_util.ajax_func(
             url,
             _register_ajax_func,
@@ -216,10 +218,8 @@ def item_find(request, code):
     return value
 
 
-@ajax_func('^item/search$', method='GET')
+@ajax_func('^item/search$', method='GET', overseer=True)
 def item_search(request, query, code, vendor, min_price, max_price, item_type, item_state):
-    if not get_clerk(request).user.has_perm('kirppu.oversee'):
-        raise AjaxError(RET_FORBIDDEN, _i(u"Access denied."))
 
     clauses = []
 
