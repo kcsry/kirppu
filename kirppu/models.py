@@ -40,6 +40,21 @@ class UserAdapterBase(object):
         fn = "" if fn is None else ("__" + fn)
         return {"phone" + fn: rhs}
 
+    @classmethod
+    def is_clerk(cls, user):
+        return hasattr(user, "clerk")
+
+    @classmethod
+    def print_name(cls, user):
+        name = u"{0} {1}.".format(user.first_name, user.last_name[:1]).strip()
+        if len(name) == 0:
+            return user.username
+        return name.title()
+
+    @classmethod
+    def full_name(cls, user):
+        return user.get_full_name()
+
 # The actual class is found by string in settings.
 UserAdapter = import_by_path(settings.KIRPPU_USER_ADAPTER)
 
@@ -72,7 +87,7 @@ class Clerk(models.Model):
     def as_dict(self):
         return {
             "user": unicode(self.user),
-            "print": getattr(self.user, "print_name", unicode(self.user)),
+            "print": UserAdapter.print_name(self.user),
         }
 
     def get_code(self):

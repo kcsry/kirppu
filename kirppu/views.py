@@ -38,6 +38,7 @@ from .models import (
     Clerk,
     Item,
     Vendor,
+    UserAdapter,
 )
 from .util import get_form
 from .utils import (
@@ -400,7 +401,7 @@ def get_clerk_codes(request, bar_type):
 
 
 @login_required
-@require_test(lambda request: request.user.is_staff or request.user.is_clerk())
+@require_test(lambda request: request.user.is_staff or UserAdapter.is_clerk(request.user))
 @barcode_view
 def get_counter_commands(request, bar_type):
     return render(request, "kirppu/app_commands.html", {
