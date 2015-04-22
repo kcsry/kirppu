@@ -392,6 +392,8 @@ def get_clerk_codes(request, bar_type):
     code_item = namedtuple("CodeItem", "name code")
 
     for c in Clerk.objects.filter(access_key__isnull=False):
+        if not c.is_enabled:
+            continue
         code = c.get_code()
         if c.user is not None:
             name = c.user.get_short_name()
