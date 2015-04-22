@@ -81,23 +81,24 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-offset-1 col-sm-6">
+            <div class="col-sm-offset-1 col-sm-11">
                 <div id="form-errors" class="text-danger"></div>
                 <button id="add_short_item" type="submit" class="btn btn-primary">{% trans "Add item" %}</button>
-            </div>
-            <div class="col-sm-5">
-                <button id="print_items" type="button" class="btn btn-success">{% trans "Print" %}</button>
             </div>
         </div>
         </div></div>{# panel-body, panel #}
     </form>
     {% endif %}
 
+
     <form id="item-add-form" method="POST" class="form-horizontal">
         <div class="form-group">
-            <div class="col-sm-12">
+            <div class="col-sm-8">
                 <button id="list_view" type="button" class="btn btn-default">{% trans "Toggle List View" %}</button>
                 <button id="delete_all" type="button" class="btn btn-default">{% trans "Mark all as printed" %}</button>
+            </div>
+            <div class="col-sm-4">
+                <button id="print_items" type="button" class="btn btn-success">{% trans "Print" %}</button>
             </div>
         </div>
     </form>
