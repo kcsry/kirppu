@@ -1,11 +1,18 @@
 // ================ 1: commands.coffee ================
 
 (function() {
-  var Generator,
+  var Generator, containerId, count, render, source,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
+  source = null;
+
+  containerId = null;
+
+  count = 1;
+
   this.listCommands = function(id) {
-    var _, cDesc, cKey, code, codeSet, codes, count, count_arg, desc, generator, i, j, k, len, mc, mode, modeName, out, ref, ref1, source;
+    var _, cDesc, cKey, code, codeSet, codes, count_arg, desc, generator, i, j, k, len, mc, mode, modeName, out, ref, ref1;
+    containerId = id;
     codes = [];
     codeSet = [];
     ref = ModeSwitcher.entryPoints;
@@ -29,14 +36,14 @@
       out.push(generator.barcode(desc[1], desc[0], i));
       i++;
     }
-    count = 1;
     count_arg = /^#(\d+)$/.exec(window.location.hash);
     if (count_arg !== null) {
       count = Math.max(1, count_arg[1] - 0);
     }
     $("#" + id).append(out);
+    source = $("#" + id).children();
+    $("#count").text(count);
     if (count > 1) {
-      source = $("#" + id).children();
       for (_ = k = 1, ref1 = count; 1 <= ref1 ? k < ref1 : k > ref1; _ = 1 <= ref1 ? ++k : --k) {
         $("#" + id).append(generator.separator.clone());
         $("#" + id).append(source.clone());
@@ -75,5 +82,28 @@
     return Generator;
 
   })();
+
+  this.addCount = function() {
+    count = count + 1;
+    return render();
+  };
+
+  this.subCount = function() {
+    count = Math.max(count - 1, 1);
+    return render();
+  };
+
+  render = function() {
+    var _, generator, id, j, ref;
+    id = containerId;
+    generator = new Generator();
+    $("#" + id).empty();
+    $("#" + id).append(source.clone());
+    for (_ = j = 1, ref = count; 1 <= ref ? j < ref : j > ref; _ = 1 <= ref ? ++j : --j) {
+      $("#" + id).append(generator.separator.clone());
+      $("#" + id).append(source.clone());
+    }
+    return $("#count").text(count);
+  };
 
 }).call(this);

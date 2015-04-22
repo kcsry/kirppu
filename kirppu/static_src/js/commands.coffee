@@ -1,4 +1,9 @@
+source = null
+containerId = null
+count = 1
+
 @listCommands = (id) ->
+  containerId = id
 
   # Parse descriptions from every registered mode.
   codes = []
@@ -20,16 +25,16 @@
     i++
 
   # Determine repeat count.
-  count = 1
   count_arg = /^#(\d+)$/.exec(window.location.hash)
   count = Math.max(1, count_arg[1] - 0) unless count_arg == null
 
   # Add first group of codes.
   $("#" + id).append(out)
+  source = $("#" + id).children()
+  $("#count").text(count)
 
   if count > 1
     # Output clones of the first clone and add separator between groups.
-    source = $("#" + id).children()
     for _ in [1...count]
       $("#" + id).append(generator.separator.clone())
       $("#" + id).append(source.clone())
@@ -57,3 +62,22 @@ class Generator
     item.find('[data-id="barcode_container"]').addClass("barcode_container_#{code.length}_2")
     item.find('[data-id="barcode_text"]').text(code)
     return item
+
+
+@addCount = () ->
+  count = count + 1
+  render()
+
+@subCount = () ->
+  count = Math.max(count - 1, 1)
+  render()
+
+render = () ->
+  id = containerId
+  generator = new Generator()
+  $("#" + id).empty()
+  $("#" + id).append(source.clone())
+  for _ in [1...count]
+    $("#" + id).append(generator.separator.clone())
+    $("#" + id).append(source.clone())
+  $("#count").text(count)

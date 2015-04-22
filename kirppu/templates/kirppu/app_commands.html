@@ -34,6 +34,11 @@
 <script type="application/javascript"
         src="{% url 'kirppu:checkout_js' %}"
         charset="UTF-8"></script>
+<div class="hidden-print">
+    <button type="button" class="btn btn-default" onclick="subCount()">-</button>
+    <button type="button" class="btn btn-default" onclick="addCount()">+</button>
+    <span id="count"></span>
+</div>
 <div id="items"><!-- Result is rendered here. --></div>
 <div id="item_template" style="visibility: hidden">
     <div class="item_container item_short">
