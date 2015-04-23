@@ -5,6 +5,7 @@ class @ItemFindMode extends CheckoutMode
     super
     @itemList = new ItemFindList()
     @searchForm = new ItemSearchForm(@doSearch)
+    @search = null
 
   enter: ->
     super
@@ -16,7 +17,7 @@ class @ItemFindMode extends CheckoutMode
   title: -> "Item Search"
 
   doSearch: (query, code, vendor, min_price, max_price, type, state) =>
-    Api.item_search(
+    @search =
       query: query
       code: code
       vendor: vendor
@@ -24,7 +25,7 @@ class @ItemFindMode extends CheckoutMode
       max_price: max_price
       item_type: if type? then type.join(' ') else ''
       item_state: if state? then state.join(' ') else ''
-    ).done(@onItemsFound)
+    Api.item_search(@search).done(@onItemsFound)
 
   onItemsFound: (items) =>
     @itemList.body.empty()
@@ -40,5 +41,12 @@ class @ItemFindMode extends CheckoutMode
   onItemClick: (item) =>
     do new ItemEditDialog(item, @onItemSaved).show
 
-  onItemSaved: (item) =>
-    console.log(item)
+  onItemSaved: (item, dialog) =>
+    Api.item_edit(item).done((editedItem) =>
+      dialog.setItem(editedItem)
+      if @search?
+        Api.item_search(@search).done(@onItemsFound)
+    ).fail((jqXHR) =>
+      msg = "Item edit failed (#{jqXHR.status}): #{jqXHR.responseText}"
+      dialog.displayError(msg)
+    )

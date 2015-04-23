@@ -2,6 +2,7 @@ import inspect
 
 from django.contrib.auth import get_user_model
 
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import Http404
 from django.http.response import (
@@ -24,6 +25,7 @@ from .models import (
     UserAdapter,
     ItemStateLog,
 )
+from .fields import ItemPriceField
 
 from . import ajax_util
 from .ajax_util import (
@@ -259,6 +261,35 @@ def item_search(request, query, code, vendor, min_price, max_price, item_type, i
         results.append(item_dict)
 
     return results
+
+
+@ajax_func('^item/edit$', method='POST', overseer=True)
+def item_edit(request, code, price):
+    try:
+        price = ItemPriceField().clean(price)
+    except ValidationError as v:
+        raise AjaxError(RET_BAD_REQUEST, ' '.join(v.messages))
+
+    item = _get_item_or_404(code)
+
+    if price != item.price:
+        price_editable_states = [
+            Item.ADVERTISED,
+            Item.BROUGHT,
+        ]
+        if item.state not in price_editable_states:
+            raise AjaxError(
+                RET_BAD_REQUEST,
+                'Cannot change price in state {0}'.format(item.state)
+            )
+        else:
+            item.price = price
+
+    item.save()
+
+    item_dict = item.as_dict()
+    item_dict['vendor'] = item.vendor.as_dict()
+    return item_dict
 
 
 @ajax_func('^item/list$', method='GET')
