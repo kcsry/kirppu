@@ -26,6 +26,7 @@ from .models import (
     ItemStateLog,
 )
 from .fields import ItemPriceField
+from .forms import ItemRemoveForm
 
 from . import ajax_util
 from .ajax_util import (
@@ -264,27 +265,53 @@ def item_search(request, query, code, vendor, min_price, max_price, item_type, i
 
 
 @ajax_func('^item/edit$', method='POST', overseer=True)
-def item_edit(request, code, price):
+def item_edit(request, code, price, state):
     try:
         price = ItemPriceField().clean(price)
     except ValidationError as v:
         raise AjaxError(RET_BAD_REQUEST, ' '.join(v.messages))
 
+    if state not in {st for (st, _) in Item.STATE}:
+        raise AjaxError(RET_BAD_REQUEST, 'Unknown state: {0}'.format(state))
+
     item = _get_item_or_404(code)
 
     if price != item.price:
-        price_editable_states = [
+        price_editable_states = {
             Item.ADVERTISED,
             Item.BROUGHT,
-        ]
-        if item.state not in price_editable_states:
+        }
+        if (item.state not in price_editable_states and
+                state not in price_editable_states):
             raise AjaxError(
                 RET_BAD_REQUEST,
                 'Cannot change price in state {0}'.format(item.state)
             )
-        else:
-            item.price = price
 
+    if item.state != state:
+        unsold_states = {
+            Item.ADVERTISED,
+            Item.BROUGHT,
+            Item.MISSING,
+            Item.RETURNED,
+        }
+        if item.state not in unsold_states and state in unsold_states:
+            # Need to remove item from receipt.
+            receipt_ids = ReceiptItem.objects.filter(
+                action=ReceiptItem.ADD,
+                item=item,
+            ).values_list('receipt_id', flat=True)
+
+            for receipt_id in receipt_ids:
+                remove_form = ItemRemoveForm({
+                    'receipt': receipt_id,
+                    'item': item.code,
+                })
+                assert remove_form.is_valid()
+                remove_form.save()
+
+    item.state = state
+    item.price = price
     item.save()
 
     item_dict = item.as_dict()
