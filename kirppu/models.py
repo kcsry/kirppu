@@ -162,8 +162,12 @@ class Clerk(models.Model):
         return clerk
 
     @property
+    def is_valid_code(self):
+        return self.access_key is not None and int(self.access_key, 16) >= 100000
+
+    @property
     def is_enabled(self):
-        return self.access_key is not None and int(self.access_key, 16) >= 100000 and self.user is not None
+        return self.is_valid_code and self.user is not None
 
     def generate_access_key(self, disabled=False):
         """

@@ -161,7 +161,7 @@ class ClerkEditForm(forms.ModelForm):
         """:type: Clerk"""
 
         self._access_key = instance.access_key
-        self._disabled = not instance.is_enabled
+        self._disabled = not instance.is_valid_code
         if instance.user is not None:
             user = u"{0} (id={1})".format(unicode(instance.user.username), instance.user.id)
         else:
