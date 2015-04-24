@@ -370,6 +370,7 @@ class Item(models.Model):
         vendor="vendor_id",
         state_display="get_state_display",
         itemtype_display="get_itemtype_display",
+        adult=lambda self: self.adult == Item.ADULT_YES,
     )
 
     @property

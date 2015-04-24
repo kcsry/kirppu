@@ -119,6 +119,31 @@ class @ItemEditDialog
                 </div>
               </div>
             </form>
+            <iframe name="item-edit-print-frame"
+                    width="100%"
+                    height="100%"
+                    frameborder="0"
+                    srcdoc="
+              <!doctype html>
+              <html>
+                <head>
+                  <link href=&quot;/static/kirppu/css/general.css&quot;
+                        rel=&quot;stylesheet&quot;>
+                  <link href=&quot;/static/kirppu/css/price_tags.css&quot;
+                        rel=&quot;stylesheet&quot;>
+                  <style>
+                    button {
+                      display: none !important;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div id=&quot;body&quot; class=&quot;container&quot;>
+                    <div id=&quot;items&quot;></div>
+                  </div>
+                </body>
+              </html>
+            "></iframe>
           </div>
         </div>
         <div id="item-edit-error"
@@ -128,6 +153,10 @@ class @ItemEditDialog
           <button class="btn btn-default"
                   data-dismiss="modal">
             Cancel
+          </button>
+          <button id="item-edit-print-button"
+                  class="btn btn-primary">
+            Print
           </button>
           <button id="item-edit-save-button"
                   class="btn btn-primary"
@@ -156,6 +185,7 @@ class @ItemEditDialog
     @priceConfirm = dialog.find('#item-edit-price-confirm')
     @errorDiv = dialog.find('#item-edit-error')
     @saveButton = dialog.find('#item-edit-save-button')
+    @printButton = dialog.find('#item-edit-print-button')
 
     @typeInput.append(
       for t in ItemSearchForm.itemtypes
@@ -176,15 +206,23 @@ class @ItemEditDialog
 
     dialog.find('input').change(@onChange)
     dialog.find('select').change(@onChange)
+    dialog.on('hidden.bs.modal', -> do dialog.remove)
+    dialog.on('shown.bs.modal', => do @insertPriceTag)
+    @dialog = dialog
+
+    @priceTag = $('.item_template').clone()
+      .removeClass('item_template')
+      .addClass('item_short')
 
     @saveButton.click(@onSave)
-    dialog.on('hidden.bs.modal', -> do dialog.remove)
-    @dialog = dialog
+    @printButton.click(@onPrint)
 
     @setItem(item)
 
   setItem: (item) =>
     @item = item
+
+    do @updatePriceTag
 
     @dialog.find('#item-edit-vendor-info').empty().append(
       new VendorInfo(item.vendor, title=false).render()
@@ -204,9 +242,26 @@ class @ItemEditDialog
     @saveButton.prop('disabled', true)
     return
 
-  show: => @dialog.modal()
+  updatePriceTag: =>
+    item = @item
+    tag = @priceTag
+    tag.find('.item_name').text(item.name)
+    tag.find('.item_price').text(item.price / 100)
+    tag.find('.item_head_price').text(item.price / 100)
+    tag.find('.item_adult_tag').text(if item.adult then 'K-18' else '')
+    tag.find('.item_vendor_id').text(item.vendor.id)
+    tag.find('.item_extra_code').text(item.code)
+    Api.get_barcodes(codes: JSON.stringify(item.code)).done((codes) ->
+      tag.find('.barcode_container > img').attr('src', codes[0])
+    )
+
+  show: => do @dialog.modal
 
   hide: => @dialog.modal('hide')
+
+  insertPriceTag: =>
+    frame = window.frames['item-edit-print-frame']
+    $(frame.document.body).find('#items').empty().append(@priceTag)
 
   displayError: (msg) =>
     if msg?
@@ -237,6 +292,11 @@ class @ItemEditDialog
   onSave: =>
     @displayError(null)
     @action(do @getFormState, @)
+
+  onPrint: =>
+    frame = window.frames['item-edit-print-frame']
+    do frame.window.focus
+    do frame.window.print
 
   getFormState: =>
     code: @item.code

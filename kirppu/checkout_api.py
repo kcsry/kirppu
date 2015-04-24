@@ -27,6 +27,7 @@ from .models import (
 )
 from .fields import ItemPriceField
 from .forms import ItemRemoveForm
+from .templatetags.kirppu_tags import get_dataurl
 
 from . import ajax_util
 from .ajax_util import (

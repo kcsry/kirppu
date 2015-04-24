@@ -376,7 +376,7 @@ def get_barcode(request, data, ext):
 
     bar = barcode.Code128(data, writer=writer)
 
-    response = HttpResponse(mimetype=mime_type)
+    response = HttpResponse(content_type=mime_type)
     bar.write(response, {
         'module_width': 1,  # pixels per smallest line
     })
