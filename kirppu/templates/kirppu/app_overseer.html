@@ -97,6 +97,11 @@
         {% endfor %}
     ];
 
+    ItemEditDialog.priceTagCss = [
+        '{% static "kirppu/css/general.css" %}',
+        '{% static "kirppu/css/price_tags.css" %}'
+    ];
+
     $(document).ready(function() {
         setupAjax();
         CheckoutConfig.check();

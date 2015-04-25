@@ -578,7 +578,9 @@
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   this.ItemEditDialog = (function() {
-    ItemEditDialog.prototype.html = '<div class="modal fade">\n  <div class="modal-dialog">\n    <div class="modal-content">\n      <div class="modal-header">\n        <button class="close"\n                data-dismiss="modal"\n                aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n        <h4 class="modal-title">Edit Item</h4>\n      </div>\n      <div class="modal-body">\n        <div class="container-fluid">\n          <form class="form-horizontal">\n            <div class="form-group">\n              <label for="item-edit-name-input"\n                     class="col-sm-2 control-label">\n                Name\n              </label>\n              <div class="col-sm-10">\n                <input id="item-edit-name-input"\n                       type="text"\n                       class="form-control"\n                       readonly/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-code-input"\n                     class="col-sm-2 control-label">\n                Code\n              </label>\n              <div class="col-sm-3">\n                <input id="item-edit-code-input"\n                       type="text"\n                       class="form-control receipt-code"\n                       readonly/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label class="col-sm-2 control-label">Vendor</label>\n              <div id="item-edit-vendor-info" class="col-sm-10"></div>\n            </div>\n            <div class="form-group">\n              <div class="col-sm-10 col-sm-offset-2">\n                <div class="checkbox">\n                  <label for="item-edit-price-confirm">\n                    <input id="item-edit-price-confirm"\n                           type="checkbox"/>\n                    Vendor has requested a price change.\n                  </label>\n                </div>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-price-input"\n                     class="col-sm-2 control-label">\n                Price\n              </label>\n              <div class="col-sm-4">\n                <div class="input-group">\n                  <input id="item-edit-price-input"\n                         type="number"\n                         step="0.50"\n                         min="0"\n                         class="form-control"\n                         readonly/>\n                  <span class="input-group-addon">&euro;</span>\n                </div>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-type-input"\n                     class="col-sm-2 control-label">\n                Type\n              </label>\n              <div class="col-sm-10">\n                <select id="item-edit-type-input"\n                        class="form-control"\n                        disabled/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-state-input"\n                     class="col-sm-2 control-label">\n                State\n              </label>\n              <div class="col-sm-10">\n                <select id="item-edit-state-input"\n                        class="form-control"/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-abandoned-input"\n                     class="col-sm-2 control-label">\n                Abandoned\n              </label>\n              <div class="col-sm-10">\n                <label for="item-edit-abandoned-yes"\n                       class="radio-inline">\n                  <input id="item-edit-abandoned-yes"\n                         name="item-edit-abandoned-input"\n                         type="radio"\n                         value="true"\n                         disabled/>\n                    Yes\n                </label>\n                <label for="item-edit-abandoned-no"\n                       class="radio-inline">\n                  <input id="item-edit-abandoned-no"\n                         name="item-edit-abandoned-input"\n                         type="radio"\n                         value="false"\n                         disabled/>\n                    No\n                </label>\n              </div>\n            </div>\n          </form>\n          <iframe name="item-edit-print-frame"\n                  width="100%"\n                  height="100%"\n                  frameborder="0"\n                  srcdoc="\n            <!doctype html>\n            <html>\n              <head>\n                <link href=&quot;/static/kirppu/css/general.css&quot;\n                      rel=&quot;stylesheet&quot;>\n                <link href=&quot;/static/kirppu/css/price_tags.css&quot;\n                      rel=&quot;stylesheet&quot;>\n                <style>\n                  button {\n                    display: none !important;\n                  }\n                </style>\n              </head>\n              <body>\n                <div id=&quot;body&quot; class=&quot;container&quot;>\n                  <div id=&quot;items&quot;></div>\n                </div>\n              </body>\n            </html>\n          "></iframe>\n        </div>\n      </div>\n      <div id="item-edit-error"\n           role="alert"\n           class="alert alert-danger alert-off"></div>\n      <div class="modal-footer">\n        <button class="btn btn-default"\n                data-dismiss="modal">\n          Cancel\n        </button>\n        <button id="item-edit-print-button"\n                class="btn btn-primary">\n          Print\n        </button>\n        <button id="item-edit-save-button"\n                class="btn btn-primary"\n                disabled>\n          Save\n        </button>\n      </div>\n    </div>\n  </div>\n</div>';
+    ItemEditDialog.priceTagCss = [];
+
+    ItemEditDialog.html = '<div class="modal fade">\n  <div class="modal-dialog">\n    <div class="modal-content">\n      <div class="modal-header">\n        <button class="close"\n                data-dismiss="modal"\n                aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n        <h4 class="modal-title">Edit Item</h4>\n      </div>\n      <div class="modal-body">\n        <div class="container-fluid">\n          <form class="form-horizontal">\n            <div class="form-group">\n              <label for="item-edit-name-input"\n                     class="col-sm-2 control-label">\n                Name\n              </label>\n              <div class="col-sm-10">\n                <input id="item-edit-name-input"\n                       type="text"\n                       class="form-control"\n                       readonly/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-code-input"\n                     class="col-sm-2 control-label">\n                Code\n              </label>\n              <div class="col-sm-3">\n                <input id="item-edit-code-input"\n                       type="text"\n                       class="form-control receipt-code"\n                       readonly/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label class="col-sm-2 control-label">Vendor</label>\n              <div id="item-edit-vendor-info" class="col-sm-10"></div>\n            </div>\n            <div class="form-group">\n              <div class="col-sm-10 col-sm-offset-2">\n                <div class="checkbox">\n                  <label for="item-edit-price-confirm">\n                    <input id="item-edit-price-confirm"\n                           type="checkbox"/>\n                    Vendor has requested a price change.\n                  </label>\n                </div>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-price-input"\n                     class="col-sm-2 control-label">\n                Price\n              </label>\n              <div class="col-sm-4">\n                <div class="input-group">\n                  <input id="item-edit-price-input"\n                         type="number"\n                         step="0.50"\n                         min="0"\n                         class="form-control"\n                         readonly/>\n                  <span class="input-group-addon">&euro;</span>\n                </div>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-type-input"\n                     class="col-sm-2 control-label">\n                Type\n              </label>\n              <div class="col-sm-10">\n                <select id="item-edit-type-input"\n                        class="form-control"\n                        disabled/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-state-input"\n                     class="col-sm-2 control-label">\n                State\n              </label>\n              <div class="col-sm-10">\n                <select id="item-edit-state-input"\n                        class="form-control"/>\n              </div>\n            </div>\n            <div class="form-group">\n              <label for="item-edit-abandoned-input"\n                     class="col-sm-2 control-label">\n                Abandoned\n              </label>\n              <div class="col-sm-10">\n                <label for="item-edit-abandoned-yes"\n                       class="radio-inline">\n                  <input id="item-edit-abandoned-yes"\n                         name="item-edit-abandoned-input"\n                         type="radio"\n                         value="true"\n                         disabled/>\n                    Yes\n                </label>\n                <label for="item-edit-abandoned-no"\n                       class="radio-inline">\n                  <input id="item-edit-abandoned-no"\n                         name="item-edit-abandoned-input"\n                         type="radio"\n                         value="false"\n                         disabled/>\n                    No\n                </label>\n              </div>\n            </div>\n          </form>\n          <iframe name="item-edit-print-frame"\n                  width="100%"\n                  height="100%"\n                  frameborder="0"\n                  srcdoc="\n            <!doctype html>\n            <html>\n              <head>\n                <style>\n                  button {\n                    display: none !important;\n                  }\n                </style>\n              </head>\n              <body>\n                <div id=&quot;body&quot; class=&quot;container&quot;>\n                  <div id=&quot;items&quot;></div>\n                </div>\n              </body>\n            </html>\n          "></iframe>\n        </div>\n      </div>\n      <div id="item-edit-error"\n           role="alert"\n           class="alert alert-danger alert-off"></div>\n      <div class="modal-footer">\n        <button class="btn btn-default"\n                data-dismiss="modal">\n          Cancel\n        </button>\n        <button id="item-edit-print-button"\n                class="btn btn-primary">\n          Print\n        </button>\n        <button id="item-edit-save-button"\n                class="btn btn-primary"\n                disabled>\n          Save\n        </button>\n      </div>\n    </div>\n  </div>\n</div>';
 
     function ItemEditDialog(item, action) {
       this.getFormState = bind(this.getFormState, this);
@@ -587,7 +589,7 @@
       this.hasChanged = bind(this.hasChanged, this);
       this.onChange = bind(this.onChange, this);
       this.displayError = bind(this.displayError, this);
-      this.insertPriceTag = bind(this.insertPriceTag, this);
+      this.onShown = bind(this.onShown, this);
       this.hide = bind(this.hide, this);
       this.show = bind(this.show, this);
       this.updatePriceTag = bind(this.updatePriceTag, this);
@@ -595,7 +597,7 @@
       var dialog, s, t;
       this.item = item;
       this.action = action;
-      dialog = $(this.html);
+      dialog = $(ItemEditDialog.html);
       this.typeInput = dialog.find('#item-edit-type-input');
       this.stateInput = dialog.find('#item-edit-state-input');
       this.nameInput = dialog.find('#item-edit-name-input');
@@ -644,7 +646,7 @@
       });
       dialog.on('shown.bs.modal', (function(_this) {
         return function() {
-          return _this.insertPriceTag();
+          return _this.onShown();
         };
       })(this));
       this.dialog = dialog;
@@ -699,10 +701,24 @@
       return this.dialog.modal('hide');
     };
 
-    ItemEditDialog.prototype.insertPriceTag = function() {
-      var frame;
-      frame = window.frames['item-edit-print-frame'];
-      return $(frame.document.body).find('#items').empty().append(this.priceTag);
+    ItemEditDialog.prototype.onShown = function() {
+      var css, doc;
+      doc = window.frames['item-edit-print-frame'].document;
+      $(doc.head).append((function() {
+        var i, len, ref, results;
+        ref = ItemEditDialog.priceTagCss;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+          css = ref[i];
+          results.push($('<link>').attr({
+            rel: 'stylesheet',
+            'href': css
+          }));
+        }
+        return results;
+      })());
+      console.log(ItemEditDialog.priceTagCss);
+      return $(doc.body).find('#items').empty().append(this.priceTag);
     };
 
     ItemEditDialog.prototype.displayError = function(msg) {
@@ -2605,7 +2621,7 @@
 
 }).call(this);
 
-// ================ 28: lostandfound.coffee ================
+// ================ 29: lostandfound.coffee ================
 
 (function() {
   var LostAndFound,
@@ -2683,7 +2699,7 @@
 
 }).call(this);
 
-// ================ 29: lostandfoundtable.coffee ================
+// ================ 30: lostandfoundtable.coffee ================
 
 (function() {
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },

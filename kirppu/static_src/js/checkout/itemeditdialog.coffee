@@ -1,6 +1,8 @@
 class @ItemEditDialog
 
-  html: '''
+  @priceTagCss = []
+
+  @html = '''
   <div class="modal fade">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -127,10 +129,6 @@ class @ItemEditDialog
               <!doctype html>
               <html>
                 <head>
-                  <link href=&quot;/static/kirppu/css/general.css&quot;
-                        rel=&quot;stylesheet&quot;>
-                  <link href=&quot;/static/kirppu/css/price_tags.css&quot;
-                        rel=&quot;stylesheet&quot;>
                   <style>
                     button {
                       display: none !important;
@@ -173,7 +171,7 @@ class @ItemEditDialog
     @item = item
     @action = action
 
-    dialog = $(@html)
+    dialog = $(ItemEditDialog.html)
 
     @typeInput = dialog.find('#item-edit-type-input')
     @stateInput = dialog.find('#item-edit-state-input')
@@ -207,7 +205,7 @@ class @ItemEditDialog
     dialog.find('input').change(@onChange)
     dialog.find('select').change(@onChange)
     dialog.on('hidden.bs.modal', -> do dialog.remove)
-    dialog.on('shown.bs.modal', => do @insertPriceTag)
+    dialog.on('shown.bs.modal', => do @onShown)
     @dialog = dialog
 
     @priceTag = $('.item_template').clone()
@@ -259,9 +257,14 @@ class @ItemEditDialog
 
   hide: => @dialog.modal('hide')
 
-  insertPriceTag: =>
-    frame = window.frames['item-edit-print-frame']
-    $(frame.document.body).find('#items').empty().append(@priceTag)
+  onShown: =>
+    doc = window.frames['item-edit-print-frame'].document
+    $(doc.head).append(
+      for css in ItemEditDialog.priceTagCss
+        $('<link>').attr({rel: 'stylesheet', 'href': css})
+    )
+    console.log(ItemEditDialog.priceTagCss)
+    $(doc.body).find('#items').empty().append(@priceTag)
 
   displayError: (msg) =>
     if msg?
