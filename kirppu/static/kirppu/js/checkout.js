@@ -525,7 +525,7 @@
 
 }).call(this);
 
-// ================ 8: itemfindlist.coffee ================
+// ================ 8: item_find_list.coffee ================
 
 (function() {
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -561,7 +561,7 @@
 
 }).call(this);
 
-// ================ 9: itemsearchform.coffee ================
+// ================ 9: item_search_form.coffee ================
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -621,7 +621,7 @@
 
 }).call(this);
 
-// ================ 10: itemeditdialog.coffee ================
+// ================ 10: item_edit_dialog.coffee ================
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -1601,7 +1601,7 @@
 
 }).call(this);
 
-// ================ 21: itemfindmode.coffee ================
+// ================ 21: item_find_mode.coffee ================
 
 (function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -2672,7 +2672,7 @@
 
 }).call(this);
 
-// ================ 29: lostandfound.coffee ================
+// ================ 29: lost_and_found.coffee ================
 
 (function() {
   var LostAndFound,
@@ -2750,7 +2750,7 @@
 
 }).call(this);
 
-// ================ 30: lostandfoundtable.coffee ================
+// ================ 30: lost_and_found_table.coffee ================
 
 (function() {
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },

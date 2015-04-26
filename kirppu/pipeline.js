@@ -56,9 +56,9 @@ module.exports.js = {
             "js/checkout/resulttable.coffee",
             "js/checkout/itemreceipttable.coffee",
             "js/checkout/itemreporttable.coffee",
-            "js/checkout/itemfindlist.coffee",
-            "js/checkout/itemsearchform.coffee",
-            "js/checkout/itemeditdialog.coffee",
+            "js/overseer/item_find_list.coffee",
+            "js/overseer/item_search_form.coffee",
+            "js/overseer/item_edit_dialog.coffee",
             "js/checkout/vendorlist.coffee",
             "js/checkout/vendorinfo.coffee",
             "js/checkout/receiptsum.coffee",
@@ -71,7 +71,7 @@ module.exports.js = {
             "js/checkout/countervalidationmode.coffee",
             "js/checkout/clerkloginmode.coffee",
             "js/checkout/itemcheckinmode.coffee",
-            "js/checkout/itemfindmode.coffee",
+            "js/overseer/item_find_mode.coffee",
             "js/checkout/vendorcheckoutmode.coffee",
             "js/checkout/countermode.coffee",
             "js/checkout/receiptprintmode.coffee",
@@ -81,8 +81,8 @@ module.exports.js = {
 
             "js/number_test.coffee",
 
-            "js/checkout/lostandfound.coffee",
-            "js/checkout/lostandfoundtable.coffee",
+            "js/overseer/lost_and_found.coffee",
+            "js/overseer/lost_and_found_table.coffee",
 
             "js/overseer/receipt_list_mode.coffee",
             "js/overseer/receipt_list.coffee",
