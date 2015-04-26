@@ -525,13 +525,14 @@
 
     function ItemSearchForm(action) {
       this.onSubmit = bind(this.onSubmit, this);
-      var s, t;
+      var price_step, s, t;
       this.action = action;
+      price_step = 0.5;
       this.searchInput = $('<input type="text" id="item_search_input" class="form-control">');
       this.searchCodeInput = $('<input type="text" id="item_code_search_input" class="form-control">');
-      this.searchVendorInput = $('<input type="number" step="any" min="1" id="vendor_search_input" class="form-control">');
-      this.minPriceInput = $('<input type="number" step="any" min="0" id="item_search_min_price" class="form-control">');
-      this.maxPriceInput = $('<input type="number" step="any" min="0" id="item_search_max_price" class="form-control">');
+      this.searchVendorInput = $('<input type="number" step="1" min="1" id="vendor_search_input" class="form-control">');
+      this.minPriceInput = $('<input type="number" step="' + price_step + '" min="0" id="item_search_min_price" class="form-control">');
+      this.maxPriceInput = $('<input type="number" step="' + price_step + '" min="0" id="item_search_max_price" class="form-control">');
       this.typeInput = $('<select multiple class="form-control" id="item_search_type">').append((function() {
         var i, len, ref, results;
         ref = ItemSearchForm.itemtypes;

@@ -5,12 +5,13 @@ class @ItemSearchForm
 
   constructor: (action) ->
     @action = action
+    price_step = 0.5
 
     @searchInput = $('<input type="text" id="item_search_input" class="form-control">')
     @searchCodeInput = $('<input type="text" id="item_code_search_input" class="form-control">')
-    @searchVendorInput = $('<input type="number" step="any" min="1" id="vendor_search_input" class="form-control">')
-    @minPriceInput = $('<input type="number" step="any" min="0" id="item_search_min_price" class="form-control">')
-    @maxPriceInput = $('<input type="number" step="any" min="0" id="item_search_max_price" class="form-control">')
+    @searchVendorInput = $('<input type="number" step="1" min="1" id="vendor_search_input" class="form-control">')
+    @minPriceInput = $('<input type="number" step="' + price_step + '" min="0" id="item_search_min_price" class="form-control">')
+    @maxPriceInput = $('<input type="number" step="' + price_step + '" min="0" id="item_search_max_price" class="form-control">')
     @typeInput = $('<select multiple class="form-control" id="item_search_type">').append(
       $('<option>').attr('value', t.name).text(t.description) for t in ItemSearchForm.itemtypes
     )
