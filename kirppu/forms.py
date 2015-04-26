@@ -2,6 +2,7 @@ import re
 from django import forms
 from django.core import validators
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 from .models import (
     Clerk,
@@ -296,6 +297,7 @@ class ItemRemoveForm(forms.Form):
         self.receipt = receipt
         return cleaned_data
 
+    @transaction.atomic
     def save(self):
         assert self.last_added_item is not None
 

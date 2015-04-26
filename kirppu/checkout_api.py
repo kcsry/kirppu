@@ -3,6 +3,7 @@ import inspect
 from django.contrib.auth import get_user_model
 
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Q
 from django.http import Http404
 from django.http.response import (
@@ -66,7 +67,7 @@ def _register_ajax_func(func):
     AJAX_FUNCTIONS[func.name] = func
 
 
-def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False):
+def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atomic=False):
     def decorator(func):
         # Get argspec before any decoration.
         (args, _, _, _) = inspect.getargspec(func)
@@ -77,12 +78,15 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False):
             func = require_clerk_login(func)
         if overseer:
             func = require_overseer_clerk_login(func)
-        return ajax_util.ajax_func(
+        fn = ajax_util.ajax_func(
             url,
             _register_ajax_func,
             method,
             args[1:]
         )(func)
+        if atomic:
+            fn = transaction.atomic(fn)
+        return fn
     return decorator
 
 
@@ -113,6 +117,7 @@ def _get_item_or_404(code):
     return item
 
 
+@transaction.atomic
 def item_mode_change(code, from_, to, message_if_not_first=None):
     item = _get_item_or_404(code)
     if not isinstance(from_, tuple):
@@ -265,7 +270,7 @@ def item_search(request, query, code, vendor, min_price, max_price, item_type, i
     return results
 
 
-@ajax_func('^item/edit$', method='POST', overseer=True)
+@ajax_func('^item/edit$', method='POST', overseer=True, atomic=True)
 def item_edit(request, code, price, state):
     try:
         price = ItemPriceField().clean(price)
@@ -376,7 +381,7 @@ def vendor_find(request, q):
     ]
 
 
-@ajax_func('^receipt/start$')
+@ajax_func('^receipt/start$', atomic=True)
 def receipt_start(request):
     receipt = Receipt()
     receipt.clerk = get_clerk(request)
@@ -388,7 +393,7 @@ def receipt_start(request):
     return receipt.as_dict()
 
 
-@ajax_func('^item/reserve$')
+@ajax_func('^item/reserve$', atomic=True)
 def item_reserve(request, code):
     item = _get_item_or_404(code)
     receipt_id = request.session["receipt"]
@@ -415,7 +420,7 @@ def item_reserve(request, code):
         raise AjaxError(RET_CONFLICT)
 
 
-@ajax_func('^item/release$')
+@ajax_func('^item/release$', atomic=True)
 def item_release(request, code):
     item = _get_item_or_404(code)
     receipt_id = request.session["receipt"]
@@ -447,7 +452,7 @@ def item_release(request, code):
     return removal_entry.as_dict()
 
 
-@ajax_func('^receipt/finish$')
+@ajax_func('^receipt/finish$', atomic=True)
 def receipt_finish(request):
     receipt_id = request.session["receipt"]
     receipt = get_object_or_404(Receipt, pk=receipt_id)
@@ -467,7 +472,7 @@ def receipt_finish(request):
     return receipt.as_dict()
 
 
-@ajax_func('^receipt/abort$')
+@ajax_func('^receipt/abort$', atomic=True)
 def receipt_abort(request):
     receipt_id = request.session["receipt"]
     receipt = get_object_or_404(Receipt, pk=receipt_id)
@@ -570,15 +575,14 @@ def items_abandon(request, vendor):
     Set all of the vendor's 'brought to event' and 'missing' items to abandoned
     The view is expected to refresh itself
     """
-    items = Item.objects.filter(vendor__id=vendor)
-    for item in items:
-        if item.state in (Item.BROUGHT, Item.MISSING):
-            item.abandoned = True
-            item.save()
+    Item.objects.filter(
+        vendor__id=vendor,
+        state__in=(Item.BROUGHT, Item.MISSING),
+    ).update(abandoned=True)
     return
 
 
-@ajax_func('^item/mark_lost$', overseer=True)
+@ajax_func('^item/mark_lost$', overseer=True, atomic=True)
 def item_mark_lost(request, code):
     item = get_object_or_404(Item, code=code)
     if item.state == Item.SOLD:
