@@ -37,6 +37,9 @@ class @ItemFindMode extends CheckoutMode
           @onItemClick,
         )
       )(item_, index_)
+    if items.length == 0
+      @itemList.no_results()
+    return
 
   onItemClick: (item) =>
     do new ItemEditDialog(item, @onItemSaved).show

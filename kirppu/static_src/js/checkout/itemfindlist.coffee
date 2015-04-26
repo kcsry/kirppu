@@ -25,3 +25,11 @@ class @ItemFindList extends ResultTable
       $('<td class="receipt_status">').text(item.state_display)
     ])
     @body.append(row)
+
+  no_results: () ->
+    row = $("<tr>")
+    row.append([
+      $('<td colspan="2">')
+      $('<td colspan="5">').text(gettext("No results."))
+    ])
+    @body.append(row)

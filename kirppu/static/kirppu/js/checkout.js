@@ -507,6 +507,13 @@
       return this.body.append(row);
     };
 
+    ItemFindList.prototype.no_results = function() {
+      var row;
+      row = $("<tr>");
+      row.append([$('<td colspan="2">'), $('<td colspan="5">').text(gettext("No results."))]);
+      return this.body.append(row);
+    };
+
     return ItemFindList;
 
   })(ResultTable);
@@ -1605,18 +1612,20 @@
     };
 
     ItemFindMode.prototype.onItemsFound = function(items) {
-      var i, index_, item_, len, results;
+      var fn, i, index_, item_, len;
       this.itemList.body.empty();
-      results = [];
+      fn = (function(_this) {
+        return function(item, index) {
+          return _this.itemList.append(item, index + 1, _this.onItemClick);
+        };
+      })(this);
       for (index_ = i = 0, len = items.length; i < len; index_ = ++i) {
         item_ = items[index_];
-        results.push(((function(_this) {
-          return function(item, index) {
-            return _this.itemList.append(item, index + 1, _this.onItemClick);
-          };
-        })(this))(item_, index_));
+        fn(item_, index_);
       }
-      return results;
+      if (items.length === 0) {
+        this.itemList.no_results();
+      }
     };
 
     ItemFindMode.prototype.onItemClick = function(item) {
