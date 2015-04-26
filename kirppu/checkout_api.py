@@ -291,7 +291,7 @@ def item_edit(request, code, price, state):
                 state not in price_editable_states):
             raise AjaxError(
                 RET_BAD_REQUEST,
-                'Cannot change price in state {0}'.format(item.state)
+                'Cannot change price in state "{0}"'.format(item.get_state_display())
             )
 
     if item.state != state:
@@ -301,7 +301,7 @@ def item_edit(request, code, price, state):
             Item.MISSING,
             Item.RETURNED,
         }
-        if item.state not in unsold_states and state in unsold_states:
+        if item.state not in unsold_states and item.state != Item.STAGED and state in unsold_states:
             # Need to remove item from receipt.
             receipt_ids = ReceiptItem.objects.filter(
                 action=ReceiptItem.ADD,
@@ -315,6 +315,13 @@ def item_edit(request, code, price, state):
                 })
                 assert remove_form.is_valid()
                 remove_form.save()
+        else:
+            raise AjaxError(
+                RET_BAD_REQUEST,
+                u'Cannot change state from "{0}" to "{1}".'.format(
+                    item.get_state_display(), unicode(dict(Item.STATE)[state])
+                )
+            )
 
     item.state = state
     item.price = price
