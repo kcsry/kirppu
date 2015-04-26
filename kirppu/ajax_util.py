@@ -28,6 +28,7 @@ RET_LOCKED = 423  # Locked resource
 
 class AjaxError(Exception):
     def __init__(self, status, message='AJAX request failed'):
+        super(AjaxError, self).__init__(message)
         self.status = status
         self.message = message
 
