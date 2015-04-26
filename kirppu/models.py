@@ -556,6 +556,7 @@ class Receipt(models.Model):
         "status",
         id="pk",
         total="total_cents",
+        status_display=lambda self: self.get_status_display(),
         start_time=lambda self: format_datetime(self.start_time),
         sell_time=lambda self: format_datetime(self.sell_time) if self.sell_time is not None else None,
         clerk=lambda self: self.clerk.as_dict(),

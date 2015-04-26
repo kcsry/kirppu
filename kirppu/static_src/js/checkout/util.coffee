@@ -96,3 +96,18 @@ safeDisplay = (textRef, message, blinkCount=0) ->
   CheckoutConfig.uiRef.errorText.addClass("alert-off")
   CheckoutConfig.uiRef.warningText.addClass("alert-off")
   return
+
+
+class @RefreshButton
+  constructor: (func, title=gettext("Refresh")) ->
+    @refresh = func
+    @title = title
+
+  render: ->
+    $('<button class="btn btn-default hidden-print">').append(
+      $('<span class="glyphicon glyphicon-refresh">')
+    ).on(
+      "click", @refresh
+    ).attr(
+      "title", @title
+    )

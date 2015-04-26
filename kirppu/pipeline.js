@@ -83,6 +83,9 @@ module.exports.js = {
 
             "js/checkout/lostandfound.coffee",
             "js/checkout/lostandfoundtable.coffee",
+
+            "js/overseer/receipt_list_mode.coffee",
+            "js/overseer/receipt_list.coffee",
         ],
         "output_filename": "checkout.js",
     },

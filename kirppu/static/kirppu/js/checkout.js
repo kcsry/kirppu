@@ -104,6 +104,23 @@
     CheckoutConfig.uiRef.warningText.addClass("alert-off");
   };
 
+  this.RefreshButton = (function() {
+    function RefreshButton(func, title) {
+      if (title == null) {
+        title = gettext("Refresh");
+      }
+      this.refresh = func;
+      this.title = title;
+    }
+
+    RefreshButton.prototype.render = function() {
+      return $('<button class="btn btn-default hidden-print">').append($('<span class="glyphicon glyphicon-refresh">')).on("click", this.refresh).attr("title", this.title);
+    };
+
+    return RefreshButton;
+
+  })();
+
 }).call(this);
 
 // ================ 2: checkout.coffee ================
@@ -361,6 +378,30 @@
 
     ResultTable.prototype.render = function() {
       return this.dom;
+    };
+
+    ResultTable.prototype.columns = [];
+
+    ResultTable.prototype.generate = function(element, texts, only_first_class) {
+      var column_class, e, i, j, query, ref, ref1, result, text;
+      if (only_first_class == null) {
+        only_first_class = false;
+      }
+      result = [];
+      for (i = j = 0, ref = this.columns.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        column_class = this.columns[i];
+        text = (ref1 = texts[i]) != null ? ref1 : "";
+        if (only_first_class) {
+          column_class = column_class.replace(new RegExp(" .*"), "");
+        }
+        query = "<" + element + ">";
+        e = $(query);
+        if (column_class.length > 0) {
+          e.addClass(column_class);
+        }
+        result.push(e.text(text));
+      }
+      return result;
     };
 
     return ResultTable;
@@ -2731,6 +2772,101 @@
     };
 
     return LostAndFoundTable;
+
+  })(ResultTable);
+
+}).call(this);
+
+// ================ 31: receipt_list_mode.coffee ================
+
+(function() {
+  var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
+
+  this.ReceiptFindMode = (function(superClass) {
+    extend(ReceiptFindMode, superClass);
+
+    ModeSwitcher.registerEntryPoint("receipt_list", ReceiptFindMode);
+
+    function ReceiptFindMode() {
+      this.onResult = bind(this.onResult, this);
+      ReceiptFindMode.__super__.constructor.apply(this, arguments);
+      this.receiptList = new ReceiptList();
+    }
+
+    ReceiptFindMode.prototype.enter = function() {
+      var refresh;
+      ReceiptFindMode.__super__.enter.apply(this, arguments);
+      refresh = new RefreshButton((function(_this) {
+        return function() {
+          return Api.receipt_list().done(_this.onResult);
+        };
+      })(this));
+      this.cfg.uiRef.body.empty();
+      this.cfg.uiRef.body.append(refresh.render());
+      this.cfg.uiRef.body.append(this.receiptList.render());
+      return refresh.refresh();
+    };
+
+    ReceiptFindMode.prototype.glyph = function() {
+      return "list-alt";
+    };
+
+    ReceiptFindMode.prototype.title = function() {
+      return "Receipt List";
+    };
+
+    ReceiptFindMode.prototype.subtitle = function() {
+      return null;
+    };
+
+    ReceiptFindMode.prototype.onResult = function(receipts) {
+      var i, index, len, receipt;
+      this.receiptList.body.empty();
+      for (index = i = 0, len = receipts.length; i < len; index = ++i) {
+        receipt = receipts[index];
+        this.receiptList.append(receipt, index + 1);
+      }
+      if (receipts.length === 0) {
+        return this.receiptList.no_results();
+      }
+    };
+
+    return ReceiptFindMode;
+
+  })(CheckoutMode);
+
+}).call(this);
+
+// ================ 32: receipt_list.coffee ================
+
+(function() {
+  var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
+
+  this.ReceiptList = (function(superClass) {
+    extend(ReceiptList, superClass);
+
+    ReceiptList.prototype.columns = ["receipt_index numeric", "", "", "", "receipt_price numeric", ""];
+
+    function ReceiptList() {
+      ReceiptList.__super__.constructor.apply(this, arguments);
+      this.head.append(this.generate("th", ["#", gettext('counter'), gettext('clerk'), gettext('start time'), gettext('total'), gettext('status')], true));
+    }
+
+    ReceiptList.prototype.append = function(item, index) {
+      var row;
+      row = $("<tr>");
+      row.append(this.generate("td", [index, item.counter, item.clerk.print, DateTimeFormatter.datetime(item.start_time), displayPrice(item.total), item.status_display]));
+      return this.body.append(row);
+    };
+
+    ReceiptList.prototype.no_results = function() {
+      return this.body.append($("<tr>").append([$('<td>'), $('<td colspan="5">').text(gettext("No results."))]));
+    };
+
+    return ReceiptList;
 
   })(ResultTable);
 

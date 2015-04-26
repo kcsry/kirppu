@@ -551,6 +551,12 @@ def receipt_activate(request):
     return data
 
 
+@ajax_func('^receipt/list$', overseer=True)
+def receipt_list(request):
+    receipts = Receipt.objects.filter(status=Receipt.PENDING)
+    return map(lambda i: i.as_dict(), receipts)
+
+
 @ajax_func('^barcode$', counter=False, clerk=False)
 def get_barcodes(request, codes=None):
     """
