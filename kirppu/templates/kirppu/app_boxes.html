@@ -3,7 +3,6 @@
 {% load static %}
 
 {% block head %}
-
     <link href="{% static "kirppu/css/general.css" %}" rel="stylesheet">
     <link href="{% static "kirppu/css/boxes.css" %}" rel="stylesheet">
     <script src="{% static "kirppu/js/general.js" %}"></script>
@@ -15,20 +14,11 @@
     {% if is_registration_open %}
     <form id="box-add-form" method="POST" class="form-horizontal">
         {% csrf_token %}
-        <p class="help-block">
-            {% load_text "box_info1" %}
-        </p>
-        <p class="help-block">
-            {% load_text "box_info2" %}
-        </p>
-        <p class="help-block">
-            {% load_text "box_info3" %}
-        </p>
-        <p class="help-block">
-            {% blocktrans %}After you have printed your price tags, you should mark them as
-            having already been printed with the 'Mark all as printed' button. Doing so moves them
-            to the bottom of the page and they are no longer printed when you print the page.{% endblocktrans %}
-        </p>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                {% load_texts "box_info" %}
+            </div>
+        </div>
 
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -98,27 +88,13 @@
     </form>
     {% endif %}
 
-    <form id="box-add-form" method="POST" class="form-horizontal">
-        <div class="form-group">
-            <div class="col-sm-12">
-                <button id="delete_all" type="button" class="btn btn-default">{% trans "Mark all as printed" %}</button>
-            </div>
-        </div>
-    </form>
-
     {# Output a single box_container as a template for javascript. #}
     {% include 'kirppu/app_boxes_box.html' with box_type="template" description="" price="0" id="" vendor_id="" adult="" locked=False %}
 
     <div id="boxes">
         {# Output a template container for every non-printed box user has. #}
         {% for b in boxes %}
-            {% include 'kirppu/app_boxes_box.html' with box_type="normal" box_id=b.id description=b.description price=b.get_price_fmt item_count=b.get_item_count item_type=b.get_item_type_for_display item_adult=b.get_item_adult %}
-        {% endfor %}
-    </div>
-    <div style="margin-top: 1cm" id="printed_boxes">
-        {# Output a template container for every printed box user has. #}
-        {% for b in printed_boxes %}
-            {% include 'kirppu/app_boxes_box.html' with id=b.id description=b.description price=b.get_price_fmt item_count=b.get_item_count %}
+            {% include 'kirppu/app_boxes_box.html' with box_type="normal" box_id=b.id description=b.description price=b.get_price_fmt item_count=b.get_item_count item_type=b.get_item_type_for_display item_adult=b.get_item_adult printed=b.is_printed %}
         {% endfor %}
     </div>
 {% endblock %}
@@ -128,9 +104,13 @@
     <script>
         boxesConfig.url_args.box_id = '__placeholder__';
         boxesConfig.urls.box_add = "{% url 'kirppu:box_add' %}";
+        boxesConfig.urls.box_content = "{% url 'kirppu:box_content' '__placeholder__' %}";
         boxesConfig.urls.box_hide = "{% url 'kirppu:box_hide' '__placeholder__' %}";
+        boxesConfig.urls.box_print = "{% url 'kirppu:box_print' '__placeholder__' %}";
         boxesConfig.urls.roller = "{% static "img/roller.gif" %}";
         {% if not is_registration_open %}boxesConfig.enabled = false;{% endif %}
+
+        boxesConfig.translations.printed_confirmation = 'This box has been already printed. Arey you sure you want to print it again?';
 
         $(document).ready(function() {
             setupAjax();
@@ -138,7 +118,6 @@
             bindFormEvents();
 
             bindBoxEvents($('#boxes > .box_editable'));
-            // bindListTagEvents($('#printed_boxs > .box_container'));
         });
     </script>
 {% endblock %}

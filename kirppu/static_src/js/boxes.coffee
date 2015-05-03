@@ -8,20 +8,33 @@ class BoxesConfig
   urls:
     roller: ''
     box_add: ''
+    box_content: ''
     box_hide: ''
+    box_print: ''
+
+  translations:
+    printed_confirmation: ''
 
   enabled: true
 
   constructor: ->
 
+  box_content_url: (box_id) ->
+    url = @urls.box_content
+    return url.replace(@url_args.box_id, box_id)
+
   box_hide_url: (box_id) ->
     url = @urls.box_hide
+    return url.replace(@url_args.box_id, box_id)
+
+  box_print_url: (box_id) ->
+    url = @urls.box_print
     return url.replace(@url_args.box_id, box_id)
 
 C = new BoxesConfig
 
 
-createBox = (description, item_count, item_price, vendor_id, item_type, item_adult) ->
+createBox = (box_id, description, item_count, item_price, vendor_id, item_type, item_adult) ->
   # Find the hidden template element, clone it and replace the contents.
   box = $(".box_template").clone();
   box.removeClass("box_template");
@@ -39,6 +52,8 @@ createBox = (description, item_count, item_price, vendor_id, item_type, item_adu
 
   $('.box_vendor_id', box).text(vendor_id)
 
+  $(box).attr('id', box_id)
+
   return box
 
 
@@ -46,7 +61,7 @@ createBox = (description, item_count, item_price, vendor_id, item_type, item_adu
 addBox = ->
   onSuccess = (box) ->
     $('#form-errors').empty()
-    box = createBox(box.description, box.item_count, box.item_price, box.vendor_id, box.item_type, box.item_adult)
+    box = createBox(box.box_id, box.description, box.item_count, box.item_price, box.vendor_id, box.item_type, box.item_adult)
     $('#boxes').prepend(box)
     bindBoxEvents($(box))
 
@@ -72,27 +87,6 @@ addBox = ->
   )
 
 
-deleteAll = ->
-  if not confirm(gettext("This will mark all boxes as printed so they won't be printed again accidentally. Continue?"))
-    return
-
-  boxes = $('#boxes > .box_container')
-  $(boxes).hide('slow')
-
-  $.ajax(
-    url:  C.urls.all_to_print
-    type: 'POST'
-    success: ->
-      $(tags).each((index, box) ->
-        box_id = $(tag).attr('id')
-        moveBoxToPrinted(tag, box_id)
-      )
-    error: ->
-      $(tags).show('slow')
-  )
-
-  return
-
 hideBox = (box, box_id) ->
   $.ajax(
     url: C.box_hide_url(box_id)
@@ -102,6 +96,34 @@ hideBox = (box, box_id) ->
     error: ->
       $(box).show('slow')
   )
+
+
+printBox = (box, box_id) ->
+  printFunc = () ->
+    window.open( C.box_content_url(box_id), '_blank' )
+    $.ajax(
+      url: C.box_print_url(box_id)
+      type: 'POST'
+      success: ->
+        $( '#print_box', box).removeClass("btn-success");
+    )
+
+  # Display warning if already printed.
+  if isPrinted(box)
+    warnAlreadyPrinted( printFunc )
+  else
+    printFunc();
+
+
+warnAlreadyPrinted = (print) ->
+    result = confirm( C.translations.printed_confirmation );
+    if result
+      print();
+
+
+isPrinted = (box) ->
+  return ! $( '#print_box', box ).hasClass("btn-success");
+
 
 onPriceChange = ->
   input = $(this)
@@ -126,15 +148,14 @@ bindFormEvents = ->
 
   return
 
-# Bind events for a set of '.item_container' elements.
-# @param tags [jQuery set] A set of '.item_container' elements.
+
 bindBoxEvents = (boxes) ->
   boxes.each((index, box) ->
     box = $(box)
     box_id = box.attr('id')
 
     bindBoxHideEvents(box, box_id)
-    # bindItemToPrintedEvents(box, box_id)
+    bindBoxPrintEvents(box, box_id)
 
     return
   )
@@ -145,9 +166,13 @@ bindBoxHideEvents = (box, box_id) ->
     $(box).hide('slow', -> hideBox(box, box_id))
   )
 
+bindBoxPrintEvents = (box, box_id) ->
+  $('#print_box', box).click( ->
+    printBox(box, box_id)
+  )
 
 window.boxesConfig = C
 window.addBox = addBox
-window.deleteAll = deleteAll
+window.printBox = printBox
 window.bindBoxEvents = bindBoxEvents
 window.bindFormEvents = bindFormEvents

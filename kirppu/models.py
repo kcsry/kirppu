@@ -259,10 +259,20 @@ class Box(models.Model):
         Gets the vendor of the box
 
         :return: Vendor
-        :rtype: Decimal
+        :rtype: Vendor object
         """
         first_item = self._get_representative_item()
         return first_item.vendor
+
+    def get_vendor_id(self):
+        """
+        Gets the vendor id of the box
+
+        :return: Vendor
+        :rtype: Decimal
+        """
+        first_item = self._get_representative_item()
+        return first_item.vendor.id
 
     def get_items(self):
         """
@@ -346,6 +356,17 @@ class Box(models.Model):
         visible_item_count = Item.objects.filter(box=self.id).exclude(hidden=False).count()
         return visible_item_count == 0
 
+    def is_printed(self):
+        """
+        Checks if this box is printed.
+
+        The box is printed if all the items within the box are printed.
+
+        :return: True if the box is printed
+        :rtype: Boolean
+        """
+        visible_item_count = Item.objects.filter(box=self.id).exclude(printed=True).count()
+        return visible_item_count == 0
 
     def _get_representative_item(self):
         if self._representative_item is None:

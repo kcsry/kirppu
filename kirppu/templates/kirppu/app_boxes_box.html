@@ -28,7 +28,7 @@
                 </div>
                 <div class="row">
                      <div class="col-sm-6"></div>
-                     <div class="col-sm-1"><button id="print_box" type="button" class="btn btn-default btn-sm btn-block">{% trans "Print" %}</button></div>
+                     <div class="col-sm-1"><button id="print_box" type="button" class="btn btn-default btn-sm btn-block {% if not printed %}btn-success{% endif %}">{% trans "Print" %}</button></div>
                 </div>
             </div>
         </div>
