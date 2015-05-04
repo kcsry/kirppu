@@ -6,6 +6,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Sum
 from django.db import transaction
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.module_loading import import_by_path
 from django.utils.six import text_type, PY3
@@ -65,6 +66,7 @@ class UserAdapterBase(object):
 UserAdapter = import_by_path(settings.KIRPPU_USER_ADAPTER)
 
 
+@python_2_unicode_compatible
 class Clerk(models.Model):
     PREFIX = "::"
 
@@ -84,7 +86,7 @@ class Clerk(models.Model):
             ("oversee", "Can perform overseer actions"),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         if self.user is not None:
             return text_type(self.user)
         else:
@@ -224,10 +226,11 @@ class Clerk(models.Model):
         return ids
 
 
+@python_2_unicode_compatible
 class Vendor(models.Model):
     user = models.OneToOneField(User)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'<Vendor: {0}>'.format(text_type(self.user))
 
     @classmethod
@@ -251,12 +254,13 @@ def validate_positive(value):
         raise ValidationError(_(u"Value cannot be negative"))
 
 
+@python_2_unicode_compatible
 class Box(models.Model):
 
     description = models.CharField(max_length=256)
     _representative_item = None
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{id} ({description})".format(id=self.id, description=self.description)
 
     def get_vendor(self):
@@ -419,6 +423,7 @@ class Box(models.Model):
         return obj
 
 
+@python_2_unicode_compatible
 class Item(models.Model):
     ADVERTISED = "AD"
     BROUGHT = "BR"
@@ -532,7 +537,7 @@ class Item(models.Model):
         help_text=_(u"Forgotten or lost property/item"),
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{name} ({code})".format(name=self.name, code=self.code)
 
     as_dict = model_dict_fn(
@@ -630,8 +635,9 @@ class Item(models.Model):
         return Item.objects.get(code=data)
 
 
+@python_2_unicode_compatible
 class UIText(models.Model):
-    def __unicode__(self):
+    def __str__(self):
         return self.identifier
 
     identifier = models.CharField(
@@ -651,6 +657,7 @@ class UIText(models.Model):
         return shorten_text(self.text)
 
 
+@python_2_unicode_compatible
 class Counter(models.Model):
     identifier = models.CharField(
         max_length=32,
@@ -666,10 +673,11 @@ class Counter(models.Model):
         help_text=_(u"Common name of the counter")
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{1} ({0})".format(self.identifier, self.name)
 
 
+@python_2_unicode_compatible
 class ReceiptItem(models.Model):
     ADD = "ADD"
     REMOVED_LATER = "RL"
@@ -693,10 +701,11 @@ class ReceiptItem(models.Model):
         ret.update(self.item.as_dict())
         return ret
 
-    def __unicode__(self):
+    def __str__(self):
         return text_type(self.item)
 
 
+@python_2_unicode_compatible
 class Receipt(models.Model):
     PENDING = "PEND"
     FINISHED = "FINI"
@@ -745,7 +754,7 @@ class Receipt(models.Model):
         self.total = price_total or 0
         return self.total
 
-    def __unicode__(self):
+    def __str__(self):
         return text_type(self.start_time) + u" / " + text_type(self.clerk)
 
 
