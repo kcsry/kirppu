@@ -431,32 +431,15 @@ def item_reserve(request, code):
 def item_release(request, code):
     item = _get_item_or_404(code)
     receipt_id = request.session["receipt"]
-    receipt = get_object_or_404(Receipt, pk=receipt_id)
+    remove_form = ItemRemoveForm({
+        'receipt': receipt_id,
+        'item': code,
+    })
+    if not remove_form.is_valid():
+        raise AjaxError(RET_CONFLICT, ", ".join(remove_form.errors))
 
-    last_added_item = ReceiptItem.objects\
-        .filter(receipt=receipt, item=item, action=ReceiptItem.ADD)\
-        .order_by("-add_time")
-
-    if len(last_added_item) == 0:
-        raise AjaxError(RET_CONFLICT, _i(u"Item is not added to receipt."))
-    assert len(last_added_item) == 1
-
-    last_added_item = last_added_item[0]
-    last_added_item.action = ReceiptItem.REMOVED_LATER
-    last_added_item.save()
-
-    removal_entry = ReceiptItem(item=item, receipt=receipt, action=ReceiptItem.REMOVE)
-    removal_entry.save()
-
-    receipt.calculate_total()
-    receipt.save()
-
-    if item.state != Item.BROUGHT:
-        ItemStateLog.objects.log_state(item=item, new_state=Item.BROUGHT)
-        item.state = Item.BROUGHT
-        item.save()
-
-    return removal_entry.as_dict()
+    remove_form.save()
+    return remove_form.removal_entry.as_dict()
 
 
 @ajax_func('^receipt/finish$', atomic=True)

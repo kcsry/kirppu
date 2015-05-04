@@ -11,6 +11,7 @@ from .models import (
     Item,
     UIText,
     Vendor,
+    ItemStateLog,
 )
 from .utils import StaticText, ButtonWidget
 
@@ -261,6 +262,7 @@ class ItemRemoveForm(forms.Form):
         self.last_added_item = None
         self.item = None
         self.receipt = None
+        self.removal_entry = None
 
     def clean_receipt(self):
         data = self.cleaned_data["receipt"]
@@ -311,8 +313,11 @@ class ItemRemoveForm(forms.Form):
         self.receipt.calculate_total()
         self.receipt.save()
 
-        self.item.state = Item.BROUGHT
-        self.item.save()
+        if self.item.state != Item.BROUGHT:
+            ItemStateLog.objects.log_state(item=self.item, new_state=Item.BROUGHT)
+            self.item.state = Item.BROUGHT
+            self.item.save()
+        self.removal_entry = removal_entry
 
 
 class VendorSetSelfForm(forms.ModelForm):
