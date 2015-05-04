@@ -1,3 +1,4 @@
+from __future__ import unicode_literals, print_function, absolute_import
 import inspect
 
 from django.contrib.auth import get_user_model
@@ -28,7 +29,6 @@ from .models import (
 )
 from .fields import ItemPriceField
 from .forms import ItemRemoveForm
-from .templatetags.kirppu_tags import get_dataurl
 
 from . import ajax_util
 from .ajax_util import (
@@ -550,7 +550,7 @@ def get_barcodes(request, codes=None):
     :return: List of barcode images encoded in data-url.
     :rtype: list[str]
     """
-    from templatetags.kirppu_tags import barcode_dataurl
+    from .templatetags.kirppu_tags import barcode_dataurl
     from json import loads
 
     codes = loads(codes)

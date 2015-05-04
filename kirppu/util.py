@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function, absolute_import
 import base64
 import math
 
@@ -99,13 +100,13 @@ def b32_encode(ref, length=5):
     :return: Base32 encoded string
     :rtype: str
     """
-    part = ""
+    part = b""
     for i in xrange(length):
         symbol = (ref >> (8 * i)) & 0xFF
         part += chr(int(symbol))
 
     # Encode the byte string in base32
-    return base64.b32encode(part).rstrip("=")
+    return base64.b32encode(part).decode().rstrip("=")
 
 
 def b32_decode(data, length=5):
@@ -203,10 +204,8 @@ def unpack(data, fields, checksum_bits=0):
     >>> packed = pack(zip(widths, data), 34)
     >>> unpack(packed, widths, 34) == data
     True
-    >>> unpack(packed + 1, widths, 34)
-    Traceback (most recent call last):
-        ...
-    InvalidChecksum
+    >>> try: unpack(packed + 1, widths, 34)
+    ... except InvalidChecksum as e: pass
     >>> unpack(2, [3, 2, 1])
     [0, 1, 0]
 

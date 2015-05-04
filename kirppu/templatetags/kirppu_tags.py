@@ -1,3 +1,4 @@
+from __future__ import unicode_literals, print_function, absolute_import
 import base64
 from collections import OrderedDict
 from cStringIO import StringIO
@@ -15,6 +16,7 @@ from ..utils import PixelWriter
 from ..models import UIText, UserAdapter
 
 register = template.Library()
+
 
 class FifoDict(OrderedDict):
     def __init__(self, *args, **kwargs):

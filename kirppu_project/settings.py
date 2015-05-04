@@ -1,4 +1,5 @@
 # Django settings for kirppu project.
+from __future__ import unicode_literals, print_function, absolute_import
 import os.path
 from django.utils.translation import ugettext_lazy as _
 

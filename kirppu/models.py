@@ -1,3 +1,4 @@
+from __future__ import unicode_literals, print_function, absolute_import
 import random
 from decimal import Decimal
 from django.core.exceptions import ValidationError, ImproperlyConfigured

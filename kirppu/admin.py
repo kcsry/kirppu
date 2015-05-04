@@ -1,3 +1,4 @@
+from __future__ import unicode_literals, print_function, absolute_import
 from django.db import IntegrityError
 from django.conf import settings
 from django.contrib import admin, messages

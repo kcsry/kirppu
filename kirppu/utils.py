@@ -1,3 +1,4 @@
+from __future__ import unicode_literals, print_function, absolute_import
 import datetime
 from functools import wraps
 from django.conf import settings
@@ -22,7 +23,7 @@ from barcode.writer import BaseWriter, mm2px
 try:
     from PIL import Image, ImageDraw
 except ImportError:
-    print "Could not find PIL."
+    print("Could not find PIL.")
     PixelWriter = None
 else:
     class PixelWriter(BaseWriter):

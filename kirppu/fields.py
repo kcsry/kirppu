@@ -1,10 +1,11 @@
+from __future__ import unicode_literals, print_function, absolute_import
 from django.forms.fields import Field
 from django.utils.translation import ugettext_lazy as _
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 
 import decimal
 from decimal import Decimal, InvalidOperation
+
 
 class ItemPriceField(Field):
 
