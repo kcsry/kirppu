@@ -8,6 +8,7 @@ from django.db.models import Sum
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 from django.utils.module_loading import import_by_path
+from django.utils.six import text_type, PY3
 from django.conf import settings
 from .utils import model_dict_fn, format_datetime
 
@@ -20,6 +21,9 @@ from .util import (
     unpack,
     shorten_text,
 )
+
+if PY3:
+    long = int
 
 # Settings safety check.
 if settings.KIRPPU_AUTO_CLERK and not settings.DEBUG:
@@ -82,13 +86,13 @@ class Clerk(models.Model):
 
     def __unicode__(self):
         if self.user is not None:
-            return unicode(self.user)
+            return text_type(self.user)
         else:
             return u'id={0}'.format(str(self.id))
 
     def as_dict(self):
         return {
-            "user": unicode(self.user),
+            "user": text_type(self.user),
             "print": UserAdapter.print_name(self.user),
         }
 
@@ -224,7 +228,7 @@ class Vendor(models.Model):
     user = models.OneToOneField(User)
 
     def __unicode__(self):
-        return u'<Vendor: {0}>'.format(unicode(self.user))
+        return u'<Vendor: {0}>'.format(text_type(self.user))
 
     @classmethod
     def get_vendor(cls, user):
@@ -690,7 +694,7 @@ class ReceiptItem(models.Model):
         return ret
 
     def __unicode__(self):
-        return unicode(self.item)
+        return text_type(self.item)
 
 
 class Receipt(models.Model):
@@ -742,7 +746,7 @@ class Receipt(models.Model):
         return self.total
 
     def __unicode__(self):
-        return unicode(self.start_time) + u" / " + unicode(self.clerk)
+        return text_type(self.start_time) + u" / " + text_type(self.clerk)
 
 
 class ItemStateLogManager(models.Manager):

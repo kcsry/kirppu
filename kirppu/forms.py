@@ -4,6 +4,7 @@ from django import forms
 from django.core import validators
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.utils.six import text_type
 
 from .models import (
     Clerk,
@@ -166,7 +167,7 @@ class ClerkEditForm(forms.ModelForm):
         self._access_key = instance.access_key
         self._disabled = not instance.is_valid_code
         if instance.user is not None:
-            user = u"{0} (id={1})".format(unicode(instance.user.username), instance.user.id)
+            user = u"{0} (id={1})".format(text_type(instance.user.username), instance.user.id)
         else:
             user = u"<Unbound>"
 

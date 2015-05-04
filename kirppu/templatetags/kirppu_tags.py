@@ -1,7 +1,13 @@
 from __future__ import unicode_literals, print_function, absolute_import
+from django.utils.six import text_type, PY2
 import base64
 from collections import OrderedDict
-from cStringIO import StringIO
+if PY2:
+    # noinspection PyUnresolvedReferences
+    from cStringIO import StringIO
+else:
+    from io import BytesIO as StringIO
+
 import re
 
 import barcode
@@ -148,7 +154,7 @@ def generate_dataurl(code, ext, expect_width=143):
     dataurl_format = 'data:{mime_type};base64,{base64_data}'
     return dataurl_format.format(
         mime_type=mime_type,
-        base64_data=base64.encodestring(data)
+        base64_data=base64.encodestring(data).decode()
     )
 get_dataurl = memoize(generate_dataurl, barcode_dataurl_cache, 2)
 
@@ -196,7 +202,7 @@ def user_adapter(user, getter):
     :param getter: Getter function to apply to the user via adapter.
     :type getter: str
     """
-    if not isinstance(getter, (str, unicode)) or getter.startswith("_"):
+    if not isinstance(getter, text_type) or getter.startswith("_"):
         raise AttributeError("Invalid adapter attribute.")
 
     getter = getattr(UserAdapter, getter)
@@ -210,7 +216,8 @@ class SplitListNode(Node):
         self.chunk_size = chunk_size
         self.new_list_name = new_list_name
 
-    def split_seq(self, seq, size):
+    @staticmethod
+    def split_seq(seq, size):
         """ Split up seq in pieces of size, from
         http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/425044"""
         return [seq[i:i+size] for i in range(0, len(seq), size)]
@@ -219,11 +226,12 @@ class SplitListNode(Node):
         context[self.new_list_name] = self.split_seq(context[self.list], int(self.chunk_size))
         return ''
 
+
 def split_list(parser, token):
     """<% split_list list as new_list 5 %>"""
     bits = token.contents.split()
     if len(bits) != 5:
-        raise TemplateSyntaxError, "split_list list as new_list 5"
+        raise TemplateSyntaxError("split_list list as new_list 5")
     return SplitListNode(bits[1], bits[4], bits[3])
 
 split_list = register.tag(split_list)

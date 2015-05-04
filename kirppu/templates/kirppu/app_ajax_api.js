@@ -1,6 +1,6 @@
 (function() {
     var {{ api_name }} = {};
-{% for name, f in funcs.iteritems %}
+{% for name, f in funcs %}
 
 {{ api_name }}['{{ name }}'] = function(params) {
     return $.ajax({

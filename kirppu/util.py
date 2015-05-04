@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, absolute_import
+from django.utils.six import moves, indexbytes, int2byte
 import base64
 import math
 
@@ -101,9 +102,9 @@ def b32_encode(ref, length=5):
     :rtype: str
     """
     part = b""
-    for i in xrange(length):
+    for i in moves.range(length):
         symbol = (ref >> (8 * i)) & 0xFF
-        part += chr(int(symbol))
+        part += int2byte(int(symbol))
 
     # Encode the byte string in base32
     return base64.b32encode(part).decode().rstrip("=")
@@ -127,8 +128,8 @@ def b32_decode(data, length=5):
     assert len(parts) == length
 
     number = 0
-    for i in xrange(length):
-        number |= ord(parts[i]) << (i * 8)
+    for i in moves.range(length):
+        number |= indexbytes(parts, i) << (i * 8)
     return number
 
 

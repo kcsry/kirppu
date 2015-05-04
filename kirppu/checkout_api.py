@@ -14,6 +14,7 @@ from django.shortcuts import (
     get_object_or_404,
     render,
 )
+from django.utils.six import string_types, text_type, iteritems
 from django.utils.translation import ugettext as _i
 from django.utils.timezone import now
 
@@ -95,7 +96,7 @@ def checkout_js(request):
     Render the JavaScript file that defines the AJAX API functions.
     """
     context = {
-        'funcs': AJAX_FUNCTIONS,
+        'funcs': iteritems(AJAX_FUNCTIONS),
         'api_name': 'Api',
     }
     return render(
@@ -319,7 +320,7 @@ def item_edit(request, code, price, state):
             raise AjaxError(
                 RET_BAD_REQUEST,
                 u'Cannot change state from "{0}" to "{1}".'.format(
-                    item.get_state_display(), unicode(dict(Item.STATE)[state])
+                    item.get_state_display(), text_type(dict(Item.STATE)[state])
                 )
             )
 
@@ -335,7 +336,7 @@ def item_edit(request, code, price, state):
 @ajax_func('^item/list$', method='GET')
 def item_list(request, vendor):
     items = Item.objects.filter(vendor__id=vendor).filter(box__isnull=True)
-    return map(lambda i: i.as_dict(), items)
+    return list(map(lambda i: i.as_dict(), items))
 
 
 @ajax_func('^item/checkin$')
@@ -537,7 +538,7 @@ def receipt_activate(request):
 @ajax_func('^receipt/list$', overseer=True)
 def receipt_list(request):
     receipts = Receipt.objects.filter(status=Receipt.PENDING)
-    return map(lambda i: i.as_dict(), receipts)
+    return list(map(lambda i: i.as_dict(), receipts))
 
 
 @ajax_func('^barcode$', counter=False, clerk=False)
@@ -554,7 +555,7 @@ def get_barcodes(request, codes=None):
     from json import loads
 
     codes = loads(codes)
-    if type(codes) in (str, unicode):
+    if isinstance(codes, string_types):
         codes = [codes]
 
     # XXX: This does ignore the width assertion. Beware with style sheets...

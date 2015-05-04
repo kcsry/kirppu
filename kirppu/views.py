@@ -1,7 +1,7 @@
+from __future__ import unicode_literals, print_function, absolute_import
 from collections import namedtuple
 import json
 import re
-import urllib
 
 import barcode
 from django.conf import settings
@@ -27,6 +27,7 @@ from django.shortcuts import (
     get_object_or_404,
 )
 from django.utils.http import is_safe_url
+from django.utils.six import text_type, moves
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -99,7 +100,7 @@ def item_add(request):
                     return None
                 if left > right:
                     left, right = right, left
-                result.extend(map(unicode, range(left, right + 1)))
+                result.extend(map(text_type, range(left, right + 1)))
             else:
                 result.append(word)
 
@@ -606,7 +607,7 @@ def checkout_view(request):
     clerk_logout_fn(request)
     context = {}
     if settings.KIRPPU_AUTO_CLERK and settings.DEBUG:
-        if isinstance(settings.KIRPPU_AUTO_CLERK, (str, unicode)):
+        if isinstance(settings.KIRPPU_AUTO_CLERK, text_type):
             real_clerks = Clerk.objects.filter(user__username=settings.KIRPPU_AUTO_CLERK)
         else:
             real_clerks = Clerk.objects.filter(user__isnull=False)
@@ -794,7 +795,7 @@ def vendor_view(request):
 
         'total_price': sum(i.price for i in items),
         'num_total': len(items),
-        'num_printed': len(filter(lambda i: i.printed, items)),
+        'num_printed': len(list(filter(lambda i: i.printed, items))),
 
         'profile_url': settings.PROFILE_URL,
         'menu': _vendor_menu_contents(request),
@@ -808,7 +809,7 @@ def _get_login_destination(request, dest_url):
         destination = request.build_absolute_uri(url.reverse('kirppu:vendor_view'))
     login_url = '{0}?{1}'.format(
         dest_url,
-        urllib.urlencode({'next': destination}),
+        moves.urllib.parse.urlencode({'next': destination}),
     )
     return login_url
 
