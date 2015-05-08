@@ -258,8 +258,8 @@ class Box(models.Model):
         """
         Gets the vendor of the box
 
-        :return: Vendor
-        :rtype: Vendor object
+        :return: Vendor object
+        :rtype: Vendor
         """
         first_item = self._get_representative_item()
         return first_item.vendor
@@ -281,7 +281,7 @@ class Box(models.Model):
         :return: List of Item of objects
         :rtype: Array
         """
-        items = Item.objects.filter(box=self.id).exclude(hidden=True).all()
+        items = Item.objects.filter(box=self.id).exclude(hidden=True)
         return items
 
     def get_price_fmt(self):
@@ -382,10 +382,10 @@ class Box(models.Model):
         :param args: Item Constructor arguments
         :param kwargs: Item Constructor arguments
         :return: New stored Item object with calculated code.
-        :rtype: Item
+        :rtype: Box
         """
-        def generate_item_name(item_title_in, id):
-            item_name = u"{0} #{1}".format(item_title_in, id)
+        def generate_item_name(item_title_in, id_):
+            item_name = u"{0} #{1}".format(item_title_in, id_)
             return item_name
 
         with transaction.atomic():
@@ -398,9 +398,9 @@ class Box(models.Model):
             # Create items for the box.
             count = kwargs["count"]
             item_title = kwargs["item_title"]
-            for i in range(0, count):
+            for i in range(count):
                 generated_name = generate_item_name(item_title, i + 1)
-                item = Item.new(
+                Item.new(
                     name=generated_name,
                     price=kwargs["price"],
                     vendor=kwargs["vendor"],

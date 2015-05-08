@@ -41,14 +41,14 @@ createBox = (box_id, description, item_count, item_price, vendor_id, item_type, 
   box.addClass("box_short")
 
   $('.box_description', box).text(description)
-  $('.item_count', box).text(item_count)
-  $('.item_price', box).text(item_price)
-  $('.item_type', box).text(item_type)
+  $('.box_count', box).text(item_count)
+  $('.box_price', box).text(item_price)
+  $('.box_type', box).text(item_type)
 
   if item_adult == "yes"
-    $('.item_adult', box).text("K-18")
+    $('.box_adult', box).text("K-18")
   else
-    $('.item_adult', box).text("-")
+    $('.box_adult', box).text("-")
 
   $('.box_vendor_id', box).text(vendor_id)
 
@@ -62,6 +62,7 @@ addBox = ->
   onSuccess = (box) ->
     $('#form-errors').empty()
     box = createBox(box.box_id, box.description, box.item_count, box.item_price, box.vendor_id, box.item_type, box.item_adult)
+    $('#box-add-form')[0].reset();
     $('#boxes').prepend(box)
     bindBoxEvents($(box))
 
@@ -142,7 +143,6 @@ onPriceChange = ->
 bindFormEvents = ->
   $('#box-add-form').bind('submit', ->
     addBox();
-    $('#box-add-form')[0].reset();
     return false;
   )
 
@@ -160,6 +160,7 @@ bindBoxEvents = (boxes) ->
     return
   )
   return
+
 
 bindBoxHideEvents = (box, box_id) ->
   $('.box_button_hide', box).click( ->

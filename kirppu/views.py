@@ -277,13 +277,14 @@ def all_to_print(request):
 
     return HttpResponse()
 
+
 @login_required
 @require_http_methods(["POST"])
 @require_vendor_open
 def box_add(request):
     vendor = Vendor.get_vendor(request.user)
     description = request.POST.get("description", u"").strip()
-    item_title = request.POST.get("item_title", "uu").strip()
+    item_title = request.POST.get("item_title", u"").strip()
     count_str = request.POST.get("count", u"")
     price = request.POST.get("price")
     item_type = request.POST.get("itemtype", u"")
@@ -348,11 +349,10 @@ def box_hide(request, box_id):
             raise Http404()
 
         items = box.get_items()
-        for item in items:
-            item.hidden = True
-            item.save()
+        items.update(hidden=True)
 
     return HttpResponse()
+
 
 @login_required
 @require_http_methods(["POST"])
@@ -501,7 +501,6 @@ def get_boxes(request):
 
     vendor = Vendor.get_vendor(user)
     boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()
-    printed_boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False, item__printed=True).distinct()
 
     # Order from newest to oldest, because that way new boxes are added
     # to the top and the user immediately sees them without scrolling
@@ -510,7 +509,6 @@ def get_boxes(request):
 
     render_params = {
         'boxes': boxes,
-        'printed_boxes': printed_boxes,
         'vendor_id_param': vendor.id,
 
         'profile_url': settings.PROFILE_URL,

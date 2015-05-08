@@ -3,27 +3,27 @@
     <div class="box_container box_{{ box_type }} {{ locked|yesno:',box_editable' }}" id="{{ box_id }}">
 
         <div class="panel panel-default">
-            <div class="panel-heading">
+            <div class="panel-heading box_header">
                 <h3 class="panel-title box_description">{{ description }}</h3>
                 <button class="box_button_hide" title="{% trans "Permanently remove the box." %}" type="button"><span class="glyphicon glyphicon-remove"></span></button>
             </div>
-            <div class="panel-body container">
+            <div class="panel-body container box_body">
                 <div class="row">
                     <div class="col-sm-1">{% trans "Items #:" %}</div>
-                    <div class="col-sm-1 item_count">{{ item_count }}</div>
+                    <div class="col-sm-1 box_count">{{ item_count }}</div>
                     <div class="col-sm-1"></div>
                     <div class="col-sm-1">{% trans "Type:" %}</div>
-                    <div class="col-sm-4 item_type">{{ item_type }}</div>
+                    <div class="col-sm-4 box_type">{{ item_type }}</div>
                 </div>
                 <div class="row">
                     <div class="col-sm-1">{% trans "Price:" %}</div>
-                    <div class="col-sm-1 item_price">{{ price }}</div>
+                    <div class="col-sm-1 box_price">{{ price }}</div>
                     <div class="col-sm-1"></div>
                     <div class="col-sm-1">{% trans "Adult:" %}</div>
                     {% if item_adult == "yes" %}
-                        <div class="col-sm-1 item_adult">K-18</div>
+                        <div class="col-sm-1 box_adult">K-18</div>
                     {% else %}
-                        <div class="col-sm-1 item_adult">-</div>
+                        <div class="col-sm-1 box_adult">-</div>
                     {% endif %}
                 </div>
                 <div class="row">

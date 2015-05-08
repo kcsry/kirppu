@@ -1,5 +1,3 @@
-/* ================ 1: price_tags.css ================ */
-
 #box-add-form {
     width: 19cm;
 }
@@ -8,25 +6,42 @@
  * Hierarchy for box_container entities.
  *
  *  .box_container
- *      .box_head
- *          .box_head_price
- *      .box_body
+ *      .box_header
  *          .box_description
+ *          .box_button_hide
+ *      .box_body
+ *          .box_count
+ *          .box_type
  *          .box_price
- *          .barcode_container
- *              .barcode_img
- *              .box_extra_code
- *          .box_adult_tag
- *          .box_vendor_id
+ *          .box_adult
+ *          #print_box
  *
- *      .box_button_hide
- *      .box_button_printed
- *      .box_button_toggle
+ *  .box_content
+ *      .box_content_table_page
+ *          .box_content_table_page_header
+ *              .box_content_number
+ *              .box_content_table_page_instructions
+ *          .box_description
+ *          .box_title
+ *          .box_price
+ *          .box_vendor_id
+ *      .box_content_page
+ *          .box_content_page_header
+ *              .box_content_number
+ *              .box_content_description
+ *                  .box_title
+ *                  .box_value
+ *                  .box_price
+ *                  .box_vendor_id
+ *
  */
-#boxes, #printed_boxes, #box_content {
+#boxes {
     width: 19cm;
     float: left;
     clear: left;
+}
+#box_content {
+    width: 19cm;
 }
 .box_template {
     display: none;
@@ -39,49 +54,8 @@
     transition: width 0.2s;
 }
 
-#printed_boxes > .box_container {
-    background-color: lightgrey;
-}
-
-.box_head {
-    float: left;
-    width: 2cm;
-}
-.box_short .box_head {
-    display: none;
-}
-
-.box_body {
-    float: left;
-    width: 9.3cm;
-    position: relative; /* Needed for absolute positioning of child elements. */
-}
-
-.box_price {
-    width: 2.5cm;
-    font-size: 150%;
-    margin-top: 3px;
-    margin: 2px; /* Compensate for border not being there for locked items */
-}
-
 .box_price:after {
     content:" \20AC"; /* euro */
-}
-
-.box_vendor_id {
-    font-size: 130%;
-    text-align: center;
-}
-
-/* Box edit forms. */
-.box_editable .box_body form {
-    display: inline;
-}
-.box_editable .box_body form input {
-    background: transparent;
-    margin: 0;
-    padding: 0;
-    border: none;
 }
 
 .box_description {
@@ -97,7 +71,7 @@
     font-weight: bold;
 }
 
-.box_content_header {
+.box_content_page_header {
 
     border: 1px solid black;
     width: 99.9%;
@@ -108,7 +82,7 @@
     transition: width 0.2s;
 }
 
-.box_content_header .box_content_number {
+.box_content_page_header .box_content_number {
 
     border: 3px solid black;
     left: 0.5em;
@@ -117,6 +91,18 @@
     height: 2cm;
     float: left;
     position: relative;
+}
+
+.box_content_page_header .box_title {
+
+    width: 5em;
+    display: inline-block
+}
+
+.box_content_page_header .box_value {
+
+    width: 3em;
+    display: inline-block
 }
 
 .box_content_description {
@@ -133,17 +119,26 @@
     font-size: 130%;
 }
 
-.box_content_table {
+.box_content_table_page {
 
     height: 14cm;
 }
 
-.box_content_table_header {
+.box_content_table_page .box_vendor_id {
+    font-size: 130%;
+}
+
+.box_content_table_page .box_price {
+    font-size: 130%;
+}
+
+
+.box_content_table_page_header {
 
     height: 9cm;
 }
 
-.box_content_table .box_content_number {
+.box_content_table_page_header .box_content_number {
 
     border: 3px solid black;
     left: 0.5em;
@@ -154,7 +149,7 @@
     position: relative;
 
 }
-.box_content_table_instructions {
+.box_content_table_page_instructions {
 
     position: relative;
     top: 35%;
@@ -162,11 +157,11 @@
     margin-left: 8.5cm;
 }
 
-.box_content_table .box_description {
+.box_content_table_page .box_description {
     font-size: 175%;
 }
 
-.box_content_table .box_title  {
+.box_content_table_page .box_title  {
     font-size: 150%;
 }
 
@@ -177,29 +172,20 @@
 
 .box_button_hide {
     position: absolute;
-    right: 0px;
+    top: 1em;
+    right: 1em;
     width: 1.5em;
     height: 1.5em;
     padding: 0px;
     font-size:14px;
     font-weight:bold;
 }
-.box_button_hide {
-    top: 1em;
-    right: 1em;
-}
 
 @media screen, projection, handheld {
-    .box_editable .box_price {
-        margin: 0px;
-        border: 2px inset;
-    }
+
 }
 
 @media print {
-    .box_extra_code {
-        background-color: white !important;
-    }
 
     .box_price, .box_description {
         border: none;
@@ -208,9 +194,6 @@
         display: none;
     }
     #box-add-form {
-        display: none;
-    }
-    #printed_boxes, .box_list {
         display: none;
     }
 
@@ -237,10 +220,5 @@
 
     #boxes {
         width: 100%;
-    }
-
-    /* Hide item name placeholder. */
-    div.box_description > em {
-        display: none;
     }
 }
