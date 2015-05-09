@@ -4,3 +4,4 @@
 kirppu/local_settings.py
 kirppu_project/local_settings.py
 node_modules
+/KirppuVenv*/
