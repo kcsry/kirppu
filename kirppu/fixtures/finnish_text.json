@@ -38,5 +38,29 @@
       "text": "",
       "identifier": "frontpage_tail"
     }
+  },
+  {
+    "pk": 6,
+    "model": "kirppu.uitext",
+    "fields": {
+      "text": "<h3>Uuden laatikon lis\u00e4\u00e4minen</h3>\n<p>Voit luoda uusia laatikoita Luo laatikko -painikkeella. T\u00e4yt\u00e4 kuvaus, esineen etuliitte, lukum\u00e4\u00e4r\u00e4, hinta ja tyypi alla olevaan lomakkeeseen ja paina sen jälkeen Luo laatikko -painiketta.</p>\n<p>Uusi laatikko lis\u00e4t\u00e4\u00e4n lomakkeen alapuolelle</p>",
+      "identifier": "box_info1"
+    }
+  },
+  {
+    "pk": 7,
+    "model": "kirppu.uitext",
+    "fields": {
+      "text": "<h3>Tulostaminen</h3>\n<p>Voit tulostaa laatikon sis\u00e4ll\u00f6n painamalla 'Tulosta' painiketta. Tulostus nappi vaihtaa v\u00e4ri\u00e4\u00e4n harmaaksi tulostamisen j\u00e4lkeen.</p>",
+      "identifier": "box_info2"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "kirppu.uitext",
+    "fields": {
+      "text": "<h3>Poistaminen</h3>\n<p>Voit poistaa olemassaolevan laatikon painamalla <span class=\"glyphicon glyphicon-remove\"></span> nappia.\n</p>",
+      "identifier": "box_info3"
+    }
   }
 ]

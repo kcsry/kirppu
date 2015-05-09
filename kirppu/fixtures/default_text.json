@@ -38,5 +38,29 @@
       "text": "",
       "identifier": "frontpage_tail"
     }
+  },
+  {
+    "pk": 6,
+    "model": "kirppu.uitext",
+    "fields": {
+      "text": "<h3>Adding new boxes</h3>\n<p>Add a new box by filling the description, item prefix, the number of items, price and type to the form below. and press 'Add Box' button.</p>\n<p>The new box will appear below the form.",
+      "identifier": "box_info1"
+    }
+  },
+  {
+    "pk": 7,
+    "model": "kirppu.uitext",
+    "fields": {
+      "text": "<h3>Printing</h3>\n<p>You can print the contents of the box by pressing the 'Print' button. The color of the Print button is switched to gray after printing.</p>",
+      "identifier": "box_info2"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "kirppu.uitext",
+    "fields": {
+      "text": "<h3>Removing</h3>\n<p>You can delete existing boxes by pressing the <span class=\"glyphicon glyphicon-remove\"></span> button.\n</p>",
+      "identifier": "box_info3"
+    }
   }
 ]

@@ -12,9 +12,6 @@ class BoxesConfig
     box_hide: ''
     box_print: ''
 
-  translations:
-    printed_confirmation: ''
-
   enabled: true
 
   constructor: ->
@@ -117,7 +114,7 @@ printBox = (box, box_id) ->
 
 
 warnAlreadyPrinted = (print) ->
-    result = confirm( C.translations.printed_confirmation );
+    result = confirm( gettext( 'This box has been already printed. Are you sure you want to print it again?' ) );
     if result
       print();
 
