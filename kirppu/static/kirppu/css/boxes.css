@@ -78,7 +78,7 @@
     border: 1px solid black;
     width: 99.9%;
     height: 3.62cm;
-    float: left;
+    clear: both;
     padding: 0.1cm;
     position: relative; /* Needed for absolute positioning of child elements. */
     transition: width 0.2s;
