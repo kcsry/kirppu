@@ -69,6 +69,27 @@ def _register_ajax_func(func):
 
 
 def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atomic=False):
+    """
+    Decorate a function with some common logic.
+    The names of the function being decorated are required to be present in the JSON object
+    that is passed to the function, and they are automatically decoded and passed to those
+    arguments.
+
+    :param url: URL RegEx this function is served in.
+    :type url: str
+    :param method: HTTP Method required. Default is POST.
+    :type method: str
+    :param counter: Is registered Counter required? Default: True.
+    :type counter: bool
+    :param clerk: Is logged in Clerk required? Default: True.
+    :type clerk: bool
+    :param overseer: Is overseer permission required for Clerk? Default: False.
+    :type overseer: bool
+    :param atomic: Should this function run in atomic transaction? Default: False.
+    :type atomic: bool
+    :return: Decorated function.
+    """
+
     def decorator(func):
         # Get argspec before any decoration.
         (args, _, _, _) = inspect.getargspec(func)
