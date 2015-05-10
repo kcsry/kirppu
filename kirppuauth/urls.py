@@ -1,5 +1,5 @@
 from __future__ import unicode_literals, print_function, absolute_import
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.views.generic import RedirectView
@@ -25,4 +25,4 @@ if settings.KIRPPU_SU_AS_USER:
     _urls.append(url('^set_user$', local_admin_login, name='local_admin_login'))
 
 
-urlpatterns = patterns('', *_urls)
+urlpatterns = _urls

@@ -1,5 +1,5 @@
 from __future__ import unicode_literals, print_function, absolute_import
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.conf import settings
 from django.utils.six import itervalues
 
@@ -72,4 +72,4 @@ if settings.KIRPPU_CHECKOUT_ACTIVE:  # Only activate API when checkout is active
         for func in itervalues(AJAX_FUNCTIONS)
     ])
 
-urlpatterns = patterns('', *_urls)
+urlpatterns = _urls
