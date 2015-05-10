@@ -70,10 +70,10 @@ addBox = ->
 
   content =
     description: $("#box-add-description").val()
-    item_title: $("#box-add-itemtitle").val()
+    name: $("#box-add-itemtitle").val()
     count: $("#box-add-count").val()
     price: $("#box-add-price").val()
-    itemtype: $("#box-add-itemtype").val()
+    item_type: $("#box-add-itemtype").val()
     adult: $("input[name=box-add-adult]:checked").val()
 
   $.ajax(

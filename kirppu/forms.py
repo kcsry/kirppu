@@ -5,7 +5,9 @@ from django.core import validators
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils.six import text_type
+from django.utils.translation import ugettext_lazy as _i
 
+from .fields import ItemPriceField, SuffixField, StripField
 from .models import (
     Clerk,
     ReceiptItem,
@@ -15,7 +17,7 @@ from .models import (
     Vendor,
     ItemStateLog,
 )
-from .utils import StaticText, ButtonWidget
+from .utils import StaticText, ButtonWidget, model_dict_fn
 
 
 class ClerkGenerationForm(forms.ModelForm):
@@ -351,3 +353,54 @@ class VendorSetSelfForm(forms.ModelForm):
     class Meta:
         model = Vendor
         fields = ()
+
+
+class VendorItemForm(forms.Form):
+    name = StripField(error_messages={"required": _i("Name is required.")})
+    price = ItemPriceField()
+    tag_type = forms.ChoiceField(
+        required=False,
+        choices=Item.TYPE,
+    )
+    suffixes = SuffixField()
+    item_type = forms.ChoiceField(
+        choices=Item.ITEMTYPE,
+        error_messages={"required": _i(u"Item must have a type.")}
+    )
+    adult = forms.BooleanField(required=False)
+
+    def get_any_error(self):
+        errors = self.errors.as_data()
+        keys = errors.keys()
+        if len(keys) == 0:
+            return None
+        some_error = errors[list(keys)[0]]
+        return u" ".join([u" ".join(error.messages) for error in some_error])
+
+    def clean_tag_type(self):
+        value = self.cleaned_data["tag_type"]
+        if not value:
+            return Item.TYPE_SHORT
+        return value
+
+    db_values = model_dict_fn(
+        "name",
+        type="tag_type",
+        itemtype="item_type",
+        adult=lambda self: "yes" if self.cleaned_data["adult"] else "no",
+        price=lambda self: str(self.cleaned_data["price"]),
+        __access_fn=lambda self, value: self.cleaned_data[value],
+    )
+
+
+class VendorBoxForm(VendorItemForm):
+    description = StripField()
+    count = forms.IntegerField(min_value=0)
+
+    db_values = model_dict_fn(
+        "description",
+        "count",
+        type=None,
+        __extend=VendorItemForm.db_values,
+        __access_fn=lambda self, value: self.cleaned_data[value],
+    )

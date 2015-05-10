@@ -1,7 +1,6 @@
 from __future__ import unicode_literals, print_function, absolute_import
 from collections import namedtuple
 import json
-import re
 
 import barcode
 from django.conf import settings
@@ -35,7 +34,7 @@ from django.views.decorators.http import require_http_methods
 
 from .checkout_api import clerk_logout_fn
 from . import ajax_util
-from .forms import ItemRemoveForm
+from .forms import ItemRemoveForm, VendorItemForm, VendorBoxForm
 from .fields import ItemPriceField
 from .models import (
     Box,
@@ -65,86 +64,32 @@ def index(request):
 @require_vendor_open
 def item_add(request):
     vendor = Vendor.get_vendor(request.user)
-    name = request.POST.get("name", u"").strip()
-    price = request.POST.get("price")
-    tag_type = request.POST.get("type", "short")
-    suffix_str = request.POST.get("range", u"")
-    itemtype = request.POST.get("itemtype", u"")
-    adult = request.POST.get("adult", "no")
-
-    if not itemtype:
-        return HttpResponseBadRequest(_(u"Item must have a type."))
-
-    try:
-        price = ItemPriceField().clean(price)
-    except ValidationError as error:
-        return HttpResponseBadRequest(u' '.join(error.messages))
-
-    def expand_suffixes(input_str):
-        """
-        Turn 'a b 1 3-4' to ['a', 'b', '1', '3', '4']
-
-        :type input_str: str | unicode
-        :rtype: list
-        """
-        words = input_str.split()
-        result = []
-
-        for word in words:
-            # Handle the range syntax as a special case.
-            match = re.match(r"(\d+)-(\d+)$", word)
-            if match:
-                # Turn '1-3' to ['1', '2', '3'] and so on
-                left, right = map(int, match.groups())
-                if abs(left - right) + 1 > 100:
-                    return None
-                if left > right:
-                    left, right = right, left
-                result.extend(map(text_type, range(left, right + 1)))
-            else:
-                result.append(word)
-
-        return result
-
-    suffixes = expand_suffixes(suffix_str)
-    if suffixes is None:
-        return HttpResponseBadRequest(_(u'Maximum of 100 items allowed by a single range statement.'))
-
-    if not suffixes:
-        # If there are no suffixes the name is added as is just once.
-        # This is equivalent to adding empty string as suffix.
-        suffixes.append(u"")
+    form = VendorItemForm(request.POST)
+    if not form.is_valid():
+        return HttpResponseBadRequest(form.get_any_error())
 
     item_cnt = Item.objects.filter(vendor=vendor).count()
 
     # Create the items and construct a response containing all the items that have been added.
     response = []
     max_items = settings.KIRPPU_MAX_ITEMS_PER_VENDOR
-    for suffix in suffixes:
+    data = form.db_values()
+    name = data.pop("name")
+
+    for suffix in form.cleaned_data["suffixes"]:
         if item_cnt >= max_items:
             error_msg = _(u"You have %(max_items)s items, which is the maximum. No more items can be registered.")
             return HttpResponseBadRequest(error_msg % {'max_items': max_items})
         item_cnt += 1
 
-        suffixed_name = (name + u" " + suffix).strip()
+        suffixed_name = (name + u" " + suffix).strip() if suffix else name
         item = Item.new(
             name=suffixed_name,
-            price=str(price),
             vendor=vendor,
-            type=tag_type,
-            state=Item.ADVERTISED,
-            itemtype=itemtype,
-            adult=adult
+            **data
         )
-        item_dict = {
-            'vendor_id': vendor.id,
-            'code': item.code,
-            'barcode_dataurl': get_dataurl(item.code, 'png'),
-            'name': item.name,
-            'price': str(item.price_fmt).replace('.', ','),
-            'type': item.type,
-            'adult': item.adult
-        }
+        item_dict = item.as_public_dict()
+        item_dict['barcode_dataurl'] = get_dataurl(item.code, 'png')
         response.append(item_dict)
 
     return HttpResponse(json.dumps(response), 'application/json')
@@ -284,26 +229,16 @@ def all_to_print(request):
 @require_vendor_open
 def box_add(request):
     vendor = Vendor.get_vendor(request.user)
-    description = request.POST.get("description", u"").strip()
-    item_title = request.POST.get("item_title", u"").strip()
-    count_str = request.POST.get("count", u"")
-    price = request.POST.get("price")
-    item_type = request.POST.get("itemtype", u"")
-    adult = request.POST.get("adult", "no")
+    form = VendorBoxForm(request.POST)
+    if not form.is_valid():
+        return HttpResponseBadRequest(form.get_any_error())
 
-    if not item_type:
-        return HttpResponseBadRequest(_(u"Item must have a type."))
-
-    # Format price
-    try:
-        price = ItemPriceField().clean(price)
-    except ValidationError as error:
-        return HttpResponseBadRequest(u' '.join(error.messages))
+    data = form.db_values()
 
     # Verify that user doesn't exceed his/hers item quota with the box.
     max_items = settings.KIRPPU_MAX_ITEMS_PER_VENDOR
     item_cnt = Item.objects.filter(vendor=vendor).count()
-    count = int(count_str)
+    count = data["count"]
     if item_cnt >= max_items:
         error_msg = _(u"You have %(max_items)s items, which is the maximum. No more items can be registered.")
         return HttpResponseBadRequest(error_msg % {'max_items': max_items})
@@ -314,24 +249,12 @@ def box_add(request):
 
     # Create the box and items. and construct a response containing box and all the items that have been added.
     box = Box.new(
-        description=description,
-        count=count,
-        item_title=item_title,
-        price=str(price),
         vendor=vendor,
-        state=Item.ADVERTISED,
-        itemtype=item_type,
-        adult=adult)
+        **data
+    )
 
-    box_dict = {
-        'vendor_id': vendor.id,
-        'box_id': box.id,
-        'description': box.description,
-        'item_price': str(box.get_price_fmt()),
-        'item_count': box.get_item_count(),
-        'item_type': box.get_item_type_for_display(),
-        'item_adult': box.get_item_adult()
-    }
+    box_dict = box.as_dict()
+    box_dict["vendor_id"] = vendor.id
     response = box_dict
 
     return HttpResponse(json.dumps(response), 'application/json')

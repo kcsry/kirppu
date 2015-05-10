@@ -1,10 +1,13 @@
 from __future__ import unicode_literals, print_function, absolute_import
-from django.forms.fields import Field
-from django.utils.translation import ugettext_lazy as _
+
 from django.core.exceptions import ValidationError
+from django.forms.fields import Field, CharField
+from django.utils.six import text_type
+from django.utils.translation import ugettext_lazy as _
 
 import decimal
 from decimal import Decimal, InvalidOperation
+import re
 
 
 class ItemPriceField(Field):
@@ -43,3 +46,58 @@ class ItemPriceField(Field):
             raise ValidationError(self.error_messages['min_value'], code='min_value')
         if value > Decimal('400'):
             raise ValidationError(self.error_messages['max_value'], code='max_value')
+
+
+class SuffixField(Field):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("error_messages", dict())
+        kwargs["error_messages"].setdefault(
+            "max_items",
+            _(u'Maximum of %(count)i items allowed by a single range statement.')
+        )
+        self.max_total = kwargs.pop("max_total", 100)
+        self.add_empty = kwargs.pop("add_empty", True)
+        super(SuffixField, self).__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        """
+        Turn 'a b 1 3-4' to ['a', 'b', '1', '3', '4']
+
+        :type value: str | unicode
+        :rtype: list
+        """
+        if value is None:
+            if self.add_empty:
+                return [u""]
+            return []
+        words = value.split()
+        result = []
+
+        for word in words:
+            # Handle the range syntax as a special case.
+            match = re.match(r"(\d+)-(\d+)$", word)
+            if match:
+                # Turn '1-3' to ['1', '2', '3'] and so on
+                left, right = map(int, match.groups())
+                if abs(left - right) + 1 > self.max_total:
+                    return None
+                if left > right:
+                    left, right = right, left
+                result.extend(map(text_type, range(left, right + 1)))
+            else:
+                result.append(word)
+
+        if self.add_empty and not result:
+            result.append(u"")
+
+        return result
+
+    def validate(self, value):
+        if value is None:
+            raise ValidationError(self.error_messages['max_items'], params={"count": self.max_total})
+        super(SuffixField, self).validate(value)
+
+
+class StripField(CharField):
+    def to_python(self, value):
+        return value.strip()

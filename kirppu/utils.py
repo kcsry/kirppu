@@ -104,7 +104,11 @@ def model_dict_fn(*args, **kwargs):
     :param kwargs: Fields to be renamed or overridden with another function call.
     :return: Function.
     """
+    access = kwargs.pop("__access_fn", lambda self, value: getattr(self, value))
+    extend = kwargs.pop("__extend", None)
     fields = {}
+    if extend:
+        fields.update(extend.fields)
     for plain_key in args:
         fields[plain_key] = plain_key
     fields.update(kwargs)
@@ -122,11 +126,12 @@ def model_dict_fn(*args, **kwargs):
                 if value in ret:
                     del ret[value]
             else:
-                ret[key] = getattr(self, value)
+                ret[key] = access(self, value)
                 if callable(ret[key]):
                     ret[key] = ret[key]()
         return ret
     model_dict.__doc__ = model_dict.__doc__.format(", ".join(fields.keys()))
+    model_dict.fields = fields  # "Base" field dictionary for extend.
     return model_dict
 
 

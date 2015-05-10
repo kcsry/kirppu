@@ -98,9 +98,9 @@ addItem = ->
   content =
     name: $("#item-add-name").val()
     price: $("#item-add-price").val()
-    range: $("#item-add-suffixes").val()
-    type: $("input[name=item-add-type]:checked").val()
-    itemtype: $("#item-add-itemtype").val()
+    suffixes: $("#item-add-suffixes").val()
+    tag_type: $("input[name=item-add-type]:checked").val()
+    item_type: $("#item-add-itemtype").val()
     adult: $("input[name=item-add-adult]:checked").val()
 
   $.ajax(

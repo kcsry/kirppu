@@ -263,6 +263,15 @@ class Box(models.Model):
     def __str__(self):
         return u"{id} ({description})".format(id=self.id, description=self.description)
 
+    as_dict = model_dict_fn(
+        "description",
+        box_id="pk",
+        item_price=lambda self: text_type(self.get_price_fmt()),
+        item_count=lambda self: self.get_item_count(),
+        item_type=lambda self: self.get_item_type_for_display(),
+        item_adult=lambda self: self.get_item_adult(),
+    )
+
     def get_vendor(self):
         """
         Gets the vendor of the box
@@ -294,16 +303,6 @@ class Box(models.Model):
         return items
 
     def get_price_fmt(self):
-        """
-        Gets the price of the items in the box
-
-        :return: Price
-        :rtype: Decimal
-        """
-        first_item = self._get_representative_item()
-        return first_item.price_fmt
-
-    def get_price_of_item(self):
         """
         Gets the price of the items in the box
 
@@ -382,7 +381,6 @@ class Box(models.Model):
             self._representative_item = Item.objects.filter(box=self.id).all()[:1][0]
         return self._representative_item
 
-
     @classmethod
     def new(cls, *args, **kwargs):
         """
@@ -399,25 +397,20 @@ class Box(models.Model):
 
         with transaction.atomic():
             obj = cls(*args,
-                      description=kwargs["description"]
+                      description=kwargs.pop("description")
                       )
             obj.full_clean()
             obj.save()
 
             # Create items for the box.
-            count = kwargs["count"]
-            item_title = kwargs["item_title"]
+            count = kwargs.pop("count")
+            item_title = kwargs.pop("name")
             for i in range(count):
                 generated_name = generate_item_name(item_title, i + 1)
                 Item.new(
                     name=generated_name,
-                    price=kwargs["price"],
-                    vendor=kwargs["vendor"],
-                    type="short",
-                    state=kwargs["state"],
-                    itemtype=kwargs["itemtype"],
-                    adult=kwargs["adult"],
-                    box=obj
+                    box=obj,
+                    **kwargs
                 )
 
         return obj
@@ -551,6 +544,15 @@ class Item(models.Model):
         state_display="get_state_display",
         itemtype_display="get_itemtype_display",
         adult=lambda self: self.adult == Item.ADULT_YES,
+    )
+    
+    as_public_dict = model_dict_fn(
+        "vendor_id",
+        "code",
+        "name",
+        "type",
+        "adult",
+        price=lambda self: str(self.price).replace(".", ","),
     )
 
     @property
