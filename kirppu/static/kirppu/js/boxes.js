@@ -75,7 +75,7 @@
     onError = function(jqXHR, textStatus, errorThrown) {
       $('#form-errors').empty();
       if (jqXHR.responseText) {
-        return $('<p>' + jqXHR.responseText + '</p>').appendTo($('#form-errors'));
+        return $('<p>').text(jqXHR.responseText).appendTo($('#form-errors'));
       }
     };
     content = {

@@ -66,7 +66,7 @@ addBox = ->
   onError = (jqXHR, textStatus, errorThrown) ->
     $('#form-errors').empty()
     if jqXHR.responseText
-      $('<p>' + jqXHR.responseText + '</p>').appendTo($('#form-errors'))
+      $('<p>').text(jqXHR.responseText).appendTo($('#form-errors'))
 
   content =
     description: $("#box-add-description").val()
