@@ -234,8 +234,10 @@ class Vendor(models.Model):
         return u'<Vendor: {0}>'.format(text_type(self.user))
 
     @classmethod
-    def get_vendor(cls, user):
+    def get_vendor(cls, user, create=True):
         if not hasattr(user, 'vendor'):
+            if not create:
+                return Vendor.objects.none()
             vendor = cls(user=user)
             vendor.save()
         return user.vendor

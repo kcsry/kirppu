@@ -320,8 +320,6 @@ def box_content(request, box_id, bar_type):
         'box': box,
         'content': items,
         'bar_type': bar_type,
-
-        'vendor_id_param': vendor.id,
     }
 
     return render(request, "kirppu/app_boxes_content.html", render_params)
@@ -379,7 +377,7 @@ def get_items(request, bar_type):
     if tag_type not in ('short', 'long'):
         return HttpResponseBadRequest(u"Tag type not supported")
 
-    vendor = Vendor.get_vendor(user)
+    vendor = Vendor.get_vendor(user, create=False)
     vendor_items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)
     items = vendor_items.filter(printed=False)
     printed_items = vendor_items.filter(printed=True)
@@ -423,7 +421,7 @@ def get_boxes(request):
     if tag_type not in ('short', 'long'):
         return HttpResponseBadRequest(u"Tag type not supported")
 
-    vendor = Vendor.get_vendor(user)
+    vendor = Vendor.get_vendor(user, create=False)
     boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()
 
     # Order from newest to oldest, because that way new boxes are added
@@ -433,7 +431,6 @@ def get_boxes(request):
 
     render_params = {
         'boxes': boxes,
-        'vendor_id_param': vendor.id,
 
         'profile_url': settings.PROFILE_URL,
 
@@ -708,7 +705,7 @@ def vendor_view(request):
     user = request.user
 
     if user.is_authenticated():
-        vendor = Vendor.get_vendor(user)
+        vendor = Vendor.get_vendor(user, create=False)
         items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)
     else:
         items = []
