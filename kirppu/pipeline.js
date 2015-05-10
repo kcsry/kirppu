@@ -123,5 +123,12 @@ module.exports.js = {
             "js/commands.coffee"
         ],
         "output_filename": "commands.js"
+    },
+    'dygraph': {
+        "source_filenames": [
+            "js/dygraph-combined-dev.js"
+        ],
+        "output_filename": "dygraph-combined.js",
+        "compress": true
     }
 };
