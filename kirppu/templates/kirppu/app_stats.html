@@ -32,15 +32,18 @@
     </h1>
 
     <div id="graph1" style="width:100%; height:300px;"></div>
+    <div id="graph2" style="width:100%; height:300px;"></div>
+
+
     <script>
     $(document).ready(function() {
         setupAjax();
 
-        var g = new Dygraph(
+        var g1 = new Dygraph(
                 document.getElementById("graph1"),
                 [[null, null, null, null, null]],
                 {
-                    labels: ['Time', 'Brought', 'Unsold', 'Money', 'Compensated'],
+                    labels: ['Time', 'Registered', 'Brought', 'Unsold', 'Money', 'Compensated'],
                     strokeWidth: 2,
                     highlightSeriesOpts: {
                         strokeWidth: 3,
@@ -50,7 +53,22 @@
                 }
         );
 
-        populateChart(g);
+        var g2 = new Dygraph(
+                document.getElementById("graph2"),
+                [[null, null, null, null, null]],
+                {
+                    labels: ['Time', 'Registered', 'Brought', 'Unsold', 'Money', 'Compensated'],
+                    strokeWidth: 2,
+                    highlightSeriesOpts: {
+                        strokeWidth: 3,
+                        strokeBorderWidth: 2,
+                        highlightCircleSize: 5
+                    }
+                }
+        );
+
+        populateChart(g1, Api.stats_registration_data);
+        populateChart(g2, Api.stats_sales_data);
     });
     </script>
 

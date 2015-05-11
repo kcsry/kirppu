@@ -616,67 +616,82 @@ def item_mark_lost(request, code):
     return item.as_dict()
 
 
-@ajax_func('^stats/get_data$')
-def stats_ajax(request):
-    import json
-    import time
+def iterate_logs(entries, hide_advertised=True):
+    """ Iterate through ItemStateLog objects returning current sum of each type of object at each timestamp.
 
-    def iterate_logs(entries):
-        """ Iterate through ItemStateLog objects returning current sum of each type of object at each timestamp.
+    Example of returned JSON:
+    [[js_time, brought, unsold, money, compensated]]
 
-        Example of returned JSON:
-        [[js_time, brought, unsold, money, compensated]]
+    :param entries: iterator to ItemStateLog objects.
+    :return: JSON presentation of the objects, one item at a time.
 
-        :param entries: iterator to ItemStateLog objects.
-        :return: JSON presentation of the objects, one item at a time.
+    """
+    from datetime import datetime, timedelta
+    import pytz
 
-        """
-        from datetime import datetime, timedelta
-        import pytz
+    advertised_status = (Item.ADVERTISED,)
+    brought_status = (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.MISSING, Item.RETURNED, Item.COMPENSATED)
+    unsold_status = (Item.BROUGHT, Item.STAGED)
+    money_status = (Item.SOLD,)
+    compensated_status = (Item.COMPENSATED,)
+    unix_epoch = datetime(1970, 1, 1, tzinfo=pytz.utc)
 
-        brought_status = (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.MISSING, Item.RETURNED, Item.COMPENSATED)
-        unsold_status = (Item.BROUGHT, Item.STAGED)
-        money_status = (Item.SOLD,)
-        compensated_status = (Item.COMPENSATED,)
-        unix_epoch = datetime(1970, 1, 1, tzinfo=pytz.utc)
+    def datetime_to_js_time(dt):
+        return int((dt - unix_epoch).total_seconds() * 1000)
 
-        def datetime_to_js_time(dt):
-            return int((dt - unix_epoch).total_seconds() * 1000)
+    def get_log_str(bucket_time, balance):
+        entry_time = datetime_to_js_time(bucket_time)
+        advertised = sum(balance[status] for status in advertised_status)
+        brought = sum(balance[status] for status in brought_status)
+        unsold = sum(balance[status] for status in unsold_status)
+        money = sum(balance[status] for status in money_status)
+        compensated = sum(balance[status] for status in compensated_status)
+        return '[%d, %s, %s, %s, %s, %s],\n' % (
+            entry_time,
+            advertised if not hide_advertised else 'null',
+            brought,
+            unsold,
+            money,
+            compensated
+        )
 
-        def get_log_str(bucket_time, balance):
-            entry_time = datetime_to_js_time(bucket_time)
-            brought = sum(balance[status] for status in brought_status)
-            unsold = sum(balance[status] for status in unsold_status)
-            money = sum(balance[status] for status in money_status)
-            compensated = sum(balance[status] for status in compensated_status)
-            return '[%d, %d, %d, %d, %d],\n' % (entry_time, brought, unsold, money, compensated)
+    yield '[\n'
 
-        yield '[\n'
+    # Collect the data into buckets of size bucket_td to reduce the amount of data that has to be sent
+    # and parsed at client side.
+    balance = { item_type: 0 for item_type, _item_desc in Item.STATE }
+    bucket_time = None
+    bucket_td = timedelta(seconds=60)
 
-        # Collect the data into buckets of size bucket_td to reduce the amount of data that has to be sent
-        # and parsed at client side.
-        balance = { item_type: 0 for item_type, _item_desc in Item.STATE }
-        bucket_time = None
-        bucket_td = timedelta(seconds=60)
-
-        for entry in entries:
-            if bucket_time is None:
-                bucket_time = entry.time
-            if (entry.time - bucket_time) > bucket_td:
-                # Fart out what was in the old bucket and start a new bucket.
-                yield get_log_str(bucket_time, balance)
-                bucket_time = entry.time
-
-            if entry.old_state:
-                balance[entry.old_state] -= 1
-            balance[entry.new_state] += 1
-
-        # Fart out the last bucket.
-        if bucket_time is not None:
+    for entry in entries:
+        if bucket_time is None:
+            bucket_time = entry.time
+        if (entry.time - bucket_time) > bucket_td:
+            # Fart out what was in the old bucket and start a new bucket.
             yield get_log_str(bucket_time, balance)
+            bucket_time = entry.time
 
-        yield 'null\n'
-        yield ']\n'
+        if entry.old_state:
+            balance[entry.old_state] -= 1
+        balance[entry.new_state] += 1
 
+    # Fart out the last bucket.
+    if bucket_time is not None:
+        yield get_log_str(bucket_time, balance)
+
+    yield 'null\n'
+    yield ']\n'
+
+
+@ajax_func('^stats/get_sales_data$')
+def stats_sales_data(request):
     entries = ItemStateLog.objects.exclude(new_state=Item.ADVERTISED)
-    return StreamingHttpResponse(iterate_logs(entries), content_type='application/json')
+    log_generator = iterate_logs(entries)
+    return StreamingHttpResponse(log_generator, content_type='application/json')
+
+
+@ajax_func('^stats/get_registration_data$')
+def stats_registration_data(request):
+    entries = ItemStateLog.objects.filter(new_state=Item.ADVERTISED)
+    log_generator = iterate_logs(entries, hide_advertised=False)
+    return StreamingHttpResponse(log_generator, content_type='application/json')

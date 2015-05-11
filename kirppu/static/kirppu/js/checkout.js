@@ -2877,7 +2877,7 @@
 (function() {
   var populateChart;
 
-  populateChart = function(chart) {
+  populateChart = function(chart, api_func) {
     var appendToChart, onError;
     appendToChart = function(responseJSON) {
       var brought_data, p;
@@ -2887,7 +2887,7 @@
         for (i = 0, len = responseJSON.length; i < len; i++) {
           p = responseJSON[i];
           if (p) {
-            results.push([new Date(p[0]), p[1], p[2], p[3], p[4]]);
+            results.push([new Date(p[0]), p[1], p[2], p[3], p[4], p[5]]);
           }
         }
         return results;
@@ -2899,7 +2899,7 @@
     onError = function(jqXHR) {
       return safeAlert("Fetching chart data failed.");
     };
-    return Api.stats_ajax().done(appendToChart).error(onError);
+    return api_func().done(appendToChart).error(onError);
   };
 
   window.populateChart = populateChart;
