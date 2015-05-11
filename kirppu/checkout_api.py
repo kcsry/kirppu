@@ -631,7 +631,7 @@ def stats_ajax(request):
         :return: JSON presentation of the objects, one item at a time.
 
         """
-        from datetime import datetime
+        from datetime import datetime, timedelta
         import pytz
 
         brought_status = (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.MISSING, Item.RETURNED, Item.COMPENSATED)
@@ -643,22 +643,37 @@ def stats_ajax(request):
         def datetime_to_js_time(dt):
             return int((dt - unix_epoch).total_seconds() * 1000)
 
-        yield '[\n'
-
-        balance = { item_type: 0 for item_type, _item_desc in Item.STATE }
-        for entry in entries:
-            if entry.new_state == Item.ADVERTISED:
-                continue
-            if entry.old_state:
-                balance[entry.old_state] -= 1
-            balance[entry.new_state] += 1
-
-            entry_time = datetime_to_js_time(entry.time)
+        def get_log_str(bucket_time, balance):
+            entry_time = datetime_to_js_time(bucket_time)
             brought = sum(balance[status] for status in brought_status)
             unsold = sum(balance[status] for status in unsold_status)
             money = sum(balance[status] for status in money_status)
             compensated = sum(balance[status] for status in compensated_status)
-            yield '[%d, %d, %d, %d, %d],\n' % (entry_time, brought, unsold, money, compensated)
+            return '[%d, %d, %d, %d, %d],\n' % (entry_time, brought, unsold, money, compensated)
+
+        yield '[\n'
+
+        # Collect the data into buckets of size bucket_td to reduce the amount of data that has to be sent
+        # and parsed at client side.
+        balance = { item_type: 0 for item_type, _item_desc in Item.STATE }
+        bucket_time = None
+        bucket_td = timedelta(seconds=60)
+
+        for entry in entries:
+            if bucket_time is None:
+                bucket_time = entry.time
+            if (entry.time - bucket_time) > bucket_td:
+                # Fart out what was in the old bucket and start a new bucket.
+                yield get_log_str(bucket_time, balance)
+                bucket_time = entry.time
+
+            if entry.old_state:
+                balance[entry.old_state] -= 1
+            balance[entry.new_state] += 1
+
+        # Fart out the last bucket.
+        if bucket_time is not None:
+            yield get_log_str(bucket_time, balance)
 
         yield 'null\n'
         yield ']\n'
