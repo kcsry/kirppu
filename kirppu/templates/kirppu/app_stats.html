@@ -40,9 +40,13 @@
                 document.getElementById("graph1"),
                 [[null, null, null, null, null]],
                 {
-                    drawPoints: true,
-                    showRoller: true,
-                    labels: ['Time', 'Brought', 'Unsold', 'Money', 'Compensated']
+                    labels: ['Time', 'Brought', 'Unsold', 'Money', 'Compensated'],
+                    strokeWidth: 2,
+                    highlightSeriesOpts: {
+                        strokeWidth: 3,
+                        strokeBorderWidth: 2,
+                        highlightCircleSize: 5
+                    }
                 }
         );
 
