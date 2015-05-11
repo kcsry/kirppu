@@ -632,13 +632,11 @@ def stats_view(request):
         def property_values(self):
             for property_name in self._properties:
                 yield getattr(self, property_name)
-            yield self.sum
 
         @property
         def property_names(self):
             for property_name in self._properties:
                 yield property_name
-            yield 'Sum'
 
         @classmethod
         def sum_stats(cls, list_of_stats):
