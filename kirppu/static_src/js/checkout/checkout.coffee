@@ -11,6 +11,7 @@ class Config
     codeForm: null
     modeMenu: null
     overseerLink: null
+    statsLink: null
     dialog: null
   uiRef:
     container: null
@@ -23,6 +24,7 @@ class Config
     codeForm: null
     modeMenu: null
     overseerLink: null
+    statsLink: null
     dialog: null
   settings:
     itemPrefix: null

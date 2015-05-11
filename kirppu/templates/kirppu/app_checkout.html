@@ -34,7 +34,9 @@
     </li>
 {% endblock %}
 {% block navbar_right %}
-    <li><a href="{% url 'kirppu:stats_view' %}" title="Stats">Stats</a></li>
+    <li id="stats_link" class="hidden">
+        <a href="{% url 'kirppu:stats_view' %}" title="Stats">Stats</a>
+    </li>
     <li id="overseer_link" class="hidden">
         <a href="{% url 'kirppu:overseer_view' %}" title="Overseer Dashboard">Overseer Dashboard</a>
     </li>
@@ -78,6 +80,7 @@
     CheckoutConfig.uiId.codeForm = "code_form";
     CheckoutConfig.uiId.modeMenu = "modeMenu";
     CheckoutConfig.uiId.overseerLink= "overseer_link";
+    CheckoutConfig.uiId.statsLink= "stats_link";
     CheckoutConfig.uiId.dialog = "dialog_template";
     DateTimeFormatter.locales = "{{ LANGUAGE_CODE }}";
     DateTimeFormatter.timeZone = "{{ TIME_ZONE }}";

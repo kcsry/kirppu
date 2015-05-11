@@ -150,6 +150,13 @@ class @ModeSwitcher
   setOverseerEnabled: (enabled) ->
     setClass(@cfg.uiRef.overseerLink, 'hidden', not enabled)
 
+  # Enable or disable the link to stats
+  #
+  # @param enabled [Boolean] If true, enable the link. If false, disable
+  # the link.
+  setStatsEnabled: (enabled) ->
+    setClass(@cfg.uiRef.statsLink, 'hidden', not enabled)
+
 
 # Populate values from commands of Modes for all 'data-command-value' and 'data-command-title' elements in DOM.
 _populateCommandRefs = () ->
