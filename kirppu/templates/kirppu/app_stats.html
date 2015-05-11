@@ -7,6 +7,9 @@
 {% block head %}
     <link href="{% static "kirppu/css/general.css" %}" rel="stylesheet">
     <script src="{% static "kirppu/js/general.js" %}"></script>
+    <script src="{% static "kirppu/js/checkout.js" %}"></script>
+    <script src="{% static "kirppu/js/dygraph-combined.js" %}"></script>
+    <script src="/kirppu/api/checkout.js"></script>
 
     <style>
     .sum_table tr:last-child {
@@ -27,6 +30,27 @@
         <span id="mode_glyph" class="glyphicon glyphicon glyphicon-signal"></span>
         <span id="title_text">Stats</span>
     </h1>
+
+    <div id="graph1" style="width:100%; height:300px;"></div>
+    <script>
+    $(document).ready(function() {
+        setupAjax();
+
+        var g = new Dygraph(
+                document.getElementById("graph1"),
+                [[null, null, null, null, null]],
+                {
+                    drawPoints: true,
+                    showRoller: true,
+                    labels: ['Time', 'Brought', 'Unsold', 'Money', 'Compensated']
+                }
+        );
+
+        populateChart(g);
+    });
+    </script>
+
+
 
     <h2>Number of items:</h2>
     <table class="table table-striped sum_table">

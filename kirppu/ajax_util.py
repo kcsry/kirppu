@@ -5,6 +5,7 @@ import json
 from django.http.response import (
     HttpResponse,
     HttpResponseBadRequest,
+    StreamingHttpResponse,
 )
 from django.views.decorators.http import require_http_methods
 from django.utils.translation import ugettext as _i
@@ -100,7 +101,7 @@ def ajax_func(url, register_func, method='POST', params=None):
             except AjaxError as ae:
                 return ae.render()
 
-            if isinstance(result, HttpResponse):
+            if isinstance(result, (HttpResponse, StreamingHttpResponse)):
                 return result
             else:
                 return HttpResponse(

@@ -99,6 +99,8 @@ module.exports.js = {
 
             "js/overseer/receipt_list_mode.coffee",
             "js/overseer/receipt_list.coffee",
+
+            "js/stats.coffee",
         ],
         "output_filename": "checkout.js",
     },

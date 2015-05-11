@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.http import Http404
 from django.http.response import (
     HttpResponse,
+    StreamingHttpResponse,
 )
 from django.shortcuts import (
     get_object_or_404,
@@ -613,3 +614,54 @@ def item_mark_lost(request, code):
     item.lost_property = True
     item.save()
     return item.as_dict()
+
+
+@ajax_func('^stats/get_data$')
+def stats_ajax(request):
+    import json
+    import time
+
+    def iterate_logs(entries):
+        """ Iterate through ItemStateLog objects returning current sum of each type of object at each timestamp.
+
+        Example of returned JSON:
+        [[js_time, brought, unsold, money, compensated]]
+
+        :param entries: iterator to ItemStateLog objects.
+        :return: JSON presentation of the objects, one item at a time.
+
+        """
+        from datetime import datetime
+        import pytz
+
+        brought_status = (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.MISSING, Item.RETURNED, Item.COMPENSATED)
+        unsold_status = (Item.BROUGHT, Item.STAGED)
+        money_status = (Item.SOLD,)
+        compensated_status = (Item.COMPENSATED,)
+        unix_epoch = datetime(1970, 1, 1, tzinfo=pytz.utc)
+
+        def datetime_to_js_time(dt):
+            return int((dt - unix_epoch).total_seconds() * 1000)
+
+        yield '[\n'
+
+        balance = { item_type: 0 for item_type, _item_desc in Item.STATE }
+        for entry in entries:
+            if entry.new_state == Item.ADVERTISED:
+                continue
+            if entry.old_state:
+                balance[entry.old_state] -= 1
+            balance[entry.new_state] += 1
+
+            entry_time = datetime_to_js_time(entry.time)
+            brought = sum(balance[status] for status in brought_status)
+            unsold = sum(balance[status] for status in unsold_status)
+            money = sum(balance[status] for status in money_status)
+            compensated = sum(balance[status] for status in compensated_status)
+            yield '[%d, %d, %d, %d, %d],\n' % (entry_time, brought, unsold, money, compensated)
+
+        yield 'null\n'
+        yield ']\n'
+
+    entries = ItemStateLog.objects.exclude(new_state=Item.ADVERTISED)
+    return StreamingHttpResponse(iterate_logs(entries), content_type='application/json')
