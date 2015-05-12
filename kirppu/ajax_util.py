@@ -84,8 +84,8 @@ def ajax_func(url, register_func, method='POST', params=None):
 
         @wraps(func)
         def wrapper(request, **kwargs):
-            if not request.is_ajax():
-                return HttpResponseBadRequest("Invalid requester")
+            #if not request.is_ajax():
+            #    return HttpResponseBadRequest("Invalid requester")
 
             # Pass request params to the view as keyword arguments.
             # The first argument is skipped since it is the request.

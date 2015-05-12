@@ -41,7 +41,7 @@
 
         var g1 = new Dygraph(
                 document.getElementById("graph1"),
-                [[null, null, null, null, null]],
+                'get_registration_data',
                 {
                     labels: ['Time', 'Registered', 'Brought', 'Unsold', 'Money', 'Compensated'],
                     strokeWidth: 2,
@@ -49,13 +49,20 @@
                         strokeWidth: 3,
                         strokeBorderWidth: 2,
                         highlightCircleSize: 5
+                    },
+                    axes: {
+                        x: {
+                            valueFormatter: Dygraph.dateString_,
+                            axisLabelFormatter: Dygraph.dateAxisLabelFormatter,
+                            ticker: Dygraph.dateTicker
+                        }
                     }
                 }
         );
 
         var g2 = new Dygraph(
                 document.getElementById("graph2"),
-                [[null, null, null, null, null]],
+                'get_sales_data',
                 {
                     labels: ['Time', 'Registered', 'Brought', 'Unsold', 'Money', 'Compensated'],
                     strokeWidth: 2,
@@ -63,12 +70,19 @@
                         strokeWidth: 3,
                         strokeBorderWidth: 2,
                         highlightCircleSize: 5
+                    },
+                    axes: {
+                        x: {
+                            valueFormatter: Dygraph.dateString_,
+                            axisLabelFormatter: Dygraph.dateAxisLabelFormatter,
+                            ticker: Dygraph.dateTicker
+                        }
                     }
                 }
         );
 
-        populateChart(g1, Api.stats_registration_data);
-        populateChart(g2, Api.stats_sales_data);
+        //populateChart(g1, Api.stats_registration_data);
+        //populateChart(g2, Api.stats_sales_data);
     });
     </script>
 

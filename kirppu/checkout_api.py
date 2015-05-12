@@ -617,7 +617,7 @@ def item_mark_lost(request, code):
     return item.as_dict()
 
 
-def iterate_logs(entries, hide_advertised=True):
+def iterate_logs(entries, hide_advertised=False, hide_sales=False):
     """ Iterate through ItemStateLog objects returning current sum of each type of object at each timestamp.
 
     Example of returned JSON:
@@ -647,16 +647,14 @@ def iterate_logs(entries, hide_advertised=True):
         unsold = sum(balance[status] for status in unsold_status)
         money = sum(balance[status] for status in money_status)
         compensated = sum(balance[status] for status in compensated_status)
-        return '[%d, %s, %s, %s, %s, %s],\n' % (
+        return '%d,%s,%s,%s,%s,%s\n' % (
             entry_time,
-            advertised if not hide_advertised else 'null',
-            brought,
-            unsold,
-            money,
-            compensated
+            advertised if not hide_advertised else '',
+            brought if not hide_sales else '',
+            unsold if not hide_sales else '',
+            money if not hide_sales else '',
+            compensated if not hide_sales else '',
         )
-
-    yield '[\n'
 
     # Collect the data into buckets of size bucket_td to reduce the amount of data that has to be sent
     # and parsed at client side.
@@ -680,19 +678,16 @@ def iterate_logs(entries, hide_advertised=True):
     if bucket_time is not None:
         yield get_log_str(bucket_time, balance)
 
-    yield 'null\n'
-    yield ']\n'
 
-
-@ajax_func('^stats/get_sales_data$')
+@ajax_func('^stats/get_sales_data$', method='GET')
 def stats_sales_data(request):
     entries = ItemStateLog.objects.exclude(new_state=Item.ADVERTISED)
-    log_generator = iterate_logs(entries)
-    return StreamingHttpResponse(log_generator, content_type='application/json')
+    log_generator = iterate_logs(entries, hide_advertised=True)
+    return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
-@ajax_func('^stats/get_registration_data$')
+@ajax_func('^stats/get_registration_data$', method='GET')
 def stats_registration_data(request):
     entries = ItemStateLog.objects.filter(new_state=Item.ADVERTISED)
-    log_generator = iterate_logs(entries, hide_advertised=False)
-    return StreamingHttpResponse(log_generator, content_type='application/json')
+    log_generator = iterate_logs(entries, hide_sales=True)
+    return StreamingHttpResponse(log_generator, content_type='text/csv')
