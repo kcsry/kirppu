@@ -5415,12 +5415,29 @@ Dygraph.prototype.start_ = function() {
       }
 
       var caller = this;
+      caller.rawData_ = [];
+      var last_update = new Date().getTime();
+      var last_size = 0;
       req.onreadystatechange = function () {
         if (req.readyState == 4) {
           if (req.status === 200 ||  // Normal http
               req.status === 0) {    // Chrome w/ --allow-file-access-from-files
             caller.loadedEvent_(req.responseText);
           }
+        } else if (req.readyState == 3) {
+            // If the download is not done yet, process whatever we have and
+            // update the graph.
+            var now = new Date().getTime();
+            if (now - last_update > 1000 / 25) {
+                var new_str = req.responseText.slice(last_size);
+                last_size = req.responseText.length;
+                var new_data = caller.parseCSV_(new_str);
+                caller.rawData_.push.apply(caller.rawData_, new_data);
+                //caller.rawData_ = caller.parseCSV_(req.responseText);
+                caller.cascadeDataDidUpdateEvent_();
+                caller.predraw_();
+                last_update = new Date().getTime();
+            }
         }
       };
 
