@@ -638,6 +638,9 @@ def stats_view(request):
             for property_name in self._properties:
                 yield property_name
 
+        def init_properties(self):
+            raise NotImplementedError()
+
         @classmethod
         def sum_stats(cls, list_of_stats):
             """Return a new instance with all properties the sum of the input stats properties."""

@@ -8,7 +8,7 @@ from django.db.models import Sum
 from django.db import transaction
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-from django.utils.module_loading import import_by_path
+from django.utils.module_loading import import_string
 from django.utils.six import text_type, PY3
 from django.conf import settings
 from .utils import model_dict_fn, format_datetime
@@ -63,7 +63,7 @@ class UserAdapterBase(object):
         return user.get_full_name()
 
 # The actual class is found by string in settings.
-UserAdapter = import_by_path(settings.KIRPPU_USER_ADAPTER)
+UserAdapter = import_string(settings.KIRPPU_USER_ADAPTER)
 
 
 @python_2_unicode_compatible

@@ -16,7 +16,7 @@ if not settings.KIRPPU_USE_SSO:
             "submit": lambda: reverse('kirppuauth:local_login'),
         },
     }))
-    _urls.append(url('^profile/$', RedirectView.as_view(pattern_name="home")))
+    _urls.append(url('^profile/$', RedirectView.as_view(pattern_name="home", permanent=False)))
     _urls.append(url('^logout/$', 'django.contrib.auth.views.logout', name='local_logout', kwargs={
         "next_page": "home",
     }))
