@@ -55,3 +55,59 @@ class @ItemReportTable extends ResultTable
       $('<th>')
       $('<th>')
     ))
+
+
+class @BoxResultTable extends ResultTable
+  columns: [
+    "receipt_index numeric"
+    ""
+    "receipt_price numeric"
+    "receipt_count numeric"
+    "receipt_count numeric"
+    "receipt_count numeric"
+  ]
+
+  constructor: ->
+    super
+    @head.append(@generate("th", [
+      "#"
+      gettext('description')
+      gettext('price')
+      gettext('sold')
+      gettext('left')
+      gettext('items')
+    ], true))
+    @head.children().first().addClass("numeric")
+
+  append: (box, index) ->
+    row = $("<tr>")
+    row.append(@generate("td", [
+      index + 1
+      box.description
+      displayPrice(box.item_price)
+      box.items_sold
+      box.item_count - box.items_sold
+      box.item_count
+    ]))
+    @body.append(row)
+    return
+
+  update: (boxes) ->
+    sum_total = 0
+    sum_total_count = 0
+    sum_sold = 0
+    sum_sold_count = 0
+    for box, i in boxes
+      @append(box, i)
+      sum_total_count += box.item_count
+      sum_total += box.item_count * box.item_price
+      sum_sold_count += box.items_sold
+      sum_sold += box.items_sold * box.item_price
+
+    @body.append($('<tr>').append(
+      $('<th colspan="3">').text(gettext('Total:'))
+      $('<th class="receipt_price numeric">').text(displayPrice(sum_sold) + " (" + sum_sold_count + ")")
+      $('<th>')
+      $('<td class="receipt_price numeric">').text(displayPrice(sum_total) + " (" + sum_total_count + ")")
+    ))
+    return

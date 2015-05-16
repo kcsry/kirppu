@@ -27,6 +27,7 @@ class @ResultTable
         column_class = column_class.replace(new RegExp(" .*"), "")
       query = "<#{ element }>"
       e = $(query)
+      column_class = column_class.trim()
       if column_class.length > 0
         e.addClass(column_class)
       result.push(e.text(text))

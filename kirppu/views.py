@@ -253,7 +253,7 @@ def box_add(request):
         **data
     )
 
-    box_dict = box.as_dict()
+    box_dict = box.as_public_dict()
     box_dict["vendor_id"] = vendor.id
     response = box_dict
 

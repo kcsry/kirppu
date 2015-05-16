@@ -46,9 +46,13 @@ class @VendorReport extends CheckoutMode
 
     Api.item_list(
       vendor: @vendor.id
-    ).done(@onGotItems)
+    ).done((items) =>
+      Api.box_list(
+        vendor: @vendor.id
+      ).done((boxes) => @onGotItems(items, boxes))
+    )
 
-  onGotItems: (items) =>
+  onGotItems: (items, boxes) =>
     for [name, states, hidePrint] in tables
       matchingItems = (i for i in items when states[i.state]?)
       table = new ItemReportTable(name)
@@ -56,6 +60,13 @@ class @VendorReport extends CheckoutMode
       rendered_table = table.render()
       if hidePrint then rendered_table.addClass('hidden-print')
       @cfg.uiRef.body.append(rendered_table)
+
+    if boxes.length > 0
+      table = new BoxResultTable(gettext("Boxes"))
+      table.update(boxes)
+      rendered_table = table.render()
+      @cfg.uiRef.body.append(rendered_table)
+    return
 
   onCompensate: => @switcher.switchTo(VendorCompensation, @vendor)
   onReturn: =>     @switcher.switchTo(VendorCheckoutMode, @vendor)

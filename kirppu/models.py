@@ -265,13 +265,18 @@ class Box(models.Model):
     def __str__(self):
         return u"{id} ({description})".format(id=self.id, description=self.description)
 
-    as_dict = model_dict_fn(
+    as_public_dict = model_dict_fn(
         "description",
         box_id="pk",
         item_price=lambda self: text_type(self.get_price_fmt()),
         item_count=lambda self: self.get_item_count(),
         item_type=lambda self: self.get_item_type_for_display(),
         item_adult=lambda self: self.get_item_adult(),
+    )
+
+    as_dict = model_dict_fn(
+        item_price=lambda self: self._get_representative_item().price_cents,
+        __extend=as_public_dict
     )
 
     def get_vendor(self):

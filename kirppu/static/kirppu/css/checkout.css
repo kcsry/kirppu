@@ -36,6 +36,10 @@ td.receipt_code {
     width: 0;
     white-space: nowrap;
 }
+.receipt_count {
+    width: 9em;
+}
+
 tr.receipt_tr_clickable:hover {
     text-decoration: underline;
     cursor: pointer;

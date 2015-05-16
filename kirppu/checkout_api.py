@@ -28,6 +28,7 @@ from .models import (
     Vendor,
     UserAdapter,
     ItemStateLog,
+    Box,
 )
 from .fields import ItemPriceField
 from .forms import ItemRemoveForm
@@ -360,6 +361,17 @@ def item_edit(request, code, price, state):
 def item_list(request, vendor):
     items = Item.objects.filter(vendor__id=vendor).filter(box__isnull=True)
     return list(map(lambda i: i.as_dict(), items))
+
+
+@ajax_func('^box/list$', method='GET')
+def box_list(request, vendor):
+    out_boxes = []
+    boxes = Box.objects.filter(item__vendor__id=vendor).distinct()
+    for box in boxes:
+        data = box.as_dict()
+        data["items_sold"] = box.get_items().filter(state=Item.SOLD).count()
+        out_boxes.append(data)
+    return out_boxes
 
 
 @ajax_func('^item/checkin$')

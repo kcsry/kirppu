@@ -398,6 +398,7 @@
         }
         query = "<" + element + ">";
         e = $(query);
+        column_class = column_class.trim();
         if (column_class.length > 0) {
           e.addClass(column_class);
         }
@@ -522,6 +523,45 @@
     };
 
     return ItemReportTable;
+
+  })(ResultTable);
+
+  this.BoxResultTable = (function(superClass) {
+    extend(BoxResultTable, superClass);
+
+    BoxResultTable.prototype.columns = ["receipt_index numeric", "", "receipt_price numeric", "receipt_count numeric", "receipt_count numeric", "receipt_count numeric"];
+
+    function BoxResultTable() {
+      BoxResultTable.__super__.constructor.apply(this, arguments);
+      this.head.append(this.generate("th", ["#", gettext('description'), gettext('price'), gettext('sold'), gettext('left'), gettext('items')], true));
+      this.head.children().first().addClass("numeric");
+    }
+
+    BoxResultTable.prototype.append = function(box, index) {
+      var row;
+      row = $("<tr>");
+      row.append(this.generate("td", [index + 1, box.description, displayPrice(box.item_price), box.items_sold, box.item_count - box.items_sold, box.item_count]));
+      this.body.append(row);
+    };
+
+    BoxResultTable.prototype.update = function(boxes) {
+      var box, i, j, len, sum_sold, sum_sold_count, sum_total, sum_total_count;
+      sum_total = 0;
+      sum_total_count = 0;
+      sum_sold = 0;
+      sum_sold_count = 0;
+      for (i = j = 0, len = boxes.length; j < len; i = ++j) {
+        box = boxes[i];
+        this.append(box, i);
+        sum_total_count += box.item_count;
+        sum_total += box.item_count * box.item_price;
+        sum_sold_count += box.items_sold;
+        sum_sold += box.items_sold * box.item_price;
+      }
+      this.body.append($('<tr>').append($('<th colspan="3">').text(gettext('Total:')), $('<th class="receipt_price numeric">').text(displayPrice(sum_sold) + " (" + sum_sold_count + ")"), $('<th>'), $('<td class="receipt_price numeric">').text(displayPrice(sum_total) + " (" + sum_total_count + ")")));
+    };
+
+    return BoxResultTable;
 
   })(ResultTable);
 
@@ -2522,24 +2562,31 @@
       this.cfg.uiRef.body.append($('<form class="hidden-print">').append(compensateButton, " ", checkoutButton, " ", abandonButton));
       return Api.item_list({
         vendor: this.vendor.id
-      }).done(this.onGotItems);
+      }).done((function(_this) {
+        return function(items) {
+          return Api.box_list({
+            vendor: _this.vendor.id
+          }).done(function(boxes) {
+            return _this.onGotItems(items, boxes);
+          });
+        };
+      })(this));
     };
 
-    VendorReport.prototype.onGotItems = function(items) {
-      var hidePrint, i, j, len, matchingItems, name, ref, rendered_table, results, states, table;
-      results = [];
+    VendorReport.prototype.onGotItems = function(items, boxes) {
+      var hidePrint, i, j, len, matchingItems, name, ref, rendered_table, states, table;
       for (j = 0, len = tables.length; j < len; j++) {
         ref = tables[j], name = ref[0], states = ref[1], hidePrint = ref[2];
         matchingItems = (function() {
-          var k, len1, results1;
-          results1 = [];
+          var k, len1, results;
+          results = [];
           for (k = 0, len1 = items.length; k < len1; k++) {
             i = items[k];
             if (states[i.state] != null) {
-              results1.push(i);
+              results.push(i);
             }
           }
-          return results1;
+          return results;
         })();
         table = new ItemReportTable(name);
         table.update(matchingItems);
@@ -2547,9 +2594,14 @@
         if (hidePrint) {
           rendered_table.addClass('hidden-print');
         }
-        results.push(this.cfg.uiRef.body.append(rendered_table));
+        this.cfg.uiRef.body.append(rendered_table);
       }
-      return results;
+      if (boxes.length > 0) {
+        table = new BoxResultTable(gettext("Boxes"));
+        table.update(boxes);
+        rendered_table = table.render();
+        this.cfg.uiRef.body.append(rendered_table);
+      }
     };
 
     VendorReport.prototype.onCompensate = function() {
