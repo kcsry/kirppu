@@ -94,7 +94,7 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
 
     def decorator(func):
         # Get argspec before any decoration.
-        (args, _, _, _) = inspect.getargspec(func)
+        (args, _, _, defaults) = inspect.getargspec(func)
 
         if counter:
             func = require_counter_validated(func)
@@ -106,7 +106,8 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
             url,
             _register_ajax_func,
             method,
-            args[1:]
+            args[1:],
+            defaults
         )(func)
         if atomic:
             fn = transaction.atomic(fn)
@@ -358,9 +359,13 @@ def item_edit(request, code, price, state):
 
 
 @ajax_func('^item/list$', method='GET')
-def item_list(request, vendor):
-    items = Item.objects.filter(vendor__id=vendor).filter(box__isnull=True)
-    return list(map(lambda i: i.as_dict(), items))
+def item_list(request, vendor, state=None, include_box_items=False):
+    items = Item.objects.filter(vendor__id=vendor)
+    if state is not None:
+        items = items.filter(state=state)
+    if not include_box_items:
+        items = items.filter(box__isnull=True)
+    return [i.as_dict() for i in items]
 
 
 @ajax_func('^box/list$', method='GET')

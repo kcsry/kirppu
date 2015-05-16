@@ -2397,7 +2397,9 @@
       this.itemDiv = $('<div>');
       this.cfg.uiRef.body.append(this.itemDiv);
       return Api.item_list({
-        vendor: this.vendor.id
+        vendor: this.vendor.id,
+        state: "SO",
+        include_box_items: true
       }).done(this.onGotItems);
     };
 
@@ -2420,18 +2422,8 @@
     };
 
     VendorCompensation.prototype.onGotItems = function(items) {
-      var i, table;
-      this.compensableItems = (function() {
-        var j, len, results;
-        results = [];
-        for (j = 0, len = items.length; j < len; j++) {
-          i = items[j];
-          if (i.state === 'SO') {
-            results.push(i);
-          }
-        }
-        return results;
-      })();
+      var table;
+      this.compensableItems = items;
       if (this.compensableItems.length > 0) {
         table = new ItemReportTable('Sold Items');
         table.update(this.compensableItems);

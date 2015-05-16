@@ -18,7 +18,7 @@ class @VendorCompensation extends CheckoutMode
     @itemDiv = $('<div>')
     @cfg.uiRef.body.append(@itemDiv)
 
-    Api.item_list(vendor: @vendor.id).done(@onGotItems)
+    Api.item_list(vendor: @vendor.id, state: "SO", include_box_items: true).done(@onGotItems)
 
   exit: ->
     @cfg.uiRef.codeForm.show()
@@ -41,7 +41,7 @@ class @VendorCompensation extends CheckoutMode
       .click(@onCancel)
 
   onGotItems: (items) =>
-    @compensableItems = (i for i in items when i.state == 'SO')
+    @compensableItems = items
 
     if @compensableItems.length > 0
       table = new ItemReportTable('Sold Items')

@@ -51,7 +51,7 @@ class AjaxFunc(object):
         self.method = method                    # http method for templates
 
 
-def ajax_func(url, register_func, method='POST', params=None):
+def ajax_func(url, register_func, method='POST', params=None, defaults=None):
     """
     Decorate the view function properly and register it.
 
@@ -70,10 +70,19 @@ def ajax_func(url, register_func, method='POST', params=None):
     :type register_func: function with a single parameter of type AjaxFunc
     :param method: Required HTTP method; either 'GET' or 'POST'
     :type method: str
+    :param params: List of names of expected arguments.
+    :type params: list[str]
+    :param defaults: List of default values for arguments. Default values are applied to `params` tail.
+    :type defaults: list
     :return: A decorator for a view function
     :rtype: function
     """
     params = params or []
+
+    # Default values are applied only to len(defaults) last parameters.
+    defaults = defaults or []
+    defaults_start = len(params) - len(defaults)
+    assert defaults_start >= 0
 
     def decorator(func):
         # Register the function.
@@ -90,11 +99,13 @@ def ajax_func(url, register_func, method='POST', params=None):
             # Pass request params to the view as keyword arguments.
             # The first argument is skipped since it is the request.
             request_data = request.GET if method == 'GET' else request.POST
-            for param in params:
+            for i, param in enumerate(params):
                 try:
                     kwargs[param] = request_data[param]
                 except KeyError:
-                    return HttpResponseBadRequest()
+                    if i < defaults_start:
+                        return HttpResponseBadRequest()
+                    kwargs[param] = defaults[i - defaults_start]
 
             try:
                 result = func(request, **kwargs)
