@@ -29,32 +29,34 @@ class @CounterValidationMode extends CheckoutMode
     code = $.cookie(@constructor.COOKIE)
     if code?
       data = JSON.parse(b64_to_utf8(code))
-      @onResultSuccess(data)
+      @validate(data["counter"])
 
   actions: -> [[
-    @cfg.settings.counterPrefix,
-    (code) => Api.counter_validate(
-      code: code,
-    ).then(@onResultSuccess, @onResultError)
+    @cfg.settings.counterPrefix, @validate
   ]]
+
+  validate: (code) =>
+    Api.counter_validate(
+      code: code
+    ).then(@onResultSuccess, @onResultError)
 
   onResultSuccess: (data) =>
     code = data["counter"]
     name = data["name"]
     @cfg.settings.counterCode = code
     @cfg.settings.counterName = name
-    console.log("Validated #{code} as #{name}.")
+    console.log("Validated as #{name}.")
 
     # Store values for next time so the mode can be skipped.
     $.cookie(@constructor.COOKIE, utf8_to_b64(JSON.stringify(
       counter: code
-      name: name
     )))
     @switcher.switchTo(ClerkLoginMode)
 
   onResultError: (jqXHR) =>
     if jqXHR.status == 419
       console.log("Invalid counter code supplied.")
+      CounterValidationMode.clearStore()
       return
     alert("Error:" + jqXHR.responseText)
     return true

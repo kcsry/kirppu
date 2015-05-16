@@ -1322,6 +1322,7 @@
     function CounterValidationMode() {
       this.onResultError = bind(this.onResultError, this);
       this.onResultSuccess = bind(this.onResultSuccess, this);
+      this.validate = bind(this.validate, this);
       return CounterValidationMode.__super__.constructor.apply(this, arguments);
     }
 
@@ -1344,22 +1345,18 @@
       code = $.cookie(this.constructor.COOKIE);
       if (code != null) {
         data = JSON.parse(b64_to_utf8(code));
-        return this.onResultSuccess(data);
+        return this.validate(data["counter"]);
       }
     };
 
     CounterValidationMode.prototype.actions = function() {
-      return [
-        [
-          this.cfg.settings.counterPrefix, (function(_this) {
-            return function(code) {
-              return Api.counter_validate({
-                code: code
-              }).then(_this.onResultSuccess, _this.onResultError);
-            };
-          })(this)
-        ]
-      ];
+      return [[this.cfg.settings.counterPrefix, this.validate]];
+    };
+
+    CounterValidationMode.prototype.validate = function(code) {
+      return Api.counter_validate({
+        code: code
+      }).then(this.onResultSuccess, this.onResultError);
     };
 
     CounterValidationMode.prototype.onResultSuccess = function(data) {
@@ -1368,10 +1365,9 @@
       name = data["name"];
       this.cfg.settings.counterCode = code;
       this.cfg.settings.counterName = name;
-      console.log("Validated " + code + " as " + name + ".");
+      console.log("Validated as " + name + ".");
       $.cookie(this.constructor.COOKIE, utf8_to_b64(JSON.stringify({
-        counter: code,
-        name: name
+        counter: code
       })));
       return this.switcher.switchTo(ClerkLoginMode);
     };
@@ -1379,6 +1375,7 @@
     CounterValidationMode.prototype.onResultError = function(jqXHR) {
       if (jqXHR.status === 419) {
         console.log("Invalid counter code supplied.");
+        CounterValidationMode.clearStore();
         return;
       }
       alert("Error:" + jqXHR.responseText);
