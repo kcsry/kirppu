@@ -2593,7 +2593,7 @@
         table = new BoxResultTable(gettext("Boxes"));
         table.update(boxes);
         rendered_table = table.render();
-        this.cfg.uiRef.body.append(rendered_table);
+        this.cfg.uiRef.body.children().last().before(rendered_table);
       }
     };
 

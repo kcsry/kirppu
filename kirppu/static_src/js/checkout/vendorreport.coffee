@@ -65,7 +65,8 @@ class @VendorReport extends CheckoutMode
       table = new BoxResultTable(gettext("Boxes"))
       table.update(boxes)
       rendered_table = table.render()
-      @cfg.uiRef.body.append(rendered_table)
+      # Insert box list before Not Brought list.
+      @cfg.uiRef.body.children().last().before(rendered_table)
     return
 
   onCompensate: => @switcher.switchTo(VendorCompensation, @vendor)
