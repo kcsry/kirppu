@@ -374,8 +374,11 @@ def box_list(request, vendor):
     boxes = Box.objects.filter(item__vendor__id=vendor, item__hidden=False).distinct()
     for box in boxes:
         data = box.as_dict()
-        data["items_sold"] = box.get_items().filter(state=Item.SOLD).count()
-        data["items_exit"] = box.get_items().filter(state__in=(Item.COMPENSATED, Item.RETURNED)).count()
+        items = box.get_items()
+        data["items_brought_total"] = items.filter(state__in=(Item.BROUGHT, Item.STAGED, Item.SOLD, Item.RETURNED))\
+            .count()
+        data["items_sold"] = items.filter(state=Item.SOLD).count()
+        data["items_returnable"] = items.filter(state__in=(Item.BROUGHT, Item.STAGED)).count()
         out_boxes.append(data)
     return out_boxes
 

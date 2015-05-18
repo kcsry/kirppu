@@ -74,8 +74,8 @@ class @BoxResultTable extends ResultTable
       gettext('description')
       gettext('price')
       gettext('compensable')
-      gettext('left')
-      gettext('items')
+      gettext('returnable')
+      gettext('brought')
     ], true))
     @head.children().first().addClass("numeric")
 
@@ -86,21 +86,21 @@ class @BoxResultTable extends ResultTable
       box.description
       displayPrice(box.item_price)
       box.items_sold
-      box.item_count - box.items_sold - box.items_exit
-      box.item_count
+      box.items_returnable
+      box.items_brought_total
     ]))
     @body.append(row)
     return
 
   update: (boxes) ->
-    sum_total = 0
-    sum_total_count = 0
+    sum_brought = 0
+    sum_brought_count = 0
     sum_sold = 0
     sum_sold_count = 0
     for box, i in boxes
       @append(box, i)
-      sum_total_count += box.item_count
-      sum_total += box.item_count * box.item_price
+      sum_brought_count += box.items_brought_total
+      sum_brought += box.items_brought_total * box.item_price
       sum_sold_count += box.items_sold
       sum_sold += box.items_sold * box.item_price
 
@@ -108,6 +108,6 @@ class @BoxResultTable extends ResultTable
       $('<th colspan="3">').text(gettext('Total:'))
       $('<th class="receipt_price numeric">').text(displayPrice(sum_sold) + " (" + sum_sold_count + ")")
       $('<th>')
-      $('<td class="receipt_price numeric">').text(displayPrice(sum_total) + " (" + sum_total_count + ")")
+      $('<td class="receipt_price numeric">').text(displayPrice(sum_brought) + " (" + sum_brought_count + ")")
     ))
     return

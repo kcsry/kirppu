@@ -276,6 +276,7 @@ class Box(models.Model):
 
     as_dict = model_dict_fn(
         item_price=lambda self: self._get_representative_item().price_cents,
+        item_count=None,
         __extend=as_public_dict
     )
 

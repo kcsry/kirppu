@@ -533,32 +533,32 @@
 
     function BoxResultTable() {
       BoxResultTable.__super__.constructor.apply(this, arguments);
-      this.head.append(this.generate("th", ["#", gettext('description'), gettext('price'), gettext('compensable'), gettext('left'), gettext('items')], true));
+      this.head.append(this.generate("th", ["#", gettext('description'), gettext('price'), gettext('compensable'), gettext('returnable'), gettext('brought')], true));
       this.head.children().first().addClass("numeric");
     }
 
     BoxResultTable.prototype.append = function(box, index) {
       var row;
       row = $("<tr>");
-      row.append(this.generate("td", [index + 1, box.description, displayPrice(box.item_price), box.items_sold, box.item_count - box.items_sold - box.items_exit, box.item_count]));
+      row.append(this.generate("td", [index + 1, box.description, displayPrice(box.item_price), box.items_sold, box.items_returnable, box.items_brought_total]));
       this.body.append(row);
     };
 
     BoxResultTable.prototype.update = function(boxes) {
-      var box, i, j, len, sum_sold, sum_sold_count, sum_total, sum_total_count;
-      sum_total = 0;
-      sum_total_count = 0;
+      var box, i, j, len, sum_brought, sum_brought_count, sum_sold, sum_sold_count;
+      sum_brought = 0;
+      sum_brought_count = 0;
       sum_sold = 0;
       sum_sold_count = 0;
       for (i = j = 0, len = boxes.length; j < len; i = ++j) {
         box = boxes[i];
         this.append(box, i);
-        sum_total_count += box.item_count;
-        sum_total += box.item_count * box.item_price;
+        sum_brought_count += box.items_brought_total;
+        sum_brought += box.items_brought_total * box.item_price;
         sum_sold_count += box.items_sold;
         sum_sold += box.items_sold * box.item_price;
       }
-      this.body.append($('<tr>').append($('<th colspan="3">').text(gettext('Total:')), $('<th class="receipt_price numeric">').text(displayPrice(sum_sold) + " (" + sum_sold_count + ")"), $('<th>'), $('<td class="receipt_price numeric">').text(displayPrice(sum_total) + " (" + sum_total_count + ")")));
+      this.body.append($('<tr>').append($('<th colspan="3">').text(gettext('Total:')), $('<th class="receipt_price numeric">').text(displayPrice(sum_sold) + " (" + sum_sold_count + ")"), $('<th>'), $('<td class="receipt_price numeric">').text(displayPrice(sum_brought) + " (" + sum_brought_count + ")")));
     };
 
     return BoxResultTable;
