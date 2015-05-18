@@ -375,6 +375,7 @@ def box_list(request, vendor):
     for box in boxes:
         data = box.as_dict()
         data["items_sold"] = box.get_items().filter(state=Item.SOLD).count()
+        data["items_exit"] = box.get_items().filter(state__in=(Item.COMPENSATED, Item.RETURNED)).count()
         out_boxes.append(data)
     return out_boxes
 

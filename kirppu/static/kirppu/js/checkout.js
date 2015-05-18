@@ -533,14 +533,14 @@
 
     function BoxResultTable() {
       BoxResultTable.__super__.constructor.apply(this, arguments);
-      this.head.append(this.generate("th", ["#", gettext('description'), gettext('price'), gettext('sold'), gettext('left'), gettext('items')], true));
+      this.head.append(this.generate("th", ["#", gettext('description'), gettext('price'), gettext('compensable'), gettext('left'), gettext('items')], true));
       this.head.children().first().addClass("numeric");
     }
 
     BoxResultTable.prototype.append = function(box, index) {
       var row;
       row = $("<tr>");
-      row.append(this.generate("td", [index + 1, box.description, displayPrice(box.item_price), box.items_sold, box.item_count - box.items_sold, box.item_count]));
+      row.append(this.generate("td", [index + 1, box.description, displayPrice(box.item_price), box.items_sold, box.item_count - box.items_sold - box.items_exit, box.item_count]));
       this.body.append(row);
     };
 

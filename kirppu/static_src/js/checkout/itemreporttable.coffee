@@ -73,7 +73,7 @@ class @BoxResultTable extends ResultTable
       "#"
       gettext('description')
       gettext('price')
-      gettext('sold')
+      gettext('compensable')
       gettext('left')
       gettext('items')
     ], true))
@@ -86,7 +86,7 @@ class @BoxResultTable extends ResultTable
       box.description
       displayPrice(box.item_price)
       box.items_sold
-      box.item_count - box.items_sold
+      box.item_count - box.items_sold - box.items_exit
       box.item_count
     ]))
     @body.append(row)
