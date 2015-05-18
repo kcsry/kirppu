@@ -395,7 +395,7 @@ class VendorItemForm(forms.Form):
 
 class VendorBoxForm(VendorItemForm):
     description = StripField()
-    count = forms.IntegerField(min_value=0)
+    count = forms.IntegerField(min_value=1)
 
     db_values = model_dict_fn(
         "description",
