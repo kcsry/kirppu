@@ -371,7 +371,7 @@ def item_list(request, vendor, state=None, include_box_items=False):
 @ajax_func('^box/list$', method='GET')
 def box_list(request, vendor):
     out_boxes = []
-    boxes = Box.objects.filter(item__vendor__id=vendor).distinct()
+    boxes = Box.objects.filter(item__vendor__id=vendor, item__hidden=False).distinct()
     for box in boxes:
         data = box.as_dict()
         data["items_sold"] = box.get_items().filter(state=Item.SOLD).count()
