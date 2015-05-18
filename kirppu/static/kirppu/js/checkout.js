@@ -1798,7 +1798,8 @@
         };
       })(this));
       return Api.item_list({
-        vendor: this.vendorId
+        vendor: this.vendorId,
+        include_box_items: true
       }).done(this.onGotItems);
     };
 

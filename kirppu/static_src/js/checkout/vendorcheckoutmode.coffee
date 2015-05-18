@@ -38,6 +38,7 @@ class @VendorCheckoutMode extends ItemCheckoutMode
 
     Api.item_list(
       vendor: @vendorId
+      include_box_items: true
     ).done(@onGotItems)
 
   onGotItems: (items) =>
