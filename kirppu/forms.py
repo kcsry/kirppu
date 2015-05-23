@@ -5,7 +5,7 @@ from django.core import validators
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils.six import text_type
-from django.utils.translation import ugettext_lazy as _i
+from django.utils.translation import ugettext_lazy as _
 
 from .fields import ItemPriceField, SuffixField, StripField
 from .models import (
@@ -356,7 +356,7 @@ class VendorSetSelfForm(forms.ModelForm):
 
 
 class VendorItemForm(forms.Form):
-    name = StripField(error_messages={"required": _i("Name is required.")})
+    name = StripField(error_messages={"required": _("Name is required.")})
     price = ItemPriceField()
     tag_type = forms.ChoiceField(
         required=False,
@@ -365,7 +365,7 @@ class VendorItemForm(forms.Form):
     suffixes = SuffixField()
     item_type = forms.ChoiceField(
         choices=Item.ITEMTYPE,
-        error_messages={"required": _i(u"Item must have a type.")}
+        error_messages={"required": _(u"Item must have a type.")}
     )
     adult = forms.BooleanField(required=False)
 

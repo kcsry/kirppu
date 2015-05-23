@@ -16,7 +16,7 @@ from django.shortcuts import (
     render,
 )
 from django.utils.six import string_types, text_type, iteritems
-from django.utils.translation import ugettext as _i
+from django.utils.translation import ugettext as _
 from django.utils.timezone import now
 
 from .models import (
@@ -138,7 +138,7 @@ def _get_item_or_404(code):
         item = None
 
     if item is None:
-        raise Http404(_i(u"No item found matching '{0}'").format(code))
+        raise Http404(_(u"No item found matching '{0}'").format(code))
     return item
 
 
@@ -166,7 +166,7 @@ def item_mode_change(code, from_, to, message_if_not_first=None):
         # Item not in expected state.
         raise AjaxError(
             RET_CONFLICT,
-            _i(u"Unexpected item state: {state_name} ({state})").format(
+            _(u"Unexpected item state: {state_name} ({state})").format(
                 state=item.state,
                 state_name=item.get_state_display()
             ),
@@ -178,7 +178,7 @@ def clerk_login(request, code, counter):
     try:
         counter_obj = Counter.objects.get(identifier=counter)
     except Counter.DoesNotExist:
-        raise AjaxError(RET_AUTH_FAILED, _i(u"Counter has gone missing."))
+        raise AjaxError(RET_AUTH_FAILED, _(u"Counter has gone missing."))
 
     try:
         clerk = Clerk.by_code(code)
@@ -186,7 +186,7 @@ def clerk_login(request, code, counter):
         raise AjaxError(RET_AUTH_FAILED, repr(ve))
 
     if clerk is None:
-        raise AjaxError(RET_AUTH_FAILED, _i(u"No such clerk."))
+        raise AjaxError(RET_AUTH_FAILED, _(u"No such clerk."))
 
     clerk_data = clerk.as_dict()
     clerk_data['overseer_enabled'] = clerk.user.has_perm('kirppu.oversee')
@@ -390,7 +390,7 @@ def item_checkin(request, code):
 
 @ajax_func('^item/checkout$')
 def item_checkout(request, code):
-    return item_mode_change(code, (Item.BROUGHT, Item.ADVERTISED), Item.RETURNED, _i(u"Item was not brought to event."))
+    return item_mode_change(code, (Item.BROUGHT, Item.ADVERTISED), Item.RETURNED, _(u"Item was not brought to event."))
 
 
 @ajax_func('^item/compensate$')
@@ -403,7 +403,7 @@ def vendor_get(request, id):
     try:
         vendor = Vendor.objects.get(pk=int(id))
     except (ValueError, Vendor.DoesNotExist):
-        raise AjaxError(RET_BAD_REQUEST, _i(u"Invalid vendor id"))
+        raise AjaxError(RET_BAD_REQUEST, _(u"Invalid vendor id"))
     else:
         return vendor.as_dict()
 

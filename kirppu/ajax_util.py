@@ -8,7 +8,7 @@ from django.http.response import (
     StreamingHttpResponse,
 )
 from django.views.decorators.http import require_http_methods
-from django.utils.translation import ugettext as _i
+from django.utils.translation import ugettext as _
 
 from .models import (
     Clerk,
@@ -132,7 +132,7 @@ def get_counter(request):
     Raise AjaxError if session is invalid or counter is not found.
     """
     if "counter" not in request.session:
-        raise AjaxError(RET_UNAUTHORIZED, _i(u"Not logged in."))
+        raise AjaxError(RET_UNAUTHORIZED, _(u"Not logged in."))
 
     counter_id = request.session["counter"]
     try:
@@ -140,7 +140,7 @@ def get_counter(request):
     except Counter.DoesNotExist:
         raise AjaxError(
             RET_UNAUTHORIZED,
-            _i(u"Counter has gone missing."),
+            _(u"Counter has gone missing."),
         )
 
     return counter_object
@@ -154,7 +154,7 @@ def get_clerk(request):
     """
     for key in ["clerk", "clerk_token", "counter"]:
         if key not in request.session:
-            raise AjaxError(RET_UNAUTHORIZED, _i(u"Not logged in."))
+            raise AjaxError(RET_UNAUTHORIZED, _(u"Not logged in."))
 
     clerk_id = request.session["clerk"]
     clerk_token = request.session["clerk_token"]
@@ -162,10 +162,10 @@ def get_clerk(request):
     try:
         clerk_object = Clerk.objects.get(pk=clerk_id)
     except Clerk.DoesNotExist:
-        raise AjaxError(RET_UNAUTHORIZED, _i(u"Clerk not found."))
+        raise AjaxError(RET_UNAUTHORIZED, _(u"Clerk not found."))
 
     if clerk_object.access_key != clerk_token:
-        raise AjaxError(RET_UNAUTHORIZED, _i(u"Bye."))
+        raise AjaxError(RET_UNAUTHORIZED, _(u"Bye."))
 
     return clerk_object
 
@@ -191,6 +191,6 @@ def require_overseer_clerk_login(func):
     def wrapper(request, *args, **kwargs):
         clerk = get_clerk(request)
         if not clerk.user.has_perm('kirppu.oversee'):
-            raise AjaxError(RET_FORBIDDEN, _i(u"Access denied."))
+            raise AjaxError(RET_FORBIDDEN, _(u"Access denied."))
         return func(request, *args, **kwargs)
     return wrapper
