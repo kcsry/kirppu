@@ -708,8 +708,12 @@ def vendor_view(request):
     if user.is_authenticated():
         vendor = Vendor.get_vendor(user, create=False)
         items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)
+        boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()
+        boxed_items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=False)
     else:
         items = []
+        boxes = []
+        boxed_items = Item.objects.none()
 
     context = {
         'user': user,
@@ -718,6 +722,12 @@ def vendor_view(request):
         'total_price': sum(i.price for i in items),
         'num_total': len(items),
         'num_printed': len(list(filter(lambda i: i.printed, items))),
+
+        'boxes': boxes,
+        'boxes_count': len(boxes),
+        'boxes_total_price': boxed_items.aggregate(sum=Sum("price"))["sum"],
+        'boxes_item_count': boxed_items.count(),
+        'boxes_printed': len(list(filter(lambda i: i.is_printed(), boxes))),
 
         'profile_url': settings.PROFILE_URL,
         'menu': _vendor_menu_contents(request),
