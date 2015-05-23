@@ -165,7 +165,7 @@ def get_clerk(request):
         raise AjaxError(RET_UNAUTHORIZED, _i(u"Clerk not found."))
 
     if clerk_object.access_key != clerk_token:
-        return AjaxError(RET_UNAUTHORIZED, _i(u"Bye."))
+        raise AjaxError(RET_UNAUTHORIZED, _i(u"Bye."))
 
     return clerk_object
 
