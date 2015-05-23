@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-13 20:30+0300\n"
-"PO-Revision-Date: 2015-04-13 20:31+0300\n"
+"POT-Creation-Date: 2015-05-23 17:20+0300\n"
+"PO-Revision-Date: 2015-05-23 17:28+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -47,6 +47,40 @@ msgstr "Access code set for '{0}'"
 msgid "Move unused access code to existing Clerk."
 msgstr "Move unused access code to existing Clerk."
 
+msgid "Not logged in."
+msgstr "Not logged in."
+
+msgid "Counter has gone missing."
+msgstr "Counter has gone missing."
+
+msgid "Clerk not found."
+msgstr "Clerk not found."
+
+msgid "Bye."
+msgstr "Bye."
+
+#| msgid "Access key value"
+msgid "Access denied."
+msgstr "Access denied."
+
+#, python-brace-format
+msgid "No item found matching '{0}'"
+msgstr "No item found matching '{0}'"
+
+#, python-brace-format
+msgid "Unexpected item state: {state_name} ({state})"
+msgstr "Unexpected item state: {state_name} ({state})"
+
+msgid "No such clerk."
+msgstr "No such clerk."
+
+#| msgid "Brought to event"
+msgid "Item was not brought to event."
+msgstr "Item was not brought to event."
+
+msgid "Invalid vendor id"
+msgstr "Invalid vendor id"
+
 msgid "Price must be numeric."
 msgstr "Price must be numeric."
 
@@ -58,6 +92,16 @@ msgstr "Price too low. (min 0.5 euros)"
 
 msgid "Price too high. (max 400 euros)"
 msgstr "Price too high. (max 400 euros)"
+
+#, python-format
+msgid "Maximum of %(count)i items allowed by a single range statement."
+msgstr "Maximum of %(count)i items allowed by a single range statement."
+
+msgid "Name is required."
+msgstr "Name is required."
+
+msgid "Item must have a type."
+msgstr "Item must have a type."
 
 msgid "Access key value"
 msgstr "Access key value"
@@ -137,6 +181,9 @@ msgstr "Item allowed to all shoppers"
 msgid "Barcode content of the product"
 msgstr "Barcode content of the product"
 
+msgid "Forgotten or lost property/item"
+msgstr "Forgotten or lost property/item"
+
 msgid "Identifier of the textitem"
 msgstr "Identifier of the text item"
 
@@ -167,34 +214,59 @@ msgstr "Finished"
 msgid "Aborted"
 msgstr "Aborted"
 
-msgid "Registration is closed"
-msgstr "Registration is closed"
+msgid "Add new box"
+msgstr "Add new box"
 
-msgid "Image extension not supported"
-msgstr "Image extension not supported"
+msgid "Description:"
+msgstr "Description:"
 
-msgid "Item must have a type."
-msgstr "Item must have a type."
+msgid "Box full of Ranma"
+msgstr "Box full of Ranma"
 
-msgid "Maximum of 100 items allowed by a single range statement."
-msgstr "Maximum of 100 items allowed by a single range statement."
+msgid "Item prefix:"
+msgstr "Item prefix:"
 
-#, python-format
-msgid ""
-"You have %(max_items)s items, which is the maximum. No more items can be "
-"registered."
-msgstr ""
-"You have %(max_items)s items, which is the maximum. No more items can be "
-"registered."
+msgid "Ranma"
+msgstr "Ranma"
 
-msgid "Home"
-msgstr "Home"
+msgid "Items #:"
+msgstr "Items #:"
 
-msgid "Item list"
-msgstr "Item list"
+msgid "10"
+msgstr "10"
 
-msgid "Counter commands"
-msgstr "Counter commands"
+msgid "Price:"
+msgstr "Price:"
+
+msgid "Type:"
+msgstr "Type:"
+
+msgid "Select…"
+msgstr "Select…"
+
+msgid "Adult:"
+msgstr "Adult:"
+
+msgid "Yes"
+msgstr "Yes"
+
+msgid "No"
+msgstr "No"
+
+msgid "Add box"
+msgstr "Add box"
+
+msgid "Permanently remove the box."
+msgstr "Permanently remove the box."
+
+msgid "Print"
+msgstr "Print"
+
+msgid "Tell this number to the clerk."
+msgstr "Tell this number to the clerk."
+
+msgid "Vendor:"
+msgstr "Vendor:"
 
 msgid "Total:"
 msgstr "Total:"
@@ -227,6 +299,22 @@ msgstr "yes,no"
 msgid "%(num_printed)s of %(num_total)s"
 msgstr "%(num_printed)s&nbsp;of&nbsp;%(num_total)s"
 
+msgid "Registered boxes"
+msgstr "Registered boxes"
+
+msgid "description"
+msgstr "description"
+
+msgid "items"
+msgstr "items"
+
+msgid "unit price"
+msgstr "unit price"
+
+#, python-format
+msgid "%(boxes_printed)s of %(boxes_count)s"
+msgstr "%(boxes_printed)s&nbsp;of&nbsp;%(boxes_count)s"
+
 msgid "No registered items."
 msgstr "No registered items."
 
@@ -245,9 +333,6 @@ msgstr "Suffixes:"
 msgid "1 3-5  A B  Blue"
 msgstr "1 3-5  A B  Blue"
 
-msgid "Price:"
-msgstr "Price:"
-
 msgid "Size:"
 msgstr "Size:"
 
@@ -260,26 +345,8 @@ msgstr "9 cm"
 msgid "Long"
 msgstr "18 cm (bookmark)"
 
-msgid "Type:"
-msgstr "Type:"
-
-msgid "Select…"
-msgstr "Select…"
-
-msgid "Adult:"
-msgstr "Adult:"
-
-msgid "Yes"
-msgstr "Yes"
-
-msgid "No"
-msgstr "No"
-
 msgid "Add item"
 msgstr "Add item"
-
-msgid "Print"
-msgstr "Print"
 
 msgid "Toggle List View"
 msgstr "Toggle List View"
@@ -304,6 +371,49 @@ msgstr "Log out"
 
 msgid "Log in"
 msgstr "Log in"
+
+msgid "Registration is closed"
+msgstr "Registration is closed"
+
+msgid "Image extension not supported"
+msgstr "Image extension not supported"
+
+#, python-format
+msgid ""
+"You have %(max_items)s items, which is the maximum. No more items can be "
+"registered."
+msgstr ""
+"You have %(max_items)s items, which is the maximum. No more items can be "
+"registered."
+
+#, python-format
+msgid ""
+"You have %(item_cnt)s items. Creating this box would cause the items to "
+"exceed the maximum number of allowed items."
+msgstr ""
+"You have %(item_cnt)s items. Creating this box would cause the items to "
+"exceed the maximum number of allowed items."
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Item list"
+msgstr "Item list"
+
+msgid "Box list"
+msgstr "Box list"
+
+msgid "Checkout commands"
+msgstr "Checkout commands"
+
+msgid "Lost and Found"
+msgstr "Lost and Found"
+
+msgid "Management"
+msgstr "Management"
+
+msgid "Counter commands"
+msgstr "Counter commands"
 
 msgid "Finnish"
 msgstr "Suomi"

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-13 20:30+0300\n"
-"PO-Revision-Date: 2015-04-13 20:31+0300\n"
+"POT-Creation-Date: 2015-05-23 17:20+0300\n"
+"PO-Revision-Date: 2015-05-23 17:27+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -48,6 +48,40 @@ msgstr "Käyttötunniste asetettu '{0}':lle"
 msgid "Move unused access code to existing Clerk."
 msgstr "Siirrä käyttämätön tunniste olemassaolevalle kassatädille"
 
+msgid "Not logged in."
+msgstr "Ei kirjautuneena."
+
+msgid "Counter has gone missing."
+msgstr "Kassakone on kadonnut."
+
+msgid "Clerk not found."
+msgstr "Kassatätiä ei löytynyt."
+
+msgid "Bye."
+msgstr "Moi."
+
+#| msgid "Access key value"
+msgid "Access denied."
+msgstr "Käyttö estetty."
+
+#, python-brace-format
+msgid "No item found matching '{0}'"
+msgstr "Ei löydy tavaraa '{0}'"
+
+#, python-brace-format
+msgid "Unexpected item state: {state_name} ({state})"
+msgstr "Odottamaton tavaran tila: {state_name} ({state})"
+
+msgid "No such clerk."
+msgstr "Ei sellaista kassatätiä."
+
+#| msgid "Brought to event"
+msgid "Item was not brought to event."
+msgstr "Tavaraa ei ole tuotu tapahtumaan."
+
+msgid "Invalid vendor id"
+msgstr "Virheellinen myyjän id"
+
 msgid "Price must be numeric."
 msgstr "Hinnan täytyy olla numero."
 
@@ -59,6 +93,16 @@ msgstr "Hinta on liian pieni. (minimi 0,5 euroa)"
 
 msgid "Price too high. (max 400 euros)"
 msgstr "Hinta on liian suuri. (maksimi 400 euroa)"
+
+#, python-format
+msgid "Maximum of %(count)i items allowed by a single range statement."
+msgstr "Lukuvälimerkinnän lukuväli saa olla maksimissaan %(count)i."
+
+msgid "Name is required."
+msgstr "Nimi on vaadittu."
+
+msgid "Item must have a type."
+msgstr "Tavaralla täytyy olla tyyppi."
 
 msgid "Access key value"
 msgstr "Käyttötunnisteen arvo"
@@ -138,6 +182,9 @@ msgstr "Kaikille sallittu tavara"
 msgid "Barcode content of the product"
 msgstr "Tuotteen viivakoodisisältö"
 
+msgid "Forgotten or lost property/item"
+msgstr "Unohdettu tai hukattu tavara"
+
 msgid "Identifier of the textitem"
 msgstr "Tekstin tunniste"
 
@@ -168,34 +215,59 @@ msgstr "Valmis"
 msgid "Aborted"
 msgstr "Keskeytetty"
 
-msgid "Registration is closed"
-msgstr "Rekisteröinti on suljettu"
+msgid "Add new box"
+msgstr "Lisää uusi laatikko"
 
-msgid "Image extension not supported"
-msgstr "Kuvatyyppi ei ole tuettu"
+msgid "Description:"
+msgstr "Kuvaus:"
 
-msgid "Item must have a type."
-msgstr "Tavaralla täytyy olla tyyppi."
+msgid "Box full of Ranma"
+msgstr "Laatikollinen Ranmaa"
 
-msgid "Maximum of 100 items allowed by a single range statement."
-msgstr "Lukuvärimerkinnän lukuväli saa olla maksimissaan 100."
+msgid "Item prefix:"
+msgstr "Nimen etuliite:"
 
-#, python-format
-msgid ""
-"You have %(max_items)s items, which is the maximum. No more items can be "
-"registered."
-msgstr ""
-"Olet rekisteröinyt %(max_items)s tavaraa, mikä on maksimi määrä. Et voi "
-"rekisteröidä enempää tavaroita."
+msgid "Ranma"
+msgstr "Ranma"
 
-msgid "Home"
-msgstr "Etusivu"
+msgid "Items #:"
+msgstr "Tavaroita:"
 
-msgid "Item list"
-msgstr "Tavaralista"
+msgid "10"
+msgstr "10"
 
-msgid "Counter commands"
-msgstr "Kassan komennot"
+msgid "Price:"
+msgstr "Hinta:"
+
+msgid "Type:"
+msgstr "Tyyppi:"
+
+msgid "Select…"
+msgstr "Valitse…"
+
+msgid "Adult:"
+msgstr "K18:"
+
+msgid "Yes"
+msgstr "Kyllä"
+
+msgid "No"
+msgstr "Ei"
+
+msgid "Add box"
+msgstr "Lisää laatikko"
+
+msgid "Permanently remove the box."
+msgstr "Poista laatikko pysyvästi."
+
+msgid "Print"
+msgstr "Tulosta"
+
+msgid "Tell this number to the clerk."
+msgstr "Kerro tämä numero kassalla."
+
+msgid "Vendor:"
+msgstr "Myyjä:"
 
 msgid "Total:"
 msgstr "Yhteensä:"
@@ -228,6 +300,22 @@ msgstr "kyllä,ei"
 msgid "%(num_printed)s of %(num_total)s"
 msgstr "%(num_printed)s&nbsp; / &nbsp;%(num_total)s"
 
+msgid "Registered boxes"
+msgstr "Rekisteröidyt laatikot"
+
+msgid "description"
+msgstr "kuvaus"
+
+msgid "items"
+msgstr "tavarat"
+
+msgid "unit price"
+msgstr "yksikköhinta"
+
+#, python-format
+msgid "%(boxes_printed)s of %(boxes_count)s"
+msgstr "%(boxes_printed)s&nbsp; / &nbsp;%(boxes_count)s"
+
 msgid "No registered items."
 msgstr "Ei rekisteröityjä tavaroita."
 
@@ -246,9 +334,6 @@ msgstr "Päätteet:"
 msgid "1 3-5  A B  Blue"
 msgstr "1 3-5  A B  Blue"
 
-msgid "Price:"
-msgstr "Hinta:"
-
 msgid "Size:"
 msgstr "Koko:"
 
@@ -261,26 +346,8 @@ msgstr "9 cm"
 msgid "Long"
 msgstr "18 cm (kirjanmerkki)"
 
-msgid "Type:"
-msgstr "Tyyppi:"
-
-msgid "Select…"
-msgstr "Valitse…"
-
-msgid "Adult:"
-msgstr "K18:"
-
-msgid "Yes"
-msgstr "Kyllä"
-
-msgid "No"
-msgstr "Ei"
-
 msgid "Add item"
 msgstr "Lisää tavara"
-
-msgid "Print"
-msgstr "Tulosta"
 
 msgid "Toggle List View"
 msgstr "Vaihda listanäkymä"
@@ -305,6 +372,49 @@ msgstr "Kirjaudu ulos"
 
 msgid "Log in"
 msgstr "Kirjaudu sisään"
+
+msgid "Registration is closed"
+msgstr "Rekisteröinti on suljettu"
+
+msgid "Image extension not supported"
+msgstr "Kuvatyyppi ei ole tuettu"
+
+#, python-format
+msgid ""
+"You have %(max_items)s items, which is the maximum. No more items can be "
+"registered."
+msgstr ""
+"Olet rekisteröinyt %(max_items)s tavaraa, mikä on maksimi määrä. Et voi "
+"rekisteröidä enempää tavaroita."
+
+#, python-format
+msgid ""
+"You have %(item_cnt)s items. Creating this box would cause the items to "
+"exceed the maximum number of allowed items."
+msgstr ""
+"Sinulla on %(item_cnt)s tavaraa. Tämän laatikon lisääminen ylittäisi "
+"sallittujen tavaroiden lukumäärän."
+
+msgid "Home"
+msgstr "Etusivu"
+
+msgid "Item list"
+msgstr "Tavaralista"
+
+msgid "Box list"
+msgstr "Laatikkolista"
+
+msgid "Checkout commands"
+msgstr "Kassan komennot"
+
+msgid "Lost and Found"
+msgstr "Löytötavarat"
+
+msgid "Management"
+msgstr "Hallinta"
+
+msgid "Counter commands"
+msgstr "Kassan komennot"
 
 msgid "Finnish"
 msgstr "Suomi"

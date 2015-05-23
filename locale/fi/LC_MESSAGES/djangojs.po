@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-12 19:59+0300\n"
-"PO-Revision-Date: 2015-04-12 18:54+0300\n"
+"POT-Creation-Date: 2015-05-23 17:20+0300\n"
+"PO-Revision-Date: 2015-05-23 15:05+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -16,6 +16,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.5\n"
+
+msgid ""
+"This box has been already printed. Are you sure you want to print it again?"
+msgstr "Tämä laatikko on jo tulostettu. Haluatko tulostaa sen uudelleen?"
 
 msgid "sold"
 msgstr "myyty"
@@ -38,6 +42,9 @@ msgstr "myyty ja hyvitetty myyjälle"
 msgid "not brought to the event"
 msgstr "ei tuotu tapahtumaan"
 
+msgid "Refresh"
+msgstr "Päivitä"
+
 msgid "code"
 msgstr "koodi"
 
@@ -59,11 +66,26 @@ msgstr "hylätty"
 msgid "Total:"
 msgstr "Yhteensä:"
 
+msgid "description"
+msgstr "kuvaus"
+
+msgid "compensable"
+msgstr "hyvitettäviä"
+
+msgid "returnable"
+msgstr "palautettavia"
+
+msgid "brought"
+msgstr "tuotuja"
+
 msgid "type"
 msgstr "tyyppi"
 
 msgid "vendor"
 msgstr "myyjä"
+
+msgid "No results."
+msgstr "Ei tuloksia."
 
 msgid "Vendor"
 msgstr "Myyjä"
@@ -92,12 +114,30 @@ msgstr "Ota vastaan tavaroita"
 msgid "Abandon All Items Currently On Display"
 msgstr "Hylkää kaikki näytteillä olevat tavarat"
 
+msgid "Boxes"
+msgstr "Laatikot"
+
 msgid ""
 "1) Have you asked for the vendor's signature AND 2) Are you sure you want to "
 "mark all items on display or missing abandoned?"
 msgstr ""
 "1) Oletko kysynyt myyjän allekirjoituksen JA 2) Oletko varma, että haluat "
 "merkitä kaikki näytteillä olevat tai hukkuneet tavarat hylätyiksi?"
+
+msgid "state"
+msgstr "tila"
+
+msgid "counter"
+msgstr "kassa"
+
+msgid "clerk"
+msgstr "myyjä"
+
+msgid "start time"
+msgstr "aloitusaika"
+
+msgid "total"
+msgstr "yhteensä"
 
 msgid ""
 "This will mark all items as printed so they won't be printed again "
