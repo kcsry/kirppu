@@ -686,6 +686,8 @@ def iterate_logs(entries, hide_advertised=False, hide_sales=False):
     for entry in entries:
         if bucket_time is None:
             bucket_time = entry.time
+            # Start the graph before the first entry, such that everything starts at zero.
+            yield get_log_str(bucket_time - bucket_td, balance)
         if (entry.time - bucket_time) > bucket_td:
             # Fart out what was in the old bucket and start a new bucket.
             yield get_log_str(bucket_time, balance)
