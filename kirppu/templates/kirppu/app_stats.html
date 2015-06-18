@@ -49,6 +49,7 @@
                 'get_registration_data',
                 {
                     labels: ['Time', 'Registered', 'Brought', 'Unsold', 'Money', 'Compensated'],
+                    ylabel: 'Items',
                     strokeWidth: 2,
                     highlightSeriesOpts: {
                         strokeWidth: 3,
@@ -70,6 +71,7 @@
                 'get_sales_data',
                 {
                     labels: ['Time', 'Registered', 'Brought', 'Unsold', 'Money', 'Compensated'],
+                    ylabel: 'Items',
                     strokeWidth: 2,
                     highlightSeriesOpts: {
                         strokeWidth: 3,
@@ -87,16 +89,16 @@
         );
 
         document.getElementById('graph1_items_link').onclick = function() {
-            g1.updateOptions({file: 'get_registration_data'});
+            g1.updateOptions({file: 'get_registration_data', ylabel: 'Items'});
         };
         document.getElementById('graph1_prices_link').onclick = function() {
-            g1.updateOptions({file: 'get_registration_data_prices'});
+            g1.updateOptions({file: 'get_registration_data_prices', ylabel: 'Euros'});
         };
         document.getElementById('graph2_items_link').onclick = function() {
-            g2.updateOptions({file: 'get_sales_data'});
+            g2.updateOptions({file: 'get_sales_data', ylabel: 'Items'});
         };
         document.getElementById('graph2_prices_link').onclick = function() {
-            g2.updateOptions({file: 'get_sales_data_prices'});
+            g2.updateOptions({file: 'get_sales_data_prices', ylabel: 'Euros'});
         };
 
         //populateChart(g1, Api.stats_registration_data);
