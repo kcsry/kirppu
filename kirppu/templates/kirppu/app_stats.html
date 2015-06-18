@@ -32,7 +32,12 @@
     </h1>
 
     <div id="graph1" style="width:100%; height:300px;"></div>
+    <a id="graph1_items_link">items</a>
+    <a id="graph1_prices_link">prices</a>
+
     <div id="graph2" style="width:100%; height:300px;"></div>
+    <a id="graph2_items_link">items</a>
+    <a id="graph2_prices_link">prices</a>
 
 
     <script>
@@ -80,6 +85,19 @@
                     }
                 }
         );
+
+        document.getElementById('graph1_items_link').onclick = function() {
+            g1.updateOptions({file: 'get_registration_data'});
+        };
+        document.getElementById('graph1_prices_link').onclick = function() {
+            g1.updateOptions({file: 'get_registration_data_prices'});
+        };
+        document.getElementById('graph2_items_link').onclick = function() {
+            g2.updateOptions({file: 'get_sales_data'});
+        };
+        document.getElementById('graph2_prices_link').onclick = function() {
+            g2.updateOptions({file: 'get_sales_data_prices'});
+        };
 
         //populateChart(g1, Api.stats_registration_data);
         //populateChart(g2, Api.stats_sales_data);

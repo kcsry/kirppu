@@ -638,7 +638,7 @@ def item_mark_lost(request, code):
     return item.as_dict()
 
 
-def iterate_logs(entries, hide_advertised=False, hide_sales=False):
+def iterate_logs(entries, hide_advertised=False, hide_sales=False, show_prices=False):
     """ Iterate through ItemStateLog objects returning current sum of each type of object at each timestamp.
 
     Example of returned CVS: js_time, advertized, brought, unsold, money, compensated
@@ -699,9 +699,13 @@ def iterate_logs(entries, hide_advertised=False, hide_sales=False):
             yield get_log_str(bucket_time, balance)
             bucket_time = entry.time
 
+        item_weight = 1
+        if show_prices:
+            item_weight = entry.item.price
+
         if entry.old_state:
-            balance[entry.old_state] -= 1
-        balance[entry.new_state] += 1
+            balance[entry.old_state] -= item_weight
+        balance[entry.new_state] += item_weight
 
     # Fart out the last bucket.
     if bucket_time is not None:
@@ -719,4 +723,18 @@ def stats_sales_data(request):
 def stats_registration_data(request):
     entries = ItemStateLog.objects.filter(new_state=Item.ADVERTISED)
     log_generator = iterate_logs(entries, hide_sales=True)
+    return StreamingHttpResponse(log_generator, content_type='text/csv')
+
+
+@ajax_func('^stats/get_sales_data_prices$', method='GET')
+def stats_sales_data_prices(request):
+    entries = ItemStateLog.objects.exclude(new_state=Item.ADVERTISED)
+    log_generator = iterate_logs(entries, hide_advertised=True, show_prices=True)
+    return StreamingHttpResponse(log_generator, content_type='text/csv')
+
+
+@ajax_func('^stats/get_registration_data_prices$', method='GET')
+def stats_registration_data_prices(request):
+    entries = ItemStateLog.objects.filter(new_state=Item.ADVERTISED)
+    log_generator = iterate_logs(entries, hide_sales=True, show_prices=True)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
