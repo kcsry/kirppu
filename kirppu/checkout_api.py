@@ -641,8 +641,14 @@ def item_mark_lost(request, code):
 def iterate_logs(entries, hide_advertised=False, hide_sales=False):
     """ Iterate through ItemStateLog objects returning current sum of each type of object at each timestamp.
 
-    Example of returned JSON:
-    [[js_time, brought, unsold, money, compensated]]
+    Example of returned CVS: js_time, advertized, brought, unsold, money, compensated
+
+    js_time is milliseconds from unix_epoch.
+    advertized is the number of items registered to the event at any time.
+    brought is the cumulative sum of all items brought to the event.
+    unsold is the number of items physically at the event. Should aproach zero by the end of the event.
+    money is the number of sold items not yet redeemed by the seller. Should aproach zero by the end of the event.
+    compensated is the number of sold and unsold items redeemed by the seller. Should aproach brought.
 
     :param entries: iterator to ItemStateLog objects.
     :return: JSON presentation of the objects, one item at a time.
