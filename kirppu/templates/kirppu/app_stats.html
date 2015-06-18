@@ -31,10 +31,12 @@
         <span id="title_text">Stats</span>
     </h1>
 
+    <div id="graph1_legend"></div>
     <div id="graph1" style="width:100%; height:300px;"></div>
     <a id="graph1_items_link">items</a>
     <a id="graph1_prices_link">prices</a>
 
+    <div id="graph2_legend"></div>
     <div id="graph2" style="width:100%; height:300px;"></div>
     <a id="graph2_items_link">items</a>
     <a id="graph2_prices_link">prices</a>
@@ -48,7 +50,9 @@
                 document.getElementById("graph1"),
                 'get_registration_data',
                 {
-                    labels: ['Time', 'Registered', 'Brought', 'Unsold', 'Money', 'Compensated'],
+                    labels: ['Time', 'Registered', 'Brought to event', 'Unsold inventory', 'Sold inventory', 'Redeemed by vendor'],
+                    labelsDiv: 'graph1_legend',
+                    legend: 'always',
                     ylabel: 'Items',
                     strokeWidth: 2,
                     highlightSeriesOpts: {
@@ -70,7 +74,9 @@
                 document.getElementById("graph2"),
                 'get_sales_data',
                 {
-                    labels: ['Time', 'Registered', 'Brought', 'Unsold', 'Money', 'Compensated'],
+                    labels: ['Time', 'Registered', 'Brought to event', 'Unsold inventory', 'Sold inventory', 'Redeemed by vendor'],
+                    labelsDiv: 'graph2_legend',
+                    legend: 'always',
                     ylabel: 'Items',
                     strokeWidth: 2,
                     highlightSeriesOpts: {
