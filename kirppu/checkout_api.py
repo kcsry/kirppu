@@ -661,7 +661,7 @@ def iterate_logs(entries, hide_advertised=False, hide_sales=False):
     brought_status = (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.MISSING, Item.RETURNED, Item.COMPENSATED)
     unsold_status = (Item.BROUGHT, Item.STAGED)
     money_status = (Item.SOLD,)
-    compensated_status = (Item.COMPENSATED,)
+    compensated_status = (Item.COMPENSATED, Item.RETURNED)
     unix_epoch = datetime(1970, 1, 1, tzinfo=pytz.utc)
 
     def datetime_to_js_time(dt):
