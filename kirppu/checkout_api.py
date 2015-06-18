@@ -689,6 +689,10 @@ def iterate_logs(entries, hide_advertised=False, hide_sales=False, show_prices=F
     bucket_time = None
     bucket_td = timedelta(seconds=60)
 
+    # Modify the query to include item price, because we need it.
+    if show_prices:
+        entries = entries.select_related('item__price')
+
     for entry in entries:
         if bucket_time is None:
             bucket_time = entry.time
