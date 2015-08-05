@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-23 17:20+0300\n"
-"PO-Revision-Date: 2015-05-23 17:27+0300\n"
+"POT-Creation-Date: 2015-08-05 22:48+0300\n"
+"PO-Revision-Date: 2015-08-05 22:52+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -60,7 +60,6 @@ msgstr "Kassatätiä ei löytynyt."
 msgid "Bye."
 msgstr "Moi."
 
-#| msgid "Access key value"
 msgid "Access denied."
 msgstr "Käyttö estetty."
 
@@ -75,7 +74,6 @@ msgstr "Odottamaton tavaran tila: {state_name} ({state})"
 msgid "No such clerk."
 msgstr "Ei sellaista kassatätiä."
 
-#| msgid "Brought to event"
 msgid "Item was not brought to event."
 msgstr "Tavaraa ei ole tuotu tapahtumaan."
 
@@ -263,11 +261,28 @@ msgstr "Poista laatikko pysyvästi."
 msgid "Print"
 msgstr "Tulosta"
 
+#, python-format
+msgid "%(price)s / unit"
+msgstr "%(price)s / kpl"
+
+msgid "Buyer!"
+msgstr "Ostaja!"
+
 msgid "Tell this number to the clerk."
 msgstr "Kerro tämä numero kassalla."
 
 msgid "Vendor:"
 msgstr "Myyjä:"
+
+msgid ""
+"This paper is attached to the box. The empty rectangle above is filled by "
+"clerk when this box is brought to the market."
+msgstr ""
+"Tämä sivu kiinnitetään laatikkoon. Kassahenkilökunta täyttää yllä olevan "
+"ruudun kirpputorilla."
+
+msgid "Give this page to the clerk when bringing items."
+msgstr "Anna tämä sivu kassahenkilökunnalle tuodessasi tavaroita."
 
 msgid "Total:"
 msgstr "Yhteensä:"

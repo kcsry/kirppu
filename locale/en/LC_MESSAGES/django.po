@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-23 17:20+0300\n"
-"PO-Revision-Date: 2015-05-23 17:28+0300\n"
+"POT-Creation-Date: 2015-08-05 22:48+0300\n"
+"PO-Revision-Date: 2015-08-05 22:52+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -59,7 +59,6 @@ msgstr "Clerk not found."
 msgid "Bye."
 msgstr "Bye."
 
-#| msgid "Access key value"
 msgid "Access denied."
 msgstr "Access denied."
 
@@ -74,7 +73,6 @@ msgstr "Unexpected item state: {state_name} ({state})"
 msgid "No such clerk."
 msgstr "No such clerk."
 
-#| msgid "Brought to event"
 msgid "Item was not brought to event."
 msgstr "Item was not brought to event."
 
@@ -262,11 +260,28 @@ msgstr "Permanently remove the box."
 msgid "Print"
 msgstr "Print"
 
+#, python-format
+msgid "%(price)s / unit"
+msgstr "%(price)s / unit"
+
+msgid "Buyer!"
+msgstr "Buyer!"
+
 msgid "Tell this number to the clerk."
 msgstr "Tell this number to the clerk."
 
 msgid "Vendor:"
 msgstr "Vendor:"
+
+msgid ""
+"This paper is attached to the box. The empty rectangle above is filled by "
+"clerk when this box is brought to the market."
+msgstr ""
+"This page is attached to the box. The empty rectangle above is filled by "
+"clerk when this box is brought to the market."
+
+msgid "Give this page to the clerk when bringing items."
+msgstr "Give this page to the clerk when bringing items."
 
 msgid "Total:"
 msgstr "Total:"
