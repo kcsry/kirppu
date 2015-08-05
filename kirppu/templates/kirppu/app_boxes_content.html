@@ -18,33 +18,43 @@
     <div id="box_content">
 
         <div class="box_content_table_page box_content_page">
-
-            <div class="box_content_table_page_header">
-                <div class="box_content_number" >
-                </div>
-                <div class="box_content_table_page_instructions" >{% trans "Tell this number to the clerk." %}</div>
-            </div>
-
             <div class="row">
                 <div class="col-sm-8"><span class="box_description">{{ box.description }}</span></div>
             </div>
 
+            <div class="row">
+            {% comment %}
+                <div class="col-xs-2"><span class="box_title">{% trans "Price:" %}</span></div>
+            {% endcomment %}
+                <div class="col-xs-4"><span class="box_price">{% blocktrans trimmed with price=box.get_price_fmt %}
+                        {{ price }} / unit
+                    {% endblocktrans %}</span></div>
+            </div>
+
+            <div class="box_content_table_page_header">
+                <div class="box_content_number" >
+                </div>
+                <div class="box_content_table_page_instructions" ><div>{% trans "Buyer!" %}</div>{% trans "Tell this number to the clerk." %}</div>
+            </div>
+
             <div class="row box_empty_row">
             </div>
             <div class="row box_empty_row">
             </div>
 
             <div class="row">
-                <div class="col-sm-2"><span class="box_title">{% trans "Price:" %}</span></div>
-                <div class="col-sm-4"><span class="box_price">{{ box.get_price_fmt }}</span></div>
+
+                <div class="col-xs-2"><span class="box_title">{% trans "Vendor:" %}</span></div>
+                <div class="col-xs-4"><span class="box_vendor_id">{{ box.get_vendor_id }}</span></div>
             </div>
 
-             <div class="row">
-
-                <div class="col-sm-2"><span class="box_title">{% trans "Vendor:" %}</span></div>
-                <div class="col-sm-4"><span class="box_vendor_id">{{ box.get_vendor_id }}</span></div>
+            <div class="row" style="height: 10cm;"></div>
+            <div class="row" style="color: lightgray; border-top: 1px lightgray dashed;">
+                {% blocktrans trimmed %}
+                    This paper is attached to the box. The empty rectangle above is filled
+                    by clerk when this box is brought to the market.
+                {% endblocktrans %}
             </div>
-
         </div>
 
         {% split_list content as pages 12 %}

@@ -63,7 +63,6 @@
 .box_description {
     width: 8.7cm;
     height: 2em;
-    margin: 2px; /* Compensate for border not being there for locked items */
 }
 
 .box_adult_tag {
