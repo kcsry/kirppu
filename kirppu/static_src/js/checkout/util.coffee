@@ -111,3 +111,19 @@ class @RefreshButton
     ).attr(
       "title", @title
     )
+
+
+@addEnableCheck = () ->
+  $(".check_enabled a").each((index, element) ->
+    # Replace href of the 'a' element with dummy.
+    target = element.href
+    element.href = "javascript:void(0)"
+
+    # Add click script that ensures the element or its parent is not disabled when 'a' is clicked.
+    $(element).on("click", (event) ->
+      if not ($(event.target).hasClass("disabled") and $(event.target.parentElement).hasClass("disabled"))
+        # Not disabled, change location.
+        window.location = target
+    )
+  )
+

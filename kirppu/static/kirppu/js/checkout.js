@@ -121,6 +121,19 @@
 
   })();
 
+  this.addEnableCheck = function() {
+    return $(".check_enabled a").each(function(index, element) {
+      var target;
+      target = element.href;
+      element.href = "javascript:void(0)";
+      return $(element).on("click", function(event) {
+        if (!($(event.target).hasClass("disabled") && $(event.target.parentElement).hasClass("disabled"))) {
+          return window.location = target;
+        }
+      });
+    });
+  };
+
 }).call(this);
 
 // ================ 2: checkout.coffee ================
@@ -1036,7 +1049,13 @@
   var _populateCommandRefs,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  this.setClass = function(element, cls, enabled) {
+  this.setClass = function(element, cls, enabled, test) {
+    if (test == null) {
+      test = null;
+    }
+    if (test !== null && !test(element)) {
+      return element;
+    }
     if (element.hasClass(cls) !== enabled) {
       if (enabled) {
         element.addClass(cls);
@@ -1177,14 +1196,20 @@
       var menu;
       menu = this.cfg.uiRef.modeMenu;
       setClass(menu, "disabled", !enabled);
-      return setClass(menu.find("a:first"), "disabled", !enabled);
+      setClass(menu.find("a:first"), "disabled", !enabled);
+      setClass(this.cfg.uiRef.overseerLink, "disabled", !enabled, function(e) {
+        return !e.hasClass("hidden");
+      });
+      return setClass(this.cfg.uiRef.statsLink, "disabled", !enabled, function(e) {
+        return !e.hasClass("hidden");
+      });
     };
 
-    ModeSwitcher.prototype.setOverseerEnabled = function(enabled) {
+    ModeSwitcher.prototype.setOverseerVisible = function(enabled) {
       return setClass(this.cfg.uiRef.overseerLink, 'hidden', !enabled);
     };
 
-    ModeSwitcher.prototype.setStatsEnabled = function(enabled) {
+    ModeSwitcher.prototype.setStatsVisible = function(enabled) {
       return setClass(this.cfg.uiRef.statsLink, 'hidden', !enabled);
     };
 
@@ -1280,8 +1305,8 @@
         return function() {
           console.log("Logged out " + _this.cfg.settings.clerkName + ".");
           _this.cfg.settings.clerkName = null;
-          _this.switcher.setOverseerEnabled(false);
-          _this.switcher.setStatsEnabled(false);
+          _this.switcher.setOverseerVisible(false);
+          _this.switcher.setStatsVisible(false);
           return _this.switcher.switchTo(ClerkLoginMode);
         };
       })(this), (function(_this) {
@@ -1488,8 +1513,8 @@
       username = data["user"];
       this.cfg.settings.clerkName = username;
       console.log("Logged in as " + username + ".");
-      this.switcher.setOverseerEnabled(data["overseer_enabled"]);
-      this.switcher.setStatsEnabled(data["stats_enabled"]);
+      this.switcher.setOverseerVisible(data["overseer_enabled"]);
+      this.switcher.setStatsVisible(data["stats_enabled"]);
       if (data["receipts"] != null) {
         return this.multipleReceipts(data["receipts"]);
       } else if (data["receipt"] != null) {

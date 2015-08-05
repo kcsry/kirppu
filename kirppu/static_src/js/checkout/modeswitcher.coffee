@@ -4,7 +4,9 @@
 # @param cls [String] CSS Class name to adjust.
 # @param enabled [Boolean] Whether the class should exist in the element.
 # @return [$] The element.
-@setClass = (element, cls, enabled) ->
+@setClass = (element, cls, enabled, test=null) ->
+  if test != null and not test(element)
+    return element
   if element.hasClass(cls) != enabled
     if enabled
       element.addClass(cls)
@@ -142,19 +144,21 @@ class @ModeSwitcher
     menu = @cfg.uiRef.modeMenu
     setClass(menu, "disabled", not enabled)
     setClass(menu.find("a:first"), "disabled", not enabled)
+    setClass(@cfg.uiRef.overseerLink, "disabled", not enabled, (e) -> not e.hasClass("hidden"))
+    setClass(@cfg.uiRef.statsLink, "disabled", not enabled, (e) -> not e.hasClass("hidden"))
 
   # Enable or disable the link to overseer dashboard
   #
   # @param enabled [Boolean] If true, enable the link. If false, disable
   # the link.
-  setOverseerEnabled: (enabled) ->
+  setOverseerVisible: (enabled) ->
     setClass(@cfg.uiRef.overseerLink, 'hidden', not enabled)
 
   # Enable or disable the link to stats
   #
   # @param enabled [Boolean] If true, enable the link. If false, disable
   # the link.
-  setStatsEnabled: (enabled) ->
+  setStatsVisible: (enabled) ->
     setClass(@cfg.uiRef.statsLink, 'hidden', not enabled)
 
 

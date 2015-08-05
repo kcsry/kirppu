@@ -34,10 +34,10 @@
     </li>
 {% endblock %}
 {% block navbar_right %}
-    <li id="stats_link" class="hidden">
+    <li id="stats_link" class="hidden check_enabled">
         <a href="{% url 'kirppu:stats_view' %}" title="Stats">Stats</a>
     </li>
-    <li id="overseer_link" class="hidden">
+    <li id="overseer_link" class="hidden check_enabled">
         <a href="{% url 'kirppu:overseer_view' %}" title="Overseer Dashboard">Overseer Dashboard</a>
     </li>
     <li>
@@ -102,6 +102,7 @@
         setupAjax();
         CheckoutConfig.check();
         new ModeSwitcher().startDefault();
+        addEnableCheck();
     });
 //--></script>
     <div class="modal fade" id="help_dialog" tabindex="-1" role="dialog" aria-labelledby="help_dialog_label"

@@ -74,8 +74,8 @@ class @CheckoutMode
       () =>
         console.log("Logged out #{ @cfg.settings.clerkName }.")
         @cfg.settings.clerkName = null
-        @switcher.setOverseerEnabled(false)
-        @switcher.setStatsEnabled(false)
+        @switcher.setOverseerVisible(false)
+        @switcher.setStatsVisible(false)
         @switcher.switchTo(ClerkLoginMode)
 
       () =>

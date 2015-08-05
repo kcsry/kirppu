@@ -25,8 +25,8 @@ class @ClerkLoginMode extends CheckoutMode
     username = data["user"]
     @cfg.settings.clerkName = username
     console.log("Logged in as #{username}.")
-    @switcher.setOverseerEnabled(data["overseer_enabled"])
-    @switcher.setStatsEnabled(data["stats_enabled"])
+    @switcher.setOverseerVisible(data["overseer_enabled"])
+    @switcher.setStatsVisible(data["stats_enabled"])
     if data["receipts"]?
       @multipleReceipts(data["receipts"])
     else if data["receipt"]?
