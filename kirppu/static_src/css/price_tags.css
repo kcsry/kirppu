@@ -44,9 +44,11 @@
 .item_tiny {
     width: 33.3%;
 }
-.item_list {
-    height: 2em;
-    width: 99.9%;
+@media screen, projection, handheld {
+    .item_list {
+        height: 2em;
+        width: 99.9%;
+    }
 }
 #printed_items > .item_container {
     background-color: lightgrey;
@@ -62,8 +64,10 @@
 .item_tiny .item_head {
     display: none;
 }
-.item_list .item_head {
-    display: none;
+@media screen, projection, handheld {
+    .item_list .item_head {
+        display: none;
+    }
 }
 .item_body {
     float: left;
@@ -76,8 +80,10 @@
 .item_tiny .item_body {
     width: 100%;
 }
-.item_list .item_body {
-    width: 100%;
+@media screen, projection, handheld {
+    .item_list .item_body {
+        width: 100%;
+    }
 }
 
 .item_price {
@@ -94,11 +100,13 @@
     }
 }
 
-.item_list .item_price {
-    border: none;
-    margin: 0px;
-    margin-top: 0px;
-    font-size: 100%;
+@media screen, projection, handheld {
+    .item_list .item_price {
+        border: none;
+        margin: 0px;
+        margin-top: 0px;
+        font-size: 100%;
+    }
 }
 .item_price:after {
     content:" \20AC"; /* euro */
@@ -151,12 +159,14 @@
 .item_tiny .item_name {
     width: 5.5cm;
 }
-.item_list .item_name {
-    position: absolute;
-    border: none;
-    margin: 0px;
-    width: 100%;
-    left: 1.5cm;
+@media screen, projection, handheld {
+    .item_list .item_name {
+        position: absolute;
+        border: none;
+        margin: 0px;
+        width: 100%;
+        left: 1.5cm;
+    }
 }
 
 /* This container is for centering the barcode text on the barcode.
@@ -174,8 +184,10 @@
     margin-right: auto;
     width: 143px;
 }
-.item_list .barcode_container {
-    display: none;
+@media screen, projection, handheld {
+    .item_list .barcode_container {
+        display: none;
+    }
 }
 .barcode_img {
     display: block;
@@ -199,8 +211,10 @@
     left: 1.75cm;
     font-weight: bold;
 }
-.item_list .item_adult_tag {
-    display: none;
+@media screen, projection, handheld {
+    .item_list .item_adult_tag {
+        display: none;
+    }
 }
 
 .item_vendor_id {
@@ -208,8 +222,10 @@
     top: 1cm;
     left: 3cm;
 }
-.item_list .item_vendor_id {
-    display: none;
+@media screen, projection, handheld {
+    .item_list .item_vendor_id {
+        display: none;
+    }
 }
 .item_vendor_id:before {
     content: 'Vendor: '
@@ -238,23 +254,29 @@
 .item_button_hide {
     top: 0em;
 }
-.item_list .item_button_printed {
-    top: 0em;
-    right: 0em;
+@media screen, projection, handheld {
+    .item_list .item_button_printed {
+        top: 0em;
+        right: 0em;
+    }
 }
 .item_button_printed {
     top: 1.5em;
     font-family: Arial, Helvetica, sans-serif;
 }
-.item_list .item_button_printed {
-    top: 0em;
-    right: 1.5em;
+@media screen, projection, handheld {
+    .item_list .item_button_printed {
+        top: 0em;
+        right: 1.5em;
+    }
 }
 .item_button_toggle {
     top: 3em;
 }
-.item_list .item_button_toggle {
-    display: none;
+@media screen, projection, handheld {
+    .item_list .item_button_toggle {
+        display: none;
+    }
 }
 a.item_button_printed {
     position: absolute; width:20px;
@@ -282,7 +304,7 @@ a.item_button_printed {
     #item-add-form {
         display: none;
     }
-    #printed_items, .item_list {
+    #printed_items {
         display: none;
     }
     .item_container {
