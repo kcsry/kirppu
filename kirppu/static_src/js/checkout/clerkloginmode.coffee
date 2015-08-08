@@ -13,10 +13,10 @@ class @ClerkLoginMode extends CheckoutMode
       @cfg.uiRef.codeInput.val(@constructor.autoClerk)
 
   actions: -> [[
-    @cfg.settings.clerkPrefix,
-    (code, prefix) =>
+    "",
+    (code) =>
       Api.clerk_login(
-        code: prefix + code
+        code: code
         counter: @cfg.settings.counterCode
       ).then(@onResultSuccess, @onResultError)
   ]]

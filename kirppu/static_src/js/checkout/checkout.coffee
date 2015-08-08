@@ -28,7 +28,6 @@ class Config
     dialog: null
   settings:
     itemPrefix: null
-    clerkPrefix: "::"
     counterPrefix: ":*"
     removeItemPrefix: "-"
     payPrefix: "+"

@@ -68,8 +68,6 @@ UserAdapter = import_string(settings.KIRPPU_USER_ADAPTER)
 
 @python_2_unicode_compatible
 class Clerk(models.Model):
-    PREFIX = "::"
-
     user = models.OneToOneField(User, null=True)
     access_key = models.CharField(
         max_length=128,
@@ -102,7 +100,7 @@ class Clerk(models.Model):
         """
         Get access card code for this Clerk.
 
-        Format of the code (without '::' prefix):
+        Format of the code:
             zeros:       4 bits
             access_key: 56 bits
             checksum:    4 bits
@@ -115,7 +113,7 @@ class Clerk(models.Model):
         if self.access_key in ("", None):
             return ""
         access_key = hex_to_number(self.access_key)
-        return self.PREFIX + b32_encode(
+        return b32_encode(
             pack([
                 (4, 0),
                 (56, access_key),
@@ -133,7 +131,6 @@ class Clerk(models.Model):
     def by_code(cls, code):
         """
         Return the Clerk instance with the given hex code.
-        The access card code should include prefix "::".
 
         :param code: Raw code string from access card.
         :type code: str
@@ -141,10 +138,6 @@ class Clerk(models.Model):
         :rtype: Clerk | None
         :raises: ValueError if not a valid Clerk access code.
         """
-        prefix_len = len(cls.PREFIX)
-        if len(code) <= prefix_len or code[:prefix_len] != cls.PREFIX:
-            raise ValueError("Not a Clerk code")
-        code = code[prefix_len:]
         try:
             zeros, access_key = unpack(
                 b32_decode(code, length=8),

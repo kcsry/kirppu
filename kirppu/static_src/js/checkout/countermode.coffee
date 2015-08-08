@@ -12,8 +12,8 @@ class @CounterMode extends ItemCheckoutMode
   glyph: -> "euro"
   title: -> "Checkout"
   commands: ->
-    abort: [":abort", "Abort receipt"]
-    print: [":print", "Print receipt / return"]
+    abort: ["abort", "Abort receipt"]
+    print: ["print", "Print receipt / return"]
 
   actions: -> [
     [@commands.abort,                 @onAbortReceipt]

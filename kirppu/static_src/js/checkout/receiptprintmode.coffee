@@ -24,7 +24,7 @@ class @ReceiptPrintMode extends CheckoutMode
   title: -> if not @hasReceipt then @constructor.strTitleFind else @constructor.strTitle
   subtitle: -> ""
   commands: ->
-    print: [":print", "Print receipt / return"]
+    print: ["print", "Print receipt / return"]
 
   actions: -> [
     ["", @findReceipt]

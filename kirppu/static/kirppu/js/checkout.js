@@ -177,7 +177,6 @@
 
     Config.prototype.settings = {
       itemPrefix: null,
-      clerkPrefix: "::",
       counterPrefix: ":*",
       removeItemPrefix: "-",
       payPrefix: "+",
@@ -1292,7 +1291,7 @@
 
     CheckoutMode.prototype.commands = function() {
       return {
-        logout: [":exit", "Log out"]
+        logout: ["exit", "Log out"]
       };
     };
 
@@ -1496,10 +1495,10 @@
     ClerkLoginMode.prototype.actions = function() {
       return [
         [
-          this.cfg.settings.clerkPrefix, (function(_this) {
-            return function(code, prefix) {
+          "", (function(_this) {
+            return function(code) {
               return Api.clerk_login({
-                code: prefix + code,
+                code: code,
                 counter: _this.cfg.settings.counterCode
               }).then(_this.onResultSuccess, _this.onResultError);
             };
@@ -1944,8 +1943,8 @@
 
     CounterMode.prototype.commands = function() {
       return {
-        abort: [":abort", "Abort receipt"],
-        print: [":print", "Print receipt / return"]
+        abort: ["abort", "Abort receipt"],
+        print: ["print", "Print receipt / return"]
       };
     };
 
@@ -2322,7 +2321,7 @@
 
     ReceiptPrintMode.prototype.commands = function() {
       return {
-        print: [":print", "Print receipt / return"]
+        print: ["print", "Print receipt / return"]
       };
     };
 

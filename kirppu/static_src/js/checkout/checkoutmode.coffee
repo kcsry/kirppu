@@ -57,7 +57,7 @@ class @CheckoutMode
   # @return [Object] Command prefixes with names.
   commands: ->
     # This is actually called by static reference.
-    logout: [":exit", "Log out"]
+    logout: ["exit", "Log out"]
 
   # Return an Array where each element is a [prefix, handler function]
   # array. The handler will be called with (code, prefix) where code is
