@@ -28,7 +28,7 @@
             {% comment %}
                 <div class="col-xs-2"><span class="box_title">{% trans "Price:" %}</span></div>
             {% endcomment %}
-                <div class="col-xs-4">{% blocktrans trimmed with price=box.get_price_fmt %}
+                <div class="col-xs-4 box_price">{% blocktrans trimmed with price=box.get_price_fmt %}
                     <span class="price">{{ price }}</span> / unit
                 {% endblocktrans %}</div>
             </div>

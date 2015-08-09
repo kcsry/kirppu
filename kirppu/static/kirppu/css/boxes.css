@@ -15,6 +15,7 @@
  *          .box_count
  *          .box_type
  *          .box_price
+ *               .price
  *          .box_adult
  *          #print_box
  *
@@ -25,7 +26,7 @@
  *              .box_content_table_page_instructions
  *          .box_description
  *          .box_title
- *          .box_price
+ *          .price
  *          .box_vendor_id
  *      .box_content_page
  *          .box_content_page_header
@@ -33,7 +34,7 @@
  *              .box_content_description
  *                  .box_title
  *                  .box_value
- *                  .box_price
+ *                  .price
  *                  .box_vendor_id
  *
  */
@@ -126,7 +127,7 @@
 }
 
 .box_content_table_page .box_price {
-    font-size: 130%;
+    font-size: 175%;
 }
 
 
@@ -184,7 +185,7 @@
 
 @media print {
 
-    .box_price, .box_description {
+    .price, .box_description {
         border: none;
     }
     .box_container > button {
