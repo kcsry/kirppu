@@ -1,7 +1,12 @@
+@CURRENCY =
+  css: ["", ""]
+  html: ["", ""]
+  raw: ["", ""]
+
 @displayPrice = (price, rounded=false) ->
   if price?
     if Number.isInteger(price)
-      price_str = price.formatCents() + " €"
+      price_str = CURRENCY.raw[0] + price.formatCents() + CURRENCY.raw[1]
     else
       price_str = price
       rounded = false
@@ -10,7 +15,7 @@
     rounded = false
 
   if rounded and price.round5() != price
-    rounded_str = price.round5().formatCents() + " €"
+    rounded_str = CURRENCY.raw[0] + price.round5().formatCents() + CURRENCY.raw[1]
     price_str = "#{ rounded_str } (#{ price_str })"
 
   return price_str

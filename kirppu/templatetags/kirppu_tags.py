@@ -9,6 +9,7 @@ else:
     from io import BytesIO as StringIO
 
 import re
+import json
 
 import barcode
 from barcode.charsets import code128
@@ -18,6 +19,7 @@ from django.conf import settings
 from django.utils.encoding import force_text
 from django.utils.functional import memoize
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from ..utils import PixelWriter
 from ..models import UIText, UserAdapter
 
@@ -235,3 +237,8 @@ def split_list(parser, token):
     return SplitListNode(bits[1], bits[4], bits[3])
 
 split_list = register.tag(split_list)
+
+
+def as_json(obj):
+    return mark_safe(json.dumps(obj))
+register.filter("json", as_json)

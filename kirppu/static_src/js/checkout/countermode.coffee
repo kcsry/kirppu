@@ -104,9 +104,9 @@ class @CounterMode extends ItemCheckoutMode
     )
 
   _setSum: (sum=0, ret=null) ->
-    text = "Total: " + (sum).formatCents() + " €"
+    text = "Total: " + CURRENCY.raw[0] + (sum).formatCents() + CURRENCY.raw[1]
     if ret?
-      text += " / Return: " + (ret).formatCents() + " €"
+      text += " / Return: " + CURRENCY.raw[0] + (ret).formatCents() + CURRENCY.raw[1]
     @receiptSum.set(text)
     @receiptSum.setEnabled(@_receipt.isActive())
 

@@ -1,4 +1,4 @@
-{% extends "kirppu/common.html" %}{% load i18n %}
+{% extends "kirppu/common.html" %}{% load i18n kirppu_tags %}
 
 {% load static %}
 
@@ -85,6 +85,7 @@
     CheckoutConfig.uiId.overseerLink= "overseer_link";
     CheckoutConfig.uiId.statsLink= "stats_link";
     CheckoutConfig.uiId.dialog = "dialog_template";
+    CURRENCY = {{ CURRENCY|json }};
     DateTimeFormatter.locales = "{{ LANGUAGE_CODE }}";
     DateTimeFormatter.timeZone = "{{ TIME_ZONE }}";
     DateTimeFormatter.init();

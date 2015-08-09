@@ -249,6 +249,8 @@ KIRPPU_CURRENCY = {
     "css": ("", " \\20AC"),  # euro.
     # Content for html elements (that cannot be styled with css content).
     "html": ("", "&euro;"),
+    # Content for raw text use (js).
+    "raw": ("", " €"),
 }
 
 

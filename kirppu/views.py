@@ -529,7 +529,9 @@ def checkout_view(request):
     :rtype: HttpResponse
     """
     clerk_logout_fn(request)
-    context = {}
+    context = {
+        'CURRENCY': settings.KIRPPU_CURRENCY,
+    }
     if settings.KIRPPU_AUTO_CLERK and settings.DEBUG:
         if isinstance(settings.KIRPPU_AUTO_CLERK, text_type):
             real_clerks = Clerk.objects.filter(user__username=settings.KIRPPU_AUTO_CLERK)

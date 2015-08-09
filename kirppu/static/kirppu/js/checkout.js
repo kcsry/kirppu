@@ -3,6 +3,12 @@
 (function() {
   var errorSound, safeDisplay, stillBlinking;
 
+  this.CURRENCY = {
+    css: ["", ""],
+    html: ["", ""],
+    raw: ["", ""]
+  };
+
   this.displayPrice = function(price, rounded) {
     var price_str, rounded_str;
     if (rounded == null) {
@@ -10,7 +16,7 @@
     }
     if (price != null) {
       if (Number.isInteger(price)) {
-        price_str = price.formatCents() + " €";
+        price_str = CURRENCY.raw[0] + price.formatCents() + CURRENCY.raw[1];
       } else {
         price_str = price;
         rounded = false;
@@ -20,7 +26,7 @@
       rounded = false;
     }
     if (rounded && price.round5() !== price) {
-      rounded_str = price.round5().formatCents() + " €";
+      rounded_str = CURRENCY.raw[0] + price.round5().formatCents() + CURRENCY.raw[1];
       price_str = rounded_str + " (" + price_str + ")";
     }
     return price_str;
@@ -2075,9 +2081,9 @@
       if (ret == null) {
         ret = null;
       }
-      text = "Total: " + sum.formatCents() + " €";
+      text = "Total: " + CURRENCY.raw[0] + sum.formatCents() + CURRENCY.raw[1];
       if (ret != null) {
-        text += " / Return: " + ret.formatCents() + " €";
+        text += " / Return: " + CURRENCY.raw[0] + ret.formatCents() + CURRENCY.raw[1];
       }
       this.receiptSum.set(text);
       return this.receiptSum.setEnabled(this._receipt.isActive());
