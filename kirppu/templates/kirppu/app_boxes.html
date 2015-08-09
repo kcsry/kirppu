@@ -108,7 +108,7 @@
         boxesConfig.urls.box_content = "{% url 'kirppu:box_content' '__placeholder__' %}";
         boxesConfig.urls.box_hide = "{% url 'kirppu:box_hide' '__placeholder__' %}";
         boxesConfig.urls.box_print = "{% url 'kirppu:box_print' '__placeholder__' %}";
-        boxesConfig.urls.roller = "{% static "img/roller.gif" %}";
+        boxesConfig.urls.roller = "{% static "kirppu/img/roller.gif" %}";
         {% if not is_registration_open %}boxesConfig.enabled = false;{% endif %}
 
         $(document).ready(function() {
