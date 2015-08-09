@@ -56,10 +56,6 @@
     transition: width 0.2s;
 }
 
-.box_price:after {
-    content:" \20AC"; /* euro */
-}
-
 .box_description {
     width: 8.7cm;
     height: 2em;
@@ -102,7 +98,7 @@
 
 .box_content_page_header .box_value {
 
-    width: 3em;
+    width: 5em;
     display: inline-block
 }
 

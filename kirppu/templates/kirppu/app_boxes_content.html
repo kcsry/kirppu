@@ -10,7 +10,9 @@
     <script src="{% static "kirppu/js/general.js" %}"></script>
     <script src="{% static "kirppu/js/jeditable.js" %}"></script>
     <script src="{% static "kirppu/js/boxes.js" %}"></script>
-
+    <style type="text/css">
+        {% include "kirppu/currency_style.css" %}
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -26,9 +28,9 @@
             {% comment %}
                 <div class="col-xs-2"><span class="box_title">{% trans "Price:" %}</span></div>
             {% endcomment %}
-                <div class="col-xs-4"><span class="box_price">{% blocktrans trimmed with price=box.get_price_fmt %}
-                        {{ price }} / unit
-                    {% endblocktrans %}</span></div>
+                <div class="col-xs-4">{% blocktrans trimmed with price=box.get_price_fmt %}
+                    <span class="price">{{ price }}</span> / unit
+                {% endblocktrans %}</div>
             </div>
 
             <div class="box_content_table_page_header">

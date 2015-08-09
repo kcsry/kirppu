@@ -320,6 +320,7 @@ def box_content(request, box_id, bar_type):
         'box': box,
         'content': items,
         'bar_type': bar_type,
+        'CURRENCY': settings.KIRPPU_CURRENCY,
     }
 
     return render(request, "kirppu/app_boxes_content.html", render_params)
@@ -398,6 +399,7 @@ def get_items(request, bar_type):
         'is_registration_open': is_vendor_open(),
         'menu': _vendor_menu_contents(request),
         'Item': Item,
+        'CURRENCY': settings.KIRPPU_CURRENCY,
     }
 
     return render(request, "kirppu/app_items.html", render_params)
@@ -437,6 +439,7 @@ def get_boxes(request):
         'is_registration_open': is_vendor_open(),
         'menu': _vendor_menu_contents(request),
         'Item': Item,
+        'CURRENCY': settings.KIRPPU_CURRENCY,
     }
 
     return render(request, "kirppu/app_boxes.html", render_params)

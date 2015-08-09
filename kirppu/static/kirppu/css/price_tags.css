@@ -110,12 +110,6 @@
         font-size: 100%;
     }
 }
-.item_price:after {
-    content:" \20AC"; /* euro */
-}
-.item_head_price:after {
-    content:" \20AC"; /* euro */
-}
 
 /* Price tag edit forms. */
 .item_editable .item_body form {

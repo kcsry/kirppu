@@ -243,6 +243,14 @@ KIRPPU_MAX_ITEMS_PER_VENDOR = 1000
 # The specified date is expected to be in TIME_ZONE timezone.
 KIRPPU_REGISTER_ACTIVE_UNTIL = "2024-12-31 23:59:59"
 
+# Prefix- and postfix content of currency values.
+KIRPPU_CURRENCY = {
+    # Content text for currency spans.
+    "css": ("", " \\20AC"),  # euro.
+    # Content for html elements (that cannot be styled with css content).
+    "html": ("", "&euro;"),
+}
+
 
 # Load local settings that are not stored in repository. This must be last at end of settings.
 try:

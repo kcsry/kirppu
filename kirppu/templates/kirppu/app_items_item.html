@@ -3,12 +3,12 @@
     <div class="item_container item_{{ tag_type }} {{ locked|yesno:',item_editable' }}" id="{{ code }}">
         {% if tag_type != "list" %}
             <div class="item_head">
-                <span class="item_head_price">{{ price }}</span>
+                <span class="item_head_price price">{{ price }}</span>
             </div>
         {% endif %}
         <div class="item_body">
             <div class="item_name">{{ name }}</div>
-            <span class="item_price">{{ price }}</span>
+            <span class="item_price price">{{ price }}</span>
             {% if tag_type != "list" %}
                 <div class="barcode_container">
                     <img class="barcode_img" src="{% barcode_dataurl code bar_type %}" alt="Barcode: {{ code }}" />
