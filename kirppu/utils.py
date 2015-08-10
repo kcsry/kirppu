@@ -18,75 +18,6 @@ TIME = "%H:%M:%S"
 MEM_TIMES = {}
 
 
-from barcode.writer import BaseWriter, mm2px
-
-try:
-    from PIL import Image, ImageDraw
-except ImportError:
-    print("Could not find PIL.")
-    PixelWriter = None
-else:
-    class PixelWriter(BaseWriter):
-        # According to wikipedia 7x smallest unit width, but 10x according
-        # to some other sources.
-        _quiet_zone = 10
-
-        @classmethod
-        def quiet_zone(cls):
-            """
-            Get total quiet zone added by this writer.
-
-            :return: Quiet zone amount.
-            :rtype: int
-            """
-            return cls._quiet_zone * 2
-
-        def __init__(self, format='PNG'):
-            BaseWriter.__init__(self, self._init, self._paint_module,
-                                self._paint_text, self._finish)
-            self.format = format.lower()
-            self.dpi = 300
-            self._image = None
-            self._draw = None
-
-        def _init(self, code):
-            size = self.calculate_size(len(code[0]), len(code), self.dpi)
-
-            if self.format == 'gif':
-                # Monochrome doesn't work with gifs for some reason.
-                color_mode = 'L'
-            else:
-                color_mode = '1'
-
-            self._image = Image.new(color_mode, size, 255)
-            self._draw = ImageDraw.Draw(self._image)
-
-        def _paint_module(self, xpos, ypos, width, color):
-            xpos += self._quiet_zone
-            xpos -= 2  # The position is off by this much for whatever reason.
-            size = [xpos, 0, xpos + width, 0]
-            self._draw.rectangle(size, outline=color, fill=color)
-
-        def _paint_text(self, xpos, ypos):
-            pass
-
-        def _finish(self):
-            return self._image
-
-        def save(self, filename, output):
-            filename = '{0}.{1}'.format(filename, self.format.lower())
-            output.save(filename, self.format.upper())
-            return filename
-
-        def calculate_size(self, modules_per_line, number_of_lines, dpi=300):
-            width = modules_per_line * self.module_width
-            width += 2 * self._quiet_zone  # quiet zone
-
-            height = 1
-
-            return width, height
-
-
 def model_dict_fn(*args, **kwargs):
     """
     Return a function that will create dictionary by reading values from class instance.
@@ -307,11 +238,11 @@ def barcode_view(fn):
     """
     @wraps(fn)
     def inner(request, *args, **kwargs):
-        # Use PNG if we can because SVGs from pyBarcode are huge.
-        default_format = 'png' if PixelWriter else 'svg'
+        default_format = 'png'
         bar_type = request.GET.get("format", default_format).lower()
 
-        if bar_type not in ('svg', 'png', 'gif', 'bmp'):
+        # Pubcode supports only these formats.
+        if bar_type not in ('png', 'bmp'):
             return HttpResponseBadRequest(_(u"Image extension not supported"))
 
         kwargs["bar_type"] = bar_type

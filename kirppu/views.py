@@ -2,7 +2,6 @@ from __future__ import unicode_literals, print_function, absolute_import
 from collections import namedtuple, OrderedDict
 import json
 
-import barcode
 from django.conf import settings
 from django.contrib.auth import logout, get_user_model
 from django.contrib.auth.decorators import login_required
@@ -47,12 +46,11 @@ from .util import get_form
 from .utils import (
     barcode_view,
     is_vendor_open,
-    PixelWriter,
     require_setting,
     require_test,
     require_vendor_open,
 )
-from .templatetags.kirppu_tags import get_dataurl, KirppuBarcode
+from .templatetags.kirppu_tags import get_dataurl
 
 
 def index(request):

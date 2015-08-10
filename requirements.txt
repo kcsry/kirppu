@@ -1,5 +1,5 @@
 django>=1.7.7,<1.8
-https://bitbucket.org/whitie/python-barcode/get/2126bc402643.zip#egg=pyBarcode
 pillow<3.0
 requests>=2.6.0,<3.0
 pytz>=2013d
+pubcode>=1.0.0
