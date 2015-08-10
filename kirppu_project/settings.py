@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Django settings for kirppu project.
 from __future__ import unicode_literals, print_function, absolute_import
 import os.path
