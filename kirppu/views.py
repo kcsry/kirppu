@@ -51,6 +51,7 @@ from .utils import (
     require_vendor_open,
 )
 from .templatetags.kirppu_tags import get_dataurl
+import pubcode
 
 
 def index(request):
@@ -466,7 +467,14 @@ def get_clerk_codes(request, bar_type):
 
         items.append(code_item(name=name, code=code))
 
-    width = KirppuBarcode.length(items[0].code, PixelWriter) if items else 100
+    if items:
+        # Generate a code to check it's length.
+        name, code = items[0]
+        width = len(pubcode.Code128(code, charset='B').modules)
+        width += 20  # quiet zone
+    else:
+        width = None  # Doesn't matter.
+
     return render(request, "kirppu/app_clerks.html", {
         'items': items,
         'bar_type': bar_type,
