@@ -446,38 +446,6 @@ def get_boxes(request):
     return render(request, "kirppu/app_boxes.html", render_params)
 
 
-def get_barcode(request, data, ext):
-    """
-    Render the data as a barcode.
-
-    :param request: HttpRequest object
-    :type request: django.http.request.HttpRequest
-
-    :param data: Data to render
-    :type data: str
-
-    :param ext: Filename extension of the preferred format
-    :type ext: str
-
-    :return: Response containing the raw image data
-    :rtype: HttpResponse
-    """
-    if ext not in ('svg', 'png', 'gif', 'bmp'):
-        return HttpResponseBadRequest(u"Image extension not supported")
-
-    # FIXME: TypeError if PIL is not installed
-    writer, mime_type = PixelWriter(format=ext), 'image/' + ext
-
-    bar = barcode.Code128(data, writer=writer)
-
-    response = HttpResponse(content_type=mime_type)
-    bar.write(response, {
-        'module_width': 1,  # pixels per smallest line
-    })
-
-    return response
-
-
 @login_required
 @require_test(lambda request: request.user.is_staff)
 @barcode_view
