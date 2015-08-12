@@ -736,6 +736,7 @@ def vendor_view(request):
 
         'profile_url': settings.PROFILE_URL,
         'menu': _vendor_menu_contents(request),
+        'CURRENCY': settings.KIRPPU_CURRENCY,
     }
     return render(request, "kirppu/app_frontpage.html", context)
 
