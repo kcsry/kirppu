@@ -1,4 +1,17 @@
-// ================ 1: boxes.coffee ================
+// ================ 1: number_test.coffee ================
+
+(function() {
+  var NUM_PAT;
+
+  NUM_PAT = /^-?\d+([,\.]\d*)?$/;
+
+  Number.isConvertible = function(str) {
+    return NUM_PAT.test(str);
+  };
+
+}).call(this);
+
+// ================ 2: boxes.coffee ================
 
 (function() {
   var BoxesConfig, C, addBox, bindBoxEvents, bindBoxHideEvents, bindBoxPrintEvents, bindFormEvents, createBox, hideBox, isPrinted, onPriceChange, printBox, warnAlreadyPrinted;
@@ -156,6 +169,7 @@
       addBox();
       return false;
     });
+    $('#box-add-price').change(onPriceChange);
   };
 
   bindBoxEvents = function(boxes) {

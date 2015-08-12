@@ -143,6 +143,8 @@ bindFormEvents = ->
     return false;
   )
 
+  $('#box-add-price').change(onPriceChange)
+
   return
 
 

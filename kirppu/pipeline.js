@@ -54,6 +54,7 @@ module.exports.js = {
     },
     'boxes': {
         "source_filenames": [
+            "js/number_test.coffee",
             "js/boxes.coffee",
         ],
         "output_filename": "boxes.js",
