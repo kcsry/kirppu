@@ -400,6 +400,7 @@ def get_items(request, bar_type):
         'menu': _vendor_menu_contents(request),
         'Item': Item,
         'CURRENCY': settings.KIRPPU_CURRENCY,
+        'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
     }
 
     return render(request, "kirppu/app_items.html", render_params)
@@ -440,6 +441,7 @@ def get_boxes(request):
         'menu': _vendor_menu_contents(request),
         'Item': Item,
         'CURRENCY': settings.KIRPPU_CURRENCY,
+        'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
     }
 
     return render(request, "kirppu/app_boxes.html", render_params)

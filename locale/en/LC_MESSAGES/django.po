@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-09 13:03+0300\n"
-"PO-Revision-Date: 2015-08-09 13:04+0300\n"
+"POT-Creation-Date: 2015-08-12 18:50+0300\n"
+"PO-Revision-Date: 2015-08-12 18:51+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -85,11 +85,13 @@ msgstr "Price must be numeric."
 msgid "Item must have a price."
 msgstr "Item must have a price."
 
-msgid "Price too low. (min 0.5 euros)"
-msgstr "Price too low. (min 0.5 euros)"
+#| msgid "Price too low. (min 0.5 euros)"
+msgid "Price too low. (min {} euros)"
+msgstr "Price too low. (min {} euros)"
 
-msgid "Price too high. (max 400 euros)"
-msgstr "Price too high. (max 400 euros)"
+#| msgid "Price too high. (max 400 euros)"
+msgid "Price too high. (max {} euros)"
+msgstr "Price too high. (max {} euros)"
 
 #, python-format
 msgid "Maximum of %(count)i items allowed by a single range statement."
@@ -233,7 +235,6 @@ msgstr "Items #:"
 msgid "10"
 msgstr "10"
 
-#| msgid "%(price)s / unit"
 msgid "Price / unit:"
 msgstr "Price / unit:"
 
@@ -257,9 +258,6 @@ msgstr "Add box"
 
 msgid "Permanently remove the box."
 msgstr "Permanently remove the box."
-
-msgid "Price:"
-msgstr "Price:"
 
 msgid "Print"
 msgstr "Print"
@@ -286,6 +284,9 @@ msgstr ""
 
 msgid "Give this page to the clerk when bringing items."
 msgstr "Give this page to the clerk when bringing items."
+
+msgid "Price:"
+msgstr "Price:"
 
 msgid "Total:"
 msgstr "Total:"

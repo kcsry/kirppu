@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-09 13:03+0300\n"
-"PO-Revision-Date: 2015-08-09 13:04+0300\n"
+"POT-Creation-Date: 2015-08-12 18:50+0300\n"
+"PO-Revision-Date: 2015-08-12 18:51+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -86,11 +86,13 @@ msgstr "Hinnan täytyy olla numero."
 msgid "Item must have a price."
 msgstr "Tavaralla täytyy olla hinta."
 
-msgid "Price too low. (min 0.5 euros)"
-msgstr "Hinta on liian pieni. (minimi 0,5 euroa)"
+#| msgid "Price too low. (min 0.5 euros)"
+msgid "Price too low. (min {} euros)"
+msgstr "Hinta on liian pieni. (minimi {} euroa)"
 
-msgid "Price too high. (max 400 euros)"
-msgstr "Hinta on liian suuri. (maksimi 400 euroa)"
+#| msgid "Price too high. (max 400 euros)"
+msgid "Price too high. (max {} euros)"
+msgstr "Hinta on liian suuri. (maksimi {} euroa)"
 
 #, python-format
 msgid "Maximum of %(count)i items allowed by a single range statement."
@@ -234,7 +236,6 @@ msgstr "Tavaroita:"
 msgid "10"
 msgstr "10"
 
-#| msgid "%(price)s / unit"
 msgid "Price / unit:"
 msgstr "Hinta / kpl:"
 
@@ -258,9 +259,6 @@ msgstr "Lisää laatikko"
 
 msgid "Permanently remove the box."
 msgstr "Poista laatikko pysyvästi."
-
-msgid "Price:"
-msgstr "Hinta:"
 
 msgid "Print"
 msgstr "Tulosta"
@@ -287,6 +285,9 @@ msgstr ""
 
 msgid "Give this page to the clerk when bringing items."
 msgstr "Anna tämä sivu kassahenkilökunnalle tuodessasi tavaroita."
+
+msgid "Price:"
+msgstr "Hinta:"
 
 msgid "Total:"
 msgstr "Yhteensä:"

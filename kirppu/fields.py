@@ -1,5 +1,6 @@
 from __future__ import unicode_literals, print_function, absolute_import
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.forms.fields import Field, CharField
 from django.utils.six import text_type
@@ -15,8 +16,8 @@ class ItemPriceField(Field):
     default_error_messages = {
         'invalid': _('Price must be numeric.'),
         'required': _('Item must have a price.'),
-        'min_value': _(u"Price too low. (min 0.5 euros)"),
-        'max_value': _(u"Price too high. (max 400 euros)"),
+        'min_value': _(u"Price too low. (min {} euros)"),
+        'max_value': _(u"Price too high. (max {} euros)"),
     }
 
     def __init__(self, **kwargs):
@@ -42,10 +43,11 @@ class ItemPriceField(Field):
 
     def validate(self, value):
         super(ItemPriceField, self).validate(value)
-        if value <= Decimal('0'):
-            raise ValidationError(self.error_messages['min_value'], code='min_value')
-        if value > Decimal('400'):
-            raise ValidationError(self.error_messages['max_value'], code='max_value')
+        _min, _max = settings.KIRPPU_MIN_MAX_PRICE
+        if value < Decimal(_min):
+            raise ValidationError(self.error_messages['min_value'].format(_min), code='min_value')
+        if value > Decimal(_max):
+            raise ValidationError(self.error_messages['max_value'].format(_max), code='max_value')
 
 
 class SuffixField(Field):

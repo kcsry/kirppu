@@ -110,6 +110,10 @@
         boxesConfig.urls.box_print = "{% url 'kirppu:box_print' '__placeholder__' %}";
         boxesConfig.urls.roller = "{% static "kirppu/img/roller.gif" %}";
         {% if not is_registration_open %}boxesConfig.enabled = false;{% endif %}
+        {% if PRICE_MIN_MAX %}
+        boxesConfig.price_min = {{ PRICE_MIN_MAX.0 }};
+        boxesConfig.price_max = {{ PRICE_MIN_MAX.1 }};
+        {% endif %}
 
         $(document).ready(function() {
             setupAjax();

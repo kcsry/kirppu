@@ -142,6 +142,10 @@
         itemsConfig.urls.item_to_print = "{% url 'kirppu:item_to_not_printed' '__placeholder__' %}";
         itemsConfig.urls.item_hide = "{% url 'kirppu:item_hide' '__placeholder__' %}";
         {% if not is_registration_open %}itemsConfig.enabled = false;{% endif %}
+        {% if PRICE_MIN_MAX %}
+        itemsConfig.price_min = {{ PRICE_MIN_MAX.0 }};
+        itemsConfig.price_max = {{ PRICE_MIN_MAX.1 }};
+        {% endif %}
 
         $(document).ready(function() {
             setupAjax();

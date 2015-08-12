@@ -254,6 +254,9 @@ KIRPPU_CURRENCY = {
     "raw": ("", " €"),
 }
 
+# Minimum and maximum price for an item.
+KIRPPU_MIN_MAX_PRICE = ('1', '400')
+
 
 # Load local settings that are not stored in repository. This must be last at end of settings.
 try:

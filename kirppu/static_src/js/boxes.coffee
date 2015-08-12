@@ -13,6 +13,8 @@ class BoxesConfig
     box_print: ''
 
   enabled: true
+  price_min: 0
+  price_max: 400
 
   constructor: ->
 
@@ -129,7 +131,7 @@ onPriceChange = ->
 
   # Replace ',' with '.' in order to accept numbers with ',' as the period.
   value = input.val().replace(',', '.')
-  if value > 400 or value <= 0 or not Number.isConvertible(value)
+  if value > C.price_max or value < C.price_min or not Number.isConvertible(value)
     formGroup.addClass('has-error')
   else
     formGroup.removeClass('has-error')

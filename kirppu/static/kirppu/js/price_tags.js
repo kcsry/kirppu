@@ -36,6 +36,10 @@
 
     PriceTagsConfig.prototype.enabled = true;
 
+    PriceTagsConfig.prototype.price_min = 0;
+
+    PriceTagsConfig.prototype.price_max = 400;
+
     function PriceTagsConfig() {}
 
     PriceTagsConfig.prototype.name_update_url = function(code) {
@@ -190,7 +194,7 @@
     input = $(this);
     formGroup = input.parents(".form-group");
     value = input.val().replace(',', '.');
-    if (value > 400 || value <= 0 || !Number.isConvertible(value)) {
+    if (value > C.price_max || value < C.price_min || !Number.isConvertible(value)) {
       formGroup.addClass('has-error');
     } else {
       formGroup.removeClass('has-error');

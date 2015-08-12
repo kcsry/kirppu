@@ -31,6 +31,10 @@
 
     BoxesConfig.prototype.enabled = true;
 
+    BoxesConfig.prototype.price_min = 0;
+
+    BoxesConfig.prototype.price_max = 400;
+
     function BoxesConfig() {}
 
     BoxesConfig.prototype.box_content_url = function(box_id) {
@@ -157,7 +161,7 @@
     input = $(this);
     formGroup = input.parents(".form-group");
     value = input.val().replace(',', '.');
-    if (value > 400 || value <= 0 || !Number.isConvertible(value)) {
+    if (value > C.price_max || value < C.price_min || !Number.isConvertible(value)) {
       formGroup.addClass('has-error');
     } else {
       formGroup.removeClass('has-error');
