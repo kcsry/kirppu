@@ -31,9 +31,13 @@
     </style>
 </head>
 <body style="padding-left: 0.5cm;">
-<script type="application/javascript"
-        src="{% url 'kirppu:checkout_js' %}"
-        charset="UTF-8"></script>
+<script type="application/javascript"><!--
+    Api = {
+        get_barcodes: function(params) {
+            return $.post('{% url "kirppu:api_get_barcodes" %}', params);
+        }
+    };
+//--></script>
 <div class="hidden-print">
     <button type="button" class="btn btn-default" onclick="subCount()">-</button>
     <button type="button" class="btn btn-default" onclick="addCount()">+</button>

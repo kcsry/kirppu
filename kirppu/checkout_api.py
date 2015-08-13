@@ -579,7 +579,7 @@ def receipt_list(request):
     return list(map(lambda i: i.as_dict(), receipts))
 
 
-@ajax_func('^barcode$', counter=False, clerk=False)
+@ajax_func('^barcode$', counter=False, clerk=False, staff_override=True)
 def get_barcodes(request, codes=None):
     """
     Get barcode images for a code, or list of codes.
