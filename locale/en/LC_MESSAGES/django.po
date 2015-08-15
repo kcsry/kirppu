@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-12 18:50+0300\n"
-"PO-Revision-Date: 2015-08-12 18:51+0300\n"
+"POT-Creation-Date: 2015-08-15 11:47+0300\n"
+"PO-Revision-Date: 2015-08-15 11:48+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -85,11 +85,9 @@ msgstr "Price must be numeric."
 msgid "Item must have a price."
 msgstr "Item must have a price."
 
-#| msgid "Price too low. (min 0.5 euros)"
 msgid "Price too low. (min {} euros)"
 msgstr "Price too low. (min {} euros)"
 
-#| msgid "Price too high. (max 400 euros)"
 msgid "Price too high. (max {} euros)"
 msgstr "Price too high. (max {} euros)"
 
@@ -428,6 +426,9 @@ msgstr "Checkout commands"
 
 msgid "Lost and Found"
 msgstr "Lost and Found"
+
+msgid "Statistics"
+msgstr "Statistics"
 
 msgid "Management"
 msgstr "Management"

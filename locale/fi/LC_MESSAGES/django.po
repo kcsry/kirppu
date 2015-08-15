@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-12 18:50+0300\n"
-"PO-Revision-Date: 2015-08-12 18:51+0300\n"
+"POT-Creation-Date: 2015-08-15 11:47+0300\n"
+"PO-Revision-Date: 2015-08-15 11:48+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -86,11 +86,9 @@ msgstr "Hinnan täytyy olla numero."
 msgid "Item must have a price."
 msgstr "Tavaralla täytyy olla hinta."
 
-#| msgid "Price too low. (min 0.5 euros)"
 msgid "Price too low. (min {} euros)"
 msgstr "Hinta on liian pieni. (minimi {} euroa)"
 
-#| msgid "Price too high. (max 400 euros)"
 msgid "Price too high. (max {} euros)"
 msgstr "Hinta on liian suuri. (maksimi {} euroa)"
 
@@ -429,6 +427,9 @@ msgstr "Kassan komennot"
 
 msgid "Lost and Found"
 msgstr "Löytötavarat"
+
+msgid "Statistics"
+msgstr "Tilastot"
 
 msgid "Management"
 msgstr "Hallinta"

@@ -353,6 +353,7 @@ def _vendor_menu_contents(request):
     if request.user.is_staff:
         manage_sub.append(fill(_(u"Clerk codes"), "kirppu:clerks"))
         manage_sub.append(fill(_(u"Lost and Found"), "kirppu:lost_and_found"))
+        manage_sub.append(fill(_(u"Statistics"), "kirppu:stats_view"))
 
     if manage_sub:
         items.append(fill(_(u"Management"), "", manage_sub))
