@@ -470,8 +470,7 @@ def get_clerk_codes(request, bar_type):
     if items:
         # Generate a code to check it's length.
         name, code = items[0]
-        width = len(pubcode.Code128(code, charset='B').modules)
-        width += 20  # quiet zone
+        width = pubcode.Code128(code, charset='B').width(add_quiet_zone=True)
     else:
         width = None  # Doesn't matter.
 

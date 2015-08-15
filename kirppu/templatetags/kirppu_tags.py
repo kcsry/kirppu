@@ -100,23 +100,13 @@ def generate_dataurl(code, ext, expect_width=143):
 
     # Code the barcode entirely with charset B to make sure that the bacode is
     # always the same width.
-    data_url = pubcode.Code128(
-            code, charset='B').data_url(image_format=ext, add_quiet_zone=True)
+    barcode = pubcode.Code128(code, charset='B')
+    data_url = barcode.data_url(image_format=ext, add_quiet_zone=True)
 
     # These measurements have to be exactly the same as the ones used in
     # price_tags.css. If they are not the image might be distorted enough
     # to not register on the scanner.
-    if settings.DEBUG:
-        # Check that the dataurl is ok.
-        import io
-        from PIL import Image
-        base64_image = data_url.split(',')[1]
-        image_data = base64.b64decode(base64_image)
-        memory_file = io.BytesIO(image_data)
-        pil_image = Image.open(memory_file)
-        width, height = pil_image.size
-        assert(height == 1)
-        assert(expect_width is None or width == expect_width)
+    assert(barcode.width(add_quiet_zone=True) == expect_width)
 
     return data_url.decode()
 get_dataurl = memoize(generate_dataurl, barcode_dataurl_cache, 2)
@@ -141,8 +131,8 @@ def barcode_css(low=4, high=6, target=None, container=None, compress=False):
 
     output = []
     for code_length in range(low, high + 1):
-        px = len(pubcode.Code128('A' * code_length, charset='B').modules)
-        px += 20  # Quiet zone.
+        example_code = pubcode.Code128('A' * code_length, charset='B')
+        px = example_code.width(add_quiet_zone=True)
 
         for multiplier in range(1, 3):
             suffix = "_" + str(code_length) + "_" + str(multiplier)
