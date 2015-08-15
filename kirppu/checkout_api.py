@@ -36,6 +36,7 @@ from .forms import ItemRemoveForm
 from . import ajax_util
 from .ajax_util import (
     AjaxError,
+    AjaxFunc,
     get_counter,
     get_clerk,
     require_user_features,
@@ -95,9 +96,9 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
         (args, _, _, defaults) = inspect.getargspec(func)
 
         func = require_user_features(counter, clerk, overseer, staff_override=staff_override)(func)
+        _register_ajax_func(AjaxFunc(func, url, method))
+
         fn = ajax_util.ajax_func(
-            url,
-            _register_ajax_func,
             method,
             args[1:],
             defaults

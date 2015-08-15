@@ -51,9 +51,9 @@ class AjaxFunc(object):
         self.method = method                    # http method for templates
 
 
-def ajax_func(url, register_func, method='POST', params=None, defaults=None):
+def ajax_func(method='POST', params=None, defaults=None):
     """
-    Decorate the view function properly and register it.
+    Create view function decorator.
 
     The decorated view will not be called if
         1. the request is not an AJAX request,
@@ -63,11 +63,6 @@ def ajax_func(url, register_func, method='POST', params=None, defaults=None):
 
     If the decorated view raises an AjaxError, it will be rendered.
 
-    :param url: Django url pattern of the AJAX function
-    :type url: str
-    :param register_func: Function to be called in order to register the
-    AJAX function
-    :type register_func: function with a single parameter of type AjaxFunc
     :param method: Required HTTP method; either 'GET' or 'POST'
     :type method: str
     :param params: List of names of expected arguments.
@@ -85,9 +80,6 @@ def ajax_func(url, register_func, method='POST', params=None, defaults=None):
     assert defaults_start >= 0
 
     def decorator(func):
-        # Register the function.
-        register_func(AjaxFunc(func, url, method))
-
         # Decorate func.
         func = require_http_methods([method])(func)
 
