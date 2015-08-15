@@ -687,7 +687,7 @@ def iterate_logs(entries, hide_advertised=False, hide_sales=False, show_prices=F
     if show_prices:
         entries = entries.select_related('item__price')
 
-    for entry in entries:
+    for entry in entries.order_by("time"):
         if bucket_time is None:
             bucket_time = entry.time
             # Start the graph before the first entry, such that everything starts at zero.
