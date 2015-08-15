@@ -1,5 +1,5 @@
 from __future__ import unicode_literals, print_function, absolute_import
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 import json
 
 import barcode
@@ -588,16 +588,16 @@ def stats_view(request):
             All properties listed in property_names are also accessible through attributes.
 
         """
-        _properties = {
-            'advertized': Item.ADVERTISED,
-            'brought': Item.BROUGHT,
-            'staged': Item.STAGED,
-            'sold': Item.SOLD,
-            'missing': Item.MISSING,
-            'returned': Item.RETURNED,
-            'compensated': Item.COMPENSATED,
-            'sum': None,
-        }
+        _properties = OrderedDict((
+            ('advertized', Item.ADVERTISED),
+            ('brought', Item.BROUGHT),
+            ('staged', Item.STAGED),
+            ('sold', Item.SOLD),
+            ('missing', Item.MISSING),
+            ('returned', Item.RETURNED),
+            ('compensated', Item.COMPENSATED),
+            ('sum', None),
+        ))
 
         def __init__(self, item_type=None, type_name=None, vendor=None):
             for property in self._properties:
