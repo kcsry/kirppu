@@ -170,27 +170,24 @@ def get_clerk(request):
     return clerk_object
 
 
-def require_counter_validated(func):
-    @wraps(func)
-    def wrapper(request, *args, **kwargs):
-        get_counter(request)
-        return func(request, *args, **kwargs)
-    return wrapper
+def require_user_features(counter=True, clerk=True, overseer=False, staff_override=False):
+    def out_w(func):
+        @wraps(func)
+        def wrapper(request, *args, **kwargs):
+            if staff_override and request.user.is_staff:
+                return func(request, *args, **kwargs)
 
+            if counter:
+                # This call raises if counter is not found.
+                get_counter(request)
 
-def require_clerk_login(func):
-    @wraps(func)
-    def wrapper(request, *args, **kwargs):
-        get_clerk(request)
-        return func(request, *args, **kwargs)
-    return wrapper
+            if clerk or overseer:
+                # Thus call raises if clerk is not found.
+                clerk_obj = get_clerk(request)
 
+                if overseer and not clerk_obj.user.has_perm('kirppu.oversee'):
+                    raise AjaxError(RET_FORBIDDEN, _(u"Access denied."))
 
-def require_overseer_clerk_login(func):
-    @wraps(func)
-    def wrapper(request, *args, **kwargs):
-        clerk = get_clerk(request)
-        if not clerk.user.has_perm('kirppu.oversee'):
-            raise AjaxError(RET_FORBIDDEN, _(u"Access denied."))
-        return func(request, *args, **kwargs)
-    return wrapper
+            return func(request, *args, **kwargs)
+        return wrapper
+    return out_w

@@ -552,8 +552,7 @@ def checkout_view(request):
 def overseer_view(request):
     """Overseer view."""
     try:
-        ajax_util.get_counter(request)
-        ajax_util.require_overseer_clerk_login(lambda _: None)(request)
+        ajax_util.require_user_features(counter=True, clerk=True, overseer=True)(lambda _: None)(request)
     except ajax_util.AjaxError:
         return redirect('kirppu:checkout_view')
     else:
@@ -569,8 +568,7 @@ def overseer_view(request):
 def stats_view(request):
     """Stats view."""
     try:
-        ajax_util.get_counter(request)
-        ajax_util.require_clerk_login(lambda _: None)(request)
+        ajax_util.require_user_features(counter=True, clerk=True, staff_override=True)(lambda _: None)(request)
     except ajax_util.AjaxError:
         return redirect('kirppu:checkout_view')
 

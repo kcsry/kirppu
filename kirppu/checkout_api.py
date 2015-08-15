@@ -38,9 +38,7 @@ from .ajax_util import (
     AjaxError,
     get_counter,
     get_clerk,
-    require_counter_validated,
-    require_clerk_login,
-    require_overseer_clerk_login,
+    require_user_features,
     RET_BAD_REQUEST,
     RET_CONFLICT,
     RET_AUTH_FAILED,
@@ -70,7 +68,7 @@ def _register_ajax_func(func):
     AJAX_FUNCTIONS[func.name] = func
 
 
-def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atomic=False):
+def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atomic=False, staff_override=False):
     """
     Decorate a function with some common logic.
     The names of the function being decorated are required to be present in the JSON object
@@ -96,12 +94,7 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
         # Get argspec before any decoration.
         (args, _, _, defaults) = inspect.getargspec(func)
 
-        if counter:
-            func = require_counter_validated(func)
-        if clerk:
-            func = require_clerk_login(func)
-        if overseer:
-            func = require_overseer_clerk_login(func)
+        func = require_user_features(counter, clerk, overseer, staff_override=staff_override)(func)
         fn = ajax_util.ajax_func(
             url,
             _register_ajax_func,
@@ -716,28 +709,28 @@ def iterate_logs(entries, hide_advertised=False, hide_sales=False, show_prices=F
         yield get_log_str(bucket_time, balance)
 
 
-@ajax_func('^stats/get_sales_data$', method='GET')
+@ajax_func('^stats/get_sales_data$', method='GET', staff_override=True)
 def stats_sales_data(request):
     entries = ItemStateLog.objects.exclude(new_state=Item.ADVERTISED)
     log_generator = iterate_logs(entries, hide_advertised=True)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
-@ajax_func('^stats/get_registration_data$', method='GET')
+@ajax_func('^stats/get_registration_data$', method='GET', staff_override=True)
 def stats_registration_data(request):
     entries = ItemStateLog.objects.filter(new_state=Item.ADVERTISED)
     log_generator = iterate_logs(entries, hide_sales=True)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
-@ajax_func('^stats/get_sales_data_prices$', method='GET')
+@ajax_func('^stats/get_sales_data_prices$', method='GET', staff_override=True)
 def stats_sales_data_prices(request):
     entries = ItemStateLog.objects.exclude(new_state=Item.ADVERTISED)
     log_generator = iterate_logs(entries, hide_advertised=True, show_prices=True)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
-@ajax_func('^stats/get_registration_data_prices$', method='GET')
+@ajax_func('^stats/get_registration_data_prices$', method='GET', staff_override=True)
 def stats_registration_data_prices(request):
     entries = ItemStateLog.objects.filter(new_state=Item.ADVERTISED)
     log_generator = iterate_logs(entries, hide_sales=True, show_prices=True)
