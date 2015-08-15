@@ -43,12 +43,13 @@ class AjaxError(Exception):
 
 
 class AjaxFunc(object):
-    def __init__(self, func, url, method):
+    def __init__(self, func, url, method, is_public=False):
         self.name = func.__name__               # name of the view function
         self.url = url                          # url for url config
         self.view_name = 'api_' + self.name     # view name for url config
         self.view = 'kirppu:' + self.view_name  # view name for templates
         self.method = method                    # http method for templates
+        self.is_public = is_public
 
 
 def ajax_func(method='POST', params=None, defaults=None):

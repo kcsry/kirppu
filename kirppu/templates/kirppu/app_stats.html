@@ -9,7 +9,6 @@
     <script src="{% static "kirppu/js/general.js" %}"></script>
     <script src="{% static "kirppu/js/checkout.js" %}"></script>
     <script src="{% static "kirppu/js/dygraph-combined.js" %}"></script>
-    <script src="/kirppu/api/checkout.js"></script>
 
     <style>
     .sum_table tr:last-child {
@@ -22,7 +21,9 @@
 {% endblock %}
 
 {% block navbar_right %}
+    {% if checkout_active %}
     <li><a href="{% url 'kirppu:checkout_view' %}" title="Return to checkout">Checkout</a></li>
+    {% endif %}
 {% endblock %}
 
 {% block body %}
@@ -57,7 +58,7 @@
 
         var g1 = new Dygraph(
                 document.getElementById("graph1"),
-                'get_registration_data',
+                '{% url "kirppu:api_stats_registration_data" %}',
                 {
                     labels: ['Time', 'Registered', 'Brought to event', 'Unsold inventory', 'Sold inventory', 'Redeemed by vendor'],
                     labelsDiv: 'graph1_legend',
@@ -81,7 +82,7 @@
 
         var g2 = new Dygraph(
                 document.getElementById("graph2"),
-                'get_sales_data',
+                '{% url "kirppu:api_stats_sales_data" %}',
                 {
                     labels: ['Time', 'Registered', 'Brought to event', 'Unsold inventory', 'Sold inventory', 'Redeemed by vendor'],
                     labelsDiv: 'graph2_legend',
@@ -104,16 +105,16 @@
         );
 
         document.getElementById('graph1_items_link').onclick = function() {
-            g1.updateOptions({file: 'get_registration_data', ylabel: 'Items'});
+            g1.updateOptions({file: '{% url "kirppu:api_stats_registration_data" %}', ylabel: 'Items'});
         };
         document.getElementById('graph1_prices_link').onclick = function() {
-            g1.updateOptions({file: 'get_registration_data_prices', ylabel: 'Euros'});
+            g1.updateOptions({file: '{% url "kirppu:api_stats_registration_data_prices" %}', ylabel: 'Euros'});
         };
         document.getElementById('graph2_items_link').onclick = function() {
-            g2.updateOptions({file: 'get_sales_data', ylabel: 'Items'});
+            g2.updateOptions({file: '{% url "kirppu:api_stats_sales_data" %}', ylabel: 'Items'});
         };
         document.getElementById('graph2_prices_link').onclick = function() {
-            g2.updateOptions({file: 'get_sales_data_prices', ylabel: 'Euros'});
+            g2.updateOptions({file: '{% url "kirppu:api_stats_sales_data_prices" %}', ylabel: 'Euros'});
         };
 
         //populateChart(g1, Api.stats_registration_data);

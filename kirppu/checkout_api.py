@@ -96,7 +96,7 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
         (args, _, _, defaults) = inspect.getargspec(func)
 
         func = require_user_features(counter, clerk, overseer, staff_override=staff_override)(func)
-        _register_ajax_func(AjaxFunc(func, url, method))
+        _register_ajax_func(AjaxFunc(func, url, method, staff_override))
 
         fn = ajax_util.ajax_func(
             method,

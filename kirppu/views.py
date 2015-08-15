@@ -563,14 +563,16 @@ def overseer_view(request):
         return render(request, 'kirppu/app_overseer.html', context)
 
 
-@require_setting("KIRPPU_CHECKOUT_ACTIVE", True)
 @ensure_csrf_cookie
 def stats_view(request):
     """Stats view."""
     try:
         ajax_util.require_user_features(counter=True, clerk=True, staff_override=True)(lambda _: None)(request)
     except ajax_util.AjaxError:
-        return redirect('kirppu:checkout_view')
+        if settings.KIRPPU_CHECKOUT_ACTIVE:
+            return redirect('kirppu:checkout_view')
+        else:
+            raise PermissionDenied()
 
     class ItemStats(object):
         """Interface for app_stats.html template.
@@ -697,6 +699,7 @@ def stats_view(request):
         'number_of_items': number_of_items,
         'number_of_euros': number_of_euros,
         'vendor_items': vendor_items,
+        'checkout_active': settings.KIRPPU_CHECKOUT_ACTIVE,
     }
 
     return render(request, 'kirppu/app_stats.html', context)
