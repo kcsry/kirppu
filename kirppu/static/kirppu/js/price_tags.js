@@ -29,7 +29,6 @@
       size_update: '',
       item_add: '',
       item_hide: '',
-      barcode_img: '',
       item_to_print: '',
       all_to_print: ''
     };
@@ -63,12 +62,6 @@
     PriceTagsConfig.prototype.size_update_url = function(code) {
       var url;
       url = this.urls.size_update;
-      return url.replace(this.url_args.code, code);
-    };
-
-    PriceTagsConfig.prototype.barcode_img_url = function(code) {
-      var url;
-      url = this.urls.barcode_img;
       return url.replace(this.url_args.code, code);
     };
 

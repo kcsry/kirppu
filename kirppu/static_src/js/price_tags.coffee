@@ -13,7 +13,6 @@ class PriceTagsConfig
     size_update: ''
     item_add: ''
     item_hide: ''
-    barcode_img: ''
     item_to_print: ''
     all_to_print: ''
 
@@ -37,10 +36,6 @@ class PriceTagsConfig
 
   size_update_url: (code) ->
     url = @urls.size_update
-    return url.replace(@url_args.code, code)
-
-  barcode_img_url: (code) ->
-    url = @urls.barcode_img
     return url.replace(@url_args.code, code)
 
   item_to_print_url: (code) ->
