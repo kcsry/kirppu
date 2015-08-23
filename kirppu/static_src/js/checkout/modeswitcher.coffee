@@ -47,6 +47,9 @@ class @ModeSwitcher
     @cfg.uiRef.dialog.on("hidden.bs.modal", regainFocus)
     $("#help_dialog").on("hidden.bs.modal", regainFocus)
 
+    # Regain focus when window is focused.
+    $(window).on("focus", regainFocus)
+
   # Start default mode operation.
   startDefault: ->
     @switchTo(ModeSwitcher.entryPoints["counter_validation"])

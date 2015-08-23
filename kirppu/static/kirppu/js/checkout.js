@@ -1105,6 +1105,7 @@
       })(this);
       this.cfg.uiRef.dialog.on("hidden.bs.modal", regainFocus);
       $("#help_dialog").on("hidden.bs.modal", regainFocus);
+      $(window).on("focus", regainFocus);
     }
 
     ModeSwitcher.prototype.startDefault = function() {
