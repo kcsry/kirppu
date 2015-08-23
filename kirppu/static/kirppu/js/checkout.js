@@ -1,7 +1,7 @@
 // ================ 1: util.coffee ================
 
 (function() {
-  var errorSound, safeDisplay, stillBlinking;
+  var safeDisplay, stillBlinking;
 
   this.CURRENCY = {
     css: ["", ""],
@@ -56,13 +56,17 @@
 
   stillBlinking = false;
 
-  errorSound = new Audio("/static/kirppu/audio/error-buzzer.mp3");
+  this.UtilSound = {
+    error: null
+  };
 
   this.safeAlert = function(message, blink) {
     if (blink == null) {
       blink = true;
     }
-    errorSound.play();
+    if (UtilSound.error != null) {
+      UtilSound.error.play();
+    }
     return safeDisplay(CheckoutConfig.uiRef.errorText, message, blink ? CheckoutConfig.settings.alertBlinkCount : 0);
   };
 

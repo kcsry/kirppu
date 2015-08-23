@@ -47,14 +47,16 @@ Number.prototype.round5 = ->
 stillBlinking = false
 
 # Instance of the sound used for barcode errors.
-errorSound = new Audio("/static/kirppu/audio/error-buzzer.mp3")
+@UtilSound =
+  error: null
 
 # Display safe alert error message.
 #
 # @param message [String] Message to display.
 # @param blink [Boolean, optional] If true (default), container is blinked.
 @safeAlert = (message, blink=true) ->
-  errorSound.play()
+  if UtilSound.error?
+    UtilSound.error.play()
   safeDisplay(CheckoutConfig.uiRef.errorText, message, if blink then CheckoutConfig.settings.alertBlinkCount else 0)
 
 
