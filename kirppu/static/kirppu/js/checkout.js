@@ -57,7 +57,8 @@
   stillBlinking = false;
 
   this.UtilSound = {
-    error: null
+    error: null,
+    success: null
   };
 
   this.safeAlert = function(message, blink) {
@@ -1312,6 +1313,7 @@
     CheckoutMode.prototype.onLogout = function() {
       return Api.clerk_logout().then((function(_this) {
         return function() {
+          _this.notifySuccess();
           console.log("Logged out " + _this.cfg.settings.clerkName + ".");
           _this.cfg.settings.clerkName = null;
           _this.switcher.setOverseerVisible(false);
@@ -1324,6 +1326,12 @@
           return true;
         };
       })(this));
+    };
+
+    CheckoutMode.prototype.notifySuccess = function() {
+      if (UtilSound.success != null) {
+        return UtilSound.success.play();
+      }
     };
 
     return CheckoutMode;
@@ -1519,6 +1527,7 @@
 
     ClerkLoginMode.prototype.onResultSuccess = function(data) {
       var username;
+      this.notifySuccess();
       username = data["user"];
       this.cfg.settings.clerkName = username;
       console.log("Logged in as " + username + ".");
@@ -1647,7 +1656,7 @@
       var row;
       if (data.vendor !== this.currentVendor) {
         this.currentVendor = data.vendor;
-        return Api.vendor_get({
+        Api.vendor_get({
           id: this.currentVendor
         }).done((function(_this) {
           return function(vendor) {
@@ -1661,8 +1670,9 @@
         })(this));
       } else {
         row = this.createRow(this.itemIndex++, data.code, data.name, data.price);
-        return this.receipt.body.prepend(row);
+        this.receipt.body.prepend(row);
       }
+      return this.notifySuccess();
     };
 
     ItemCheckInMode.prototype.onResultError = function(jqXHR) {
@@ -1902,6 +1912,7 @@
       }
       this.receipt.body.prepend(returnable_item.clone());
       this.lastItem.body.empty().append(returnable_item);
+      this.notifySuccess();
     };
 
     return VendorCheckoutMode;
@@ -2102,7 +2113,8 @@
             safeWarning(data._message);
           }
           _this._receipt.total += data.price;
-          return _this.addRow(data.code, data.name, data.price);
+          _this.addRow(data.code, data.name, data.price);
+          return _this.notifySuccess();
         };
       })(this), (function(_this) {
         return function(jqXHR) {
@@ -2121,7 +2133,8 @@
       }).then((function(_this) {
         return function(data) {
           _this._receipt.total -= data.price;
-          return _this.addRow(data.code, data.name, -data.price);
+          _this.addRow(data.code, data.name, -data.price);
+          return _this.notifySuccess();
         };
       })(this), (function(_this) {
         return function() {
@@ -2186,7 +2199,8 @@
           console.log(_this._receipt);
           _this.addRow(null, "Aborted", null).addClass("danger");
           _this.switcher.setMenuEnabled(true);
-          return _this.receiptSum.setEnabled(false);
+          _this.receiptSum.setEnabled(false);
+          return _this.notifySuccess();
         };
       })(this), (function(_this) {
         return function() {
@@ -2344,7 +2358,8 @@
         item: code
       }).then((function(_this) {
         return function(data) {
-          return _this.renderReceipt(data);
+          _this.renderReceipt(data);
+          return _this.notifySuccess();
         };
       })(this), (function(_this) {
         return function() {

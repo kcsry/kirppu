@@ -117,6 +117,8 @@ class @CounterMode extends ItemCheckoutMode
             safeWarning(data._message)
           @_receipt.total += data.price
           @addRow(data.code, data.name, data.price)
+          @notifySuccess()
+
         (jqXHR) =>
           @showError(jqXHR.status, jqXHR.responseText, code)
           return true
@@ -129,6 +131,7 @@ class @CounterMode extends ItemCheckoutMode
       (data) =>
         @_receipt.total -= data.price
         @addRow(data.code, data.name, -data.price)
+        @notifySuccess()
 
       () =>
         safeAlert("Item not found on receipt: " + code)
@@ -197,6 +200,7 @@ class @CounterMode extends ItemCheckoutMode
         # Mode switching is safe to use again.
         @switcher.setMenuEnabled(true)
         @receiptSum.setEnabled(false)
+        @notifySuccess()
 
       () =>
         safeAlert("Error ending receipt!")

@@ -36,6 +36,7 @@ class @ReceiptPrintMode extends CheckoutMode
     Api.receipt_get(item: code).then(
       (data) =>
         @renderReceipt(data)
+        @notifySuccess()
       () =>
         safeAlert("Item not found in receipt!")
     )

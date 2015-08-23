@@ -49,6 +49,7 @@ stillBlinking = false
 # Instance of the sound used for barcode errors.
 @UtilSound =
   error: null
+  success: null
 
 # Display safe alert error message.
 #

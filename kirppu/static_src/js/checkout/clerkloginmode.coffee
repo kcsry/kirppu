@@ -22,6 +22,7 @@ class @ClerkLoginMode extends CheckoutMode
   ]]
 
   onResultSuccess: (data) =>
+    @notifySuccess()
     username = data["user"]
     @cfg.settings.clerkName = username
     console.log("Logged in as #{username}.")

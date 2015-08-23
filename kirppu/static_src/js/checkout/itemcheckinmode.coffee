@@ -32,6 +32,7 @@ class @ItemCheckInMode extends ItemCheckoutMode
     else
       row = @createRow(@itemIndex++, data.code, data.name, data.price)
       @receipt.body.prepend(row)
+    @notifySuccess()
 
   onResultError: (jqXHR) =>
     if jqXHR.status == 404

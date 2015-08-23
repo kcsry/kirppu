@@ -89,4 +89,5 @@ class @VendorCheckoutMode extends ItemCheckoutMode
 
     # Add the just returned item to "last item" list.
     @lastItem.body.empty().append(returnable_item)
+    @notifySuccess()
     return

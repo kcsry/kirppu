@@ -72,6 +72,7 @@ class @CheckoutMode
   onLogout: =>
     Api.clerk_logout().then(
       () =>
+        @notifySuccess()
         console.log("Logged out #{ @cfg.settings.clerkName }.")
         @cfg.settings.clerkName = null
         @switcher.setOverseerVisible(false)
@@ -82,3 +83,7 @@ class @CheckoutMode
         safeAlert("Logout failed!")
         return true
     )
+
+  notifySuccess: ->
+    if UtilSound.success?
+      UtilSound.success.play()
