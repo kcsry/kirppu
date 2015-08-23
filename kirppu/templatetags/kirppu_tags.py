@@ -106,9 +106,9 @@ def generate_dataurl(code, ext, expect_width=143):
     # These measurements have to be exactly the same as the ones used in
     # price_tags.css. If they are not the image might be distorted enough
     # to not register on the scanner.
-    assert(barcode.width(add_quiet_zone=True) == expect_width)
+    assert(expect_width is None or barcode.width(add_quiet_zone=True) == expect_width)
 
-    return data_url.decode()
+    return data_url
 get_dataurl = memoize(generate_dataurl, barcode_dataurl_cache, 2)
 
 
