@@ -57,9 +57,19 @@
     transition: width 0.2s;
 }
 
-.box_description {
-    width: 8.7cm;
+.box_container .box_description {
+    width: 17cm;
     height: 2em;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.box_content_page .box_description {
+    width: 18cm;
+    overflow-wrap: break-word;
+    display: inline-block;
+    height: auto;
+    max-height: 10cm;
 }
 
 .box_adult_tag {
@@ -95,6 +105,13 @@
 
     width: 5em;
     display: inline-block
+}
+
+.box_content_page_header .box_page_description {
+    width: 90%;
+    overflow-wrap: break-word;
+    display: inline-block;
+    font-size: 130%;
 }
 
 .box_content_page_header .box_value {
