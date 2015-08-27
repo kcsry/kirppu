@@ -17,6 +17,7 @@ from .models import (
     Vendor,
     ItemStateLog,
 )
+from .util import shorten_text
 from .utils import StaticText, ButtonWidget, model_dict_fn
 
 
@@ -356,7 +357,7 @@ class VendorSetSelfForm(forms.ModelForm):
 
 
 class VendorItemForm(forms.Form):
-    name = StripField(error_messages={"required": _("Name is required.")})
+    name = StripField(error_messages={"required": _("Name is required.")}, max_length=256)
     price = ItemPriceField()
     tag_type = forms.ChoiceField(
         required=False,
@@ -394,13 +395,15 @@ class VendorItemForm(forms.Form):
 
 
 class VendorBoxForm(VendorItemForm):
-    description = StripField()
+    description = StripField(max_length=256)
+    name = None
     count = forms.IntegerField(min_value=1)
 
     db_values = model_dict_fn(
         "description",
         "count",
         type=None,
+        name=lambda self: shorten_text(self.cleaned_data["description"], 32),
         __extend=VendorItemForm.db_values,
         __access_fn=lambda self, value: self.cleaned_data[value],
     )

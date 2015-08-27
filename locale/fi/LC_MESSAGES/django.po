@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 11:47+0300\n"
-"PO-Revision-Date: 2015-08-15 11:48+0300\n"
+"POT-Creation-Date: 2015-08-27 09:47+0300\n"
+"PO-Revision-Date: 2015-08-27 09:47+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -216,17 +216,12 @@ msgstr "Keskeytetty"
 msgid "Add new box"
 msgstr "Lisää uusi laatikko"
 
-msgid "Description:"
-msgstr "Kuvaus:"
+#| msgid "Description:"
+msgid "Description for box label:"
+msgstr "Kuvaus laatikkoon:"
 
 msgid "Box full of Ranma"
 msgstr "Laatikollinen Ranmaa"
-
-msgid "Item prefix:"
-msgstr "Nimen etuliite:"
-
-msgid "Ranma"
-msgstr "Ranma"
 
 msgid "Items #:"
 msgstr "Tavaroita:"
@@ -455,6 +450,12 @@ msgstr "Salasana"
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Lisää irrallinen %(name)s"
+
+#~ msgid "Item prefix:"
+#~ msgstr "Nimen etuliite:"
+
+#~ msgid "Ranma"
+#~ msgstr "Ranma"
 
 #~ msgid "price tag guide"
 #~ msgstr "hintalapun kiinnitysohje"

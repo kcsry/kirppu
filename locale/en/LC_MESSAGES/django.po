@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-15 11:47+0300\n"
-"PO-Revision-Date: 2015-08-15 11:48+0300\n"
+"POT-Creation-Date: 2015-08-27 09:47+0300\n"
+"PO-Revision-Date: 2015-08-27 09:47+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -215,17 +215,12 @@ msgstr "Aborted"
 msgid "Add new box"
 msgstr "Add new box"
 
-msgid "Description:"
-msgstr "Description:"
+#| msgid "Description:"
+msgid "Description for box label:"
+msgstr "Description for box label:"
 
 msgid "Box full of Ranma"
 msgstr "Box full of Ranma"
-
-msgid "Item prefix:"
-msgstr "Item prefix:"
-
-msgid "Ranma"
-msgstr "Ranma"
 
 msgid "Items #:"
 msgstr "Items #:"
@@ -454,6 +449,12 @@ msgstr "Password"
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Add unbound %(name)s"
+
+#~ msgid "Item prefix:"
+#~ msgstr "Item prefix:"
+
+#~ msgid "Ranma"
+#~ msgstr "Ranma"
 
 #~ msgid "price tag guide"
 #~ msgstr "Tiny price tag"
