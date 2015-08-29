@@ -83,6 +83,11 @@
             </div>
         </div>{# panel-body, panel #}
     </form>
+    {% else %}
+    <div class="alert alert-warning hidden-print col-sm-8" role="alert">
+        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+        {% trans "Registration is closed" %}
+    </div>
     {% endif %}
 
     {# Output a single box_container as a template for javascript. #}
