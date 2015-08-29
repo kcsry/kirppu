@@ -531,6 +531,11 @@ class Item(models.Model):
         help_text=_(u"Forgotten or lost property/item"),
     )
 
+    class Meta:
+        permissions = (
+            ("register_override", _("Can register items after registration is closed")),
+        )
+
     def __str__(self):
         return u"{name} ({code})".format(name=self.name, code=self.code)
 
@@ -546,7 +551,7 @@ class Item(models.Model):
         itemtype_display="get_itemtype_display",
         adult=lambda self: self.adult == Item.ADULT_YES,
     )
-    
+
     as_public_dict = model_dict_fn(
         "vendor_id",
         "code",

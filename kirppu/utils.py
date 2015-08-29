@@ -186,13 +186,16 @@ def is_now_after(date_str):
     return timezone.now() > cached_instant
 
 
-def is_vendor_open():
+def is_vendor_open(request=None):
     """
     Test if Item edit for vendor is currently open.
 
+    :param request: Optional Django request for checking whether current user has override permission for registration.
     :return: True if open, False if not and modifications by vendor must not be allowed.
     """
-    return not is_now_after(settings.KIRPPU_REGISTER_ACTIVE_UNTIL)
+    return not is_now_after(settings.KIRPPU_REGISTER_ACTIVE_UNTIL) or (
+        request is not None and request.user.has_perm("kirppu.register_override")
+    )
 
 
 def require_vendor_open(fn):
@@ -203,10 +206,10 @@ def require_vendor_open(fn):
     :return: Decorated function.
     """
     @wraps(fn)
-    def inner(*args, **kwargs):
-        if not is_vendor_open():
+    def inner(request, *args, **kwargs):
+        if not is_vendor_open(request):
             return HttpResponseForbidden(_(u"Registration is closed"))
-        return fn(*args, **kwargs)
+        return fn(request, *args, **kwargs)
     return inner
 
 

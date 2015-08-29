@@ -116,7 +116,7 @@ def item_to_not_printed(request, code):
         # Create a duplicate of the item with a new code and hide the old item.
         # This way, even if the user forgets to attach the new tags, the old
         # printed tag is still in the system.
-        if not is_vendor_open():
+        if not is_vendor_open(request):
             return HttpResponseForbidden("Registration is closed")
 
         new_item = Item.new(
@@ -396,7 +396,7 @@ def get_items(request, bar_type):
 
         'profile_url': settings.PROFILE_URL,
 
-        'is_registration_open': is_vendor_open(),
+        'is_registration_open': is_vendor_open(request),
         'menu': _vendor_menu_contents(request),
         'Item': Item,
         'CURRENCY': settings.KIRPPU_CURRENCY,
@@ -437,7 +437,7 @@ def get_boxes(request):
 
         'profile_url': settings.PROFILE_URL,
 
-        'is_registration_open': is_vendor_open(),
+        'is_registration_open': is_vendor_open(request),
         'menu': _vendor_menu_contents(request),
         'Item': Item,
         'CURRENCY': settings.KIRPPU_CURRENCY,
