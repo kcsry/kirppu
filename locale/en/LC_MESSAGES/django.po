@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-29 15:52+0300\n"
-"PO-Revision-Date: 2015-08-29 15:53+0300\n"
+"POT-Creation-Date: 2015-08-29 16:14+0300\n"
+"PO-Revision-Date: 2015-08-29 16:14+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -443,11 +443,23 @@ msgstr "English"
 msgid "Login"
 msgstr "Login"
 
+msgid "Both username and password must be given."
+msgstr "Both username and password must be given."
+
+msgid "Your username and password did not match."
+msgstr "Your username and password did not match."
+
 msgid "Username"
 msgstr "Username"
 
 msgid "Password"
 msgstr "Password"
+
+msgid "User {} not found."
+msgstr "User {} not found."
+
+msgid "Username is required."
+msgstr "Username is required."
 
 #, python-format
 msgid "Add unbound %(name)s"
