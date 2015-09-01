@@ -72,7 +72,7 @@ _user_link.short_description = ugettext(u"User")
 
 class VendorAdmin(admin.ModelAdmin):
     ordering = ('user__first_name', 'user__last_name')
-    search_fields = ['user__first_name', 'user__last_name', 'user__username']
+    search_fields = ['id', 'user__first_name', 'user__last_name', 'user__username']
     list_display = ['id', _user_link]
 
     @staticmethod
