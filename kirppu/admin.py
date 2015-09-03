@@ -230,8 +230,8 @@ admin.site.register(Receipt, ReceiptAdmin)
 class ItemStateLogAdmin(admin.ModelAdmin):
     model = ItemStateLog
     ordering = ["-id"]
-    search_fields = ['item__code']
-    list_display = ['id', 'time', 'item', 'old_state', 'new_state']
+    search_fields = ['item__code', 'clerk__user__username']
+    list_display = ['id', 'time', 'item', 'old_state', 'new_state', 'clerk', 'counter']
 
 admin.site.register(ItemStateLog, ItemStateLogAdmin)
 

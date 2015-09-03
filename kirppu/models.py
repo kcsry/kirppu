@@ -767,8 +767,21 @@ class Receipt(models.Model):
 
 
 class ItemStateLogManager(models.Manager):
-    def log_state(self, item, new_state):
-        log_entry = self.create(item=item, old_state=item.state, new_state=new_state)
+    def log_state(self, item, new_state, request):
+        from .ajax_util import get_clerk, get_counter, AjaxError
+        counter = None
+        clerk = None
+        try:
+            clerk = get_clerk(request)
+            counter = get_counter(request)
+        except AjaxError:
+            if request.user.is_authenticated():
+                try:
+                    clerk = Clerk.objects.get(user=request.user)
+                except Clerk.DoesNotExist:
+                    clerk = None
+        log_entry = self.create(item=item, old_state=item.state, new_state=new_state,
+                                clerk=clerk, counter=counter)
         return log_entry
 
 
@@ -785,3 +798,6 @@ class ItemStateLog(models.Model):
         choices=Item.STATE,
         max_length=2,
     )
+
+    clerk = models.ForeignKey(Clerk, null=True)
+    counter = models.ForeignKey(Counter, null=True)

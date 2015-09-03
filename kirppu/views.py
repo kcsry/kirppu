@@ -758,7 +758,7 @@ def remove_item_from_receipt(request):
     form = get_form(ItemRemoveForm, request)
 
     if request.method == "POST" and form.is_valid():
-        form.save()
+        form.save(request)
         return HttpResponseRedirect(url.reverse('kirppu:remove_item_from_receipt'))
 
     return render(request, "kirppu/app_item_receipt_remove.html", {

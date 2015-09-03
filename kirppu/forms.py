@@ -305,7 +305,7 @@ class ItemRemoveForm(forms.Form):
         return cleaned_data
 
     @transaction.atomic
-    def save(self):
+    def save(self, request):
         assert self.last_added_item is not None
 
         last_added_item = self.last_added_item[0]
@@ -319,7 +319,7 @@ class ItemRemoveForm(forms.Form):
         self.receipt.save()
 
         if self.item.state != Item.BROUGHT:
-            ItemStateLog.objects.log_state(item=self.item, new_state=Item.BROUGHT)
+            ItemStateLog.objects.log_state(item=self.item, new_state=Item.BROUGHT, request=request)
             self.item.state = Item.BROUGHT
             self.item.save()
         self.removal_entry = removal_entry

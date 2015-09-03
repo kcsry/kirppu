@@ -137,7 +137,7 @@ def _get_item_or_404(code):
 
 
 @transaction.atomic
-def item_mode_change(code, from_, to, message_if_not_first=None):
+def item_mode_change(request, code, from_, to, message_if_not_first=None):
     item = _get_item_or_404(code)
     if not isinstance(from_, tuple):
         from_ = (from_,)
@@ -147,7 +147,7 @@ def item_mode_change(code, from_, to, message_if_not_first=None):
             # users list. The same probably applies to any interaction with the item.
             item.hidden = False
 
-        ItemStateLog.objects.log_state(item=item, new_state=to)
+        ItemStateLog.objects.log_state(item=item, new_state=to, request=request)
         old_state = item.state
         item.state = to
         item.save()
@@ -334,7 +334,7 @@ def item_edit(request, code, price, state):
                     'item': item.code,
                 })
                 assert remove_form.is_valid()
-                remove_form.save()
+                remove_form.save(request)
         else:
             raise AjaxError(
                 RET_BAD_REQUEST,
@@ -379,17 +379,18 @@ def box_list(request, vendor):
 
 @ajax_func('^item/checkin$')
 def item_checkin(request, code):
-    return item_mode_change(code, Item.ADVERTISED, Item.BROUGHT)
+    return item_mode_change(request, code, Item.ADVERTISED, Item.BROUGHT)
 
 
 @ajax_func('^item/checkout$')
 def item_checkout(request, code):
-    return item_mode_change(code, (Item.BROUGHT, Item.ADVERTISED), Item.RETURNED, _(u"Item was not brought to event."))
+    return item_mode_change(request, code, (Item.BROUGHT, Item.ADVERTISED), Item.RETURNED,
+                            _(u"Item was not brought to event."))
 
 
 @ajax_func('^item/compensate$')
 def item_compensate(request, code):
-    return item_mode_change(code, Item.SOLD, Item.COMPENSATED)
+    return item_mode_change(request, code, Item.SOLD, Item.COMPENSATED)
 
 
 @ajax_func('^vendor/get$', method='GET')
@@ -447,7 +448,7 @@ def item_reserve(request, code):
 
     message = raise_if_item_not_available(item)
     if item.state in (Item.ADVERTISED, Item.BROUGHT, Item.MISSING):
-        ItemStateLog.objects.log_state(item, Item.STAGED)
+        ItemStateLog.objects.log_state(item, Item.STAGED, request=request)
         item.state = Item.STAGED
         item.save()
 
@@ -477,7 +478,7 @@ def item_release(request, code):
     if not remove_form.is_valid():
         raise AjaxError(RET_CONFLICT, ", ".join(remove_form.errors))
 
-    remove_form.save()
+    remove_form.save(request)
     return remove_form.removal_entry.as_dict()
 
 
@@ -494,7 +495,7 @@ def receipt_finish(request):
 
     receipt_items = Item.objects.filter(receipt=receipt, receiptitem__action=ReceiptItem.ADD)
     for item in receipt_items:
-        ItemStateLog.objects.log_state(item=item, new_state=Item.SOLD)
+        ItemStateLog.objects.log_state(item=item, new_state=Item.SOLD, request=request)
     receipt_items.update(state=Item.SOLD)
 
     del request.session["receipt"]
@@ -517,7 +518,7 @@ def receipt_abort(request):
         ReceiptItem(item=item, receipt=receipt, action=ReceiptItem.REMOVE).save()
 
         if item.state != Item.BROUGHT:
-            ItemStateLog.objects.log_state(item=item, new_state=Item.BROUGHT)
+            ItemStateLog.objects.log_state(item=item, new_state=Item.BROUGHT, request=request)
             item.state = Item.BROUGHT
             item.save()
 
