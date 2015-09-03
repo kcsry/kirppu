@@ -48,26 +48,39 @@ class ItemAdmin(admin.ModelAdmin):
 admin.site.register(Item, ItemAdmin)
 
 
-def _user_link(obj):
+def ref_link_accessor(field_name, description):
     """
-    Admin UI list column that displays user name with link to the user model itself.
+    Create accessor function that returns a link to given FK-field admin.
 
-    :param obj: Object being listed, such as Clerk or Vendor.
-    :type obj: Clerk | Vendor | T
-    :return: Contents for the field.
-    :rtype: unicode
+    :param field_name: Field to link to.
+    :param description: Column description.
+    :return: Accessor function, ready for adding to list_display.
     """
-    user = obj.user
-    if user is None:
-        return u"(None)"
-    # noinspection PyProtectedMember
-    info = user._meta.app_label, user._meta.model_name
-    return u'<a href="{0}">{1}</a>'.format(
-        reverse("admin:%s_%s_change" % info, args=(user.id,)),
-        escape(user)
-    )
-_user_link.allow_tags = True
-_user_link.short_description = ugettext(u"User")
+
+    def accessor(obj):
+        field = getattr(obj, field_name)
+        if field is None:
+            return u"(None)"
+        # noinspection PyProtectedMember
+        info = field._meta.app_label, field._meta.model_name
+        return u'<a href="{0}">{1}</a>'.format(
+            reverse("admin:%s_%s_change" % info, args=(field.id,)),
+            escape(field)
+        )
+    accessor.allow_tags = True
+    accessor.short_description = description
+    return accessor
+
+
+"""
+Admin UI list column that displays user name with link to the user model itself.
+
+:param obj: Object being listed, such as Clerk or Vendor.
+:type obj: Clerk | Vendor | T
+:return: Contents for the field.
+:rtype: unicode
+"""
+_user_link = ref_link_accessor("user", ugettext(u"User"))
 
 
 class VendorAdmin(admin.ModelAdmin):
@@ -231,7 +244,11 @@ class ItemStateLogAdmin(admin.ModelAdmin):
     model = ItemStateLog
     ordering = ["-id"]
     search_fields = ['item__code', 'clerk__user__username']
-    list_display = ['id', 'time', 'item', 'old_state', 'new_state', 'clerk', 'counter']
+    list_display = ['id', 'time',
+                    ref_link_accessor("item", ugettext(u"Item")),
+                    'old_state', 'new_state',
+                    ref_link_accessor("clerk", ugettext(u"Clerk")),
+                    'counter']
 
 admin.site.register(ItemStateLog, ItemStateLogAdmin)
 

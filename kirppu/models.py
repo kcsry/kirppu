@@ -223,8 +223,11 @@ class Clerk(models.Model):
 class Vendor(models.Model):
     user = models.OneToOneField(User)
 
-    def __str__(self):
+    def __repr__(self):
         return u'<Vendor: {0}>'.format(text_type(self.user))
+
+    def __str__(self):
+        return text_type(self.user)
 
     @classmethod
     def get_vendor(cls, user, create=True):

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-29 16:14+0300\n"
-"PO-Revision-Date: 2015-08-29 16:14+0300\n"
+"POT-Creation-Date: 2015-09-03 20:12+0300\n"
+"PO-Revision-Date: 2015-09-03 20:13+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -46,6 +46,12 @@ msgstr "Access code set for '{0}'"
 
 msgid "Move unused access code to existing Clerk."
 msgstr "Move unused access code to existing Clerk."
+
+msgid "Item"
+msgstr "Item"
+
+msgid "Clerk"
+msgstr "Clerk"
 
 msgid "Not logged in."
 msgstr "Not logged in."
