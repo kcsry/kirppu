@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib import admin, messages
 from django.core.urlresolvers import reverse
 from django.utils.html import escape
-from django.utils.translation import ugettext
+from django.utils.translation import ugettext_lazy as ugettext
 
 from .forms import (
     ClerkGenerationForm,
