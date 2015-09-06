@@ -53,6 +53,7 @@ class @VendorCheckoutMode extends ItemCheckoutMode
       @receipt.body.prepend(row)
 
   returnItem: (code) =>
+    code = fixToUppercase(code)
     Api.item_find(code: code).then(
       @onItemFound
 

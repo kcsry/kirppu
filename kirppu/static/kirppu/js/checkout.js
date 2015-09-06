@@ -78,6 +78,16 @@
     return safeDisplay(CheckoutConfig.uiRef.warningText, message, blink ? 1 : 0);
   };
 
+  this.fixToUppercase = function(code) {
+    var codeUC;
+    codeUC = code.toUpperCase();
+    if (codeUC !== code) {
+      code = codeUC;
+      safeWarning("CAPS-LOCK may be ON!");
+    }
+    return code;
+  };
+
   safeDisplay = function(textRef, message, blinkCount) {
     var blinksToGo, body, cls, text, timeCb, timeout;
     if (blinkCount == null) {
@@ -1644,6 +1654,7 @@
         [
           '', (function(_this) {
             return function(code) {
+              code = fixToUppercase(code);
               return Api.item_checkin({
                 code: code
               }).then(_this.onResultSuccess, _this.onResultError);
@@ -1880,6 +1891,7 @@
     };
 
     VendorCheckoutMode.prototype.returnItem = function(code) {
+      code = fixToUppercase(code);
       return Api.item_find({
         code: code
       }).then(this.onItemFound, function() {
@@ -2007,6 +2019,7 @@
       if (code.trim() === "") {
         return;
       }
+      code = fixToUppercase(code);
       if (!this._receipt.isActive()) {
         return Api.item_find({
           code: code,
@@ -2129,6 +2142,7 @@
       if (!this._receipt.isActive()) {
         return;
       }
+      code = fixToUppercase(code);
       return Api.item_release({
         code: code
       }).then((function(_this) {

@@ -11,6 +11,7 @@ class @ItemCheckInMode extends ItemCheckoutMode
 
   actions: -> [
     ['', (code) =>
+      code = fixToUppercase(code)
       Api.item_checkin(
         code: code
       ).then(@onResultSuccess, @onResultError)

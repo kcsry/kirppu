@@ -47,6 +47,7 @@ class @CounterMode extends ItemCheckoutMode
   onAddItem: (code) =>
     if code.trim() == "" then return
 
+    code = fixToUppercase(code)
     if not @_receipt.isActive()
       Api.item_find(code: code, available: true).then(
         () => @startReceipt(code)
@@ -127,6 +128,7 @@ class @CounterMode extends ItemCheckoutMode
   onRemoveItem: (code) =>
     unless @_receipt.isActive() then return
 
+    code = fixToUppercase(code)
     Api.item_release(code: code).then(
       (data) =>
         @_receipt.total -= data.price

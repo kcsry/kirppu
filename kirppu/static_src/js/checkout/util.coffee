@@ -69,6 +69,15 @@ stillBlinking = false
   safeDisplay(CheckoutConfig.uiRef.warningText, message, if blink then 1 else 0)
 
 
+@fixToUppercase = (code) ->
+  # XXX: Convert lowercase code to uppercase... Expecting uppercase codes.
+  codeUC = code.toUpperCase()
+  if codeUC != code
+    code = codeUC
+    safeWarning("CAPS-LOCK may be ON!")
+  return code
+
+
 # Display the alert message.
 #
 # @param textRef [jQuery] Div reference for the message.
