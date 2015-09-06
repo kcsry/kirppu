@@ -184,7 +184,7 @@ def clerk_login(request, code, counter):
 
     clerk_data = clerk.as_dict()
     clerk_data['overseer_enabled'] = clerk.user.has_perm('kirppu.oversee')
-    clerk_data['stats_enabled'] = clerk.user.is_staff
+    clerk_data['stats_enabled'] = clerk.user.is_staff or clerk.user.has_perm('kirppu.oversee')
 
     active_receipts = Receipt.objects.filter(clerk=clerk, status=Receipt.PENDING)
     if active_receipts:
