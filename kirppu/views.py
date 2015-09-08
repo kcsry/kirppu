@@ -25,7 +25,7 @@ from django.shortcuts import (
     get_object_or_404,
 )
 from django.utils.http import is_safe_url
-from django.utils.six import text_type, moves
+from django.utils.six import moves, string_types
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -509,7 +509,7 @@ def checkout_view(request):
         'CURRENCY': settings.KIRPPU_CURRENCY,
     }
     if settings.KIRPPU_AUTO_CLERK and settings.DEBUG:
-        if isinstance(settings.KIRPPU_AUTO_CLERK, text_type):
+        if isinstance(settings.KIRPPU_AUTO_CLERK, string_types):
             real_clerks = Clerk.objects.filter(user__username=settings.KIRPPU_AUTO_CLERK)
         else:
             real_clerks = Clerk.objects.filter(user__isnull=False)
