@@ -552,7 +552,12 @@
         }).call(this));
         this.body.append(row);
       }
-      return this.body.append($('<tr>').append($('<th colspan="3">').text(gettext('Total:')), $('<th class="receipt_price numeric">').text(displayPrice(sum)), $('<th>'), $('<th>')));
+      this.body.prepend(this._createTotal(sum));
+      return this.body.append(this._createTotal(sum));
+    };
+
+    ItemReportTable.prototype._createTotal = function(sum) {
+      return $('<tr>').append($('<th colspan="3">').text(gettext('Total:')), $('<th class="receipt_price numeric">').text(displayPrice(sum)), $('<th>'), $('<th>'));
     };
 
     return ItemReportTable;

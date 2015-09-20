@@ -48,13 +48,16 @@ class @ItemReportTable extends ResultTable
           $('<td>').text(c.render(item, index)).addClass(c.class)
       )
       @body.append(row)
+    @body.prepend(@_createTotal(sum))
+    @body.append(@_createTotal(sum))
 
-    @body.append($('<tr>').append(
+  _createTotal: (sum) ->
+    $('<tr>').append(
       $('<th colspan="3">').text(gettext('Total:'))
       $('<th class="receipt_price numeric">').text(displayPrice(sum))
       $('<th>')
       $('<th>')
-    ))
+    )
 
 
 class @BoxResultTable extends ResultTable
