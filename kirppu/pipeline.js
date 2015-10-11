@@ -2,8 +2,8 @@ module.exports.css = {
     'general': {
         "source_filenames": [
             "css/general.css",
-            "css/bootstrap.css",
-            "css/bootstrap-theme.css",
+            "../node_modules/bootstrap/dist/css/bootstrap.css",
+            "../node_modules/bootstrap/dist/css/bootstrap-theme.css",
         ],
         "output_filename": "general.css",
     },
@@ -38,7 +38,7 @@ module.exports.js = {
         "source_filenames": [
             "js/gettext_shim.js",
             "js/jquery-1.11.2.js",
-            "js/bootstrap.js",
+            "../node_modules/bootstrap/dist/js/bootstrap.js",
             "js/csrf.coffee",
         ],
         "output_filename": "general.js",
@@ -135,13 +135,22 @@ module.exports.js = {
         "compress": true
     }
 };
-module.exports.static = [
-    "audio/bleep.mp3",
-    "audio/error-buzzer.mp3",
-    "fonts/glyphicons-halflings-regular.eot",
-    "fonts/glyphicons-halflings-regular.svg",
-    "fonts/glyphicons-halflings-regular.ttf",
-    "fonts/glyphicons-halflings-regular.woff",
-    "fonts/glyphicons-halflings-regular.woff2",
-    "img/roller.gif"
-];
+module.exports.static = {
+    "general": {
+        "source_filenames": [
+            "audio/bleep.mp3",
+            "audio/error-buzzer.mp3",
+            "img/roller.gif"
+        ]
+    },
+    "bootstrap": {
+        "dest": "fonts",
+        "source_filenames": [
+            "../node_modules/bootstrap/fonts/glyphicons-halflings-regular.eot",
+            "../node_modules/bootstrap/fonts/glyphicons-halflings-regular.ttf",
+            "../node_modules/bootstrap/fonts/glyphicons-halflings-regular.svg",
+            "../node_modules/bootstrap/fonts/glyphicons-halflings-regular.woff",
+            "../node_modules/bootstrap/fonts/glyphicons-halflings-regular.woff2"
+        ]
+    }
+};

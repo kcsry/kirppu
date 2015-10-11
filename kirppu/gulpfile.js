@@ -18,6 +18,15 @@ var shouldCompress = gutil.env.type === "production";
 var jsHeader = "// ================ <%= index %>: <%= original %> ================\n\n";
 var cssHeader = "/* ================ <%= index %>: <%= original %> ================ */\n\n";
 
+var pathJoin = function() {
+    return _.reduce(_.slice(arguments, 1), function(acc, item) {
+        acc = _.trimRight(acc, "/");
+        item = _.trimLeft(item, "/");
+        if (!item) return acc;
+        return (acc ? (acc + "/") : acc) + item;
+    }, arguments[0]);
+};
+
 /**
  * Add source (SRC) prefix for all source file names from pipeline definition.
  *
@@ -25,7 +34,7 @@ var cssHeader = "/* ================ <%= index %>: <%= original %> =============
  * @returns {Array} Prefixed source files.
  */
 var srcPrepend = function(def) {
-    return _.map(def.source_filenames, function(n) { return SRC + "/" + n; })
+    return _.map(def.source_filenames, function(n) { return pathJoin(SRC, n); })
 };
 
 /**
@@ -76,18 +85,27 @@ var cssTasks = _.map(pipeline.css, function(def, name) {
     return taskName;
 });
 
-gulp.task("static", function() {
-    var sources = _.map(pipeline.static, function(entry) {
-        return SRC + "/" + entry;
+var staticTasks = _.map(pipeline.static, function(def, name) {
+    var taskName = "static:" + name;
+    gulp.task(taskName, function() {
+        var _to = DEST;
+        var options = {};
+        if (def.dest) {
+            _to = pathJoin(_to, def.dest);
+        }
+        else {
+            options["base"] = SRC;
+        }
+        return gulp.src(srcPrepend(def), options)
+            .pipe(gulp.dest(_to))
     });
-    return gulp.src(sources, {base: SRC})
-        .pipe(gulp.dest(DEST));
+    return taskName;
 });
 
 gulp.task("pipeline", []
     .concat(jsTasks)
     .concat(cssTasks)
-    .concat(["static"])
+    .concat(staticTasks)
     , function() {
 
 });
@@ -107,7 +125,7 @@ var findTask = function(haystack, file) {
     return _.findKey(haystack, function(def) {
         // Match if 'file' ends with any source filename.
         return _.find(def.source_filenames, function(src) {
-            return _.endsWith(file, src);
+            return _.endsWith(_.trimLeft(file, "."), src);
         });
     });
 };
