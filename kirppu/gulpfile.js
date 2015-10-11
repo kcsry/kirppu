@@ -151,4 +151,7 @@ var watcher = function(event) {
 
 gulp.task("watch", function() {
     gulp.watch(SRC + "/**/*", watcher);
+    gulp.watch("pipeline.js", function() {
+        gutil.log("Pipeline configuration changed. Please restart " + gutil.colors.cyan("gulp watch"));
+    })
 });
