@@ -4,7 +4,9 @@
   "description": "",
   "main": "gulpfile.js",
   "directories": {},
-  "scripts": {},
+  "scripts": {
+    "gulp": "gulp"
+  },
   "author": "",
   "license": "unknown",
   "private": true,
