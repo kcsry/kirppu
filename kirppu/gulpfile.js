@@ -95,8 +95,7 @@ var findTask = function(haystack, file) {
     return _.findKey(haystack, function(def) {
         // Match if 'file' ends with any source filename.
         return _.find(def.source_filenames, function(src) {
-            var pos = file.length - src.length;
-            return pos >= 0 && file.indexOf(src, pos) == pos;
+            return _.endsWith(file, src);
         });
     });
 };
