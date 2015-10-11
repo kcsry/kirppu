@@ -103,19 +103,21 @@ var findTask = function(haystack, file) {
 /**
  * Start task by watch or --file commandline argument.
  *
- * @param group {string} Pipeline group container name to try.
- * @param file {string?} Optional file argument. If not supplied, environment is used.
+ * @param file Filename argument, which file has been changed.
  * @returns {boolean} True if task was run. Otherwise false.
  */
-var startFileTask = function(group, file) {
-    if (file === undefined) {
-        file = gutil.env.file;
-    }
+var startFileTask = function(file) {
     // Replace '\' with '/' so Windows file paths work.
     var filename = file.replace(/\\/g, "/");
-    var task = findTask(_.result(pipeline, group), filename);
+
+    // Find first matching task from pipeline groups.
+    var task = _.find(_.map(_.keys(pipeline), function(group) {
+        var taskName = findTask(_.result(pipeline, group), filename);
+        return taskName != null ? group + ":" + taskName : null;
+    }));
+
     if (task != null) {
-        gulp.start(group + ":" + task);
+        gulp.start(task);
         return true;
     }
     return false;
@@ -123,10 +125,11 @@ var startFileTask = function(group, file) {
 
 // For file watcher:  build --file $FilePathRelativeToProjectRoot$
 gulp.task("build", function() {
-    if (gutil.env.file == null) {
+    var file = gutil.env.file;
+    if (file == null) {
         gutil.log(gutil.colors.red("Need argument: --file FILE"));
     }
-    else if (!(startFileTask("css") || startFileTask("js"))) {
+    else if (!(startFileTask(file))) {
         gutil.log(gutil.colors.red("Target file not found in pipeline.js: " + file));
     }
 });
@@ -141,7 +144,7 @@ var watcher = function(event) {
         gutil.log("Unhandled event: " + event.type + " " + file);
         return;
     }
-    if (!(startFileTask("css", file) || startFileTask("js", file))) {
+    if (!(startFileTask(file))) {
         gutil.log(gutil.colors.red("Target file not found in pipeline.js: " + file));
     }
 };
