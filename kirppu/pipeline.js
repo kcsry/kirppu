@@ -135,3 +135,13 @@ module.exports.js = {
         "compress": true
     }
 };
+module.exports.static = [
+    "audio/bleep.mp3",
+    "audio/error-buzzer.mp3",
+    "fonts/glyphicons-halflings-regular.eot",
+    "fonts/glyphicons-halflings-regular.svg",
+    "fonts/glyphicons-halflings-regular.ttf",
+    "fonts/glyphicons-halflings-regular.woff",
+    "fonts/glyphicons-halflings-regular.woff2",
+    "img/roller.gif"
+];

@@ -76,7 +76,19 @@ var cssTasks = _.map(pipeline.css, function(def, name) {
     return taskName;
 });
 
-gulp.task("pipeline", [].concat(jsTasks).concat(cssTasks), function() {
+gulp.task("static", function() {
+    var sources = _.map(pipeline.static, function(entry) {
+        return SRC + "/" + entry;
+    });
+    return gulp.src(sources, {base: SRC})
+        .pipe(gulp.dest(DEST));
+});
+
+gulp.task("pipeline", []
+    .concat(jsTasks)
+    .concat(cssTasks)
+    .concat(["static"])
+    , function() {
 
 });
 
