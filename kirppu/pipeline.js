@@ -37,7 +37,7 @@ module.exports.js = {
     'general': {
         "source_filenames": [
             "js/gettext_shim.js",
-            "js/jquery-1.11.2.js",
+            "../node_modules/jquery/dist/jquery.js",
             "../node_modules/bootstrap/dist/js/bootstrap.js",
             "js/csrf.coffee",
         ],
