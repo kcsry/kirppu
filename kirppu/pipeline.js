@@ -108,8 +108,8 @@ module.exports.js = {
     'checkout_compressed': {
         "source_filenames": [
             "js/jquery.cookie-1.4.1-0.js",
-            "js/moment.js",
-            "js/moment.fi.js",
+            "../node_modules/moment/moment.js",
+            "../node_modules/moment/locale/fi.js",
         ],
         "output_filename": "checkout_comp.js",
         "compress": true
