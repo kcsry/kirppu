@@ -58,6 +58,7 @@ class @CounterMode extends ItemCheckoutMode
 
   showError: (status, text, code) =>
     switch status
+      when 0 then errorMsg = "Network disconnected!"
       when 404 then errorMsg = "Item is not registered."
       when 409 then errorMsg = text
       when 423 then errorMsg = text
