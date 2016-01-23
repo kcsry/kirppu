@@ -202,7 +202,7 @@ class @ItemEditDialog
         @priceInput.prop('readonly', true)
     )
 
-    dialog.find('input').change(@onChange)
+    dialog.find('input').change(@onChange).on("keyup", @onChange)
     dialog.find('select').change(@onChange)
     dialog.on('hidden.bs.modal', -> do dialog.remove)
     dialog.on('shown.bs.modal', => do @onShown)
