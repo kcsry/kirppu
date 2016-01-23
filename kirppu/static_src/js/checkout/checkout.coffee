@@ -31,6 +31,7 @@ class Config
     counterPrefix: ":*"
     removeItemPrefix: "-"
     payPrefix: "+"
+    quickPayExtra: ""
     counterCode: null
     clerkName: null
     alertBlinkCount: 4

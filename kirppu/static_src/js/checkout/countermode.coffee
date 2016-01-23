@@ -142,15 +142,22 @@ class @CounterMode extends ItemCheckoutMode
     )
 
   onPayReceipt: (input) =>
-    unless Number.isConvertible(input) then return
+    unless Number.isConvertible(input)
+      unless input == @cfg.settings.quickPayExtra
+        safeWarning("Number not understood. The format must be like: #{@cfg.settings.payPrefix}0.00")
+        return
+      else
+        # Quick pay.
+        input = @_receipt.total
 
-    # If decimal separator is supplied, ensure dot and expect euros.
-    input = input.replace(",", ".")
-    input = (input - 0) * 100
+    else
+      # If decimal separator is supplied, ensure dot and expect euros.
+      input = input.replace(",", ".")
+      input = (input - 0) * 100
 
-    # Round the number to integer just to be sure it is whole cents (and no parts of it).
-    # This should differ maximum of epsilon from previous line.
-    input = Math.round(input)
+      # Round the number to integer just to be sure it is whole cents (and no parts of it).
+      # This should differ maximum of epsilon from previous line.
+      input = Math.round(input)
 
     if input < @_receipt.total
       safeAlert("Not enough given money!")
