@@ -198,7 +198,7 @@ class @ItemEditDialog
       if @priceConfirm.prop('checked')
         @priceInput.prop('readonly', false)
       else
-        @priceInput.val(@item.price / 100)
+        @priceInput.val(@item.price.formatCents())
         @priceInput.prop('readonly', true)
     )
 
@@ -227,7 +227,7 @@ class @ItemEditDialog
     )
     @nameInput.val(item.name)
     @codeInput.val(item.code)
-    @priceInput.val(item.price / 100)
+    @priceInput.val(item.price.formatCents())
     @typeInput.val(item.itemtype)
     @stateInput.val(item.state)
     if item.abandoned
@@ -244,8 +244,8 @@ class @ItemEditDialog
     item = @item
     tag = @priceTag
     tag.find('.item_name').text(item.name)
-    tag.find('.item_price').text(item.price / 100)
-    tag.find('.item_head_price').text(item.price / 100)
+    tag.find('.item_price').text(item.price.formatCents())
+    tag.find('.item_head_price').text(item.price.formatCents())
     tag.find('.item_adult_tag').text(if item.adult then 'K-18' else '')
     tag.find('.item_vendor_id').text(item.vendor.id)
     tag.find('.item_extra_code').text(item.code)
@@ -285,7 +285,12 @@ class @ItemEditDialog
 
   hasChanged: =>
     state = do @getFormState
-    if state.price * 100 != @item.price
+    if state.price == ""
+      # Not-a-number, detected by browser.
+      @priceInput.parent().addClass("has-error")
+      return false
+    @priceInput.parent().removeClass("has-error")
+    if Math.round((state.price - 0) * 100) != @item.price
       return true
     for attr in ['name', 'itemtype', 'state', 'abandoned']
       if state[attr] != @item[attr]
