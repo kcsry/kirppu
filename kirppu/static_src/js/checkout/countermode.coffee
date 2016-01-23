@@ -146,12 +146,11 @@ class @CounterMode extends ItemCheckoutMode
 
     # If decimal separator is supplied, ensure dot and expect euros.
     input = input.replace(",", ".")
-    if input.indexOf(".")
-      # Euros.
-      input = (input - 0) * 100
-    else
-      # Cents.
-      input = input - 0
+    input = (input - 0) * 100
+
+    # Round the number to integer just to be sure it is whole cents (and no parts of it).
+    # This should differ maximum of epsilon from previous line.
+    input = Math.round(input)
 
     if input < @_receipt.total
       safeAlert("Not enough given money!")
