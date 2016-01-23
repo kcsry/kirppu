@@ -3,7 +3,7 @@ var gif = require("gulp-if");
 var concat = require("gulp-concat-util");
 var coffee = require("gulp-coffee");
 var uglify = require("gulp-uglify");
-var minify = require("gulp-minify-css");
+var minify = require("gulp-cssnano");
 var gutil = require("gulp-util");
 var _ = require("lodash");
 
