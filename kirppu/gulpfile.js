@@ -2,6 +2,7 @@ var gulp = require("gulp");
 var gif = require("gulp-if");
 var concat = require("gulp-concat-util");
 var coffee = require("gulp-coffee");
+var fs = require("fs");
 var uglify = require("gulp-uglify");
 var minify = require("gulp-cssnano");
 var nunjucks = require("gulp-nunjucks");
@@ -36,7 +37,16 @@ var pathJoin = function() {
  * @returns {Array} Prefixed source files.
  */
 var srcPrepend = function(def) {
-    return _.map(def.source_filenames, function(n) { return pathJoin(SRC, n); })
+    return _.map(def.source_filenames, function (n) {
+        var resultName = pathJoin(SRC, n);
+        try {
+            fs.statSync(resultName);
+        }
+        catch (ignored) {
+            gutil.log(gutil.colors.red("File not found (or error): ") + n);
+        }
+        return resultName;
+    })
 };
 
 /**
