@@ -68,7 +68,7 @@ module.exports.js = {
             "js/checkout/dialog.coffee",
 
             "js/checkout/resulttable.coffee",
-            "js/checkout/itemreceipttable.coffee",
+            "js/checkout/item_receipt_table.coffee",
             "js/overseer/item_find_list.coffee",
             "js/overseer/item_search_form.coffee",
             "js/overseer/item_edit_dialog.coffee",
@@ -143,7 +143,9 @@ module.exports.jst = {
         "source_filenames": [
             "jst/item_report_table.jinja2",
             "jst/box_report_table.jinja2",
-            "jst/vendor_info.jinja2"
+            "jst/vendor_info.jinja2",
+            "jst/item_receipt_table.jinja2",
+            "jst/item_receipt_table_row.jinja2",
         ],
         "output_filename": "checkout_templates.js"
     }

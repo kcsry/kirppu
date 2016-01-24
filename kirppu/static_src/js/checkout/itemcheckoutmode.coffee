@@ -21,7 +21,4 @@ class @ItemCheckoutMode extends CheckoutMode
   # @param rounded [Boolean, optional] Should the price be displayed also as rounded?
   # @return [$] Table row (tr element) as jQuery object.
   createRow: (index, code, name, price=null, rounded=false) ->
-    row = $('<tr id="' + code + '">')
-    for x in [index, code, name, displayPrice(price, rounded)]
-      row.append($("<td>").text(x))
-    return row
+    return @receipt.createRow(index, code, name, price, rounded)
