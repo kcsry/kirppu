@@ -1,9 +1,9 @@
 tables = [
-  # title, included modes, hideInPrint
-  [gettext('Compensable Items'), {SO: 0}, false]
-  [gettext('Returnable Items'),  {BR: 0, ST: 0}, false]
-  [gettext('Other Items'),       {MI: 0, RE: 0, CO: 0}, false]
-  [gettext('Not brought to event'), {AD: 0}, true]
+  # title, included modes, hideInPrint, isExpectedValue (not to be trusted)
+  [gettext('Compensable Items'), {SO: 0}, false, true]
+  [gettext('Returnable Items'),  {BR: 0, ST: 0}, false, false]
+  [gettext('Other Items'),       {MI: 0, RE: 0, CO: 0}, false, false]
+  [gettext('Not brought to event'), {AD: 0}, true, false]
 ]
 
 class @VendorReport extends CheckoutMode
@@ -53,13 +53,15 @@ class @VendorReport extends CheckoutMode
     )
 
   onGotItems: (items, boxes) =>
-    for [name, states, hidePrint] in tables
+    for [name, states, hidePrint, isExpectedSum] in tables
       matchingItems = (i for i in items when states[i.state]?)
       rendered_table = Templates.render("item_report_table",
          caption: name
          items: matchingItems
          sum: _.reduce(@compensableItems, ((acc, item) -> acc + item.price), 0)
          hidePrint: hidePrint
+         isExpectedSum: isExpectedSum
+         hideSumInPrint: true
       )
       @cfg.uiRef.body.append(rendered_table)
 
@@ -78,6 +80,7 @@ class @VendorReport extends CheckoutMode
         sum_brought: sum_brought
         sum_sold_count: sum_sold_count
         sum_sold: sum_sold
+        hideSumInPrint: true
       )
 
       # Insert box list before Not Brought list.

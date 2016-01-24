@@ -12,9 +12,14 @@
 </thead>
 <tbody>
 {% macro total(sum) %}
-    <tr>
+    <tr{% if hideSumInPrint %} class="hidden-print"{% endif %}>
+    {% if isExpectedSum %}
+        <th colspan="3">Expected total:</th>
+        <th class="receipt_price numeric">~ {{ sum|displayPrice }} ~</th>
+    {% else %}
         <th colspan="3">Total:</th>
         <th class="receipt_price numeric">{{ sum|displayPrice }}</th>
+    {% endif %}
         <th></th>
         <th></th>
     </tr>

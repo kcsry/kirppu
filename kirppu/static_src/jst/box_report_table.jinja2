@@ -26,7 +26,7 @@
     </tr>
 {% endfor %}
 {% if items %}
-    <tr>
+    <tr{% if hideSumInPrint %} class="hidden-print"{% endif %}>
         <th colspan="3">Total:</th>
         <th class="receipt_price numeric">{{ sum_sold|displayPrice }} ({{ sum_sold_count }})</th>
         <th></th>
