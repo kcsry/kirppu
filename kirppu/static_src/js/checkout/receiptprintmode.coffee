@@ -49,14 +49,10 @@ class @ReceiptPrintMode extends CheckoutMode
       row = PrintReceiptTable.createRow(item.vendor, item.code, item.name, item.price, false)
       @receipt.body.append(row)
 
-    replacer = (s) ->
-      switch s[1]
-        when 'd' then DateTimeFormatter.datetime(receiptData.sell_time)
-        when 'c' then receiptData.clerk.print
-        else s[1]
-
-    sellFmt = /%[dc%]/g
-    sellStr = @constructor.strSell.replace(sellFmt, replacer)
+    sellStr = dPrintF(@constructor.strSell,
+      d: DateTimeFormatter.datetime(receiptData.sell_time)
+      c: receiptData.clerk.print
+    )
 
     @receipt.body.append(row) for row in [
       @constructor.middleLine

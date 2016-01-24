@@ -144,3 +144,24 @@ class @RefreshButton
     )
   )
 
+# PrintF-style formatter that actually formats just replacements.
+# Placeholders not found in args are assumed empty. Double-percent is converted to single percent sign.
+#
+# @param format [String] The format string. Placeholders start with percent sign (%) and must be exactly one character long.
+# @param args [Object, optional] Placeholder-to-values map. Keys must be exactly one character long.
+# @return [String] Formatted string.
+@dPrintF = (format, args={}) ->
+  if not _.every(_.keys(args), (key) -> key.length == 1)
+    throw Error("Key must be exactly one character long.")
+
+  replacer = (s) ->
+    val = s[1]
+    if val of args
+      return args[val]
+    else if val == "%"
+      return val
+    else
+      return ""
+
+  replaceExp = new RegExp("%.", 'g')
+  return format.replace(replaceExp, replacer)
