@@ -69,7 +69,6 @@ module.exports.js = {
 
             "js/checkout/resulttable.coffee",
             "js/checkout/itemreceipttable.coffee",
-            "js/checkout/itemreporttable.coffee",
             "js/overseer/item_find_list.coffee",
             "js/overseer/item_search_form.coffee",
             "js/overseer/item_edit_dialog.coffee",
@@ -110,6 +109,9 @@ module.exports.js = {
             "js/jquery.cookie-1.4.1-0.js",
             "../node_modules/moment/moment.js",
             "../node_modules/moment/locale/fi.js",
+            "../node_modules/nunjucks/browser/nunjucks-slim.js",
+            "../node_modules/lodash/index.js",
+            "js/nunjucks-helpers.coffee",
         ],
         "output_filename": "checkout_comp.js",
         "compress": true
@@ -137,6 +139,13 @@ module.exports.js = {
 };
 
 module.exports.jst = {
+    "checkout_templates": {
+        "source_filenames": [
+            "jst/item_report_table.jinja2",
+            "jst/box_report_table.jinja2"
+        ],
+        "output_filename": "checkout_templates.js"
+    }
 };
 
 module.exports.static = {

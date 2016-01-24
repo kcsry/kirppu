@@ -44,9 +44,13 @@ class @VendorCompensation extends CheckoutMode
     @compensableItems = items
 
     if @compensableItems.length > 0
-      table = new ItemReportTable('Sold Items')
-      table.update(@compensableItems)
-      @itemDiv.empty().append(table.render())
+      table = Templates.render("item_report_table",
+        caption: "Sold Items"
+        items: @compensableItems
+        sum: _.reduce(@compensableItems, ((acc, item) -> acc + item.price), 0)
+        topSum: true
+      )
+      @itemDiv.empty().append(table)
       @buttonForm.empty().append(@confirmButton(), @abortButton())
 
     else
@@ -69,7 +73,11 @@ class @VendorCompensation extends CheckoutMode
     @compensableItems = []
     for i in items
       i.state = 'CO'
-    table = new ItemReportTable('Compensated Items')
-    table.update(items)
-    @itemDiv.empty().append(table.render())
+    table = Templates.render("item_report_table",
+      caption: "Compensated Items"
+      items: items
+      sum: _.reduce(@compensableItems, ((acc, item) -> acc + item.price), 0)
+      topSum: true
+    )
+    @itemDiv.empty().append(table)
     @buttonForm.empty().append(@continueButton())

@@ -55,16 +55,31 @@ class @VendorReport extends CheckoutMode
   onGotItems: (items, boxes) =>
     for [name, states, hidePrint] in tables
       matchingItems = (i for i in items when states[i.state]?)
-      table = new ItemReportTable(name)
-      table.update(matchingItems)
-      rendered_table = table.render()
-      if hidePrint then rendered_table.addClass('hidden-print')
+      rendered_table = Templates.render("item_report_table",
+         caption: name
+         items: matchingItems
+         sum: _.reduce(@compensableItems, ((acc, item) -> acc + item.price), 0)
+         hidePrint: hidePrint
+      )
       @cfg.uiRef.body.append(rendered_table)
 
     if boxes.length > 0
-      table = new BoxResultTable(gettext("Boxes"))
-      table.update(boxes)
-      rendered_table = table.render()
+      [sum_brought_count, sum_brought, sum_sold_count, sum_sold] = [0, 0, 0, 0]
+      for box in boxes
+        sum_brought_count += box.items_brought_total
+        sum_brought += box.items_brought_total * box.item_price
+        sum_sold_count += box.items_sold
+        sum_sold += box.items_sold * box.item_price
+
+      rendered_table = Templates.render("box_report_table",
+        caption: gettext("Boxes")
+        items: boxes
+        sum_brought_count: sum_brought_count
+        sum_brought: sum_brought
+        sum_sold_count: sum_sold_count
+        sum_sold: sum_sold
+      )
+
       # Insert box list before Not Brought list.
       @cfg.uiRef.body.children().last().before(rendered_table)
     return

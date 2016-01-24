@@ -1,0 +1,37 @@
+<table class="table table-striped table-hover table-condensed{% if hidePrint %} hidden-print{% endif %}">
+{% if caption %}<caption class="h3">{{caption}}</caption>{% endif %}
+<thead>
+    <tr>
+        <th class="receipt_index numeric">#</th>
+        <th>description</th>
+        <th class="receipt_price numeric">price</th>
+        <th class="receipt_count numeric">compensable</th>
+        <th class="receipt_count numeric">returnable</th>
+        <th class="receipt_count numeric">brought</th>
+    </tr>
+</thead>
+<tbody>
+{% for item in items %}
+    <tr>
+        <td class="receipt_index numeric">{{ loop.index }}</td>
+        <td>{{ item.description }}</td>
+        <td class="receipt_price numeric">{{ item.item_price|displayPrice }}</td>
+        <td class="receipt_price numeric">{{ item.items_sold }}</td>
+        <td class="receipt_price numeric">{{ item.items_returnable }}</td>
+        <td class="receipt_price numeric">{{ item.items_brought_total }}</td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="6">No boxes.</td>
+    </tr>
+{% endfor %}
+{% if items %}
+    <tr>
+        <th colspan="3">Total:</th>
+        <th class="receipt_price numeric">{{ sum_sold|displayPrice }} ({{ sum_sold_count }})</th>
+        <th></th>
+        <th class="receipt_price numeric">{{ sum_brought|displayPrice }} ({{ sum_brought_count }})</th>
+    </tr>
+{% endif %}
+</tbody>
+</table>
