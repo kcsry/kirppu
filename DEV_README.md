@@ -17,7 +17,8 @@ It consists of a high level guide outlining the steps, example guide that has mo
 5. Install dependencies with pip and dependencies.txt.
 6. Install js dependencies with npm. (Needed only if doing CoffeeScript/js/css editing.)
 7. Setup database with dev data.
-8. Run django with manage.py.
+8. Run gulp to build frontend code.
+9. Run django with manage.py.
 
 
 ## Example guide
@@ -71,6 +72,9 @@ Successfully installed django-1.6.10 django-pipeline-1.3.27 pillow-2.4.0 pyBarco
 # Note, that this is ran inside the "kirppu" module instead of project root.
 ~/kirppu/kirppu$ npm install
 # (this may take a while, and will output huge tree after it completes.)
+
+# Build frontend.
+~/kirppu/kirppu$ npm run gulp
 ```
 
 ### Add some example Data for Kirppu.
@@ -116,10 +120,15 @@ To compile frontend sources for use in browser, there is two choices, which can 
 
 ### Gulp watcher
 
-- When changing files in `static_src`, they need to be compiled with `gulp`. Manually:
-  `~/kirppu/kirppu$ node node_modules/gulp/bin/gulp.js`
+- When changing files in `static_src`, they need to be compiled with `gulp`. Manually (note directory):
+    - `~/kirppu/kirppu$ node node_modules/gulp/bin/gulp.js`
+    - or `~/kirppu/kirppu/$ npm run gulp`
 
-- Automatic compilation can be added to IDE. Following configuration compiles only module whose part has been changed.
+- Gulp can automatically build the changed files with its watcher. It does not, however handle file additions, pipeline
+  changes, nor gulpfile changes. For those changes, manual rebuild must be done and the watcher then restarted.
+    - `~/kirppu/kirppu$ npm run gulp watch`
+
+- Alternatively, automatic compilation can be added to IDE. Following configuration compiles only module whose part has been changed.
     - Disable _Immediate file synchronization_
     - Show console: _Always_  (errors are currently not found correctly from output)
     - File type: _Any_
