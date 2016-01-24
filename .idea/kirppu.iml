@@ -15,6 +15,7 @@
       <sourceFolder url="file://$MODULE_DIR$/kirppu" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kirppuauth" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/kirppu_project" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/kirppu/static" />
     </content>
     <orderEntry type="jdk" jdkName="KirppuVenv" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
