@@ -142,7 +142,8 @@ module.exports.jst = {
     "checkout_templates": {
         "source_filenames": [
             "jst/item_report_table.jinja2",
-            "jst/box_report_table.jinja2"
+            "jst/box_report_table.jinja2",
+            "jst/vendor_info.jinja2"
         ],
         "output_filename": "checkout_templates.js"
     }
