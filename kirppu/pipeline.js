@@ -135,6 +135,10 @@ module.exports.js = {
         "compress": true
     }
 };
+
+module.exports.jst = {
+};
+
 module.exports.static = {
     "general": {
         "source_filenames": [

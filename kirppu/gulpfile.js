@@ -4,6 +4,8 @@ var concat = require("gulp-concat-util");
 var coffee = require("gulp-coffee");
 var uglify = require("gulp-uglify");
 var minify = require("gulp-cssnano");
+var nunjucks = require("gulp-nunjucks");
+var nunjucks_compiler = require("nunjucks");
 var gutil = require("gulp-util");
 var _ = require("lodash");
 
@@ -85,6 +87,30 @@ var cssTasks = _.map(pipeline.css, function(def, name) {
     return taskName;
 });
 
+// Strip some newlines/whitespace from {%%} tags. Sadly, does not strip whitespace from html.
+var nunjucksEnv = nunjucks_compiler.configure({trimBlocks: true, lstripBlocks: true});
+var jstTasks = _.map(pipeline.jst, function(def, name) {
+    var taskName = "jst:" + name;
+    var nameFn = function(file) {
+        // VinylFS 1.1.0 has stem-helper.
+        // Fallback-re for older VFS that should get the basename without extension.
+        // Fallback to original relative result if the re fails for some reason.
+        return file.stem || (/.*\/(.+)\.[^.]+$/.exec(file.path) || [file.path, file.relative])[1];
+    };
+    gulp.task(taskName, function() {
+        return gulp.src(srcPrepend(def))
+            .pipe(gif(/\.jinja2?$/, nunjucks.precompile({
+                env: nunjucksEnv,
+                name: nameFn
+            }), gutil.noop()))
+            .on('error', handleError)
+            .pipe(concat(def.output_filename, {process: fileHeader(jsHeader)}))
+            .pipe(gif(shouldCompress, uglify()))
+            .pipe(gulp.dest(DEST + "/jst/"));
+    });
+    return taskName;
+});
+
 var staticTasks = _.map(pipeline.static, function(def, name) {
     var taskName = "static:" + name;
     gulp.task(taskName, function() {
@@ -105,6 +131,7 @@ var staticTasks = _.map(pipeline.static, function(def, name) {
 gulp.task("pipeline", []
     .concat(jsTasks)
     .concat(cssTasks)
+    .concat(jstTasks)
     .concat(staticTasks)
     , function() {
 
