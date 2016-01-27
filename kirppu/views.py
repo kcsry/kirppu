@@ -507,6 +507,7 @@ def checkout_view(request):
     clerk_logout_fn(request)
     context = {
         'CURRENCY': settings.KIRPPU_CURRENCY,
+        'PURCHASE_MAX': settings.KIRPPU_MAX_PURCHASE,
     }
     if settings.KIRPPU_AUTO_CLERK and settings.DEBUG:
         if isinstance(settings.KIRPPU_AUTO_CLERK, string_types):

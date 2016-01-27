@@ -257,6 +257,8 @@ KIRPPU_CURRENCY = {
 # Minimum and maximum price for an item.
 KIRPPU_MIN_MAX_PRICE = ('1', '400')
 
+# Maximum purchase amount.
+KIRPPU_MAX_PURCHASE = '450'
 
 # Load local settings that are not stored in repository. This must be last at end of settings.
 try:
