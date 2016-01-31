@@ -1,6 +1,7 @@
 from django.http import HttpResponse
+from django.utils.http import is_safe_url
 from django.views.generic import View
-from django.shortcuts import redirect
+from django.shortcuts import redirect, resolve_url
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login
@@ -14,6 +15,13 @@ def get_session(request, **kwargs):
         scope=settings.KOMPASSI_OAUTH2_SCOPE, # XXX hardcoded scope
         **kwargs
     )
+
+
+def get_redirect_url(request, redirect_to, fallback):
+    # Ensure the user-originating redirection url is safe.
+    if not is_safe_url(url=redirect_to, host=request.get_host()):
+        redirect_to = resolve_url(fallback)
+    return redirect_to
 
 
 class LoginView(View):
@@ -51,7 +59,7 @@ class CallbackView(View):
         user = authenticate(oauth2_session=session)
         if user is not None and user.is_active:
             login(request, user)
-            return redirect(next_url if next_url else '/')
+            return redirect(get_redirect_url(request, next_url, settings.LOGIN_REDIRECT_URL))
         else:
             return HttpResponse('OAuth2 login failed', status=403)
 
