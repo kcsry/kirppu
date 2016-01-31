@@ -4,8 +4,9 @@ from django.views.generic import View
 from django.shortcuts import redirect, resolve_url
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
+import requests
 from requests_oauthlib import OAuth2Session
 
 
@@ -52,6 +53,9 @@ class CallbackView(View):
             authorization_response=request.build_absolute_uri(),
         )
 
+        # Store tokens for later revoke in logout.
+        request.session['oauth_tokens'] = token
+
         next_url = request.session['oauth_next']
 
         self._finish(request)
@@ -67,3 +71,28 @@ class CallbackView(View):
     def _finish(request):
         del request.session['oauth_state']
         del request.session['oauth_next']
+
+
+class LogoutView(View):
+    def get(self, request):
+        next_url = request.GET.get("next", None)  # type: str
+        next_url = get_redirect_url(request, next_url, "/")
+
+        if "oauth_tokens" not in request.session:
+            logout(request)
+            return redirect(next_url)
+
+        token = request.session["oauth_tokens"]  # type: dict
+
+        # Server returns always 200.
+        requests.post(settings.KOMPASSI_OAUTH2_REVOKE_URL, {
+            "token": token["access_token"],
+            "token_type_hint": "access_token",
+            "client_id": settings.KOMPASSI_OAUTH2_CLIENT_ID,
+            "client_secret": settings.KOMPASSI_OAUTH2_CLIENT_SECRET,
+        })
+
+        del request.session["oauth_tokens"]
+        logout(request)
+
+        return redirect(next_url)

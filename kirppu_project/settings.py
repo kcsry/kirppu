@@ -201,6 +201,7 @@ KOMPASSI_API_APPLICATION_PASSWORD = 'fill me in'
 
 KOMPASSI_OAUTH2_AUTHORIZATION_URL = 'http://kompassi.dev:8001/oauth2/authorize'
 KOMPASSI_OAUTH2_TOKEN_URL = 'http://kompassi.dev:8001/oauth2/token'
+KOMPASSI_OAUTH2_REVOKE_URL = 'http://kompassi.dev:8001/oauth2/revoke'
 KOMPASSI_OAUTH2_CLIENT_ID = 'kompassi_insecure_test_client_id'
 KOMPASSI_OAUTH2_CLIENT_SECRET = 'kompassi_insecure_test_client_secret'
 KOMPASSI_OAUTH2_SCOPE = ['read']
@@ -212,7 +213,11 @@ KOMPASSI_API_V2_USER_INFO_URL = 'http://kompassi.dev:8001/api/v2/people/me'
 # ---------+-----------------+------------------+---------+-------------
 # Internal | /accounts/login | /accounts/logout | False   | Yes
 # Embed    | project url     | project url      | False   | No
-# OAUTH2   | /oauth2/login   | /accounts/logout | True    | Yes
+# OAUTH2#1 | /oauth2/login   | /oauth2/logout   | True    | Yes
+# OAUTH2#2 | /oauth2/login   | /accounts/logout | True    | Yes
+#
+# #1: Use this if server supports token revokation. KOMPASSI_OAUTH2_REVOKE_URL is needed.
+# #2: Use this if server does not support token revokation.
 
 # This can be left to default if kirppuauth module is installed.
 # LOGIN_URL = '/oauth2/login'
