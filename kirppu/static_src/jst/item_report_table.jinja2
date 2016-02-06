@@ -9,6 +9,7 @@
         <th class="receipt_price numeric">price</th>
         <th class="receipt_status">status</th>
         <th class="receipt_abandoned">abandoned</th>
+        {% if extra_col %}<th class="receipt_extra_col"></th>{% endif %}
     </tr>
 </thead>
 <tbody>
@@ -23,23 +24,25 @@
     {% endif %}
         <th></th>
         <th></th>
+        {% if extra_col %}<th class="receipt_extra_col"></th>{% endif %}
     </tr>
 {% endmacro %}
 {% if items and topSum %}
     {{ total(sum) }}
 {% endif %}
 {% for item in items %}
-    <tr>
+    <tr class="table_row_{{ loop.index }}">
         <td class="receipt_index numeric">{{ loop.index }}</td>
         <td class="receipt_code">{{ item.code }}</td>
         <td class="receipt_item">{{ item.name }}</td>
         <td class="receipt_price numeric">{{ item.price|displayPrice }}</td>
         <td class="receipt_status">{{ item.state_display }}</td>
         <td class="receipt_abandoned">{{ item.abandoned|yesno|title }}</td>
+        {% if extra_col %}<td class="receipt_extra_col"></td>{% endif %}
     </tr>
 {% else %}
     <tr>
-        <td colspan="6">No items.</td>
+        <td colspan="{% if extra_col %}7{% else %}6{% endif %}">No items.</td>
     </tr>
 {% endfor %}
 {% if items %}
