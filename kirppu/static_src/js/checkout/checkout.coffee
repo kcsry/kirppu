@@ -13,6 +13,7 @@ class Config
     overseerLink: null
     statsLink: null
     dialog: null
+    printButton: null
   uiRef:
     container: null
     body: null
@@ -26,6 +27,7 @@ class Config
     overseerLink: null
     statsLink: null
     dialog: null
+    printButton: null
   settings:
     itemPrefix: null
     counterPrefix: ":*"

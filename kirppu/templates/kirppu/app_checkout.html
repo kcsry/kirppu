@@ -53,6 +53,9 @@
     <h1>
         <span id="mode_glyph" class="glyphicon glyphicon-euro"></span>
         <span id="title_text">Checkout</span>
+        <button id="print_button" type="button" class="btn btn-success btn-sm hidden-print hidden">
+            <span class="glyphicon glyphicon-print"></span>
+        </button>
         <small id="subtitle_text" class="hidden-print"></small>
     </h1>
     <div class="alert alert-danger alert-off" role="alert" id="error_container"></div>
@@ -61,7 +64,7 @@
         <div class="form-group">
             <label class="sr-only" for="code_input">Code</label>
             <input type="text" id="code_input" class="form-control"
-                   placeholder="Barcode" autofocus="true"/>
+                   placeholder="Barcode" autofocus="autofocus"/>
         </div>
     </form>
 
@@ -86,6 +89,7 @@
     CheckoutConfig.uiId.overseerLink= "overseer_link";
     CheckoutConfig.uiId.statsLink= "stats_link";
     CheckoutConfig.uiId.dialog = "dialog_template";
+    CheckoutConfig.uiId.printButton = "print_button";
     CheckoutConfig.settings.purchaseMax = {{ PURCHASE_MAX }};
     CURRENCY = {{ CURRENCY|json }};
     DateTimeFormatter.locales = "{{ LANGUAGE_CODE }}";

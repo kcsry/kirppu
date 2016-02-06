@@ -53,6 +53,7 @@ class @VendorReport extends CheckoutMode
     )
 
   onGotItems: (items, boxes) =>
+    @switcher.setPrintable()
     for [name, states, hidePrint, isExpectedSum] in tables
       matchingItems = (i for i in items when states[i.state]?)
       rendered_table = Templates.render("item_report_table",

@@ -84,13 +84,23 @@ class @ModeSwitcher
     @cfg.uiRef.stateText.text(@_currentMode.title())
     @cfg.uiRef.subtitleText.text(@_currentMode.subtitle() or "")
     @cfg.uiRef.codeInput.attr("placeholder", @_currentMode.inputPlaceholder())
+    @setPrintable(false)
     return
+
+  setPrintable: (printable=true) ->
+    btn = @cfg.uiRef.printButton
+    if printable
+      btn.removeClass("hidden")
+    else
+      btn.addClass("hidden")
 
   # Bind functions to HTML elements.
   _bindForm: ->
     form = @cfg.uiRef.codeForm
     form.off("submit")
     form.submit(@_onFormSubmit)
+
+    @cfg.uiRef.printButton.click(-> window.print())
 
   _onFormSubmit: (event) =>
     event.preventDefault()

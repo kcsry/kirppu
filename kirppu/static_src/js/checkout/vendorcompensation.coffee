@@ -69,6 +69,7 @@ class @VendorCompensation extends CheckoutMode
       )
 
   onCompensated: ->
+    @switcher.setPrintable()
     items = @compensableItems
     @compensableItems = []
     for i in items
