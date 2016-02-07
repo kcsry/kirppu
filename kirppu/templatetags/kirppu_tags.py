@@ -1,25 +1,27 @@
 from __future__ import unicode_literals, print_function, absolute_import
-from django.utils.six import text_type, PY2
-import base64
-from collections import OrderedDict
-if PY2:
-    # noinspection PyUnresolvedReferences
-    from cStringIO import StringIO
-else:
-    from io import BytesIO as StringIO
 
-import re
 import json
+import re
+from collections import OrderedDict
 
-import pubcode
 from django import template
-from django.template import Node, TemplateSyntaxError
 from django.conf import settings
+from django.template import Node, TemplateSyntaxError
 from django.utils.encoding import force_text
 from django.utils.functional import memoize
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.six import text_type, PY2
+
+import pubcode
 from ..models import UIText, UserAdapter
+
+if PY2:
+    # noinspection PyUnresolvedReferences
+    from cStringIO import StringIO
+else:
+    # noinspection PyUnresolvedReferences
+    from io import BytesIO as StringIO
 
 register = template.Library()
 
