@@ -20,6 +20,12 @@
         {% csrf_token %}
         <div class="panel panel-default">
             <div class="panel-body">
+                {% if is_registration_closed_for_users %}
+                <div class="alert alert-warning hidden-print" role="alert">
+                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+                    {% trans "Admin note: Registration is closed for users." %}
+                </div>
+                {% endif %}
                 {% load_texts "item_info" %}
             </div>
         </div>

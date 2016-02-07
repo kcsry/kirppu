@@ -395,6 +395,7 @@ def get_items(request, bar_type):
         'profile_url': settings.PROFILE_URL,
 
         'is_registration_open': is_vendor_open(request),
+        'is_registration_closed_for_users': not is_vendor_open(),
         'menu': _vendor_menu_contents(request),
         'Item': Item,
         'CURRENCY': settings.KIRPPU_CURRENCY,
@@ -436,6 +437,7 @@ def get_boxes(request):
         'profile_url': settings.PROFILE_URL,
 
         'is_registration_open': is_vendor_open(request),
+        'is_registration_closed_for_users': not is_vendor_open(),
         'menu': _vendor_menu_contents(request),
         'Item': Item,
         'CURRENCY': settings.KIRPPU_CURRENCY,
