@@ -2,13 +2,12 @@ from __future__ import unicode_literals, print_function, absolute_import
 
 import json
 import re
-from collections import OrderedDict
 
 from django import template
 from django.conf import settings
 from django.template import Node, TemplateSyntaxError
 from django.utils.encoding import force_text
-from django.utils.functional import memoize
+from django.utils.lru_cache import lru_cache
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.six import text_type, PY2
@@ -24,29 +23,6 @@ else:
     from io import BytesIO as StringIO
 
 register = template.Library()
-
-
-class FifoDict(OrderedDict):
-    def __init__(self, *args, **kwargs):
-        self.limit = kwargs.pop("limit", None)
-        OrderedDict.__init__(self, *args, **kwargs)
-        self._remove_oldest()
-
-    def __setitem__(self, key, value):
-        OrderedDict.__setitem__(self, key, value)
-        self._remove_oldest()
-
-    def _remove_oldest(self):
-        if not self.limit:
-            return
-
-        while len(self) > self.limit:
-            self.popitem(last=False)
-
-
-# Limit the size of the dict to a reasonable number so that we don't have
-# millions of dataurls cached.
-barcode_dataurl_cache = FifoDict(limit=50000)
 
 
 @register.simple_tag
@@ -96,7 +72,10 @@ def load_texts(id_, wrap=None):
     return begin + joined.join(texts) + end
 
 
-def generate_dataurl(code, ext, expect_width=143):
+# Limit the size of the dict to a reasonable number so that we don't have
+# millions of dataurls cached.
+@lru_cache(maxsize=50000)
+def get_dataurl(code, ext, expect_width=143):
     if not code:
         return ''
 
@@ -111,7 +90,6 @@ def generate_dataurl(code, ext, expect_width=143):
     assert(expect_width is None or barcode.width(add_quiet_zone=True) == expect_width)
 
     return data_url
-get_dataurl = memoize(generate_dataurl, barcode_dataurl_cache, 2)
 
 
 @register.simple_tag
