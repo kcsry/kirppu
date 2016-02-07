@@ -70,7 +70,7 @@ class @VendorCompensation extends CheckoutMode
     if nItems == 0
       console.error("What? Nothing to compensate?")
       return
-    @buttonForm.empty()
+    @_createProgress(nItems)
 
     # Add table row indices for items (needed to point to the rows at UI).
     for i, index in @compensableItems
@@ -78,6 +78,19 @@ class @VendorCompensation extends CheckoutMode
 
     @_loopResult = []
     @_loopBack(@compensableItems)
+
+
+  _createProgress: (max) ->
+    max--  # Last completing index is length - 1.
+    @buttonForm.empty().append(Templates.render("progress_bar", {
+      max: max
+    }))
+    @_progressMax = max
+    @_progress = @buttonForm.find(".progress-bar")
+
+  _setProgress: (progress) ->
+    @_progress[0].style.width = Math.round(progress * 100 / @_progressMax) + "%"
+    @_progress.attr("aria-valuenow", progress)
 
   # Compensate items by looping over the list of items.
   # Failed items are added to @_loopResult thus it must be set to empty Array before calling this.
@@ -93,6 +106,7 @@ class @VendorCompensation extends CheckoutMode
 
     cb = (glyph, color) => () =>
       status.html("<span class=\"glyphicon glyphicon-#{glyph} text-#{color}\"></span>")
+      @_setProgress(index)
       if index + 1 < list.length
         @_loopBack(list, index + 1)
       else
@@ -120,7 +134,7 @@ class @VendorCompensation extends CheckoutMode
     if nItems == 0
       console.error("What? Nothing to retry?")
       return
-    @buttonForm.empty()
+    @_createProgress(nItems)
 
     list = @_loopResult
     @_loopResult = []

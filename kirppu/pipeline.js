@@ -146,6 +146,7 @@ module.exports.jst = {
             "jst/vendor_info.jinja2",
             "jst/item_receipt_table.jinja2",
             "jst/item_receipt_table_row.jinja2",
+            "jst/progress_bar.jinja2",
         ],
         "output_filename": "checkout_templates.js"
     }
