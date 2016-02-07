@@ -77,7 +77,7 @@ class @VendorCompensation extends CheckoutMode
     table = Templates.render("item_report_table",
       caption: "Compensated Items"
       items: items
-      sum: _.reduce(@compensableItems, ((acc, item) -> acc + item.price), 0)
+      sum: _.reduce(items, ((acc, item) -> acc + item.price), 0)
       topSum: true
     )
     @itemDiv.empty().append(table)
