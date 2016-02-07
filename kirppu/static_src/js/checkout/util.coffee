@@ -88,7 +88,10 @@ safeDisplay = (textRef, message, blinkCount=0) ->
   text = textRef
   cls = "alert-blink"
 
-  text.text(message)
+  if message instanceof $
+    text.html(message)
+  else
+    text.text(message)
   text.removeClass("alert-off")
   return unless blinkCount > 0
 

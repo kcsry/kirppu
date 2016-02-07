@@ -92,6 +92,12 @@ class @VendorCompensation extends CheckoutMode
     @_progress[0].style.width = Math.round(progress * 100 / @_progressMax) + "%"
     @_progress.attr("aria-valuenow", progress)
 
+  _addFailedItem: (jqXHR, item) =>
+    item.error =
+      status: jqXHR.status
+      text: jqXHR.responseText
+    @_loopResult.push(item)
+
   # Compensate items by looping over the list of items.
   # Failed items are added to @_loopResult thus it must be set to empty Array before calling this.
   # The failed items can then be tried again with this function. Note, that @_loopResult must be
@@ -116,7 +122,7 @@ class @VendorCompensation extends CheckoutMode
     Api.item_compensate(code: item.code)
       .done(() => item.state = "CO")
       .done(cb("ok", "success"))
-      .fail(() => @_loopResult.push(item))
+      .fail((jqXHR) => @_addFailedItem(jqXHR, item))
       .fail(cb("remove", "danger"))
 
   # Looping done, choose next action.
@@ -124,8 +130,15 @@ class @VendorCompensation extends CheckoutMode
     if @_loopResult.length > 0
       # Some items failed. Give options to retry or continue/skip.
       @buttonForm.append(@retryButton(), @continueButton("warning", @onSkipFailed))
+      errorList = $("<ul>")
+      for item in @_loopResult
+        text = _.trunc(item.error.text, 100)
+        item = $("<li>").text("Row #{item.row_index} - #{item.code}: HTTP #{item.error.status}: #{text}")
+        errorList.append(item)
+      safeAlert(errorList)
     else
       # All success. Continue to compensation view.
+      safeAlertOff()
       setTimeout((=> @onCompensated()), 1000)
 
   # Start new compensation loop over failed items.
@@ -144,6 +157,7 @@ class @VendorCompensation extends CheckoutMode
   onSkipFailed: =>
     r = confirm("Failed items will not be compensated. Check report. Are you sure to skip failed items?")
     if r
+      safeAlertOff()
       @onCompensated()
 
   onCompensated: ->
