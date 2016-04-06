@@ -59,7 +59,7 @@ class @VendorReport extends CheckoutMode
       rendered_table = Templates.render("item_report_table",
          caption: name
          items: matchingItems
-         sum: _.reduce(@compensableItems, ((acc, item) -> acc + item.price), 0)
+         sum: _.reduce(matchingItems, ((acc, item) -> acc + item.price), 0)
          hidePrint: hidePrint
          isExpectedSum: isExpectedSum
          hideSumInPrint: true
