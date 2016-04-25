@@ -24,6 +24,8 @@ from django.shortcuts import (
     render,
     get_object_or_404,
 )
+from django.utils import timezone
+from django.utils.formats import localize
 from django.utils.six import string_types
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -60,6 +62,8 @@ def index(request):
 @require_http_methods(["POST"])
 @require_vendor_open
 def item_add(request):
+    if not Vendor.has_accepted(request.user):
+        return HttpResponseBadRequest()
     vendor = Vendor.get_vendor(request.user)
     form = VendorItemForm(request.POST)
     if not form.is_valid():
@@ -225,6 +229,8 @@ def all_to_print(request):
 @require_http_methods(["POST"])
 @require_vendor_open
 def box_add(request):
+    if not Vendor.has_accepted(request.user):
+        return HttpResponseBadRequest()
     vendor = Vendor.get_vendor(request.user)
     form = VendorBoxForm(request.POST)
     if not form.is_valid():
@@ -393,6 +399,7 @@ def get_items(request, bar_type):
         'tag_type': tag_type,
 
         'profile_url': settings.PROFILE_URL,
+        'terms_accepted': vendor.terms_accepted if vendor is not None else False,
 
         'is_registration_open': is_vendor_open(request),
         'is_registration_closed_for_users': not is_vendor_open(),
@@ -435,6 +442,7 @@ def get_boxes(request):
         'boxes': boxes,
 
         'profile_url': settings.PROFILE_URL,
+        'terms_accepted': vendor.terms_accepted if vendor is not None else False,
 
         'is_registration_open': is_vendor_open(request),
         'is_registration_closed_for_users': not is_vendor_open(),
@@ -717,6 +725,23 @@ def vendor_view(request):
         'CURRENCY': settings.KIRPPU_CURRENCY,
     }
     return render(request, "kirppu/app_frontpage.html", context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def accept_terms(request):
+    vendor = Vendor.get_vendor(request.user)
+    if vendor.terms_accepted is None:
+        vendor.terms_accepted = timezone.now()
+        vendor.save()
+
+    result = timezone.template_localtime(vendor.terms_accepted)
+    result = localize(result)
+
+    return HttpResponse(json.dumps({
+        "result": "ok",
+        "time": result,
+    }), "application/json")
 
 
 @login_required

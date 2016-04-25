@@ -15,7 +15,8 @@
 
 {% block body %}
     {% if is_registration_open %}
-    <form id="box-add-form" method="POST" class="form-horizontal">
+    {% include "kirppu/terms_form.html" %}
+    <form id="box-add-form" method="POST" class="form-horizontal" data-require-terms="true">
         {% csrf_token %}
         <div class="panel panel-default">
             <div class="panel-body">
@@ -104,7 +105,7 @@
     {# Output a single box_container as a template for javascript. #}
     {% include 'kirppu/app_boxes_box.html' with box_type="template" description="" price="0" id="" vendor_id="" adult="" locked=False %}
 
-    <div id="boxes">
+    <div id="boxes" data-require-terms="true">
         {# Output a template container for every non-printed box user has. #}
         {% for b in boxes %}
             {% include 'kirppu/app_boxes_box.html' with box_type="normal" box_id=b.id description=b.description price=b.get_price_fmt item_count=b.get_item_count item_type=b.get_item_type_for_display item_adult=b.get_item_adult printed=b.is_printed %}

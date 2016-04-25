@@ -1,0 +1,78 @@
+{% load i18n %}
+<form id="terms-form" method="post" class="form-horizontal hidden hidden-print" style="width: 19cm">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{% trans "Terms of use" %}</h3>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="terms-accepted"{% if terms_accepted %} disabled="disabled" checked="checked"{% endif %}/>
+                        {% trans "I accept Kirppu terms of use:" %}
+                    </label>
+                </div>
+            </div>
+            <p><em>
+{% blocktrans %}All items in the market are at own risk of vendor. The event is not responsible for lost nor damaged items.{% endblocktrans %}
+            </em></p><p id="terms-message"></p>
+            {% if not terms_accepted %}
+            <button class="btn btn-default" type="button" id="terms-accept" disabled="disabled">{% trans "Accept" %}</button>
+            {% endif %}
+            <p id="terms-template"{% if not terms_accepted %} class="hidden"{% endif %}>
+                {% with terms_accepted|default:"%s" as terms_time %}
+                    {% blocktrans %}Accepted at {{ terms_time }}.{% endblocktrans %}
+                {% endwith %}
+            </p>
+        </div>
+    </div>
+
+    {#<!--suppress ThisExpressionReferencesGlobalObjectJS -->#}
+    <script type="text/javascript"><!--
+        (function() {
+            var cb = $("#terms-accepted");
+            var btn = $("#terms-accept");
+
+            cb.change(function () {
+                if ($(this).prop("checked")) {
+                    btn.prop("disabled", "");
+                } else {
+                    btn.prop("disabled", "disabled");
+                }
+            });
+            btn.click(function () {
+                cb.prop("disabled", "disabled");
+                btn.prop("disabled", "disabled");
+
+                $.post("{% url "kirppu:accept_terms" %}"
+                ).done(function(data) {
+                    if (data.result == "ok") {
+                        btn.addClass("hidden");
+                        var tpl = $("#terms-template").removeClass("hidden");
+                        tpl.text(tpl.text().replace("%s", data.time));
+                        $("#terms-style").text("");
+                    } else {
+                        $("#terms-message").text("error 1");
+                        console.error(data);
+                    }
+                }).fail(function(jqXHR) {
+                    var text;
+                    if (jqXHR.responseJSON) {
+                        text = jqXHR.responseJSON.message || "error 2";
+                    } else {
+                        text = "error 3";
+                    }
+                    $("#terms-message").text(text);
+                });
+            });
+            $("#terms-form").removeClass("hidden");
+        }).call(this);
+    //--></script>
+</form>
+{% if not terms_accepted %}
+<style type="text/css" id="terms-style">
+    *[data-require-terms=true] {
+        display: none;
+    }
+</style>
+{% endif %}

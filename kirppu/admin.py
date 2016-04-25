@@ -86,7 +86,7 @@ _user_link = ref_link_accessor("user", ugettext(u"User"))
 class VendorAdmin(admin.ModelAdmin):
     ordering = ('user__first_name', 'user__last_name')
     search_fields = ['id', 'user__first_name', 'user__last_name', 'user__username']
-    list_display = ['id', _user_link]
+    list_display = ['id', _user_link, "terms_accepted"]
 
     @staticmethod
     def _can_set_user(request, obj):
@@ -101,7 +101,9 @@ class VendorAdmin(admin.ModelAdmin):
         return super(VendorAdmin, self).get_form(request, obj, **kwargs)
 
     def get_readonly_fields(self, request, obj=None):
-        return ["user"] if obj is not None and not self._can_set_user(request, obj) else []
+        fields = ["user"] if obj is not None and not self._can_set_user(request, obj) else []
+        fields.append("terms_accepted")
+        return fields
 
 admin.site.register(Vendor, VendorAdmin)
 

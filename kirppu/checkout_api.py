@@ -379,6 +379,9 @@ def box_list(request, vendor):
 
 @ajax_func('^item/checkin$')
 def item_checkin(request, code):
+    item = _get_item_or_404(code)
+    if not item.vendor.terms_accepted:
+        raise AjaxError(500, _(u"Vendor has not accepted terms!"))
     return item_mode_change(request, code, Item.ADVERTISED, Item.BROUGHT)
 
 

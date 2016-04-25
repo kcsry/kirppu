@@ -222,6 +222,7 @@ class Clerk(models.Model):
 @python_2_unicode_compatible
 class Vendor(models.Model):
     user = models.OneToOneField(User)
+    terms_accepted = models.DateTimeField(null=True)
 
     def __repr__(self):
         return u'<Vendor: {0}>'.format(text_type(self.user))
@@ -238,8 +239,16 @@ class Vendor(models.Model):
             vendor.save()
         return user.vendor
 
+    @classmethod
+    def has_accepted(cls, user):
+        vendor = cls.get_vendor(user, create=False)
+        if not vendor:
+            return False
+        return vendor.terms_accepted is True
+
     as_dict = model_dict_fn(
         'id',
+        terms_accepted=lambda self: format_datetime(self.terms_accepted) if self.terms_accepted is not None else None,
         username=lambda self: self.user.username,
         name=lambda self: "%s %s" % (self.user.first_name, self.user.last_name),
         email=lambda self: self.user.email,
