@@ -16,6 +16,7 @@
 
 {% block body %}
     {% if is_registration_open %}
+    {% include "kirppu/noscript_help.html" %}
     {% include "kirppu/terms_form.html" %}
     <form id="item-add-form" method="POST" class="form-horizontal" data-require-terms="true">
         {% csrf_token %}
