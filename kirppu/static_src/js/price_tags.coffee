@@ -162,6 +162,7 @@ bindFormEvents = ->
     addItem();
     return false;
   )
+  $("#item-add-controls").on("submit", -> false)
 
   $('#print_items').click(-> window.print())
 

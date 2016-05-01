@@ -1,4 +1,4 @@
-#item-add-form {
+#item-add-form, #item-add-controls {
     width: 19cm;
 }
 
@@ -295,7 +295,7 @@ a.item_button_printed {
     .item_container > button {
         display: none;
     }
-    #item-add-form {
+    #item-add-form, #item-add-controls {
         display: none;
     }
     #printed_items {
