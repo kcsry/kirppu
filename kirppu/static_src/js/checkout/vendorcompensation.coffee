@@ -155,7 +155,7 @@ class @VendorCompensation extends CheckoutMode
 
   # Skip failed items and proceed to compensation with only the successful items.
   onSkipFailed: =>
-    r = confirm("Failed items will not be compensated. Check report. Are you sure to skip failed items?")
+    r = confirm("Failed items will not be compensated. Check report for updated sum. Are you sure to skip failed items?")
     if r
       safeAlertOff()
       @onCompensated()
