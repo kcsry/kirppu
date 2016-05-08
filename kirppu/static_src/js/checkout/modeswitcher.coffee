@@ -101,6 +101,9 @@ class @ModeSwitcher
     form.submit(@_onFormSubmit)
 
     @cfg.uiRef.printButton.click(-> window.print())
+    @cfg.uiRef.codeInput.on("keypress", capsLockDetect((capsOn) =>
+      $("#capslock_container")[if capsOn then "removeClass" else "addClass"]("alert-off")
+    ))
 
   _onFormSubmit: (event) =>
     event.preventDefault()

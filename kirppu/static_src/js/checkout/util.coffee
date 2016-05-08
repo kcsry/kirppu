@@ -74,7 +74,6 @@ stillBlinking = false
   codeUC = code.toUpperCase()
   if codeUC != code
     code = codeUC
-    safeWarning("CAPS-LOCK may be ON!")
   return code
 
 
