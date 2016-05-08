@@ -542,6 +542,7 @@ def overseer_view(request):
         context = {
             'itemtypes': Item.ITEMTYPE,
             'itemstates': Item.STATE,
+            'CURRENCY': settings.KIRPPU_CURRENCY,
         }
         return render(request, 'kirppu/app_overseer.html', context)
 

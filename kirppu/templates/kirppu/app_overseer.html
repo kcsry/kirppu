@@ -1,4 +1,4 @@
-{% extends "kirppu/common.html" %}{% load i18n %}
+{% extends "kirppu/common.html" %}{% load i18n kirppu_tags %}
 
 {% load static %}
 
@@ -86,6 +86,8 @@
     CheckoutConfig.uiId.statsLink= "ignored";
     CheckoutConfig.uiId.dialog = "ignored";
     CheckoutConfig.uiId.printButton = "ignored";
+
+    CURRENCY = {{ CURRENCY|json }};
 
     DateTimeFormatter.locales = "{{ LANGUAGE_CODE }}";
     DateTimeFormatter.timeZone = "{{ TIME_ZONE }}";
