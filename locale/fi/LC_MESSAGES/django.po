@@ -219,6 +219,9 @@ msgstr "Ei valmis"
 msgid "Finished"
 msgstr "Valmis"
 
+msgid "Suspended"
+msgstr "Pysäytetty"
+
 msgid "Aborted"
 msgstr "Keskeytetty"
 

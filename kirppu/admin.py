@@ -16,7 +16,7 @@ from .forms import (
     VendorSetSelfForm,
 )
 
-from .models import Clerk, Item, Vendor, Counter, Receipt, ReceiptItem, UIText, ItemStateLog, Box
+from .models import Clerk, Item, Vendor, Counter, Receipt, ReceiptItem, ReceiptNote, UIText, ItemStateLog, Box
 
 __author__ = 'jyrkila'
 
@@ -228,9 +228,16 @@ class ReceiptItemAdmin(admin.TabularInline):
     readonly_fields = ["item"]
 
 
+class ReceiptNoteAdmin(admin.TabularInline):
+    model = ReceiptNote
+    ordering = ["timestamp"]
+    readonly_fields = ["clerk", "text"]
+
+
 class ReceiptAdmin(admin.ModelAdmin):
     inlines = [
         ReceiptItemAdmin,
+        ReceiptNoteAdmin,
     ]
     ordering = ["clerk", "start_time"]
     list_display = ["__str__", "status", "total", "counter", "sell_time"]

@@ -109,6 +109,11 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
     return decorator
 
 
+# Must be after ajax_func to ensure circular import works. Must be imported, for part to be included at all in the API.
+# noinspection PyUnresolvedReferences
+from .api import receipt as receipt_api
+
+
 def checkout_js(request):
     """
     Render the JavaScript file that defines the AJAX API functions.
@@ -241,6 +246,18 @@ def item_find(request, code):
     item = _get_item_or_404(code)
     value = item.as_dict()
     if "available" in request.GET:
+        if item.state == Item.STAGED:
+            suspended = item.receipt_set.filter(status=Receipt.SUSPENDED)
+            if len(suspended) == 1:
+                suspended = suspended[0]
+                value.update(receipt=suspended.as_dict())
+                import json
+                return HttpResponse(
+                    json.dumps(value),
+                    status=RET_LOCKED,
+                    content_type='application/json',
+                )
+
         message = raise_if_item_not_available(item)
         if message is not None:
             value.update(_message=message)
@@ -510,7 +527,7 @@ def receipt_abort(request):
     receipt_id = request.session["receipt"]
     receipt = get_object_or_404(Receipt, pk=receipt_id)
 
-    if receipt.status != Receipt.PENDING:
+    if receipt.status not in (Receipt.PENDING, Receipt.SUSPENDED):
         raise AjaxError(RET_CONFLICT)
 
     # For all ADDed items, add REMOVE-entries and return the real Item's back to available.
@@ -557,12 +574,17 @@ def receipt_get(request):
     """
     if "id" in request.GET:
         receipt_id = int(request.GET.get("id"))
+        query = {"pk": receipt_id}
     elif "item" in request.GET:
         item_code = request.GET.get("item")
-        receipt_id = get_object_or_404(ReceiptItem, item__code=item_code, action=ReceiptItem.ADD).receipt_id
+        query = {
+            "receiptitem__item__code": item_code,
+            "receiptitem__action": ReceiptItem.ADD,
+            "status": Receipt.FINISHED,
+        }
     else:
         raise AjaxError(RET_BAD_REQUEST)
-    return _get_receipt_data_with_items(pk=receipt_id)
+    return _get_receipt_data_with_items(**query)
 
 
 @ajax_func('^receipt/activate$')
@@ -579,7 +601,7 @@ def receipt_activate(request):
 
 @ajax_func('^receipt/list$', overseer=True)
 def receipt_list(request):
-    receipts = Receipt.objects.filter(status=Receipt.PENDING)
+    receipts = Receipt.objects.filter(status__in=(Receipt.PENDING, Receipt.SUSPENDED))
     return list(map(lambda i: i.as_dict(), receipts))
 
 

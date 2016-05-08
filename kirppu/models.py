@@ -732,11 +732,13 @@ class ReceiptItem(models.Model):
 class Receipt(models.Model):
     PENDING = "PEND"
     FINISHED = "FINI"
+    SUSPENDED = "SUSP"
     ABORTED = "ABRT"
 
     STATUS = (
         (PENDING, _(u"Not finished")),
         (FINISHED, _(u"Finished")),
+        (SUSPENDED, _(u"Suspended")),
         (ABORTED, _(u"Aborted")),
     )
 
@@ -749,11 +751,7 @@ class Receipt(models.Model):
     sell_time = models.DateTimeField(null=True, blank=True)
 
     def items_list(self):
-        items = []
-        for item in self.items.all():
-            items.append(item.as_dict())
-
-        return items
+        return [row.as_dict() for row in self.items.order_by("receiptitem__add_time")]
 
     @property
     def total_cents(self):
@@ -767,7 +765,8 @@ class Receipt(models.Model):
         start_time=lambda self: format_datetime(self.start_time),
         sell_time=lambda self: format_datetime(self.sell_time) if self.sell_time is not None else None,
         clerk=lambda self: self.clerk.as_dict(),
-        counter=lambda self: self.counter.name
+        counter=lambda self: self.counter.name,
+        notes=lambda self: [note.as_dict() for note in self.receiptnote_set.order_by("timestamp")],
     )
 
     def calculate_total(self):
@@ -779,6 +778,23 @@ class Receipt(models.Model):
 
     def __str__(self):
         return text_type(self.start_time) + u" / " + text_type(self.clerk)
+
+
+@python_2_unicode_compatible
+class ReceiptNote(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    clerk = models.ForeignKey(Clerk)
+    text = models.TextField()
+    receipt = models.ForeignKey(Receipt)
+
+    as_dict = model_dict_fn(
+        "text",
+        timestamp=lambda self: format_datetime(self.timestamp),
+        clerk=lambda self: self.clerk.as_dict(),
+    )
+
+    def __str__(self):
+        return text_type(self.timestamp) + u" / " + text_type(self.clerk) + u" @ " + text_type(self.receipt_id)
 
 
 class ItemStateLogManager(models.Manager):

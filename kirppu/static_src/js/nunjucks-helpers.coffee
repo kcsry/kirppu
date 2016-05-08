@@ -19,6 +19,9 @@ yesnoHelper = (bValue, choices) ->
     sValue = "undefined"
   return choices[Math.min(YES_NO_INDICES[sValue], choices.length - 1)]
 
+dateTime = (value) ->
+  return DateTimeFormatter.datetime(value)
+
 
 class @Templates
   @render: (name, context={}) ->
@@ -35,4 +38,5 @@ class @Templates
       env = Templates._env = nunjucks.configure()
       env.addFilter("displayPrice", displayPrice)
       env.addFilter("yesno", yesnoHelper)
+      env.addFilter("dateTime", dateTime)
     return Templates._env

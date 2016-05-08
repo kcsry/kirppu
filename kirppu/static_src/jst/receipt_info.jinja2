@@ -1,0 +1,25 @@
+{# -*- mode: django; -*- #}
+<dl class="dl-horizontal">
+    <dt>began</dt>
+    <dd>{{ receipt.start_time|dateTime }}</dd>
+
+    <dt>sum</dt>
+    <dd>{{ receipt.total|displayPrice }}</dd>
+
+    <dt>status</dt>
+    <dd>{{ receipt.status_display }}</dd>
+
+    <dt>clerk</dt>
+    <dd>{{ receipt.clerk.print }}</dd>
+
+    <dt>counter</dt>
+    <dd>{{ receipt.counter }}</dd>
+</dl>
+{% if receipt.notes and receipt.notes.length %}
+    <h4>Notes</h4>
+    <ul>
+{% for note in receipt.notes %}
+        <li>{{ note.timestamp|dateTime }} <em>{{ note.clerk.print }}</em>: {{ note.text }}</li>
+{% endfor %}
+    </ul>
+{% endif %}

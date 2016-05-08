@@ -13,10 +13,12 @@ class @CounterMode extends ItemCheckoutMode
   title: -> "Checkout"
   commands: ->
     abort: ["abort", "Abort receipt"]
+    suspend: ["suspend", "Suspend active receipt"]
     print: ["print", "Print receipt / return"]
 
   actions: -> [
     [@commands.abort,                 @onAbortReceipt]
+    [@commands.suspend,               @onSuspendReceipt]
     [@commands.print,                 @onPrintReceipt]
     [@commands.logout,                @onLogout]
     [@cfg.settings.payPrefix,         @onPayReceipt]
@@ -51,7 +53,7 @@ class @CounterMode extends ItemCheckoutMode
     if not @_receipt.isActive()
       Api.item_find(code: code, available: true).then(
         () => @startReceipt(code)
-        (jqXHR) => @showError(jqXHR.status, jqXHR.responseText, code)
+        (jqXHR) => @_onInitialItemFailed(jqXHR, code)
       )
     else
       @reserveItem(code)
@@ -69,20 +71,47 @@ class @CounterMode extends ItemCheckoutMode
   restoreReceipt: (receipt) ->
     @switcher.setMenuEnabled(false)
     Api.receipt_activate(id: receipt.id).then(
-      (data) =>
-        @_receipt.start(data)
-        @_receipt.total = data.total
-
-        @receipt.body.empty()
-        for item in data.items
-          price = if item.action == "DEL" then -item.price else item.price
-          @addRow(item.code, item.name, price)
-        @_setSum(@_receipt.total)
-
+      (data) => @_startOldReceipt(data)
       () =>
         alert("Could not restore receipt!")
         @switcher.setMenuEnabled(true)
     )
+
+  _startOldReceipt: (data) ->
+    throw "Still active receipt!" if @_receipt.isActive()
+
+    @_receipt.start(data)
+    @_receipt.total = data.total
+
+    @receipt.body.empty()
+    for item in data.items
+      price = if item.action == "DEL" then -item.price else item.price
+      @addRow(item.code, item.name, price)
+    @_setSum(@_receipt.total)
+
+  _onInitialItemFailed: (jqXHR, code) =>
+    if jqXHR.status == 423
+      # Locked. Is it suspended?
+      if jqXHR.responseJSON? and jqXHR.responseJSON.receipt?
+        receipt = jqXHR.responseJSON.receipt
+        dialog = new Dialog()
+        dialog.title.text("Continue suspended receipt?")
+        table = Templates.render("receipt_info", receipt: receipt)
+        dialog.body.append(table)
+        dialog.addPositive().text("Continue").click(() =>
+          console.log("Continuing receipt #{receipt.id}")
+          Api.receipt_continue(code: code).then((data) =>
+            @_startOldReceipt(data)
+          )
+        )
+        dialog.addNegative().text("Cancel")
+        dialog.show(
+          keyboard: false
+          backdrop: "static"
+        )
+        return
+    # else:
+    @showError(jqXHR.status, jqXHR.responseText, code)
 
   startReceipt: (code) ->
     @_receipt.start()
@@ -215,6 +244,30 @@ class @CounterMode extends ItemCheckoutMode
         safeAlert("Error ending receipt!")
         return true
     )
+
+  onSuspendReceipt: =>
+    unless @_receipt.isActive() then return
+
+    dialog = new Dialog()
+    dialog.title.text("Suspend receipt?")
+    form = Templates.render("receipt_suspend_form")
+    dialog.body.append(form)
+
+    dialog.addPositive().text("Suspend").click(() =>
+      Api.receipt_suspend(note: $("#suspend_note", dialog.body).val()).then(
+        (receipt) =>
+          @_receipt.end(receipt)
+
+          @addRow(null, "Suspended", null).addClass("warning")
+          @switcher.setMenuEnabled(true)
+          @receiptSum.setEnabled(false)
+          @notifySuccess()
+
+        () => safeAlert("Error suspending receipt!")
+      )
+    )
+    dialog.addNegative().text("Cancel")
+    dialog.show()
 
   onPrintReceipt: =>
     unless @_receipt.data?

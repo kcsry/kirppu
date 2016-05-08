@@ -218,6 +218,9 @@ msgstr "Not finished"
 msgid "Finished"
 msgstr "Finished"
 
+msgid "Suspended"
+msgstr "Suspended"
+
 msgid "Aborted"
 msgstr "Aborted"
 
