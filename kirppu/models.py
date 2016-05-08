@@ -53,7 +53,10 @@ class UserAdapterBase(object):
 
     @classmethod
     def print_name(cls, user):
-        name = u"{0} {1}.".format(user.first_name, user.last_name[:1]).strip()
+        last_name_part = user.last_name[:1]
+        if last_name_part and last_name_part != user.last_name:
+            last_name_part += "."
+        name = u"{0} {1}".format(user.first_name, last_name_part).strip()
         if len(name) == 0:
             return user.username
         return name.title()
