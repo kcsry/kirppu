@@ -84,7 +84,7 @@
     CheckoutConfig.uiId.subtitleText = "ignored";
     CheckoutConfig.uiId.overseerLink= "ignored";
     CheckoutConfig.uiId.statsLink= "ignored";
-    CheckoutConfig.uiId.dialog = "ignored";
+    CheckoutConfig.uiId.dialog = "dialog_template";
     CheckoutConfig.uiId.printButton = "ignored";
 
     CURRENCY = {{ CURRENCY|json }};
@@ -119,4 +119,6 @@
         new ModeSwitcher();
     });
 //--></script>
+
+    {% include "kirppu/dialog_template.html" %}
 {% endblock %}

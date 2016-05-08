@@ -20,6 +20,23 @@ class @ReceiptFindMode extends CheckoutMode
   onResult: (receipts) =>
     @receiptList.body.empty()
     for receipt, index in receipts
-      @receiptList.append(receipt, index + 1)
+      row = @receiptList.append(receipt, index + 1)
+      row.on("click", @_showReceiptFn(receipt.id))
     if receipts.length == 0
       @receiptList.no_results()
+
+  _showReceiptFn: (receiptId) =>
+    () =>
+      dialog = new Dialog()
+      dialog.addPositive().text("Ok")
+      dialog.title.text("Receipt details")
+
+      Api.receipt_get(id: receiptId).then(
+        (data) =>
+          result = Templates.render("receipt_info", receipt: data)
+          dialog.body.append(result)
+
+        (jqXHR) =>
+          dialog.body.text(jqXHR.responseText)
+      )
+      dialog.show()

@@ -21,7 +21,7 @@ class @ReceiptList extends ResultTable
     ], true))
 
   append: (item, index) ->
-    row = $("<tr>")
+    row = $("<tr class='receipt_tr_clickable'>")
     row.append(@generate("td", [
       index
       item.counter
@@ -31,6 +31,7 @@ class @ReceiptList extends ResultTable
       item.status_display
     ]))
     @body.append(row)
+    return row
 
   no_results: () ->
     @body.append($("<tr>").append([
