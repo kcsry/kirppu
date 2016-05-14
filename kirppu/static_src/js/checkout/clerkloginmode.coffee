@@ -50,15 +50,21 @@ class @ClerkLoginMode extends CheckoutMode
     dialog.title.html('<span class="glyphicon glyphicon-warning-sign text-warning"></span> Multiple receipts active')
 
     info = $("<div>").text("Please select receipt, which you want to continue.")
-    table_body = $("<tbody>")
+    table = $ Templates.render("receipt_list_table_simple",
+      items: receipts
+    )
 
-    @_createReceiptTable(receipts, dialog, table_body)
+    # This may not use => version of function, as `this` of the row is needed.
+    $("tbody tr", table).click(() ->
+      table.find(".success").removeClass("success")
+      $(this).addClass("success")
+      dialog.setEnabled(dialog.btnPositive)
+    )
 
-    table = $('<table class="table table-striped table-hover table-condensed">').append(table_body)
     dialog.body.append(info, table)
 
     dialog.addPositive().text("Select").click(() =>
-      index = table_body.find(".success").data("index")
+      index = $("tbody", table).find(".success").data("index")
       if index?
         console.log("Selected #{ 1 + index }: " + receipts[index].start_time)
         @switcher.switchTo(CounterMode, receipts[index])
@@ -71,23 +77,3 @@ class @ClerkLoginMode extends CheckoutMode
       keyboard: false
       backdrop: "static"
     )
-
-  _createReceiptTable: (receipts, dialog, table_body) ->
-    for receipt, i in receipts
-      row = $("<tr>")
-      row.append(
-        $("<td>").text(i + 1),
-        $("<td>").text(DateTimeFormatter.datetime(receipt.start_time)),
-        $("<td>").text(receipt.total.formatCents()),
-        $("<td>").text(receipt.counter),
-      )
-
-      # This may not use => version, as `this` id needed.
-      row.click(() ->
-        table_body.find(".success").removeClass("success")
-        $(this).addClass("success")
-        dialog.setEnabled(dialog.btnPositive)
-      )
-      row.data("index", i)
-      table_body.append(row)
-    return table_body
