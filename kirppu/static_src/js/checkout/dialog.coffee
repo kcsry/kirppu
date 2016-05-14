@@ -12,6 +12,11 @@ class @Dialog
 
     @btnPositive = null
     @btnNegative = null
+    @container.on("hidden.bs.modal", () =>
+      @title.empty()
+      @body.empty()
+      @buttons.empty()
+    )
 
   # Add positive button to the dialog.
   # @param clazz [optional] Initial btn-class to set to the button.
