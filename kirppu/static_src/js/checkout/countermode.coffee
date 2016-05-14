@@ -127,7 +127,7 @@ class @CounterMode extends ItemCheckoutMode
         @reserveItem(code)
 
       (jqHXR) =>
-        safeAlert("Could not start receipt!")
+        safeAlert("Could not start receipt! " + jqHXR.responseText)
         # Rollback.
         @_receipt.end()
         @switcher.setMenuEnabled(true)
@@ -221,8 +221,8 @@ class @CounterMode extends ItemCheckoutMode
         @switcher.setMenuEnabled(true)
         @receiptSum.setEnabled(false)
 
-      () =>
-        safeAlert("Error ending receipt!")
+      (jqXHR) =>
+        safeAlert("Error ending receipt! " + jqXHR.responseText)
         return true
     )
 
@@ -240,8 +240,8 @@ class @CounterMode extends ItemCheckoutMode
         @receiptSum.setEnabled(false)
         @notifySuccess()
 
-      () =>
-        safeAlert("Error ending receipt!")
+      (jqXHR) =>
+        safeAlert("Error ending receipt! " + jqXHR.responseText)
         return true
     )
 

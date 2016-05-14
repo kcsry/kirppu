@@ -1,5 +1,6 @@
 from __future__ import unicode_literals, print_function, absolute_import
 import inspect
+import logging
 
 from django.contrib.auth import get_user_model
 
@@ -45,6 +46,8 @@ from .ajax_util import (
     RET_AUTH_FAILED,
     RET_LOCKED,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def raise_if_item_not_available(item):
@@ -198,8 +201,14 @@ def clerk_login(request, code, counter):
             clerk_data["receipt"] = "MULTIPLE"
         else:
             receipt = active_receipts[0]
+            if "receipt" in request.session:
+                logging.warning("Previous receipt reference found in session at login.")
             request.session["receipt"] = receipt.pk
             clerk_data["receipt"] = receipt.as_dict()
+
+    elif "receipt" in request.session:
+        logging.warning("Stale receipt reference found in session at login.")
+        del request.session["receipt"]
 
     request.session["clerk"] = clerk.pk
     request.session["clerk_token"] = clerk.access_key
@@ -222,7 +231,7 @@ def clerk_logout_fn(request):
 
     :param request: Active request, for session access.
     """
-    for key in ["clerk", "clerk_token", "counter"]:
+    for key in ["clerk", "clerk_token", "counter", "receipt"]:
         request.session.pop(key, None)
 
 
@@ -450,8 +459,15 @@ def vendor_find(request, q):
 
 @ajax_func('^receipt/start$', atomic=True)
 def receipt_start(request):
+    if "receipt" in request.session:
+        raise AjaxError(RET_CONFLICT, "There is already an active receipt on this counter!")
+
+    clerk = get_clerk(request)
+    if Receipt.objects.filter(clerk=clerk, status=Receipt.PENDING).count() > 0:
+        raise AjaxError(RET_CONFLICT, "There is already an active receipt!")
+
     receipt = Receipt()
-    receipt.clerk = get_clerk(request)
+    receipt.clerk = clerk
     receipt.counter = get_counter(request)
 
     receipt.save()
@@ -524,6 +540,9 @@ def receipt_finish(request):
 
 @ajax_func('^receipt/abort$', atomic=True)
 def receipt_abort(request):
+    if "receipt" not in request.session:
+        raise AjaxError(RET_CONFLICT, "There is no receipt to end.")
+
     receipt_id = request.session["receipt"]
     receipt = get_object_or_404(Receipt, pk=receipt_id)
 
