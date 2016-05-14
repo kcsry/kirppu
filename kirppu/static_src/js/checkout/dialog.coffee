@@ -10,8 +10,7 @@ class @Dialog
     @body.empty()
     @buttons.empty()
 
-    @btnPositive = null
-    @btnNegative = null
+    @_buttonList = []
     @container.on("hidden.bs.modal", () =>
       @title.empty()
       @body.empty()
@@ -22,16 +21,24 @@ class @Dialog
   # @param clazz [optional] Initial btn-class to set to the button.
   # @return [$] Button object.
   addPositive: (clazz="success") ->
-    @btnPositive = @_button(clazz)
+    return @addButton(clazz)
 
   # Add negative button to the dialog.
   # @param clazz [optional] Initial btn-class to set to the button.
   # @return [$] Button object.
   addNegative: (clazz="default") ->
-    @btnNegative = @_button(clazz)
+    return @addButton(clazz)
+
+  # Add a button to the dialog.
+  # @params clazz Initial btn-class to set to the button.
+  # @return [$] Button object.
+  addButton: (clazz) ->
+    btn = @_button(clazz)
+    @_buttonList.push(btn)
+    return btn
 
   # Enable or disable a button.
-  # @param button [$] Button reference (like `dialog.btnPositive`).
+  # @param button [$] Button reference from `add*` functions.
   # @param enabled [Boolean, optional] Whether to enable (default) or disable the button.
   setEnabled: (button, enabled = true) ->
     if enabled
@@ -42,9 +49,7 @@ class @Dialog
   # Display the dialog. This will append added buttons to `buttons`-container.
   # @param modalArgs [optional] Arguments for BootStrap `modal()`.
   show: (modalArgs=keyboard:false) ->
-    @buttons.append(@btnPositive) if @btnPositive?
-    @buttons.append(@btnNegative) if @btnNegative?
-
+    @buttons.append(@_buttonList)
     @container.modal(modalArgs)
 
   _button: (clazz="default") ->

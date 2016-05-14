@@ -54,22 +54,24 @@ class @ClerkLoginMode extends CheckoutMode
       items: receipts
     )
 
+    buttonPositive = dialog.addPositive().text("Select")
+
     # This may not use => version of function, as `this` of the row is needed.
     $("tbody tr", table).click(() ->
       table.find(".success").removeClass("success")
       $(this).addClass("success")
-      dialog.setEnabled(dialog.btnPositive)
+      dialog.setEnabled(buttonPositive)
     )
 
     dialog.body.append(info, table)
 
-    dialog.addPositive().text("Select").click(() =>
+    buttonPositive.click(() =>
       index = $("tbody", table).find(".success").data("index")
       if index?
         console.log("Selected #{ 1 + index }: " + receipts[index].start_time)
         @switcher.switchTo(CounterMode, receipts[index])
     )
-    dialog.setEnabled(dialog.btnPositive, false)
+    dialog.setEnabled(buttonPositive, false)
     dialog.addNegative().text("Cancel").click(() -> console.log("Cancelled receipt selection"))
 
     # Don't close with keyboard ESC, or by clicking outside dialog.
