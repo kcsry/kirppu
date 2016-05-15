@@ -28,7 +28,7 @@ register = template.Library()
 @register.simple_tag
 def load_text(id_):
     try:
-        return UIText.objects.get(identifier=id_).text
+        return mark_safe(UIText.objects.get(identifier=id_).text)
     except UIText.DoesNotExist:
         if settings.DEBUG:
             return format_html(
@@ -69,7 +69,7 @@ def load_texts(id_, wrap=None):
         else:
             joined = wrap
 
-    return begin + joined.join(texts) + end
+    return mark_safe(begin + joined.join(texts) + end)
 
 
 # Limit the size of the dict to a reasonable number so that we don't have

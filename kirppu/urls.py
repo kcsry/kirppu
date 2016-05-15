@@ -62,7 +62,7 @@ if settings.KIRPPU_CHECKOUT_ACTIVE:  # Only activate API when checkout is active
     _urls.append(url('^api/checkout.js$', checkout_js, name='checkout_js'))
 
 _urls.extend([
-    url(func.url, func.pkg + "." + func.name, name=func.view_name)
+    url(func.url, func.func, name=func.view_name)
     for func in itervalues(AJAX_FUNCTIONS)
     if func.is_public or settings.KIRPPU_CHECKOUT_ACTIVE
 ])

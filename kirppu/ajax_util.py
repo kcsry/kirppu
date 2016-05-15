@@ -46,6 +46,7 @@ class AjaxFunc(object):
     def __init__(self, func, url, method, is_public=False):
         self.name = func.__name__               # name of the view function
         self.pkg = func.__module__
+        self.func = func
         self.url = url                          # url for url config
         self.view_name = 'api_' + self.name     # view name for url config
         self.view = 'kirppu:' + self.view_name  # view name for templates

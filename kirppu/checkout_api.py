@@ -1,4 +1,5 @@
 from __future__ import unicode_literals, print_function, absolute_import
+import functools
 import inspect
 import logging
 
@@ -99,7 +100,6 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
         (args, _, _, defaults) = inspect.getargspec(func)
 
         func = require_user_features(counter, clerk, overseer, staff_override=staff_override)(func)
-        _register_ajax_func(AjaxFunc(func, url, method, staff_override))
 
         fn = ajax_util.ajax_func(
             method,
@@ -108,6 +108,12 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
         )(func)
         if atomic:
             fn = transaction.atomic(fn)
+
+        # Copy name etc from original function to wrapping function.
+        # The wrapper must be the one referred from urlconf.
+        fn = functools.wraps(func)(fn)
+        _register_ajax_func(AjaxFunc(fn, url, method, staff_override))
+
         return fn
     return decorator
 

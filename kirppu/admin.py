@@ -198,13 +198,13 @@ class ClerkAdmin(admin.ModelAdmin):
         else:
             super(ClerkAdmin, self).save_model(request, obj, form, change)
 
-    def log_addition(self, request, object):
+    def log_addition(self, request, object, *args):
         if isinstance(object, ClerkGenerationForm):
             # Log all added items separately.
             for item in object.saved_list:
-                super(ClerkAdmin, self).log_addition(request, item)
+                super(ClerkAdmin, self).log_addition(request, item, *args)
             return
-        super(ClerkAdmin, self).log_addition(request, object)
+        super(ClerkAdmin, self).log_addition(request, object, *args)
 
 
 admin.site.register(Clerk, ClerkAdmin)
