@@ -247,7 +247,7 @@ class Vendor(models.Model):
         vendor = cls.get_vendor(user, create=False)
         if not vendor:
             return False
-        return vendor.terms_accepted is True
+        return vendor.terms_accepted is not None
 
     as_dict = model_dict_fn(
         'id',
