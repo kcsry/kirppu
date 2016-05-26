@@ -235,12 +235,20 @@ class Vendor(models.Model):
 
     @classmethod
     def get_vendor(cls, user, create=True):
-        if not hasattr(user, 'vendor'):
+        """
+        Get the Vendor for the given user.
+
+        If `create` is truthy and a vendor does not exist, one is implicitly created.
+
+        :return: A Vendor, or None.
+        :rtype: Vendor|None
+        """
+        try:
+            return user.vendor
+        except Vendor.DoesNotExist:
             if not create:
-                return Vendor.objects.none()
-            vendor = cls(user=user)
-            vendor.save()
-        return user.vendor
+                return None
+            return cls.objects.create(user=user)
 
     @classmethod
     def has_accepted(cls, user):
