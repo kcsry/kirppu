@@ -305,8 +305,7 @@ bindItemToggleEvents = (tag, code) ->
   getNextType = (tag_type) ->
     tag_type = switch tag_type
       when "tiny" then "short"
-      when "short" then "long"
-      when "long" then "tiny"
+      when "short" then "tiny"
       else "short"
     return tag_type
 

@@ -11,7 +11,7 @@
     "pk": 2,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Adding and editing</h3>\n<p>\nAdd item by filling name, price and type of your item to form below, and predd 'Add item' button. The size of the tag can be set with size-selection. The long size is meant for bookmark-like tags.\n</p>\n<p>\nMultiple similar items or even whole series can be added by using Suffix-field. For example by setting name to 'Manga' and suffix to '1-3' items named 'Manga 1', 'Manga 2' and 'Manga 3' would be added. Using the same name with suffix 'Blue Red' would add items 'Manga Blue' and 'Manga Red'.\n</p>\n<p>\nWhen you have added item, its price tag will appear in the list below form. You can edit item details by typing into the fields in the tag. By using button <span class=\"glyphicon glyphicon-resize-horizontal\"></span> within the tag you can adjust the size of the tag.\n</p>",
+      "text": "<h3>Adding and editing</h3>\n<p>\nAdd item by filling name, price and type of your item to form below, and predd 'Add item' button. The size of the tag can be set with size-selection.\n</p>\n<p>\nMultiple similar items or even whole series can be added by using Suffix-field. For example by setting name to 'Manga' and suffix to '1-3' items named 'Manga 1', 'Manga 2' and 'Manga 3' would be added. Using the same name with suffix 'Blue Red' would add items 'Manga Blue' and 'Manga Red'.\n</p>\n<p>\nWhen you have added item, its price tag will appear in the list below form. You can edit item details by typing into the fields in the tag. By using button <span class=\"glyphicon glyphicon-resize-horizontal\"></span> within the tag you can adjust the size of the tag.\n</p>",
       "identifier": "item_info1"
     }
   },

@@ -361,7 +361,7 @@ class VendorItemForm(forms.Form):
     price = ItemPriceField()
     tag_type = forms.ChoiceField(
         required=False,
-        choices=Item.TYPE,
+        choices=[i for i in Item.TYPE if i != "long"],
     )
     suffixes = SuffixField()
     item_type = forms.ChoiceField(
