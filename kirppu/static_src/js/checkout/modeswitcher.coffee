@@ -160,8 +160,8 @@ class @ModeSwitcher
     menu = @cfg.uiRef.modeMenu
     setClass(menu, "disabled", not enabled)
     setClass(menu.find("a:first"), "disabled", not enabled)
-    setClass(@cfg.uiRef.overseerLink, "disabled", not enabled, (e) -> not e.hasClass("hidden"))
-    setClass(@cfg.uiRef.statsLink, "disabled", not enabled, (e) -> not e.hasClass("hidden"))
+    setCheckedLinkEnabled(@cfg.uiRef.overseerLink, enabled and not @cfg.uiRef.overseerLink.hasClass("hidden"))
+    setCheckedLinkEnabled(@cfg.uiRef.statsLink, enabled and not @cfg.uiRef.statsLink.hasClass("hidden"))
 
   # Enable or disable the link to overseer dashboard
   #
@@ -169,6 +169,7 @@ class @ModeSwitcher
   # the link.
   setOverseerVisible: (enabled) ->
     setClass(@cfg.uiRef.overseerLink, 'hidden', not enabled)
+    setCheckedLinkEnabled(@cfg.uiRef.overseerLink, enabled and not @cfg.uiRef.overseerLink.hasClass("disabled"))
 
   # Enable or disable the link to stats
   #
@@ -176,6 +177,7 @@ class @ModeSwitcher
   # the link.
   setStatsVisible: (enabled) ->
     setClass(@cfg.uiRef.statsLink, 'hidden', not enabled)
+    setCheckedLinkEnabled(@cfg.uiRef.statsLink, enabled and not @cfg.uiRef.statsLink.hasClass("disabled"))
 
 
 # Populate values from commands of Modes for all 'data-command-value' and 'data-command-title' elements in DOM.

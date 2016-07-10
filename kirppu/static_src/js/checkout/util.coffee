@@ -137,14 +137,19 @@ class @RefreshButton
     # Replace href of the 'a' element with dummy.
     target = element.href
     element.href = "javascript:void(0)"
-
-    # Add click script that ensures the element or its parent is not disabled when 'a' is clicked.
-    $(element).on("click", (event) ->
-      if not ($(event.target).hasClass("disabled") and $(event.target.parentElement).hasClass("disabled"))
-        # Not disabled, change location.
-        window.location = target
-    )
+    $(element).data("link-target", target)
   )
+
+@setCheckedLinkEnabled = (link, enabled) ->
+  container = $(link)
+  setClass(container, "disabled", not enabled)
+
+  theLink = container.find("a")
+  if enabled
+    theLink.attr("href", theLink.data("link-target"))
+  else
+    theLink.attr("href", "javascript:void(0)")
+
 
 # PrintF-style formatter that actually formats just replacements.
 # Placeholders not found in args are assumed empty. Double-percent is converted to single percent sign.
