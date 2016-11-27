@@ -108,13 +108,13 @@
             g1.updateOptions({file: '{% url "kirppu:api_stats_registration_data" %}', ylabel: 'Items'});
         };
         document.getElementById('graph1_prices_link').onclick = function() {
-            g1.updateOptions({file: '{% url "kirppu:api_stats_registration_data_prices" %}', ylabel: 'Euros'});
+            g1.updateOptions({file: '{% url "kirppu:api_stats_registration_data_prices" %}', ylabel: 'Prices sum'});
         };
         document.getElementById('graph2_items_link').onclick = function() {
             g2.updateOptions({file: '{% url "kirppu:api_stats_sales_data" %}', ylabel: 'Items'});
         };
         document.getElementById('graph2_prices_link').onclick = function() {
-            g2.updateOptions({file: '{% url "kirppu:api_stats_sales_data_prices" %}', ylabel: 'Euros'});
+            g2.updateOptions({file: '{% url "kirppu:api_stats_sales_data_prices" %}', ylabel: 'Prices sum'});
         };
 
         //populateChart(g1, Api.stats_registration_data);
@@ -144,7 +144,7 @@
         {% endfor %}
     </table>
 
-    <h2>Number of euros:</h2>
+    <h2>Sum of prices:</h2>
     <table class="table table-striped sum_table">
         <tr>
             <th></th>

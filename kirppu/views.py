@@ -652,9 +652,9 @@ def stats_view(request):
             return self._items.filter(state=item_state).count()
 
         def init_properties(self):
-            for property in self._properties:
-                value = str(self.values[property])
-                setattr(self, property, value)
+            for _property in self._properties:
+                value = str(self.values[_property])
+                setattr(self, _property, value)
 
     class ItemEuros(ItemStats):
         def get_value(self, item_state):
@@ -663,9 +663,10 @@ def stats_view(request):
             return price
 
         def init_properties(self):
-            for property in self._properties:
-                value = "{}&nbsp;&euro;".format(self.values[property])
-                setattr(self, property, value)
+            currency = settings.KIRPPU_CURRENCY["html"]
+            for _property in self._properties:
+                value = "{}{}{}".format(currency[0], self.values[_property], currency[1])
+                setattr(self, _property, value)
 
     number_of_items = [ItemCounts(item_type, type_name) for item_type, type_name in Item.ITEMTYPE]
     number_of_items.append(ItemCounts.sum_stats(number_of_items))
