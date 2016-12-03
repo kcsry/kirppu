@@ -240,7 +240,7 @@ class ReceiptAdmin(admin.ModelAdmin):
         ReceiptNoteAdmin,
     ]
     ordering = ["clerk", "start_time"]
-    list_display = ["__str__", "status", "total", "counter", "sell_time"]
+    list_display = ["__str__", "status", "total", "counter", "end_time"]
     form = ReceiptAdminForm
     search_fields = ["items__code", "items__name"]
 

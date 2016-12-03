@@ -289,7 +289,7 @@ class ItemRemoveForm(forms.Form):
         code = cleaned_data["item"]
 
         item = Item.objects.get(code=code)
-        receipt = Receipt.objects.get(pk=receipt_id)
+        receipt = Receipt.objects.get(pk=receipt_id, type=Receipt.TYPE_PURCHASE)
 
         last_added_item = ReceiptItem.objects\
             .filter(receipt=receipt, item=item, action=ReceiptItem.ADD)\

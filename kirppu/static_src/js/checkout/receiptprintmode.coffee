@@ -53,7 +53,7 @@ class @ReceiptPrintMode extends CheckoutMode
       @receipt.body.append(row)
 
     sellStr = dPrintF(@constructor.strSell,
-      d: DateTimeFormatter.datetime(receiptData.sell_time)
+      d: DateTimeFormatter.datetime(receiptData.end_time)
       c: receiptData.clerk.print
     )
 

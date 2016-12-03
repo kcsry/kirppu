@@ -750,13 +750,22 @@ class Receipt(models.Model):
         (ABORTED, _(u"Aborted")),
     )
 
+    TYPE_PURCHASE = "PURCHASE"
+    TYPE_COMPENSATION = "COMPENSATION"
+
+    TYPES = (
+        (TYPE_PURCHASE, _(u"Purchase")),
+        (TYPE_COMPENSATION, _(u"Compensation")),
+    )
+
     items = models.ManyToManyField(Item, through=ReceiptItem)
     status = models.CharField(choices=STATUS, max_length=16, default=PENDING)
     total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     clerk = models.ForeignKey(Clerk)
     counter = models.ForeignKey(Counter)
     start_time = models.DateTimeField(auto_now_add=True)
-    sell_time = models.DateTimeField(null=True, blank=True)
+    end_time = models.DateTimeField(null=True, blank=True)
+    type = models.CharField(choices=TYPES, max_length=16, default=TYPE_PURCHASE)
 
     def items_list(self):
         return [row.as_dict() for row in self.items.order_by("receiptitem__add_time")]
@@ -767,14 +776,16 @@ class Receipt(models.Model):
 
     as_dict = model_dict_fn(
         "status",
+        "type",
         id="pk",
         total="total_cents",
         status_display=lambda self: self.get_status_display(),
         start_time=lambda self: format_datetime(self.start_time),
-        sell_time=lambda self: format_datetime(self.sell_time) if self.sell_time is not None else None,
+        end_time=lambda self: format_datetime(self.end_time) if self.end_time is not None else None,
         clerk=lambda self: self.clerk.as_dict(),
         counter=lambda self: self.counter.name,
         notes=lambda self: [note.as_dict() for note in self.receiptnote_set.order_by("timestamp")],
+        type_display=lambda self: self.get_type_display(),
     )
 
     def calculate_total(self):
@@ -785,7 +796,11 @@ class Receipt(models.Model):
         return self.total
 
     def __str__(self):
-        return text_type(self.start_time) + u" / " + text_type(self.clerk)
+        return "{type}: {start} / {clerk}".format(
+            type=self.get_type_display(),
+            start=text_type(self.start_time),
+            clerk=text_type(self.clerk),
+        )
 
 
 @python_2_unicode_compatible

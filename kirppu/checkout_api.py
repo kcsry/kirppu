@@ -200,7 +200,7 @@ def clerk_login(request, code, counter):
     clerk_data['overseer_enabled'] = clerk.user.has_perm('kirppu.oversee')
     clerk_data['stats_enabled'] = clerk.user.is_staff or clerk.user.has_perm('kirppu.oversee')
 
-    active_receipts = Receipt.objects.filter(clerk=clerk, status=Receipt.PENDING)
+    active_receipts = Receipt.objects.filter(clerk=clerk, status=Receipt.PENDING, type=Receipt.TYPE_PURCHASE)
     if active_receipts:
         if len(active_receipts) > 1:
             clerk_data["receipts"] = [receipt.as_dict() for receipt in active_receipts]
@@ -262,7 +262,7 @@ def item_find(request, code):
     value = item.as_dict()
     if "available" in request.GET:
         if item.state == Item.STAGED:
-            suspended = item.receipt_set.filter(status=Receipt.SUSPENDED)
+            suspended = item.receipt_set.filter(status=Receipt.SUSPENDED, type=Receipt.TYPE_PURCHASE)
             if len(suspended) == 1:
                 suspended = suspended[0]
                 value.update(receipt=suspended.as_dict())
@@ -353,6 +353,7 @@ def item_edit(request, code, price, state):
             Item.MISSING,
             Item.RETURNED,
         }
+        # Removing already sold item from receipt.
         if item.state not in unsold_states and item.state != Item.STAGED and state in unsold_states:
             # Need to remove item from receipt.
             receipt_ids = ReceiptItem.objects.filter(
@@ -469,12 +470,13 @@ def receipt_start(request):
         raise AjaxError(RET_CONFLICT, "There is already an active receipt on this counter!")
 
     clerk = get_clerk(request)
-    if Receipt.objects.filter(clerk=clerk, status=Receipt.PENDING).count() > 0:
+    if Receipt.objects.filter(clerk=clerk, status=Receipt.PENDING, type=Receipt.TYPE_PURCHASE).count() > 0:
         raise AjaxError(RET_CONFLICT, "There is already an active receipt!")
 
     receipt = Receipt()
     receipt.clerk = clerk
     receipt.counter = get_counter(request)
+    receipt.type = Receipt.TYPE_PURCHASE
 
     receipt.save()
 
@@ -486,7 +488,7 @@ def receipt_start(request):
 def item_reserve(request, code):
     item = _get_item_or_404(code)
     receipt_id = request.session["receipt"]
-    receipt = get_object_or_404(Receipt, pk=receipt_id)
+    receipt = get_object_or_404(Receipt, pk=receipt_id, type=Receipt.TYPE_PURCHASE)
 
     message = raise_if_item_not_available(item)
     if item.state in (Item.ADVERTISED, Item.BROUGHT, Item.MISSING):
@@ -527,11 +529,11 @@ def item_release(request, code):
 @ajax_func('^receipt/finish$', atomic=True)
 def receipt_finish(request):
     receipt_id = request.session["receipt"]
-    receipt = get_object_or_404(Receipt, pk=receipt_id)
+    receipt = get_object_or_404(Receipt, pk=receipt_id, type=Receipt.TYPE_PURCHASE)
     if receipt.status != Receipt.PENDING:
         raise AjaxError(RET_CONFLICT)
 
-    receipt.sell_time = now()
+    receipt.end_time = now()
     receipt.status = Receipt.FINISHED
     receipt.save()
 
@@ -550,7 +552,7 @@ def receipt_abort(request):
         raise AjaxError(RET_CONFLICT, "There is no receipt to end.")
 
     receipt_id = request.session["receipt"]
-    receipt = get_object_or_404(Receipt, pk=receipt_id)
+    receipt = get_object_or_404(Receipt, pk=receipt_id, type=Receipt.TYPE_PURCHASE)
 
     if receipt.status not in (Receipt.PENDING, Receipt.SUSPENDED):
         raise AjaxError(RET_CONFLICT)
@@ -574,7 +576,7 @@ def receipt_abort(request):
 
     # End the receipt. (Must be done after previous updates, so calculate_total calculates
     # correct sum.)
-    receipt.sell_time = now()
+    receipt.end_time = now()
     receipt.status = Receipt.ABORTED
     receipt.calculate_total()
     receipt.save()
@@ -584,6 +586,7 @@ def receipt_abort(request):
 
 
 def _get_receipt_data_with_items(**kwargs):
+    kwargs.setdefault("type", Receipt.TYPE_PURCHASE)
     receipt = get_object_or_404(Receipt, **kwargs)
     receipt_items = ReceiptItem.objects.filter(receipt_id=receipt.pk).order_by("add_time")
 
@@ -619,14 +622,15 @@ def receipt_activate(request):
     """
     clerk = request.session["clerk"]
     receipt_id = int(request.POST.get("id"))
-    data = _get_receipt_data_with_items(pk=receipt_id, clerk__id=clerk, status=Receipt.PENDING)
+    data = _get_receipt_data_with_items(pk=receipt_id, clerk__id=clerk, status=Receipt.PENDING,
+                                        type=Receipt.TYPE_PURCHASE)
     request.session["receipt"] = receipt_id
     return data
 
 
-@ajax_func('^receipt/list$', overseer=True)
-def receipt_list(request):
-    receipts = Receipt.objects.filter(status__in=(Receipt.PENDING, Receipt.SUSPENDED))
+@ajax_func('^receipt/pending', overseer=True)
+def receipt_pending(request):
+    receipts = Receipt.objects.filter(status__in=(Receipt.PENDING, Receipt.SUSPENDED), type=Receipt.TYPE_PURCHASE)
     return list(map(lambda i: i.as_dict(), receipts))
 
 

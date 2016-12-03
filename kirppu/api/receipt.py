@@ -13,7 +13,7 @@ def receipt_suspend(request, note):
     receipt_id = request.session["receipt"]
     receipt = get_object_or_404(Receipt, pk=receipt_id)
 
-    if receipt.status != Receipt.PENDING:
+    if receipt.status != Receipt.PENDING or receipt.type != Receipt.TYPE_PURCHASE:
         raise AjaxError(RET_CONFLICT)
 
     if note:
@@ -33,6 +33,7 @@ def receipt_continue(request, code):
     clerk = request.session["clerk"]
     item = Item.get_item_by_barcode(code)
     receipt = get_object_or_404(Receipt, status=Receipt.SUSPENDED,
+                                type=Receipt.TYPE_PURCHASE,
                                 receiptitem__item=item, receiptitem__action=ReceiptItem.ADD)
 
     receipt.status = Receipt.PENDING
