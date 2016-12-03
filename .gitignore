@@ -6,3 +6,4 @@ kirppu_project/local_settings.py
 node_modules
 /KirppuVenv*/
 kirppu/static/kirppu/*
+kirppu/static_src/js/api_stub.js
