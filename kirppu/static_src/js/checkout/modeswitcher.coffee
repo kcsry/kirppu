@@ -60,10 +60,15 @@ class @ModeSwitcher
   #
   # @param mode [CheckoutMode, class] Class of new mode.
   # @param args... [] Arguments for the mode constructor.
-  switchTo: (mode, params=null) ->
+  switchTo: (mode, params...) ->
     if @_currentMode? then @_currentMode.exit()
     @setMenuEnabled(true)
-    @_currentMode = new mode(@, @cfg, params)
+
+    if params.length == 0
+      params.push(null)  # Old behaviour was to pass a single null if no parameters were given.
+    params.unshift(null, @, @cfg)  # null is .apply() weirdness.
+    @_currentMode = new (mode.bind.apply(mode, params))   # NOTE: Needs ECMAScript 5!
+
     safeAlertOff()
 
     @cfg.uiRef.container.removeClass().addClass('container').addClass('color-mode')
