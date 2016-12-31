@@ -87,7 +87,6 @@ class @VendorCompensation extends CheckoutMode
 
 
   _createProgress: (max) ->
-    max--  # Last completing index is length - 1.
     @buttonForm.empty().append(Templates.render("progress_bar", {
       max: max
     }))
@@ -118,7 +117,7 @@ class @VendorCompensation extends CheckoutMode
 
     cb = (glyph, color) => () =>
       status.html("<span class=\"glyphicon glyphicon-#{glyph} text-#{color}\"></span>")
-      @_setProgress(index)
+      @_setProgress(index + 1)
       if index + 1 < list.length
         @_loopBack(list, index + 1)
       else
