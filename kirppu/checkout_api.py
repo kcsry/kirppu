@@ -424,9 +424,56 @@ def item_checkout(request, code):
                             _(u"Item was not brought to event."))
 
 
-@ajax_func('^item/compensate$')
+@ajax_func('^item/compensate/start$')
+def item_compensate_start(request):
+    if "compensation_pk" in request.session:
+        raise AjaxError(RET_CONFLICT, _(u"Already compensating"))
+
+    clerk = Clerk.objects.get(pk=request.session["clerk"])
+    counter = Counter.objects.get(pk=request.session["counter"])
+
+    receipt = Receipt()
+    receipt.clerk = clerk
+    receipt.counter = counter
+    receipt.type = Receipt.TYPE_COMPENSATION
+    receipt.save()
+
+    request.session["compensation_pk"] = receipt.pk
+
+    return receipt.as_dict()
+
+
+@ajax_func('^item/compensate$', atomic=True)
 def item_compensate(request, code):
-    return item_mode_change(request, code, Item.SOLD, Item.COMPENSATED)
+    if "compensation_pk" not in request.session:
+        raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
+    receipt_pk = request.session["compensation_pk"]
+    receipt = Receipt.objects.get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
+
+    item = _get_item_or_404(code)
+    item_dict = item_mode_change(request, code, Item.SOLD, Item.COMPENSATED)
+
+    ReceiptItem.objects.create(item=item, receipt=receipt)
+    receipt.calculate_total()
+    receipt.save()
+
+    return item_dict
+
+
+@ajax_func('^item/compensate/end')
+def item_compensate_end(request):
+    if "compensation_pk" not in request.session:
+        raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
+
+    receipt_pk = request.session["compensation_pk"]
+    receipt = Receipt.objects.get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
+    receipt.status = Receipt.FINISHED
+    receipt.end_time = now()
+    receipt.save()
+
+    del request.session["compensation_pk"]
+
+    return receipt.as_dict()
 
 
 @ajax_func('^vendor/get$', method='GET')

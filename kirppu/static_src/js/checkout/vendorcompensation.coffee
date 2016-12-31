@@ -76,8 +76,14 @@ class @VendorCompensation extends CheckoutMode
     for i, index in @compensableItems
       i.row_index = index + 1
 
-    @_loopResult = []
-    @_loopBack(@compensableItems)
+    Api.item_compensate_start()
+      .done(=>
+        @_loopResult = []
+        @_loopBack(@compensableItems)
+      )
+      .fail((jqXHR) =>
+        safeAlert("Failed to start compensation: #{jqXHR.status}: #{jqXHR.responseText}")
+      )
 
 
   _createProgress: (max) ->
@@ -170,11 +176,23 @@ class @VendorCompensation extends CheckoutMode
         items.push(item)
     @compensableItems = []
 
-    table = Templates.render("item_report_table",
-      caption: "Compensated Items"
-      items: items
-      sum: _.reduce(items, ((acc, item) -> acc + item.price), 0)
-      topSum: true
-    )
-    @itemDiv.empty().append(table)
-    @buttonForm.empty().append(@continueButton())
+    sum = _.reduce(items, ((acc, item) -> acc + item.price), 0)
+
+    Api.item_compensate_end()
+      .done((receiptCopy) =>
+        if receiptCopy.total != sum
+          safeAlert("Totals do not match: server said #{displayPrice(receiptCopy.total)}, below is #{displayPrice(sum)}")
+          @buttonForm.empty().append(@continueButton())
+        else
+          table = Templates.render("item_report_table",
+            caption: "Compensated Items"
+            items: items
+            sum: _.reduce(items, ((acc, item) -> acc + item.price), 0)
+            topSum: true
+          )
+          @itemDiv.empty().append(table)
+          @buttonForm.empty().append(@continueButton())
+      )
+      .fail((jqXHR) =>
+        safeAlert("Receipt ending failed! #{jqXHR.status}: #{jqXHR.responseText}")
+      )
