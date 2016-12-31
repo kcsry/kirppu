@@ -184,14 +184,7 @@ class @VendorCompensation extends CheckoutMode
           safeAlert("Totals do not match: server said #{displayPrice(receiptCopy.total)}, below is #{displayPrice(sum)}")
           @buttonForm.empty().append(@continueButton())
         else
-          table = Templates.render("item_report_table",
-            caption: "Compensated Items"
-            items: items
-            sum: _.reduce(items, ((acc, item) -> acc + item.price), 0)
-            topSum: true
-          )
-          @itemDiv.empty().append(table)
-          @buttonForm.empty().append(@continueButton())
+          @switcher.switchTo(CompensationReceipt, @vendor, receiptCopy.id, true)
       )
       .fail((jqXHR) =>
         safeAlert("Receipt ending failed! #{jqXHR.status}: #{jqXHR.responseText}")

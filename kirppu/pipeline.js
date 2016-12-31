@@ -89,6 +89,7 @@ module.exports.js = {
             "js/checkout/countermode.coffee",
             "js/checkout/receiptprintmode.coffee",
             "js/checkout/vendorcompensation.coffee",
+            "js/checkout/compensation_receipt.coffee",
             "js/checkout/vendorreport.coffee",
             "js/checkout/vendorfindmode.coffee",
 
@@ -149,6 +150,7 @@ module.exports.jst = {
             "jst/item_receipt_table_row.jinja2",
             "jst/progress_bar.jinja2",
             "jst/receipt_list_table_simple.jinja2",
+            "jst/receipt_list_table_compensations.jinja2",
             "jst/receipt_info.jinja2",
             "jst/receipt_suspend_form.jinja2",
         ],

@@ -7,8 +7,10 @@
         <th class="receipt_code">code</th>
         <th class="receipt_item">item</th>
         <th class="receipt_price numeric">price</th>
+        {% if not hide_status %}
         <th class="receipt_status">status</th>
         <th class="receipt_abandoned">abandoned</th>
+        {% endif %}
         {% if extra_col %}<th class="receipt_extra_col"></th>{% endif %}
     </tr>
 </thead>
@@ -22,8 +24,10 @@
         <th colspan="3">Total:</th>
         <th class="receipt_price numeric">{{ sum|displayPrice }}</th>
     {% endif %}
+    {% if not hide_status %}
         <th></th>
         <th></th>
+    {% endif %}
         {% if extra_col %}<th class="receipt_extra_col"></th>{% endif %}
     </tr>
 {% endmacro %}
@@ -36,8 +40,10 @@
         <td class="receipt_code">{{ item.code }}</td>
         <td class="receipt_item">{{ item.name }}</td>
         <td class="receipt_price numeric">{{ item.price|displayPrice }}</td>
+    {% if not hide_status %}
         <td class="receipt_status">{{ item.state_display }}</td>
         <td class="receipt_abandoned">{{ item.abandoned|yesno|title }}</td>
+    {% endif %}
         {% if extra_col %}<td class="receipt_extra_col"></td>{% endif %}
     </tr>
 {% else %}

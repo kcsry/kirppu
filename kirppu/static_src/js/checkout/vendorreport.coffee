@@ -34,6 +34,11 @@ class @VendorReport extends CheckoutMode
       .addClass('btn btn-primary')
       .attr('value', gettext('Abandon All Items Currently On Display'))
       .click(@onAbandon)
+    compensationsButton = $('<input type="button">')
+      .addClass('btn btn-default')
+      .attr('value', gettext('Compensation receipts'))
+      .click(@onShowCompensations)
+
     @cfg.uiRef.body.append(
       $('<form class="hidden-print">').append(
         compensateButton,
@@ -41,6 +46,8 @@ class @VendorReport extends CheckoutMode
         checkoutButton,
         " ",
         abandonButton,
+        " ",
+        compensationsButton
       )
     )
 
@@ -49,11 +56,20 @@ class @VendorReport extends CheckoutMode
     ).done((items) =>
       Api.box_list(
         vendor: @vendor.id
-      ).done((boxes) => @onGotItems(items, boxes))
+      ).done((boxes) =>
+        Api.receipt_compensated(
+          vendor: @vendor.id
+        ).done((compensations) =>
+          @onGotItems(items, boxes, compensations)
+        )
+      )
     )
 
-  onGotItems: (items, boxes) =>
+  onGotItems: (items, boxes, compensations) =>
     @switcher.setPrintable()
+
+    @_compensations = compensations
+
     for [name, states, hidePrint, isExpectedSum] in tables
       matchingItems = (i for i in items when states[i.state]?)
       rendered_table = Templates.render("item_report_table",
@@ -98,3 +114,35 @@ class @VendorReport extends CheckoutMode
       ).done(=> @switcher.switchTo(VendorReport, @vendor))
     return
 
+  onShowCompensations: =>
+    dlg = new Dialog()
+    dlg.title.text("Compensation receipts")
+
+    # TODO: customized Dialog class for listing things?
+    table = $ Templates.render("receipt_list_table_compensations",
+      items: @_compensations
+    )
+
+    dlg.addNegative().text("Close").addClass("btn-primary")
+    buttonPositive = dlg.addPositive().text("Show")
+
+    $("tbody tr", table).click(() ->
+      table.find(".success").removeClass("success")
+      $(this).addClass("success")
+      dlg.setEnabled(buttonPositive)
+    )
+
+    buttonPositive.click(() =>
+      selected = $("tbody", table).find(".success")
+      index = selected.data("index")
+      selected_id = selected.data("id")
+      receipt_id = @_compensations[index].id
+      if receipt_id != selected_id
+        throw new "ID mismatch!"
+      @switcher.switchTo(CompensationReceipt, @vendor, receipt_id)
+    )
+
+    dlg.setEnabled(buttonPositive, false)
+
+    dlg.body.append(table)
+    dlg.show()

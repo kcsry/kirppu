@@ -650,6 +650,8 @@ def receipt_get(request):
     if "id" in request.GET:
         receipt_id = int(request.GET.get("id"))
         query = {"pk": receipt_id}
+        if request.GET.get("type") == "compensation":
+            query["type"] = Receipt.TYPE_COMPENSATION
     elif "item" in request.GET:
         item_code = request.GET.get("item")
         query = {
@@ -679,6 +681,16 @@ def receipt_activate(request):
 def receipt_pending(request):
     receipts = Receipt.objects.filter(status__in=(Receipt.PENDING, Receipt.SUSPENDED), type=Receipt.TYPE_PURCHASE)
     return list(map(lambda i: i.as_dict(), receipts))
+
+
+@ajax_func('^receipt/compensated', method='GET')
+def receipt_compensated(request, vendor):
+    receipts = Receipt.objects.filter(
+        type=Receipt.TYPE_COMPENSATION,
+        receiptitem__item__vendor_id=int(vendor),
+    ).distinct().order_by("start_time")
+
+    return [receipt.as_dict() for receipt in receipts]
 
 
 @ajax_func('^barcode$', counter=False, clerk=False, staff_override=True)
