@@ -300,7 +300,10 @@ def item_search(request, query, code, vendor, min_price, max_price, item_type, i
         clauses.append(Q(state__in=states))
 
     for part in query.split():
-        clauses.append(Q(name__icontains=part))
+        p = Q(name__icontains=part)
+        if Item.is_item_barcode(part):
+            p |= Q(code=part)
+        clauses.append(p)
 
     try:
         clauses.append(Q(price__gte=float(min_price)))

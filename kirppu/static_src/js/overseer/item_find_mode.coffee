@@ -12,6 +12,7 @@ class @ItemFindMode extends CheckoutMode
     @cfg.uiRef.body.empty()
     @cfg.uiRef.body.append(@searchForm.render())
     @cfg.uiRef.body.append(@itemList.render())
+    @searchForm.searchInput.focus()
 
   glyph: -> "search"
   title: -> "Item Search"

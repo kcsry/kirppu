@@ -508,6 +508,8 @@ class Item(models.Model):
     # Number "one", represented with precision defined by FRACTION(_LEN).
     Q_EXP = Decimal(FRACTION).scaleb(-FRACTION_LEN)
 
+    CODE_BITS = 40
+
     code = models.CharField(
         max_length=16,
         blank=True,
@@ -624,8 +626,8 @@ class Item(models.Model):
 
         return obj
 
-    @staticmethod
-    def gen_barcode():
+    @classmethod
+    def gen_barcode(cls):
         """
         Generate new random barcode for item.
 
@@ -639,13 +641,15 @@ class Item(models.Model):
         :return: The newly generated code.
         :rtype: str
         """
+        checksum_bits = 4
+        data_bits = cls.CODE_BITS - checksum_bits
         key = None
-        i_max = 2 ** 36 - 1
+        i_max = 2 ** data_bits - 1
         while key is None or Item.objects.filter(code=key).exists():
             key = b32_encode(
                 pack([
-                    (36, random.randint(1, i_max)),
-                ], checksum_bits=4)
+                    (data_bits, random.randint(1, i_max)),
+                ], checksum_bits=checksum_bits)
             )
         return key
 
@@ -664,6 +668,18 @@ class Item(models.Model):
         :raise Item.DoesNotExist: If no Item matches the code.
         """
         return Item.objects.get(code=data)
+
+    @classmethod
+    def is_item_barcode(cls, text):
+        """
+        Do a simple test whether given string could be a Item barcode.
+
+        :param text: String to test.
+        :type text: str
+        :return: True if the string could be a (full) barcode. False if not.
+        :rtype: bool
+        """
+        return text.isalnum() and text.isupper() and len(text) == cls.CODE_BITS / 5
 
 
 @python_2_unicode_compatible

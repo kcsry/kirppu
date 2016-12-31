@@ -21,11 +21,11 @@ class @ItemSearchForm
 
     @form = $('<form role="form" class="form-horizontal">').append([
       $('<div class="form-group">').append([
-        $('<label for="item_search_input" class="control-label col-sm-2">Name</label>')
+        $('<label for="item_search_input" class="control-label col-sm-2">Name / Bar code</label>')
         $('<div class="input-group col-sm-10">').append(@searchInput)
       ])
       $('<div class="form-group">').append([
-        $('<label for="item_code_search_input" class="control-label col-sm-2">Bar code</label>')
+        $('<label for="item_code_search_input" class="control-label col-sm-2">Bar code part</label>')
         $('<div class="input-group col-sm-10">').append(@searchCodeInput)
       ])
       $('<div class="form-group">').append([
