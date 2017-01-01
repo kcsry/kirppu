@@ -7,7 +7,7 @@ class @ReceiptFindMode extends CheckoutMode
 
   enter: ->
     super
-    refresh = new RefreshButton(=> Api.receipt_list().done(@onResult))
+    refresh = new RefreshButton(=> Api.receipt_pending().done(@onResult))
     @cfg.uiRef.body.empty()
     @cfg.uiRef.body.append(refresh.render())
     @cfg.uiRef.body.append(@receiptList.render())
