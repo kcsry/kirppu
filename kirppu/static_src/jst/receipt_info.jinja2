@@ -29,10 +29,10 @@
     <tbody>
     {% for item in receipt.items %}
         <tr>
-            <td class="numeric">{{ loop.index }}</td>
+            <td class="numeric">{% if item.action == "DEL" %}-{% endif %}{{ loop.index }}</td>
             <td class="receipt_code">{{ item.code }}</td>
             <td>{{ item.name }}</td>
-            <td class="numeric">{{ item.price|displayPrice }}</td>
+            <td class="numeric">{% if item.action == "DEL" %}-{% endif %}{{ item.price|displayPrice }}</td>
         </tr>
     {% endfor %}
     </tbody>
