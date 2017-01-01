@@ -262,7 +262,7 @@ def item_find(request, code):
     value = item.as_dict()
     if "available" in request.GET:
         if item.state == Item.STAGED:
-            suspended = item.receipt_set.filter(status=Receipt.SUSPENDED, type=Receipt.TYPE_PURCHASE)
+            suspended = item.receipt_set.filter(status=Receipt.SUSPENDED, type=Receipt.TYPE_PURCHASE).distinct()
             if len(suspended) == 1:
                 suspended = suspended[0]
                 value.update(receipt=suspended.as_dict())
