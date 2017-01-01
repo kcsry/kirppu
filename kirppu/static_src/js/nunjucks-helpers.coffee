@@ -1,8 +1,8 @@
 YES_NO_INDICES =
   "true": 0,
   "false": 1,
-  "null": 3,
-  "undefined": 3
+  "null": 2,
+  "undefined": 2
 
 # yesno-helper like one found in django templates.
 yesnoHelper = (bValue, choices) ->
