@@ -4,26 +4,27 @@ from __future__ import unicode_literals, print_function, absolute_import
 import os.path
 from django.utils.translation import ugettext_lazy as _
 
-BASE = os.path.dirname(os.path.abspath(__file__))
-_path = lambda path: os.path.normpath(os.path.join(BASE, '..', path))
+import environ
 
-DEBUG = True
+
+env = environ.Env()
+
+BASE = os.path.dirname(os.path.abspath(__file__))
+
+
+def _path(path):
+    return os.path.normpath(os.path.join(BASE, '..', path))
+
+
+DEBUG = env.bool('DEBUG', default=False)
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': _path('db.sqlite'),              # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',  # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',  # Set to empty string for default.
-    }
+    'default': env.db(default='sqlite:///db.sqlite3'),
 }
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env('ALLOWED_HOSTS', default='').split()
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -90,7 +91,9 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '=#j)-ml7x@a2iw9=#l7%i89l%cry6kch6x49=0%vcasq!!@97-'
+SECRET_KEY = env.str('SECRET_KEY', default=(
+    '' if not DEBUG else '=#j)-ml7x@a2iw9=#l7%i89l%cry6kch6x49=0%vcasq!!@97-'
+))
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -204,17 +207,34 @@ KOMPASSI_USER_MAP_V2 = [
     ('phone', 'phone'),
 ]
 
-KOMPASSI_API_URL = 'http://kompassi.dev:8001/api/v1'
-KOMPASSI_API_APPLICATION_NAME = 'kirppu'
-KOMPASSI_API_APPLICATION_PASSWORD = 'fill me in'
+KOMPASSI_API_APPLICATION_NAME = env(
+    'KOMPASSI_API_APPLICATION_NAME',
+    default='kirppu',
+)
+KOMPASSI_API_APPLICATION_PASSWORD = env(
+    'KOMPASSI_API_APPLICATION_PASSWORD',
+    default='fill me in',
+)
 
-KOMPASSI_OAUTH2_AUTHORIZATION_URL = 'http://kompassi.dev:8001/oauth2/authorize'
-KOMPASSI_OAUTH2_TOKEN_URL = 'http://kompassi.dev:8001/oauth2/token'
-KOMPASSI_OAUTH2_REVOKE_URL = 'http://kompassi.dev:8001/oauth2/revoke'
-KOMPASSI_OAUTH2_CLIENT_ID = 'kompassi_insecure_test_client_id'
-KOMPASSI_OAUTH2_CLIENT_SECRET = 'kompassi_insecure_test_client_secret'
+KOMPASSI_HOST = KOMPASSI_API_URL = env('KOMPASSI_HOST', default='https://kompassi.eu')
+KOMPASSI_OAUTH2_AUTHORIZATION_URL = '{KOMPASSI_HOST}/oauth2/authorize'.format(**locals())
+KOMPASSI_OAUTH2_TOKEN_URL = '{KOMPASSI_HOST}/oauth2/token'.format(**locals())
+
+KOMPASSI_OAUTH2_CLIENT_ID = env(
+    'KOMPASSI_OAUTH2_CLIENT_ID',
+    default='kompassi_insecure_test_client_id',
+)
+
+KOMPASSI_OAUTH2_CLIENT_SECRET = env(
+    'KOMPASSI_OAUTH2_CLIENT_SECRET',
+    default='kompassi_insecure_test_client_secret'
+)
+
 KOMPASSI_OAUTH2_SCOPE = ['read']
-KOMPASSI_API_V2_USER_INFO_URL = 'http://kompassi.dev:8001/api/v2/people/me'
+KOMPASSI_API_V2_USER_INFO_URL = '{KOMPASSI_HOST}/api/v2/people/me'.format(**locals())
+KOMPASSI_API_V2_EVENT_INFO_URL_TEMPLATE = '{kompassi_host}/api/v2/events/{event_slug}'
+KOMPASSI_ADMIN_GROUP = env('KOMPASSI_ADMIN_GROUP', default='admins')
+
 
 # Kirppu authentication configurations:
 #
@@ -232,16 +252,17 @@ KOMPASSI_API_V2_USER_INFO_URL = 'http://kompassi.dev:8001/api/v2/people/me'
 # LOGIN_URL = '/oauth2/login'
 
 # Absolute URL for user "Profile". Leave None if the link should not be displayed.
-PROFILE_URL = None  # 'https://kompassidev.tracon.fi/profile'
+# 'https://kompassidev.tracon.fi/profile'
+PROFILE_URL = env('KOMPASSI_PROFILE_URL', default=None)
 
 # Whether external login and SSO clerk add are enabled (True) or not (False).
-KIRPPU_USE_SSO = False
+KIRPPU_USE_SSO = env.bool('KIRPPU_USE_SSO', default=False)
 
 # If True, admin can change identity.
 KIRPPU_SU_AS_USER = "kirppuauth" in INSTALLED_APPS
 
 # Whether checkout functionality is active or not.
-KIRPPU_CHECKOUT_ACTIVE = False
+KIRPPU_CHECKOUT_ACTIVE = env.bool('KIRPPU_CHECKOUT_ACTIVE', default=False)
 
 # Automatic checkout login. May not be enabled in non-dev environments!
 # If True, first enabled Clerk is automatically used.
