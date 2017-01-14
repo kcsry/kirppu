@@ -79,9 +79,12 @@ Successfully installed django-1.6.10 django-pipeline-1.3.27 pillow-2.4.0 pyBarco
 
 ### Add some example Data for Kirppu.
 ```Text
+# Avoid having to define SECRET_KEY & co
+(venv) ~/kirppu$ export DEBUG=1
+
 # Initialize models for Kirppu in a sqlite database (db.sqlite).
 # Create a new superuser when asked.
-(venv) ~/kirppu$ python manage.py syncdb
+(venv) ~/kirppu$ python manage.py migrate
 Installed 0 object(s) from 0 fixture(s)
 
 # Load some fake data to play with.
