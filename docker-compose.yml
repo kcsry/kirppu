@@ -1,0 +1,26 @@
+version: '2'
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    links:
+      - postgres
+    volumes:
+      - .:/usr/src/app
+    environment:
+      DEBUG: 1
+      DATABASE_URL: psql://kirppu:secret@postgres/kirppu
+      ALLOWED_HOSTS: '*'
+  postgres:
+    image: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: kirppu
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: kirppu
+volumes:
+  postgres-data:
+    driver: local
