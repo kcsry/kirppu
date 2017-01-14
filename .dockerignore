@@ -1,0 +1,11 @@
+*.pyc
+*.mo
+/static/
+kirppu/local_settings.py
+kirppu_project/local_settings.py
+node_modules
+/KirppuVenv*/
+kirppu/static/kirppu/*
+kirppu/static_src/js/api_stub.js
+*.sqlite3
+.vscode/
