@@ -1,9 +1,20 @@
-# Setting up development environment
+# Kirppu – Second-hand sales POS and vendor signup for conventions
+
+## Getting started using Docker
+
+Install Docker and `docker-compose` and run
+
+    docker-compose up
+
+There is a race between the `postgres` and `web` containers and the first try will usually fail. Workaround is to Ctrl+C once the PostgreSQL database has initialized and then run `docker-compose up` again.
+
+## Getting started without Docker
+
 This guide is meant for setting up a basic Kirppu development environment for testing.
 It consists of a high level guide outlining the steps, example guide that has more detail and finally some pointers on how to access Kirppu once it's running.
 
 
-## High level guide
+### High level guide
 
 1. Install python.
     1. Install pip.
@@ -21,7 +32,7 @@ It consists of a high level guide outlining the steps, example guide that has mo
 9. Run django with manage.py.
 
 
-## Example guide
+### Example guide
 
 Windows:
 
@@ -36,7 +47,7 @@ Syntax:
 - \> Windows specific command line
 
 
-### Setting up Kirppu and its dependencies
+#### Setting up Kirppu and its dependencies
 ```Text
 # Install python if your system doesn't have it already.
 $ sudo aptitude install python
@@ -77,7 +88,7 @@ Successfully installed django-1.6.10 django-pipeline-1.3.27 pillow-2.4.0 pyBarco
 ~/kirppu/kirppu$ npm run gulp
 ```
 
-### Add some example Data for Kirppu.
+#### Add some example Data for Kirppu.
 ```Text
 # Avoid having to define SECRET_KEY & co
 (venv) ~/kirppu$ export DEBUG=1
@@ -95,7 +106,7 @@ Installed 10 object(s) from 1 fixture(s)
 (venv) ~/kirppu$ python manage.py runserver 9874
 ```
 
-## Testing Kirppu
+### Testing Kirppu
 
 - Admin interface
     - `localhost:9874/admin/`
@@ -154,3 +165,34 @@ To compile frontend sources for use in browser, there is two choices, which can 
 - "Rebuild production":
     - Same as above, but this additionally compress the results (of some parts). This will take a bit longer than without compress.
     - Arguments: `--type production`
+
+
+## MIT License
+
+    The MIT License (MIT)
+
+    Copyright (c) 2013 Jyrki Launonen
+    Copyright (c) 2014 Ari Koivula, Jyrki Launonen, Elina Lukkarinen, Arttu Ylä-Outinen
+    Copyright (c) 2015 Mikko Karttunen, Ari Koivula, Aarni Koskela, Jyrki Launonen, Juha Lepola, Mikael Niemelä, Arttu Ylä-Outinen
+    Copyright (c) 2014–2017 Santtu Pajukanta
+    Copyright (c) 2016 Aarni Koskela, Jyrki Launonen
+    Copyright (c) 2017 Jyrki Launonen
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+
