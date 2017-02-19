@@ -76,7 +76,7 @@ class @VendorCompensation extends CheckoutMode
     for i, index in @compensableItems
       i.row_index = index + 1
 
-    Api.item_compensate_start()
+    Api.item_compensate_start(vendor: @vendor.id)
       .done(=>
         @_loopResult = []
         @_loopBack(@compensableItems)

@@ -428,9 +428,13 @@ def item_checkout(request, code):
 
 
 @ajax_func('^item/compensate/start$')
-def item_compensate_start(request):
-    if "compensation_pk" in request.session:
+def item_compensate_start(request, vendor):
+    if "compensation" in request.session:
         raise AjaxError(RET_CONFLICT, _(u"Already compensating"))
+
+    vendor_id = int(vendor)
+    if not Vendor.objects.filter(pk=vendor_id).exists():
+        raise AjaxError(RET_BAD_REQUEST)
 
     clerk = Clerk.objects.get(pk=request.session["clerk"])
     counter = Counter.objects.get(pk=request.session["counter"])
@@ -441,19 +445,19 @@ def item_compensate_start(request):
     receipt.type = Receipt.TYPE_COMPENSATION
     receipt.save()
 
-    request.session["compensation_pk"] = receipt.pk
+    request.session["compensation"] = (receipt.pk, vendor_id)
 
     return receipt.as_dict()
 
 
 @ajax_func('^item/compensate$', atomic=True)
 def item_compensate(request, code):
-    if "compensation_pk" not in request.session:
+    if "compensation" not in request.session:
         raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
-    receipt_pk = request.session["compensation_pk"]
+    receipt_pk, vendor_id = request.session["compensation"]
     receipt = Receipt.objects.get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
 
-    item = _get_item_or_404(code)
+    item = _get_item_or_404(code, vendor=vendor_id)
     item_dict = item_mode_change(request, code, Item.SOLD, Item.COMPENSATED)
 
     ReceiptItem.objects.create(item=item, receipt=receipt)
@@ -465,16 +469,16 @@ def item_compensate(request, code):
 
 @ajax_func('^item/compensate/end')
 def item_compensate_end(request):
-    if "compensation_pk" not in request.session:
+    if "compensation" not in request.session:
         raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
 
-    receipt_pk = request.session["compensation_pk"]
+    receipt_pk, vendor_id = request.session["compensation"]
     receipt = Receipt.objects.get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
     receipt.status = Receipt.FINISHED
     receipt.end_time = now()
     receipt.save()
 
-    del request.session["compensation_pk"]
+    del request.session["compensation"]
 
     return receipt.as_dict()
 
