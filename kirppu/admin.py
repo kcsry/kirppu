@@ -16,7 +16,18 @@ from .forms import (
     VendorSetSelfForm,
 )
 
-from .models import Clerk, Item, Vendor, Counter, Receipt, ReceiptItem, ReceiptNote, UIText, ItemStateLog, Box
+from .models import (
+    Clerk,
+    Item,
+    Vendor,
+    Counter,
+    Receipt,
+    ReceiptItem,
+    ReceiptNote,
+    UIText,
+    ItemStateLog,
+    Box,
+)
 
 __author__ = 'jyrkila'
 

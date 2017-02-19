@@ -33,6 +33,10 @@ if settings.KIRPPU_AUTO_CLERK and not settings.DEBUG:
 User = settings.AUTH_USER_MODEL
 
 
+def decimal_to_transport(value):
+    return long(value * Item.FRACTION)
+
+
 class UserAdapterBase(object):
     """
     Base version of UserAdapter. This can be (optionally) subclassed somewhere else which can then be set
@@ -588,7 +592,7 @@ class Item(models.Model):
 
     @property
     def price_cents(self):
-        return long(self.price * self.FRACTION)
+        return decimal_to_transport(self.price)
 
     @property
     def price_fmt(self):
@@ -788,7 +792,7 @@ class Receipt(models.Model):
 
     @property
     def total_cents(self):
-        return long(self.total * Item.FRACTION)
+        return decimal_to_transport(self.total)
 
     as_dict = model_dict_fn(
         "status",
