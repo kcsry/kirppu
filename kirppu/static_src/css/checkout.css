@@ -19,8 +19,9 @@ td.receipt_code {
 }
 .receipt_price {
     width:     5em;
-    max-width: 5em;
+    max-width: 12em;
     white-space: nowrap;
+    text-align: right;
 }
 .receipt_vendor_id {
     width:     4em;
