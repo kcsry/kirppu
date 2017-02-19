@@ -576,12 +576,31 @@ def item_release(request, code):
     return remove_form.removal_entry.as_dict()
 
 
-@ajax_func('^receipt/finish$', atomic=True)
-def receipt_finish(request):
-    receipt_id = request.session["receipt"]
+def _get_active_receipt(request, id, allowed_states=(Receipt.PENDING,)):
+    arg_id = int(id)
+    in_session = "receipt" in request.session
+    if in_session:
+        receipt_id = request.session["receipt"]
+        if receipt_id != arg_id:
+            msg = "Receipt id conflict: {} != {}".format(receipt_id, arg_id)
+            logger.error(msg)
+            raise AjaxError(RET_CONFLICT, msg)
+    else:
+        receipt_id = arg_id
+        logger.warning("Active receipt is being read without it being in session: %i", receipt_id)
+
     receipt = get_object_or_404(Receipt, pk=receipt_id, type=Receipt.TYPE_PURCHASE)
-    if receipt.status != Receipt.PENDING:
-        raise AjaxError(RET_CONFLICT)
+    if receipt.status not in allowed_states:
+        if not in_session and receipt.status == Receipt.FINISHED:
+            raise AjaxError(RET_CONFLICT, "Receipt {} was already ended at {}".format(receipt_id, receipt.end_time))
+        raise AjaxError(RET_CONFLICT, "Receipt {} is in unexpected state: {}".format(
+            receipt_id, receipt.get_status_display()))
+    return receipt, receipt_id
+
+
+@ajax_func('^receipt/finish$', atomic=True)
+def receipt_finish(request, id):
+    receipt, receipt_id = _get_active_receipt(request, id)
 
     receipt.end_time = now()
     receipt.status = Receipt.FINISHED
@@ -597,15 +616,8 @@ def receipt_finish(request):
 
 
 @ajax_func('^receipt/abort$', atomic=True)
-def receipt_abort(request):
-    if "receipt" not in request.session:
-        raise AjaxError(RET_CONFLICT, "There is no receipt to end.")
-
-    receipt_id = request.session["receipt"]
-    receipt = get_object_or_404(Receipt, pk=receipt_id, type=Receipt.TYPE_PURCHASE)
-
-    if receipt.status not in (Receipt.PENDING, Receipt.SUSPENDED):
-        raise AjaxError(RET_CONFLICT)
+def receipt_abort(request, id):
+    receipt, receipt_id = _get_active_receipt(request, id, (Receipt.PENDING, Receipt.SUSPENDED))
 
     # For all ADDed items, add REMOVE-entries and return the real Item's back to available.
     added_items = ReceiptItem.objects.filter(receipt_id=receipt_id, action=ReceiptItem.ADD)

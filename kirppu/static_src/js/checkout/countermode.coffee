@@ -212,7 +212,7 @@ class @CounterMode extends ItemCheckoutMode
 
     # End receipt only if it has not been ended.
     unless @_receipt.isActive() then return
-    Api.receipt_finish().then(
+    Api.receipt_finish(id: @_receipt.data.id).then(
       (data) =>
         @_receipt.end(data)
         console.log(@_receipt)
@@ -229,7 +229,7 @@ class @CounterMode extends ItemCheckoutMode
   onAbortReceipt: =>
     unless @_receipt.isActive() then return
 
-    Api.receipt_abort().then(
+    Api.receipt_abort(id: @_receipt.data.id).then(
       (data) =>
         @_receipt.end(data)
         console.log(@_receipt)
