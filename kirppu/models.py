@@ -192,7 +192,8 @@ class Clerk(models.Model):
             i_max = 100000 - 1
         while key is None or Clerk.objects.filter(access_key=key).exists():
             key = random.randint(i_min, i_max)
-        self.access_key = number_to_hex(key, 56)
+            key = number_to_hex(key, 56)
+        self.access_key = key
         return key
 
     def save(self, *args, **kwargs):
