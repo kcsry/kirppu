@@ -22,6 +22,7 @@ from .models import (
     Vendor,
     Counter,
     Receipt,
+    ReceiptExtraRow,
     ReceiptItem,
     ReceiptNote,
     UIText,
@@ -221,6 +222,7 @@ class ClerkAdmin(admin.ModelAdmin):
 admin.site.register(Clerk, ClerkAdmin)
 
 admin.site.register(Counter)
+admin.site.register(ReceiptExtraRow)
 
 
 class UITextAdmin(admin.ModelAdmin):
@@ -239,6 +241,10 @@ class ReceiptItemAdmin(admin.TabularInline):
     readonly_fields = ["item"]
 
 
+class ReceiptExtraAdmin(admin.TabularInline):
+    model = ReceiptExtraRow
+
+
 class ReceiptNoteAdmin(admin.TabularInline):
     model = ReceiptNote
     ordering = ["timestamp"]
@@ -248,12 +254,23 @@ class ReceiptNoteAdmin(admin.TabularInline):
 class ReceiptAdmin(admin.ModelAdmin):
     inlines = [
         ReceiptItemAdmin,
+        ReceiptExtraAdmin,
         ReceiptNoteAdmin,
     ]
     ordering = ["clerk", "start_time"]
     list_display = ["__str__", "status", "total", "counter", "end_time"]
+    list_filter = [
+        ("type", admin.ChoicesFieldListFilter),
+    ]
     form = ReceiptAdminForm
     search_fields = ["items__code", "items__name"]
+    actions = ["re_calculate_total"]
+
+    def re_calculate_total(self, request, queryset):
+        for i in queryset:  # type: Receipt
+            i.calculate_total()
+            i.save(update_fields=["total"])
+    re_calculate_total.short_description = "Re-calculate total sum of receipt"
 
     def has_delete_permission(self, request, obj=None):
         return False

@@ -21,12 +21,14 @@ from django.utils.six import string_types, text_type, iteritems
 from django.utils.translation import ugettext as _
 from django.utils.timezone import now
 
+from .provision import Provision
 from .models import (
     Item,
     Receipt,
     Clerk,
     Counter,
     ReceiptItem,
+    ReceiptExtraRow,
     Vendor,
     UserAdapter,
     ItemStateLog,
@@ -139,9 +141,9 @@ def checkout_js(request):
     )
 
 
-def _get_item_or_404(code):
+def _get_item_or_404(code, **kwargs):
     try:
-        item = Item.get_item_by_barcode(code)
+        item = Item.get_item_by_barcode(code, **kwargs)
     except Item.DoesNotExist:
         item = None
 
@@ -398,6 +400,38 @@ def item_list(request, vendor, state=None, include_box_items=False):
     return [i.as_dict() for i in items]
 
 
+@ajax_func('^item/compensable', method='GET', atomic=True)
+def compensable_items(request, vendor):
+    vendor = int(vendor)
+    vendor_items = Item.objects.filter(vendor__id=vendor)
+
+    items_for_compensation = vendor_items.filter(state=Item.SOLD)
+    if not items_for_compensation:
+        return {"items": []}
+
+    r = dict(items=[i.as_dict() for i in items_for_compensation])
+
+    provision = Provision(vendor_id=vendor)
+    if provision.has_provision:
+        # DON'T SAVE THESE OBJECTS!
+        provision_obj = ReceiptExtraRow(
+            type=ReceiptExtraRow.TYPE_PROVISION,
+            value=provision.provision,
+        )
+        r["extras"] = [provision_obj.as_dict()]
+
+        if not provision.provision_fix.is_zero():
+            print(provision.provision_fix, provision.provision_fix.is_zero())
+
+            provision_fixup_obj = ReceiptExtraRow(
+                type=ReceiptExtraRow.TYPE_PROVISION_FIX,
+                value=provision.provision_fix,
+            )
+            r["extras"].append(provision_fixup_obj.as_dict())
+
+    return r
+
+
 @ajax_func('^box/list$', method='GET')
 def box_list(request, vendor):
     out_boxes = []
@@ -467,15 +501,32 @@ def item_compensate(request, code):
     return item_dict
 
 
-@ajax_func('^item/compensate/end')
+@ajax_func('^item/compensate/end', atomic=True)
 def item_compensate_end(request):
     if "compensation" not in request.session:
         raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
 
     receipt_pk, vendor_id = request.session["compensation"]
     receipt = Receipt.objects.get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
+
+    provision = Provision(vendor_id=vendor_id, receipt=receipt)
+    if provision.has_provision:
+        ReceiptExtraRow.objects.create(
+            type=ReceiptExtraRow.TYPE_PROVISION,
+            value=provision.provision,
+            receipt=receipt,
+        )
+
+        if not provision.provision_fix.is_zero():
+            ReceiptExtraRow.objects.create(
+                type=ReceiptExtraRow.TYPE_PROVISION_FIX,
+                value=provision.provision_fix,
+                receipt=receipt,
+            )
+
     receipt.status = Receipt.FINISHED
     receipt.end_time = now()
+    receipt.calculate_total()
     receipt.save()
 
     del request.session["compensation"]
@@ -654,10 +705,9 @@ def receipt_abort(request, id):
 def _get_receipt_data_with_items(**kwargs):
     kwargs.setdefault("type", Receipt.TYPE_PURCHASE)
     receipt = get_object_or_404(Receipt, **kwargs)
-    receipt_items = ReceiptItem.objects.filter(receipt_id=receipt.pk).order_by("add_time")
 
     data = receipt.as_dict()
-    data["items"] = [item.as_dict() for item in receipt_items]
+    data["items"] = receipt.row_list()
     return data
 
 

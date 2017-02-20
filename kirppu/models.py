@@ -662,7 +662,7 @@ class Item(models.Model):
         return self.state != Item.ADVERTISED
 
     @staticmethod
-    def get_item_by_barcode(data):
+    def get_item_by_barcode(data, **kwargs):
         """
         Get Item by barcode.
 
@@ -672,7 +672,7 @@ class Item(models.Model):
         :rtype: Item
         :raise Item.DoesNotExist: If no Item matches the code.
         """
-        return Item.objects.get(code=data)
+        return Item.objects.get(code=data, **kwargs)
 
     @classmethod
     def is_item_barcode(cls, text):
@@ -791,6 +791,11 @@ class Receipt(models.Model):
     def items_list(self):
         return [row.as_dict() for row in self.receiptitem_set.order_by("add_time")]
 
+    def row_list(self):
+        r = self.items_list()
+        r.extend([row.as_dict() for row in self.extra_rows.all()])
+        return r
+
     @property
     def total_cents(self):
         return decimal_to_transport(self.total)
@@ -812,8 +817,12 @@ class Receipt(models.Model):
     def calculate_total(self):
         result = ReceiptItem.objects.filter(action=ReceiptItem.ADD, receipt=self)\
             .aggregate(price_total=Sum("item__price"))
+        extras = ReceiptExtraRow.objects.filter(receipt=self).aggregate(extras_total=Sum("value"))
+
         price_total = result["price_total"]
-        self.total = price_total or 0
+        extras_total = extras["extras_total"]
+
+        self.total = (price_total or 0) + (extras_total or 0)
         return self.total
 
     def __str__(self):
@@ -822,6 +831,30 @@ class Receipt(models.Model):
             start=text_type(self.start_time),
             clerk=text_type(self.clerk),
         )
+
+
+@python_2_unicode_compatible
+class ReceiptExtraRow(models.Model):
+    TYPE_PROVISION = "PRO"
+    TYPE_PROVISION_FIX = "PRO_FIX"
+    TYPES = (
+        (TYPE_PROVISION, _("Provision")),
+        (TYPE_PROVISION_FIX, _("Provision balancing")),
+    )
+
+    type = models.CharField(max_length=8, choices=TYPES)
+    value = models.DecimalField(max_digits=8, decimal_places=2)
+    receipt = models.ForeignKey(Receipt, related_name="extra_rows")
+
+    as_dict = model_dict_fn(
+        "type",
+        type_display=lambda self: self.get_type_display(),
+        action=lambda _: "EXTRA",  # Same key as in ReceiptItem.action.
+        value=lambda self: decimal_to_transport(self.value),
+    )
+
+    def __str__(self):
+        return "{}: {} ({})".format(self.get_type_display(), self.value, self.receipt)
 
 
 @python_2_unicode_compatible

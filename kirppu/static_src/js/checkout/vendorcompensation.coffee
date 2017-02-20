@@ -18,7 +18,11 @@ class @VendorCompensation extends CheckoutMode
     @itemDiv = $('<div>')
     @cfg.uiRef.body.append(@itemDiv)
 
-    Api.item_list(vendor: @vendor.id, state: "SO", include_box_items: true).done(@onGotItems)
+    Api.compensable_items(vendor: @vendor.id)
+      .done(@onGotItems)
+      .fail((jqXHR) =>
+        safeAlert("Request error: #{jqXHR.status}: #{jqXHR.responseText}")
+      )
 
   exit: ->
     @cfg.uiRef.codeForm.show()
@@ -46,13 +50,31 @@ class @VendorCompensation extends CheckoutMode
       .click(@onRetryFailed)
 
   onGotItems: (items) =>
-    @compensableItems = items
+    @compensableItems = items.items
+    @compensableExtras = items.extras
+
+    rows = @compensableItems.slice()
+    compensableSum = _.reduce(@compensableItems, ((acc, item) -> acc + item.price), 0)
+    provisionAmount = 0
+    if @compensableExtras?
+      rows.push(
+        action: "EXTRA"
+        type: "SUB"
+        type_display: "Subtotal"
+        value: compensableSum
+      )
+      rows = rows.concat(@compensableExtras)
+      for i in @compensableExtras
+        provisionAmount += i.value
+    else
+      provisionAmount = 0
+
 
     if @compensableItems.length > 0
       table = Templates.render("item_report_table",
         caption: "Sold Items"
-        items: @compensableItems
-        sum: _.reduce(@compensableItems, ((acc, item) -> acc + item.price), 0)
+        items: rows
+        sum: compensableSum + provisionAmount
         topSum: true
         extra_col: true
       )
@@ -173,9 +195,14 @@ class @VendorCompensation extends CheckoutMode
     for item in @compensableItems
       if item.state == "CO"
         items.push(item)
+
+    if @compensableExtras
+      adjust = _.reduce(@compensableExtras, ((acc, item) -> acc + item.value), 0)
+    else
+      adjust = 0
     @compensableItems = []
 
-    sum = _.reduce(items, ((acc, item) -> acc + item.price), 0)
+    sum = _.reduce(items, ((acc, item) -> acc + item.price), 0) + adjust
 
     Api.item_compensate_end()
       .done((receiptCopy) =>

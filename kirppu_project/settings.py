@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Django settings for kirppu project.
 from __future__ import unicode_literals, print_function, absolute_import
+
+from decimal import Decimal
 import os.path
 from django.utils.translation import ugettext_lazy as _
 
@@ -292,6 +294,12 @@ KIRPPU_MIN_MAX_PRICE = ('1', '400')
 
 # Maximum purchase amount.
 KIRPPU_MAX_PURCHASE = '450'
+
+
+# Function to calculate provision amount. Must return always None or a Decimal instance.
+def KIRPPU_POST_PROVISION(sold_and_compensated):
+    return None
+
 
 # Load local settings that are not stored in repository. This must be last at end of settings.
 try:

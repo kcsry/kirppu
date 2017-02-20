@@ -36,13 +36,21 @@
 {% endif %}
 {% for item in items %}
     <tr class="table_row_{{ loop.index }}">
+    {% if item.action != "EXTRA" %}
         <td class="receipt_index numeric">{{ loop.index }}</td>
         <td class="receipt_code">{{ item.code }}</td>
         <td class="receipt_item">{{ item.name }}</td>
         <td class="receipt_price numeric">{{ item.price|displayPrice }}</td>
-    {% if not hide_status %}
+        {% if not hide_status %}
         <td class="receipt_status">{{ item.state_display }}</td>
         <td class="receipt_abandoned">{{ item.abandoned|yesno|title }}</td>
+        {% endif %}
+    {% else %}
+        <td colspan="3">{{ item.type_display }}</td>
+        <td class="receipt_price numeric">{{ item.value|displayPrice }}</td>
+        {% if not hide_status %}
+        <td colspan="2"></td>
+        {% endif %}
     {% endif %}
         {% if extra_col %}<td class="receipt_extra_col"></td>{% endif %}
     </tr>

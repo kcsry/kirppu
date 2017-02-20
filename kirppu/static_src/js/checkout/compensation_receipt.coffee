@@ -39,6 +39,8 @@ class @CompensationReceipt extends CheckoutMode
   onGotReceipt: (receipt) =>
     @switcher.setPrintable()
 
+    # TODO: Add subtotal if receipt.extras
+
     table = Templates.render("item_report_table",
       caption: "Compensated Items"
       items: receipt.items
