@@ -219,6 +219,7 @@ KOMPASSI_API_APPLICATION_PASSWORD = env(
 KOMPASSI_HOST = KOMPASSI_API_URL = env('KOMPASSI_HOST', default='https://kompassi.eu')
 KOMPASSI_OAUTH2_AUTHORIZATION_URL = '{KOMPASSI_HOST}/oauth2/authorize'.format(**locals())
 KOMPASSI_OAUTH2_TOKEN_URL = '{KOMPASSI_HOST}/oauth2/token'.format(**locals())
+KOMPASSI_OAUTH2_REVOKE_URL = '{KOMPASSI_HOST}/oauth2/revoke'.format(**locals())
 
 KOMPASSI_OAUTH2_CLIENT_ID = env(
     'KOMPASSI_OAUTH2_CLIENT_ID',
