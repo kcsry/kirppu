@@ -116,13 +116,14 @@ Installed 10 object(s) from 1 fixture(s)
 - Clerk UI
     - `localhost:9874/kirppu/checkout`
     - To enable, you need to set `KIRPPU_CHECKOUT_ACTIVE` to _True_ in
-      `kirppu/local_settings.py`
+      `kirppu_project/local_settings.py`
     - "Locked Need to validate counter."
         - Input `:*dev_counter`
     - "Locked Login..."
         - In admin panel, goto clerks and generate an access code for you self with
           Action: "Generate missing Clerk access codes"
         - Input your access code.
+          Alternatively, add `KIRPPU_AUTO_CLERK = True` to `kirppu_project/local_settings.py`
 
 
 ## Frontend development notes
