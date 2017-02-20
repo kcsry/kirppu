@@ -1,3 +1,2 @@
--r requirements.txt
 requests>=2.6.0,<3.0
 requests-oauthlib==0.6.0
