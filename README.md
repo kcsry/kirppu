@@ -6,8 +6,6 @@ Install Docker and `docker-compose` and run
 
     docker-compose up
 
-There is a race between the `postgres` and `web` containers and the first try will usually fail. Workaround is to Ctrl+C once the PostgreSQL database has initialized and then run `docker-compose up` again.
-
 ## Getting started without Docker
 
 This guide is meant for setting up a basic Kirppu development environment for testing.
