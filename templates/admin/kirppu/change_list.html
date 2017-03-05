@@ -1,6 +1,11 @@
 {% extends "admin/change_list.html" %}
 {% load i18n admin_urls admin_static admin_list %}
 {% block object-tools-items %}
+    <style type="text/css">
+        .field-access_key {
+            font-size: 10px;
+        }
+    </style>
 {{ block.super }}
 {% if cl.opts.model_name == "clerk" %}
     {% url cl.opts|admin_urlname:'add' as add_url %}
