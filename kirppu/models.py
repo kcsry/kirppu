@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.module_loading import import_string
 from django.utils.six import text_type, PY3
 from django.conf import settings
-from .utils import model_dict_fn, format_datetime
+from .utils import model_dict_fn, format_datetime, short_description
 
 from .util import (
     number_to_hex,
@@ -180,6 +180,7 @@ class Clerk(models.Model):
         return self.access_key is not None and int(self.access_key, 16) >= 100000
 
     @property
+    @short_description(_("Is enabled?"))
     def is_enabled(self):
         return self.is_valid_code and self.user is not None
 

@@ -251,3 +251,16 @@ def barcode_view(fn):
         kwargs["bar_type"] = bar_type
         return fn(request, *args, **kwargs)
     return inner
+
+
+def short_description(text):
+    """
+    Decorator for property functions (or other functions) adding short_description to the function.
+
+    :param text: Text to add.
+    :type text: str
+    """
+    def wrap(fn):
+        fn.short_description = text
+        return fn
+    return wrap
