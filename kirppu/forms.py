@@ -90,7 +90,8 @@ class ClerkSSOForm(forms.ModelForm):
                 'Enter a valid username.',
                 'invalid'
             )
-        ]
+        ],
+        label=_("Username"),
     )
 
     def __init__(self, *args, **kwargs):
@@ -124,10 +125,10 @@ class ClerkSSOForm(forms.ModelForm):
                 clerk.save()
             return clerk
 
-        from kompassi_crowd.kompassi_client import user_defaults_from_kompassi as user_defaults
+        from kompassi_crowd.kompassi_client import user_defaults_from_kompassi
         user, created = get_user_model().objects.get_or_create(
             username=username,
-            defaults=user_defaults(self._sso_user)
+            defaults=user_defaults_from_kompassi(self._sso_user)
         )
 
         clerk = Clerk(user=user)

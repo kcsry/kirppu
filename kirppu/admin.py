@@ -122,6 +122,7 @@ admin.site.register(Vendor, VendorAdmin)
 
 # noinspection PyMethodMayBeStatic
 class ClerkAdmin(admin.ModelAdmin):
+    uses_sso = settings.KIRPPU_USE_SSO  # Used by the overridden template.
     actions = ["_gen_clerk_code", "_del_clerk_code", "_move_clerk_code"]
     list_display = ('id', _user_link, 'access_code', 'access_key', 'is_enabled')
     ordering = ('user__first_name', 'user__last_name')
@@ -182,7 +183,7 @@ class ClerkAdmin(admin.ModelAdmin):
             return ClerkGenerationForm
 
         # Custom creation form if SSO is enabled.
-        if obj is None and settings.KIRPPU_USE_SSO:
+        if "sso" in request.GET and self.uses_sso:
             return ClerkSSOForm
 
         # Custom form for editing already created Clerks.

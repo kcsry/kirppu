@@ -2,11 +2,20 @@
 {% load i18n admin_urls admin_static admin_list %}
 {% block object-tools-items %}
 {{ block.super }}
-{% if cl.opts.verbose_name == "clerk" %}
-<li>{% url cl.opts|admin_urlname:'add' as add_url %}
-    <a href="{% add_preserved_filters add_url is_popup %}?unbound" class="addlink">
-        {% blocktrans with cl.opts.verbose_name as name %}Add unbound {{ name }}{% endblocktrans %}
-    </a>
-</li>
+{% if cl.opts.model_name == "clerk" %}
+    {% url cl.opts|admin_urlname:'add' as add_url %}
+    {% if cl.model_admin.uses_sso %}
+        <li>
+        <a href="{% add_preserved_filters add_url is_popup %}?sso" class="addlink">
+                {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }} from SSO provider{% endblocktrans %}
+            </a>
+        </li>
+    {% endif %}
+
+    <li class="display-for-clerk">
+        <a href="{% add_preserved_filters add_url is_popup %}?unbound" class="addlink">
+            {% blocktrans with cl.opts.verbose_name as name %}Add unbound {{ name }}{% endblocktrans %}
+        </a>
+    </li>
 {% endif %}
 {% endblock %}
