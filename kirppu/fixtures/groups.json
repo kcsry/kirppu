@@ -1,0 +1,73 @@
+[
+    {
+        "fields": {
+            "name": "kirppu_leader",
+            "permissions": [
+                [
+                    "change_box",
+                    "kirppu",
+                    "box"
+                ],
+                [
+                    "add_clerk",
+                    "kirppu",
+                    "clerk"
+                ],
+                [
+                    "change_clerk",
+                    "kirppu",
+                    "clerk"
+                ],
+                [
+                    "oversee",
+                    "kirppu",
+                    "clerk"
+                ],
+                [
+                    "add_counter",
+                    "kirppu",
+                    "counter"
+                ],
+                [
+                    "change_counter",
+                    "kirppu",
+                    "counter"
+                ],
+                [
+                    "change_item",
+                    "kirppu",
+                    "item"
+                ],
+                [
+                    "register_override",
+                    "kirppu",
+                    "item"
+                ],
+                [
+                    "change_uitext",
+                    "kirppu",
+                    "uitext"
+                ]
+            ]
+        },
+        "model": "auth.group"
+    },
+    {
+        "fields": {
+            "name": "kirppu_overseer",
+            "permissions": [
+                [
+                    "oversee",
+                    "kirppu",
+                    "clerk"
+                ],
+                [
+                    "register_override",
+                    "kirppu",
+                    "item"
+                ]
+            ]
+        },
+        "model": "auth.group"
+    }
+]
