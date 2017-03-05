@@ -60,17 +60,47 @@ class ItemAdmin(admin.ModelAdmin):
 admin.site.register(Item, ItemAdmin)
 
 
-def ref_link_accessor(field_name, description):
+class FieldAccessor(object):
     """
-    Create accessor function that returns a link to given FK-field admin.
-
-    :param field_name: Field to link to.
-    :param description: Column description.
-    :return: Accessor function, ready for adding to list_display.
+    Abstract base class for field-links to be used in Admin.list_display.
+    Sub-classes must implement __call__ that is used to generate the field text / link.
     """
+    def __init__(self, field_name, description):
+        """
+        :param field_name: Field to link to.
+        :type field_name: str
+        :param description: Column description.
+        :type description: str
+        """
+        self._field_name = field_name
+        self._description = description
 
-    def accessor(obj):
-        field = getattr(obj, field_name)
+    def __call__(self, obj):
+        """
+        :param obj: Model object from the query.
+        :rtype: str
+        :return: Unsafe string containing the field value.
+        """
+        raise NotImplementedError
+
+    @property
+    def short_description(self):
+        return self._description
+
+    @property
+    def allow_tags(self):
+        return True
+
+    def __str__(self):
+        return self._field_name
+
+
+class RefLinkAccessor(FieldAccessor):
+    """
+    Accessor function that returns a link to given FK-field admin.
+    """
+    def __call__(self, obj):
+        field = getattr(obj, self._field_name)
         if field is None:
             return u"(None)"
         # noinspection PyProtectedMember
@@ -79,9 +109,6 @@ def ref_link_accessor(field_name, description):
             reverse("admin:%s_%s_change" % info, args=(field.id,)),
             escape(field)
         )
-    accessor.allow_tags = True
-    accessor.short_description = description
-    return accessor
 
 
 """
@@ -92,7 +119,7 @@ Admin UI list column that displays user name with link to the user model itself.
 :return: Contents for the field.
 :rtype: unicode
 """
-_user_link = ref_link_accessor("user", ugettext(u"User"))
+_user_link = RefLinkAccessor("user", ugettext(u"User"))
 
 
 class VendorAdmin(admin.ModelAdmin):
@@ -283,9 +310,9 @@ class ItemStateLogAdmin(admin.ModelAdmin):
     ordering = ["-id"]
     search_fields = ['item__code', 'clerk__user__username']
     list_display = ['id', 'time',
-                    ref_link_accessor("item", ugettext(u"Item")),
+                    RefLinkAccessor("item", ugettext("Item")),
                     'old_state', 'new_state',
-                    ref_link_accessor("clerk", ugettext(u"Clerk")),
+                    RefLinkAccessor("clerk", ugettext("Clerk")),
                     'counter']
 
 admin.site.register(ItemStateLog, ItemStateLogAdmin)
