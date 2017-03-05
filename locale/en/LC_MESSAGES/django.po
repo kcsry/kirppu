@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016.
+# Jyrki Launonen, 2014, 2015, 2016, 2017.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-14 19:02+0300\n"
-"PO-Revision-Date: 2016-05-14 19:06+0300\n"
+"POT-Creation-Date: 2017-03-05 15:29+0200\n"
+"PO-Revision-Date: 2017-03-05 15:29+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 2.0\n"
 
 msgid "Generate bar codes for items missing it"
 msgstr "Generate bar codes for items missing it"
@@ -28,6 +28,12 @@ msgstr "Re-generate bar codes for items"
 
 msgid "User"
 msgstr "User "
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Access code"
+msgstr "Access code"
 
 msgid "Generate missing Clerk access codes"
 msgstr "Generate missing Clerk access codes"
@@ -85,6 +91,12 @@ msgstr "Vendor has not accepted terms!"
 msgid "Item was not brought to event."
 msgstr "Item was not brought to event."
 
+msgid "Already compensating"
+msgstr "Already compensating"
+
+msgid "No compensation started!"
+msgstr "No compensation started!"
+
 msgid "Invalid vendor id"
 msgstr "Invalid vendor id"
 
@@ -104,6 +116,38 @@ msgstr "Price too high. (max {} euros)"
 msgid "Maximum of %(count)i items allowed by a single range statement."
 msgstr "Maximum of %(count)i items allowed by a single range statement."
 
+msgid "Username"
+msgstr "Username"
+
+msgid "Disabled"
+msgstr "Disabled"
+
+msgid "Clerk will be disabled or enabled on save."
+msgstr "Clerk will be disabled or enabled on save."
+
+msgid "Regenerate access code"
+msgstr "Regenerate access code"
+
+msgid "Enabled Clerk access code will be randomized on save."
+msgstr "Enabled Clerk access code will be randomized on save."
+
+msgid "Change access code"
+msgstr "Change access code"
+
+msgid "Clerk access code will be changed to this on save."
+msgstr "Clerk access code will be changed to this on save."
+
+#, python-format
+msgid "Either \"%(disabled)s\" or \"%(change)s\" must be cleared."
+msgstr "Either \"%(disabled)s\" or \"%(change)s\" must be cleared."
+
+#, python-format
+msgid "Either \"%(regen)s\" or \"%(change)s\" must be cleared."
+msgstr "Either \"%(regen)s\" or \"%(change)s\" must be cleared."
+
+msgid "Only one option may be selected at a time."
+msgstr "Only one option may be selected at a time."
+
 msgid "Name is required."
 msgstr "Name is required."
 
@@ -115,6 +159,9 @@ msgstr "Access key value"
 
 msgid "Access code assigned to the clerk. 14 hexlets."
 msgstr "Access code assigned to the clerk."
+
+msgid "Is enabled?"
+msgstr "Is enabled?"
 
 msgid "Value cannot be negative"
 msgstr "Value cannot be negative"
@@ -227,14 +274,24 @@ msgstr "Suspended"
 msgid "Aborted"
 msgstr "Aborted"
 
-#| msgid "Registration is closed"
+msgid "Purchase"
+msgstr "Purchase"
+
+msgid "Compensation"
+msgstr "Compensation"
+
+msgid "Provision"
+msgstr "Provision"
+
+msgid "Provision balancing"
+msgstr "Provision balancing"
+
 msgid "Admin note: Registration is closed for users."
 msgstr "Admin note: Registration is closed for users."
 
 msgid "Add new box"
 msgstr "Add new box"
 
-#| msgid "Description:"
 msgid "Description for box label:"
 msgstr "Description for box label:"
 
@@ -267,6 +324,9 @@ msgstr "No"
 
 msgid "Add box"
 msgstr "Add box"
+
+msgid "Registration is closed"
+msgstr "Registration is closed"
 
 msgid "Permanently remove the box."
 msgstr "Permanently remove the box."
@@ -374,9 +434,6 @@ msgstr "6 cm"
 msgid "Short"
 msgstr "9 cm"
 
-msgid "Long"
-msgstr "18 cm (bookmark)"
-
 msgid "Add item"
 msgstr "Add item"
 
@@ -404,8 +461,6 @@ msgstr "Log out"
 msgid "Log in"
 msgstr "Log in"
 
-msgid "Registration is closed"
-msgstr "Registration is closed"
 #, python-format
 msgid ""
 "%(icon)s This site requires browser Javascript support to be enabled. See <a "
@@ -494,9 +549,6 @@ msgstr "Both username and password must be given."
 msgid "Your username and password did not match."
 msgstr "Your username and password did not match."
 
-msgid "Username"
-msgstr "Username"
-
 msgid "Password"
 msgstr "Password"
 
@@ -507,8 +559,15 @@ msgid "Username is required."
 msgstr "Username is required."
 
 #, python-format
+msgid "Add %(name)s from SSO provider"
+msgstr "Add %(name)s from SSO provider"
+
+#, python-format
 msgid "Add unbound %(name)s"
 msgstr "Add unbound %(name)s"
+
+#~ msgid "Long"
+#~ msgstr "18 cm (bookmark)"
 
 #~ msgid "Item prefix:"
 #~ msgstr "Item prefix:"

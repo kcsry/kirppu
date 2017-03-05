@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015.
+# Jyrki Launonen, 2014, 2015, 2017.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-05 22:48+0300\n"
-"PO-Revision-Date: 2015-05-23 14:24+0300\n"
+"POT-Creation-Date: 2017-03-05 15:29+0200\n"
+"PO-Revision-Date: 2017-03-05 15:29+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 2.0\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -55,41 +55,23 @@ msgstr "item"
 msgid "price"
 msgstr "price"
 
-msgid "#"
-msgstr "#"
-
-msgid "status"
-msgstr "status"
-
-msgid "abandoned"
-msgstr "abandoned"
-
-msgid "Total:"
-msgstr "Total:"
-
-msgid "description"
-msgstr "description"
-
-msgid "compensable"
-msgstr "compensable"
-
-msgid "returnable"
-msgstr "returnable"
-
-msgid "brought"
-msgstr "brought"
-
 msgid "type"
 msgstr "type"
 
 msgid "vendor"
 msgstr "vendor"
 
+msgid "status"
+msgstr "status"
+
 msgid "No results."
 msgstr "No results."
 
-msgid "Vendor"
-msgstr "Vendor"
+msgid "Vendor Compensation"
+msgstr "Vendor Compensation"
+
+msgid "Compensation Receipt"
+msgstr "Compensation Receipt"
 
 msgid "Compensable Items"
 msgstr "Compensable Items"
@@ -114,6 +96,9 @@ msgstr "Return Items"
 
 msgid "Abandon All Items Currently On Display"
 msgstr "Abandon All Items Currently On Display"
+
+msgid "Compensation receipts"
+msgstr "Compensation receipts"
 
 msgid "Boxes"
 msgstr "Boxes"
@@ -152,3 +137,27 @@ msgstr "Click to edit…"
 
 msgid "<em>Click to edit</em>"
 msgstr "<em>Click to edit</em>"
+
+#~ msgid "#"
+#~ msgstr "#"
+
+#~ msgid "abandoned"
+#~ msgstr "abandoned"
+
+#~ msgid "Total:"
+#~ msgstr "Total:"
+
+#~ msgid "description"
+#~ msgstr "description"
+
+#~ msgid "compensable"
+#~ msgstr "compensable"
+
+#~ msgid "returnable"
+#~ msgstr "returnable"
+
+#~ msgid "brought"
+#~ msgstr "brought"
+
+#~ msgid "Vendor"
+#~ msgstr "Vendor"

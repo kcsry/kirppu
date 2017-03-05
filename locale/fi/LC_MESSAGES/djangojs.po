@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015.
+# Jyrki Launonen, 2014, 2015, 2017.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-05 22:48+0300\n"
-"PO-Revision-Date: 2015-05-23 15:05+0300\n"
+"POT-Creation-Date: 2017-03-05 15:29+0200\n"
+"PO-Revision-Date: 2017-03-05 15:37+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 2.0\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -54,41 +54,23 @@ msgstr "tavara"
 msgid "price"
 msgstr "hinta"
 
-msgid "#"
-msgstr "#"
-
-msgid "status"
-msgstr "tila"
-
-msgid "abandoned"
-msgstr "hylätty"
-
-msgid "Total:"
-msgstr "Yhteensä:"
-
-msgid "description"
-msgstr "kuvaus"
-
-msgid "compensable"
-msgstr "hyvitettäviä"
-
-msgid "returnable"
-msgstr "palautettavia"
-
-msgid "brought"
-msgstr "tuotuja"
-
 msgid "type"
 msgstr "tyyppi"
 
 msgid "vendor"
 msgstr "myyjä"
 
+msgid "status"
+msgstr "tila"
+
 msgid "No results."
 msgstr "Ei tuloksia."
 
-msgid "Vendor"
-msgstr "Myyjä"
+msgid "Vendor Compensation"
+msgstr "Myyjän Hyvitys"
+
+msgid "Compensation Receipt"
+msgstr "Hyvityskuitti"
 
 msgid "Compensable Items"
 msgstr "Myydyt tavarat"
@@ -113,6 +95,9 @@ msgstr "Ota vastaan tavaroita"
 
 msgid "Abandon All Items Currently On Display"
 msgstr "Hylkää kaikki näytteillä olevat tavarat"
+
+msgid "Compensation receipts"
+msgstr "Hyvityskuitit"
 
 msgid "Boxes"
 msgstr "Laatikot"
@@ -151,3 +136,27 @@ msgstr "Klikkaa muokataksesi…"
 
 msgid "<em>Click to edit</em>"
 msgstr "<em>Klikkaa muokataksesi</em>"
+
+#~ msgid "#"
+#~ msgstr "#"
+
+#~ msgid "abandoned"
+#~ msgstr "hylätty"
+
+#~ msgid "Total:"
+#~ msgstr "Yhteensä:"
+
+#~ msgid "description"
+#~ msgstr "kuvaus"
+
+#~ msgid "compensable"
+#~ msgstr "hyvitettäviä"
+
+#~ msgid "returnable"
+#~ msgstr "palautettavia"
+
+#~ msgid "brought"
+#~ msgstr "tuotuja"
+
+#~ msgid "Vendor"
+#~ msgstr "Myyjä"

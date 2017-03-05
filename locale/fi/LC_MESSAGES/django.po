@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016.
+# Jyrki Launonen, 2014, 2015, 2016, 2017.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-14 19:02+0300\n"
-"PO-Revision-Date: 2016-05-14 19:07+0300\n"
+"POT-Creation-Date: 2017-03-05 15:29+0200\n"
+"PO-Revision-Date: 2017-03-05 15:36+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 2.0\n"
 
 msgid "Generate bar codes for items missing it"
 msgstr "Luo viivakoodit tuotteille joilta se puuttuu"
@@ -28,6 +28,12 @@ msgstr "Luo tavaroiden viivakoodit uudelleen"
 
 msgid "User"
 msgstr "Käyttäjä"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Access code"
+msgstr "Käyttötunniste"
 
 msgid "Generate missing Clerk access codes"
 msgstr "Luo puuttuvat kassatätien käyttötunnisteet"
@@ -86,6 +92,12 @@ msgstr "Myyjä ei ole hyväksynyt ehtoja!"
 msgid "Item was not brought to event."
 msgstr "Tavaraa ei ole tuotu tapahtumaan."
 
+msgid "Already compensating"
+msgstr "Hyvitystapahtuma on jo aloitettu"
+
+msgid "No compensation started!"
+msgstr "Hyvitystapahtumaa ei ole aloitettu!"
+
 msgid "Invalid vendor id"
 msgstr "Virheellinen myyjän id"
 
@@ -105,6 +117,38 @@ msgstr "Hinta on liian suuri. (maksimi {} euroa)"
 msgid "Maximum of %(count)i items allowed by a single range statement."
 msgstr "Lukuvälimerkinnän lukuväli saa olla maksimissaan %(count)i."
 
+msgid "Username"
+msgstr "Käyttäjätunnus"
+
+msgid "Disabled"
+msgstr "Estetty"
+
+msgid "Clerk will be disabled or enabled on save."
+msgstr "Kassatäti estetään tai sallitaan tallennettaessa."
+
+msgid "Regenerate access code"
+msgstr "Luo käyttötunniste uudelleen"
+
+msgid "Enabled Clerk access code will be randomized on save."
+msgstr "Satunnainen käyttötunniste luodaan tallennettaessa."
+
+msgid "Change access code"
+msgstr "Vaihda käyttötunniste"
+
+msgid "Clerk access code will be changed to this on save."
+msgstr "Käyttötunniste vaihdetaan valittuun arvoon tallennettaessa."
+
+#, python-format
+msgid "Either \"%(disabled)s\" or \"%(change)s\" must be cleared."
+msgstr "Joko \"%(disabled)s\" tai \"%(change)s\" on poistettava."
+
+#, python-format
+msgid "Either \"%(regen)s\" or \"%(change)s\" must be cleared."
+msgstr "Joko \"%(regen)s\" tai \"%(change)s\" on poistettava."
+
+msgid "Only one option may be selected at a time."
+msgstr "Vain yksi valinta voidaan valita kerrallaan."
+
 msgid "Name is required."
 msgstr "Nimi on vaadittu."
 
@@ -116,6 +160,9 @@ msgstr "Käyttötunnisteen arvo"
 
 msgid "Access code assigned to the clerk. 14 hexlets."
 msgstr "Käyttötunnisteen arvo"
+
+msgid "Is enabled?"
+msgstr "Käytössä?"
 
 msgid "Value cannot be negative"
 msgstr "Arvo ei voi olla negatiivinen"
@@ -228,14 +275,24 @@ msgstr "Pysäytetty"
 msgid "Aborted"
 msgstr "Keskeytetty"
 
-#| msgid "Registration is closed"
+msgid "Purchase"
+msgstr "Ostos"
+
+msgid "Compensation"
+msgstr "Hyvitys"
+
+msgid "Provision"
+msgstr "Provisio"
+
+msgid "Provision balancing"
+msgstr "Provision tasaus"
+
 msgid "Admin note: Registration is closed for users."
 msgstr "Ylläpitohuomautus: Rekisteröinti on suljettu käyttäjiltä"
 
 msgid "Add new box"
 msgstr "Lisää uusi laatikko"
 
-#| msgid "Description:"
 msgid "Description for box label:"
 msgstr "Kuvaus laatikkoon:"
 
@@ -268,6 +325,9 @@ msgstr "Ei"
 
 msgid "Add box"
 msgstr "Lisää laatikko"
+
+msgid "Registration is closed"
+msgstr "Rekisteröinti on suljettu"
 
 msgid "Permanently remove the box."
 msgstr "Poista laatikko pysyvästi."
@@ -375,9 +435,6 @@ msgstr "6 cm"
 msgid "Short"
 msgstr "9 cm"
 
-msgid "Long"
-msgstr "18 cm (kirjanmerkki)"
-
 msgid "Add item"
 msgstr "Lisää tavara"
 
@@ -405,8 +462,6 @@ msgstr "Kirjaudu ulos"
 msgid "Log in"
 msgstr "Kirjaudu sisään"
 
-msgid "Registration is closed"
-msgstr "Rekisteröinti on suljettu"
 #, python-format
 msgid ""
 "%(icon)s This site requires browser Javascript support to be enabled. See <a "
@@ -495,9 +550,6 @@ msgstr "Sekä käyttäjätunnus että salasana on annettava."
 msgid "Your username and password did not match."
 msgstr "Käyttäjätunnus ja salasana eivät täsmää."
 
-msgid "Username"
-msgstr "Käyttäjätunnus"
-
 msgid "Password"
 msgstr "Salasana"
 
@@ -508,8 +560,15 @@ msgid "Username is required."
 msgstr "Käyttäjätunnus on vaadittu."
 
 #, python-format
+msgid "Add %(name)s from SSO provider"
+msgstr "Lisää %(name)s SSO-tarjoajalta"
+
+#, python-format
 msgid "Add unbound %(name)s"
 msgstr "Lisää irrallinen %(name)s"
+
+#~ msgid "Long"
+#~ msgstr "18 cm (kirjanmerkki)"
 
 #~ msgid "Item prefix:"
 #~ msgstr "Nimen etuliite:"
