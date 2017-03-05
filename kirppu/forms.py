@@ -3,6 +3,7 @@ import re
 from django import forms
 from django.core import validators
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
@@ -157,11 +158,19 @@ class ClerkEditForm(forms.ModelForm):
     )
     disabled = forms.BooleanField(
         required=False,
-        help_text=u"Clerk will be disabled or enabled on save.",
+        label=_("Disabled"),
+        help_text=_("Clerk will be disabled or enabled on save."),
     )
     regen_code = forms.BooleanField(
         required=False,
-        help_text=u"Enabled Clerk access code will be regenerated on save."
+        label=_("Regenerate access code"),
+        help_text=_("Enabled Clerk access code will be randomized on save."),
+    )
+    change_code = forms.ModelChoiceField(
+        queryset=Clerk.objects.filter(user__isnull=True),
+        label=_("Change access code"),
+        help_text=_("Clerk access code will be changed to this on save."),
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):
@@ -182,16 +191,59 @@ class ClerkEditForm(forms.ModelForm):
         )
         super(ClerkEditForm, self).__init__(*args, **kwargs)
 
+    def clean(self):
+        cleaned_data = super(ClerkEditForm, self).clean()
+        is_disabled = cleaned_data["disabled"]
+        is_regen_code = cleaned_data["regen_code"]
+        is_change_code = cleaned_data["change_code"]
+        msg = None
+
+        labels = {
+            "disabled": self.fields["disabled"].label,
+            "regen": self.fields["regen_code"].label,
+            "change": self.fields["change_code"].label,
+        }
+
+        if is_disabled and is_change_code:
+            msg = ValidationError(_('Either "%(disabled)s" or "%(change)s" must be cleared.'),
+                                  params=labels,
+                                  code="set_disabled_and_change_code")
+            self.add_error("disabled", msg)
+            self.add_error("change_code", msg)
+
+        if is_regen_code and is_change_code:
+            msg = ValidationError(_('Either "%(regen)s" or "%(change)s" must be cleared.'),
+                                  params=labels,
+                                  code="regenerate_and_change_code")
+            self.add_error("regen_code", msg)
+            self.add_error("change_code", msg)
+
+        if msg is not None:
+            raise ValidationError(_("Only one option may be selected at a time."),
+                                  code="operation_conflict")
+
+        return cleaned_data
+
     def save(self, commit=True):
         # Save only if disabled has changed.
 
         disabled = self.cleaned_data["disabled"]
+        regen = self.cleaned_data["regen_code"]
+        change = self.cleaned_data["change_code"]
         if disabled and self._disabled == disabled and self.instance.access_key is not None:
+            # Do nothing if setting disabled to a clerk that is disabled (but not None).
             return self.instance
-        elif self._disabled == disabled and not self.cleaned_data["regen_code"]:
+        elif self._disabled == disabled and not regen and not change:
+            # Do nothing if not changing disabled and there is no other operation too.
             return self.instance
 
-        self.instance.generate_access_key(disabled=disabled)
+        if change:
+            self.instance.access_key = change.access_key
+            if commit:
+                change.delete()
+        else:
+            self.instance.generate_access_key(disabled=disabled)
+
         if commit:
             self.instance.save()
         return self.instance

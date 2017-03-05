@@ -147,14 +147,36 @@ class VendorAdmin(admin.ModelAdmin):
 admin.site.register(Vendor, VendorAdmin)
 
 
+class ClerkEditLink(FieldAccessor):
+    def __call__(self, obj):
+        """
+        :type obj: Clerk
+        :return:
+        """
+        value = getattr(obj, self._field_name)
+        info = obj._meta.app_label, obj._meta.model_name
+        if obj.user is None:
+            return escape(value)
+        else:
+            return u'<a href="{0}">{1}</a>'.format(
+                reverse("admin:%s_%s_change" % info, args=(obj.id,)),
+                escape(value)
+            )
+
+
+_clerk_id_link = ClerkEditLink("id", ugettext("ID"))
+_clerk_access_code_link = ClerkEditLink("access_code", ugettext("Access code"))
+
+
 # noinspection PyMethodMayBeStatic
 class ClerkAdmin(admin.ModelAdmin):
     uses_sso = settings.KIRPPU_USE_SSO  # Used by the overridden template.
     actions = ["_gen_clerk_code", "_del_clerk_code", "_move_clerk_code"]
-    list_display = ('id', _user_link, 'access_code', 'access_key', 'is_enabled')
+    list_display = (_clerk_id_link, _user_link, _clerk_access_code_link, 'access_key', 'is_enabled')
     ordering = ('user__first_name', 'user__last_name')
     search_fields = ['user__first_name', 'user__last_name', 'user__username']
     exclude = ['access_key']
+    list_display_links = None
 
     def _gen_clerk_code(self, request, queryset):
         for clerk in queryset:

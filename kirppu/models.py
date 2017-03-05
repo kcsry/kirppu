@@ -95,7 +95,13 @@ class Clerk(models.Model):
         if self.user is not None:
             return text_type(self.user)
         else:
-            return u'id={0}'.format(str(self.id))
+            return self.access_code
+
+    def __repr__(self):
+        if self.user is not None:
+            return "<Clerk: %s>" % text_type(self.user)
+        else:
+            return "<Clerk id=%s, code=%s...>" % (self.id, self.access_code[:5])
 
     def as_dict(self):
         return {
