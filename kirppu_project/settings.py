@@ -38,10 +38,12 @@ TIME_ZONE = 'Europe/Helsinki'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'fi'
 
-LANGUAGES = (
+_LANGUAGES = env.str("LANGUAGES", "").split(",")
+
+LANGUAGES = tuple(lang for lang in (
     ('fi', _("Finnish")),
     ('en', _("English")),
-)
+) if not _LANGUAGES or lang[0] in _LANGUAGES)
 
 LOCALE_PATHS = (
     _path("locale"),
@@ -253,10 +255,14 @@ KOMPASSI_ADMIN_GROUP = env('KOMPASSI_ADMIN_GROUP', default='admins')
 
 # This can be left to default if kirppuauth module is installed.
 # LOGIN_URL = '/oauth2/login'
+if env.str("LOGIN_URL", default=None) is not None:
+    LOGIN_URL = env.str("LOGIN_URL")
+if env.str("LOGOUT_URL", default=None) is not None:
+    LOGOUT_URL = env.str("LOGOUT_URL")
 
 # Absolute URL for user "Profile". Leave None if the link should not be displayed.
 # 'https://kompassidev.tracon.fi/profile'
-PROFILE_URL = env('KOMPASSI_PROFILE_URL', default=None)
+PROFILE_URL = env('PROFILE_URL', default=None)
 
 # Whether external login and SSO clerk add are enabled (True) or not (False).
 KIRPPU_USE_SSO = env.bool('KIRPPU_USE_SSO', default=False)
