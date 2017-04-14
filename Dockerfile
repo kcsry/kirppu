@@ -2,7 +2,7 @@ FROM python:2.7
 WORKDIR /usr/src/app
 
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
-    apt-get -y install nodejs && \
+    apt-get -y install nodejs gettext && \
     mkdir -p /usr/src/app/kirppu
 
 COPY requirements.txt requirements-oauth.txt requirements-production.txt /usr/src/app/
