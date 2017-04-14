@@ -28,6 +28,9 @@ DATABASES = {
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = env('ALLOWED_HOSTS', default='').split()
 
+if env.str('ASSUME_SSL_HEADER', None) is not None:
+    SECURE_PROXY_SSL_HEADER = env.str('ASSUME_SSL_HEADER').split("=", 1)
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
