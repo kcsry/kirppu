@@ -16,6 +16,7 @@ RUN cd /usr/src/app/kirppu && \
     groupadd -r kirppu && useradd -r -g kirppu kirppu
 
 RUN env DEBUG=1 python manage.py collectstatic --noinput && \
+    python manage.py compilemessages && \
     python -m compileall -q .
 
 USER kirppu
