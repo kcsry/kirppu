@@ -206,7 +206,18 @@ LOGGING = {
 }
 
 # Mapping from Kompassi user fields to Kirppu user fields.
+# for SSOClerkForm
+KOMPASSI_USER_MAP = [
+    # Kompassi, django
+    ('username', 'username'),
+    ('email', 'email'),
+    ('first_name', 'first_name'),
+    ('surname', 'last_name'),
+    ('phone', 'phone'),
+]
+# for OAuth2
 KOMPASSI_USER_MAP_V2 = [
+    # django, Kompassi
     ('username', 'username'),
     ('email', 'email'),
     ('first_name', 'first_name'),
