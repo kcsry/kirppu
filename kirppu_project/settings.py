@@ -102,18 +102,17 @@ SECRET_KEY = env.str('SECRET_KEY', default=(
     '' if not DEBUG else '=#j)-ml7x@a2iw9=#l7%i89l%cry6kch6x49=0%vcasq!!@97-'
 ))
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
 
-    # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
 
 AUTHENTICATION_BACKENDS = (
     'kompassi_oauth2.backends.KompassiOAuth2AuthenticationBackend',
@@ -274,6 +273,8 @@ if env.str("LOGIN_URL", default=None) is not None:
     LOGIN_URL = env.str("LOGIN_URL")
 if env.str("LOGOUT_URL", default=None) is not None:
     LOGOUT_URL = env.str("LOGOUT_URL")
+else:
+    LOGOUT_URL = "/accounts/logout"
 
 # Absolute URL for user "Profile". Leave None if the link should not be displayed.
 # 'https://kompassidev.tracon.fi/profile'

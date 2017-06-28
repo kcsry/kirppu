@@ -3,7 +3,7 @@ from django.utils.http import is_safe_url
 from django.views.generic import View
 from django.shortcuts import redirect, resolve_url
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 
 import requests

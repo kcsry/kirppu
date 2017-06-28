@@ -9,7 +9,7 @@ from django.core.exceptions import (
     PermissionDenied,
     ValidationError,
 )
-import django.core.urlresolvers as url
+import django.urls as url
 from django.db.models import Sum
 from django.db import transaction
 from django.http.response import (
@@ -698,7 +698,7 @@ def vendor_view(request):
     """
     user = request.user
 
-    if user.is_authenticated():
+    if user.is_authenticated:
         vendor = Vendor.get_vendor(user, create=False)
         items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)
         boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()

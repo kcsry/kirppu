@@ -273,7 +273,7 @@ class UITextForm(forms.ModelForm):
     text = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={"cols": 100}),
-        help_text=UIText._meta.get_field("text", False).help_text
+        help_text=UIText._meta.get_field("text").help_text
     )
 
     class Meta:
@@ -299,7 +299,9 @@ class ReceiptItemAdminForm(forms.ModelForm):
 
 
 class ReceiptAdminForm(forms.ModelForm):
-    start_time = StaticText(
+    # Django 1.10 does not allow same name to be used when overriding read-only -properties.
+    # TODO: Maybe show this as description for state?
+    start_time_ = StaticText(
         label=u"Start time",
         text=u"--"
     )
@@ -308,7 +310,7 @@ class ReceiptAdminForm(forms.ModelForm):
         super(ReceiptAdminForm, self).__init__(*args, **kwargs)
         if "instance" in kwargs:
             mdl = kwargs["instance"]
-            self.fields["start_time"].widget.set_text(mdl.start_time)
+            self.fields["start_time_"].widget.set_text(mdl.start_time)
 
 
 class ItemRemoveForm(forms.Form):
@@ -399,7 +401,7 @@ class VendorSetSelfForm(forms.ModelForm):
 
         super(VendorSetSelfForm, self).__init__(*args, **kwargs)
 
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
         url = reverse("kirppuauth:local_admin_login")
         click = u"""document.forms[0].action='{0}'; document.forms[0].submit();""".format(url)
         self.fields["set_user"].widget.set_click(click)

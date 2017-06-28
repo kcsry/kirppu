@@ -1,6 +1,6 @@
 from __future__ import unicode_literals, print_function, absolute_import
 from django.conf.urls import include, url
-from django.views.i18n import javascript_catalog
+from django.views.i18n import JavaScriptCatalog
 
 from kirppu.views import index
 
@@ -8,9 +8,9 @@ from kirppu.views import index
 from django.contrib import admin
 admin.autodiscover()
 
-js_info_dict = {
-    'packages': ('kirppu',),
-}
+js_packages = (
+    'kirppu',
+)
 
 urlpatterns = [
     url(r'^$', index, name='home'),
@@ -23,6 +23,6 @@ urlpatterns = [
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url(r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^jsi18n/$', javascript_catalog, js_info_dict),
+    url(r'^jsi18n/$', JavaScriptCatalog.as_view(packages=js_packages)),
     url(r'^', include('kompassi_oauth2.urls')),
 ]

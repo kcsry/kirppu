@@ -890,7 +890,7 @@ class ItemStateLogManager(models.Manager):
             clerk = get_clerk(request)
             counter = get_counter(request)
         except AjaxError:
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 try:
                     clerk = Clerk.objects.get(user=request.user)
                 except Clerk.DoesNotExist:

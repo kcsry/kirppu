@@ -2,7 +2,7 @@ from __future__ import unicode_literals, print_function, absolute_import
 from django.conf.urls import url
 from django.conf import settings
 from django.contrib.auth.views import login, logout
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.views.generic import RedirectView
 from .views import local_admin_login
 

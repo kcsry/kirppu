@@ -73,7 +73,7 @@ def ajax_func(method='POST', params=None, defaults=None):
     :param defaults: List of default values for arguments. Default values are applied to `params` tail.
     :type defaults: list
     :return: A decorator for a view function
-    :rtype: function
+    :rtype: callable
     """
     params = params or []
 

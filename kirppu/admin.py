@@ -2,7 +2,7 @@ from __future__ import unicode_literals, print_function, absolute_import
 from django.db import IntegrityError
 from django.conf import settings
 from django.contrib import admin, messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as ugettext
 
@@ -92,6 +92,12 @@ class FieldAccessor(object):
         return True
 
     def __str__(self):
+        # Django 1.9 converts the field to string for id.
+        return self._field_name
+
+    @property
+    def __name__(self):
+        # Django 1.10 lookups the field name via __name__.
         return self._field_name
 
 
