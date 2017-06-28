@@ -26,7 +26,7 @@ def kompassi_application_auth():
 
 def kompassi_url(*args):
     return u'{base_url}/{path}'.format(
-        base_url=settings.KOMPASSI_API_URL,
+        base_url=settings.KOMPASSI_API_V1_URL,
         path=u'/'.join(text_type(i) for i in args),
     )
 
