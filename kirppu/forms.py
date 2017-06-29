@@ -275,16 +275,12 @@ class ClerkEditForm(forms.ModelForm):
 
 
 class UITextForm(forms.ModelForm):
-    # noinspection PyProtectedMember
-    text = forms.CharField(
-        required=False,
-        widget=forms.Textarea(attrs={"cols": 100}),
-        help_text=UIText._meta.get_field("text").help_text
-    )
-
     class Meta:
         model = UIText
-        fields = ("identifier", "text")
+        fields = "__all__"
+        widgets = {
+            "text": forms.Textarea(attrs={"cols": 100}),
+        }
 
 
 class ReceiptItemAdminForm(forms.ModelForm):

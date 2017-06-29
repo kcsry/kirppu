@@ -701,12 +701,11 @@ class UIText(models.Model):
 
     identifier = models.CharField(
         max_length=16,
-        blank=True,
-        null=False,
         unique=True,
         help_text=_(u"Identifier of the textitem")
     )
     text = models.CharField(
+        blank=True,
         max_length=16384,
         help_text=_(u"Textitem in UI")
     )
