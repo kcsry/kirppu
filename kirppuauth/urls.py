@@ -6,6 +6,8 @@ from django.urls import reverse
 from django.views.generic import RedirectView
 from .views import local_admin_login
 
+app_name = "kirppuauth"
+
 _urls = []
 
 

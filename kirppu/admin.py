@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from django.conf import settings
 from django.contrib import admin, messages
 from django.urls import reverse
-from django.utils.html import escape
+from django.utils.html import escape, format_html
 from django.utils.translation import ugettext_lazy as ugettext
 
 from .forms import (
@@ -87,10 +87,6 @@ class FieldAccessor(object):
     def short_description(self):
         return self._description
 
-    @property
-    def allow_tags(self):
-        return True
-
     def __str__(self):
         # Django 1.9 converts the field to string for id.
         return self._field_name
@@ -111,7 +107,8 @@ class RefLinkAccessor(FieldAccessor):
             return u"(None)"
         # noinspection PyProtectedMember
         info = field._meta.app_label, field._meta.model_name
-        return u'<a href="{0}">{1}</a>'.format(
+        return format_html(
+            u'<a href="{0}">{1}</a>',
             reverse("admin:%s_%s_change" % info, args=(field.id,)),
             escape(field)
         )
@@ -164,7 +161,8 @@ class ClerkEditLink(FieldAccessor):
         if obj.user is None:
             return escape(value)
         else:
-            return u'<a href="{0}">{1}</a>'.format(
+            return format_html(
+                u'<a href="{0}">{1}</a>',
                 reverse("admin:%s_%s_change" % info, args=(obj.id,)),
                 escape(value)
             )

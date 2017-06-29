@@ -15,13 +15,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='itemstatelog',
             name='clerk',
-            field=models.ForeignKey(to='kirppu.Clerk', null=True),
+            field=models.ForeignKey(to='kirppu.Clerk', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='itemstatelog',
             name='counter',
-            field=models.ForeignKey(to='kirppu.Counter', null=True),
+            field=models.ForeignKey(to='kirppu.Counter', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

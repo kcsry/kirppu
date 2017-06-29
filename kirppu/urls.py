@@ -32,6 +32,8 @@ from .checkout_api import AJAX_FUNCTIONS, checkout_js
 
 __author__ = 'jyrkila'
 
+app_name = "kirppu"
+
 _urls = [
     url(r'^clerks/$', get_clerk_codes, name='clerks'),
     url(r'^commands/$', get_counter_commands, name='commands'),

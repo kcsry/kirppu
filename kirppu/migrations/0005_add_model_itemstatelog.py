@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('time', models.DateTimeField(auto_now_add=True)),
                 ('old_state', models.CharField(max_length=2, choices=[(b'AD', 'Advertised'), (b'BR', 'Brought to event'), (b'ST', 'Staged for selling'), (b'SO', 'Sold'), (b'MI', 'Missing'), (b'RE', 'Returned to vendor'), (b'CO', 'Compensated to vendor')])),
                 ('new_state', models.CharField(max_length=2, choices=[(b'AD', 'Advertised'), (b'BR', 'Brought to event'), (b'ST', 'Staged for selling'), (b'SO', 'Sold'), (b'MI', 'Missing'), (b'RE', 'Returned to vendor'), (b'CO', 'Compensated to vendor')])),
-                ('item', models.ForeignKey(to='kirppu.Item')),
+                ('item', models.ForeignKey(to='kirppu.Item', on_delete=models.CASCADE)),
             ],
             options={
             },

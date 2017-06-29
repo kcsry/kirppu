@@ -75,7 +75,7 @@ UserAdapter = import_string(settings.KIRPPU_USER_ADAPTER)
 
 @python_2_unicode_compatible
 class Clerk(models.Model):
-    user = models.OneToOneField(User, null=True)
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     access_key = models.CharField(
         max_length=128,
         unique=True,  # TODO: Replace unique restraint with db_index.
@@ -236,7 +236,7 @@ class Clerk(models.Model):
 
 @python_2_unicode_compatible
 class Vendor(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     terms_accepted = models.DateTimeField(null=True)
 
     def __repr__(self):
@@ -532,7 +532,7 @@ class Item(models.Model):
     )
     name = models.CharField(max_length=256, blank=True)
     price = models.DecimalField(max_digits=8, decimal_places=2, validators=[validate_positive])
-    vendor = models.ForeignKey(Vendor)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     state = models.CharField(
         choices=STATE,
         max_length=8,
@@ -561,7 +561,7 @@ class Item(models.Model):
 
     # Affects whether the item is shown at all.
     hidden = models.BooleanField(default=False)
-    box = models.ForeignKey(Box, blank=True, null=True)
+    box = models.ForeignKey(Box, on_delete=models.CASCADE, blank=True, null=True)
 
     lost_property = models.BooleanField(
         default=False,
@@ -748,8 +748,8 @@ class ReceiptItem(models.Model):
         (REMOVE, _(u"Removed from receipt")),
     )
 
-    item = models.ForeignKey(Item)
-    receipt = models.ForeignKey("Receipt")
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    receipt = models.ForeignKey("Receipt", on_delete=models.CASCADE)
     action = models.CharField(choices=ACTION, max_length=16, default=ADD)
     add_time = models.DateTimeField(auto_now_add=True)
 
@@ -789,8 +789,8 @@ class Receipt(models.Model):
     items = models.ManyToManyField(Item, through=ReceiptItem)
     status = models.CharField(choices=STATUS, max_length=16, default=PENDING)
     total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    clerk = models.ForeignKey(Clerk)
-    counter = models.ForeignKey(Counter)
+    clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE)
+    counter = models.ForeignKey(Counter, on_delete=models.CASCADE)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True, blank=True)
     type = models.CharField(choices=TYPES, max_length=16, default=TYPE_PURCHASE)
@@ -851,7 +851,7 @@ class ReceiptExtraRow(models.Model):
 
     type = models.CharField(max_length=8, choices=TYPES)
     value = models.DecimalField(max_digits=8, decimal_places=2)
-    receipt = models.ForeignKey(Receipt, related_name="extra_rows")
+    receipt = models.ForeignKey(Receipt, on_delete=models.CASCADE, related_name="extra_rows")
 
     as_dict = model_dict_fn(
         "type",
@@ -867,9 +867,9 @@ class ReceiptExtraRow(models.Model):
 @python_2_unicode_compatible
 class ReceiptNote(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
-    clerk = models.ForeignKey(Clerk)
+    clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE)
     text = models.TextField()
-    receipt = models.ForeignKey(Receipt)
+    receipt = models.ForeignKey(Receipt, on_delete=models.CASCADE)
 
     as_dict = model_dict_fn(
         "text",
@@ -903,7 +903,7 @@ class ItemStateLogManager(models.Manager):
 class ItemStateLog(models.Model):
     objects = ItemStateLogManager()
 
-    item = models.ForeignKey(Item)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True)
     old_state = models.CharField(
         choices=Item.STATE,
@@ -914,5 +914,5 @@ class ItemStateLog(models.Model):
         max_length=2,
     )
 
-    clerk = models.ForeignKey(Clerk, null=True)
-    counter = models.ForeignKey(Counter, null=True)
+    clerk = models.ForeignKey(Clerk, null=True, on_delete=models.CASCADE)
+    counter = models.ForeignKey(Counter, null=True, on_delete=models.CASCADE)

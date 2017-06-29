@@ -14,14 +14,14 @@ js_packages = (
 
 urlpatterns = [
     url(r'^$', index, name='home'),
-    url(r'^kirppu/', include('kirppu.urls', app_name="kirppu", namespace="kirppu")),
-    url(r'^accounts/', include('kirppuauth.urls', app_name="kirppuauth", namespace="kirppuauth")),
+    url(r'^kirppu/', include('kirppu.urls', namespace="kirppu")),
+    url(r'^accounts/', include('kirppuauth.urls', namespace="kirppuauth")),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(packages=js_packages)),
     url(r'^', include('kompassi_oauth2.urls')),

@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
                 ('text', models.TextField()),
-                ('clerk', models.ForeignKey(to='kirppu.Clerk')),
+                ('clerk', models.ForeignKey(to='kirppu.Clerk', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AlterField(
@@ -28,6 +28,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='receiptnote',
             name='receipt',
-            field=models.ForeignKey(to='kirppu.Receipt'),
+            field=models.ForeignKey(to='kirppu.Receipt', on_delete=models.CASCADE),
         ),
     ]

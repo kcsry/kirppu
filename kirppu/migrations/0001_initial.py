@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('access_key', models.CharField(null=True, validators=[django.core.validators.RegexValidator(b'^[0-9a-f]{14}$', message=b'Must be 14 hex chars.')], max_length=128, blank=True, help_text='Access code assigned to the clerk. 14 hexlets.', unique=True, verbose_name='Access key value')),
-                ('user', models.OneToOneField(null=True, to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(null=True, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -60,8 +60,8 @@ class Migration(migrations.Migration):
                 ('total', models.DecimalField(default=0, max_digits=8, decimal_places=2)),
                 ('start_time', models.DateTimeField(auto_now_add=True)),
                 ('sell_time', models.DateTimeField(null=True, blank=True)),
-                ('clerk', models.ForeignKey(to='kirppu.Clerk')),
-                ('counter', models.ForeignKey(to='kirppu.Counter')),
+                ('clerk', models.ForeignKey(to='kirppu.Clerk', on_delete=models.CASCADE)),
+                ('counter', models.ForeignKey(to='kirppu.Counter', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -73,8 +73,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('action', models.CharField(default=b'ADD', max_length=16, choices=[(b'ADD', 'Added to receipt'), (b'RL', 'Removed later'), (b'DEL', 'Removed from receipt')])),
                 ('add_time', models.DateTimeField(auto_now_add=True)),
-                ('item', models.ForeignKey(to='kirppu.Item')),
-                ('receipt', models.ForeignKey(to='kirppu.Receipt')),
+                ('item', models.ForeignKey(to='kirppu.Item', on_delete=models.CASCADE)),
+                ('receipt', models.ForeignKey(to='kirppu.Receipt', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
             name='Vendor',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='item',
             name='vendor',
-            field=models.ForeignKey(to='kirppu.Vendor'),
+            field=models.ForeignKey(to='kirppu.Vendor', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

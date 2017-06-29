@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='item',
             name='box',
-            field=models.ForeignKey(blank=True, to='kirppu.Box', null=True),
+            field=models.ForeignKey(blank=True, to='kirppu.Box', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]
