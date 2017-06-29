@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from requests_oauthlib import OAuth2Session
+
 User = get_user_model()
 
 
@@ -9,7 +11,10 @@ def user_defaults_from_kompassi(kompassi_user):
 
 
 class KompassiOAuth2AuthenticationBackend(object):
-    def authenticate(self, oauth2_session=None, **kwargs):
+    def authenticate(self, request=None, oauth2_session=None, **kwargs):
+        if isinstance(request, OAuth2Session):
+            # Django <1.11 compatibility.
+            oauth2_session = request
         if oauth2_session is None:
             # Not ours (password login)
             return None

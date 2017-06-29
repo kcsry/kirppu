@@ -247,7 +247,7 @@ class ClerkAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         # Don't allow changing unbound Clerks. That might create unusable codes (because they are not printed).
-        if obj is not None and obj.user is None:
+        if obj is not None and not isinstance(obj, ClerkGenerationForm) and obj.user is None:
             return False
         return True
 

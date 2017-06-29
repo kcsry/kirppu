@@ -30,6 +30,12 @@ class ClerkGenerationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ClerkGenerationForm, self).__init__(*args, **kwargs)
+        # TODO: Rethink this bulk creation form...
+        # noinspection PyProtectedMember
+        self._meta.app_label = self._meta.model._meta.app_label
+        # noinspection PyProtectedMember
+        self._meta.model_name = self._meta.model._meta.model_name
+
         self._save_list = None
         self._saved_list = None
 

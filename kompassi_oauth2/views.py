@@ -1,3 +1,4 @@
+from django import __version__ as django_version
 from django.http import HttpResponse
 from django.utils.http import is_safe_url
 from django.views.generic import View
@@ -60,7 +61,11 @@ class CallbackView(View):
 
         self._finish(request)
 
-        user = authenticate(oauth2_session=session)
+        if django_version >= (1, 11):
+            user = authenticate(request=request, oauth2_session=session)
+        else:
+            # Django <1.11 compatibility.
+            user = authenticate(oauth2_session=session)
         if user is not None and user.is_active:
             login(request, user)
             return redirect(get_redirect_url(request, next_url, settings.LOGIN_REDIRECT_URL))
