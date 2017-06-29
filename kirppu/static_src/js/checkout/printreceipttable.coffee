@@ -1,23 +1,29 @@
-class @PrintReceiptTable extends ResultTable
+class @PrintReceiptTable
   @strCode: "code"
   @strItem: "item"
   @strPrice: "price"
   @strVendor: "vendor"
 
-  constructor: (args...)->
-    super(args...)
-    @head.append([
-      "<th class=\"receipt_vendor_id\">#{ @constructor.strVendor }</th>"
-      "<th class=\"receipt_code\">#{ @constructor.strCode }</th>"
-      "<th class=\"receipt_item\">#{ @constructor.strItem }</th>"
-      "<th class=\"receipt_price\">#{ @constructor.strPrice }</th>"
-    ].map($))
+  constructor: (caption=null)->
+    @table = $ Templates.render("receipt_table",
+      caption: caption
+      vendor: @constructor.strVendor
+      code: @constructor.strCode
+      item: @constructor.strItem
+      price: @constructor.strPrice
+    )
+    @body = $("tbody", @table)
 
-  @joinedLine: (text="", html=false) ->
-    $("<tr>").append($('<td colspan="4">')[if html then "html" else "text"](text))
+  @joinedLine: (text="") ->
+    Templates.render("receipt_table_row",
+      joined: true
+      text: text
+    )
 
-  @createRow: (args..., price, rounded) ->
-    row = $("<tr>")
-    for x in [args..., displayPrice(price, rounded)]
-      row.append($("<td>").text(x))
-    return row
+  @createRow: (vendor, code, name, price, rounded) ->
+    Templates.render("receipt_table_row",
+      vendor: vendor
+      code: code
+      name: name
+      price: displayPrice(price, rounded)
+    )

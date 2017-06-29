@@ -1,0 +1,11 @@
+{# -*- mode: django; -*- #}
+<tr{% if code %} id="{{ code }}"{% endif %}>
+{% if not joined %}
+    <td class="receipt_vendor_id numeric">{{ vendor }}</td>
+    <td class="receipt_code">{{ code }}</td>
+    <td class="receipt_item">{{ name }}</td>
+    <td class="receipt_price numeric">{{ price }}</td>
+{% else %}
+    <td colspan="4">{{ text }}</td>
+{% endif %}
+</tr>

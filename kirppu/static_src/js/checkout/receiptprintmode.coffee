@@ -14,7 +14,7 @@ class @ReceiptPrintMode extends CheckoutMode
 
   enter: ->
     super
-    @cfg.uiRef.body.append(@receipt.render())
+    @cfg.uiRef.body.append(@receipt.table)
     if @initialReceipt?
       @renderReceipt(@initialReceipt)
       window.print()
@@ -58,10 +58,10 @@ class @ReceiptPrintMode extends CheckoutMode
     )
 
     @receipt.body.append(row) for row in [
-      @constructor.middleLine
+      @constructor.middleLine()
       PrintReceiptTable.createRow("", "", @constructor.strTotal, receiptData.total, true)
       PrintReceiptTable.joinedLine(sellStr)
-    ].concat(@constructor.tailLines)
+    ].concat(@constructor.tailLines())
 
     @hasReceipt = true
     @switcher.updateHead()
@@ -71,7 +71,7 @@ class @ReceiptPrintMode extends CheckoutMode
   onReturnToCounter: =>
     @switcher.switchTo(CounterMode)
 
-  @middleLine: PrintReceiptTable.joinedLine()
-  @tailLines: [
+  @middleLine: () -> PrintReceiptTable.joinedLine()
+  @tailLines: () -> [
     PrintReceiptTable.joinedLine()
   ]

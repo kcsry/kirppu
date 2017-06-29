@@ -153,6 +153,8 @@ module.exports.jst = {
             "jst/receipt_list_table_compensations.jinja2",
             "jst/receipt_info.jinja2",
             "jst/receipt_suspend_form.jinja2",
+            "jst/receipt_table.jinja2",
+            "jst/receipt_table_row.jinja2",
         ],
         "output_filename": "checkout_templates.js"
     }
