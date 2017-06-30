@@ -1,10 +1,14 @@
 from __future__ import unicode_literals, print_function, absolute_import
 
+import json
+
 from django.core.exceptions import PermissionDenied
-from django.db import IntegrityError
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin, messages
+from django.contrib.admin.options import get_content_type_for_model
+from django.contrib.admin.models import LogEntry, ADDITION, CHANGE
+from django.db import IntegrityError, transaction
 from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.html import escape, format_html
@@ -210,6 +214,7 @@ class ClerkAdmin(admin.ModelAdmin):
                           ugettext(u"Must select exactly one 'unbound' and one 'bound' Clerk for this operation"),
                           messages.ERROR)
 
+    @transaction.atomic
     def _move_clerk_code(self, request, queryset):
         if len(queryset) != 2:
             self._move_error(request)
@@ -229,8 +234,11 @@ class ClerkAdmin(admin.ModelAdmin):
 
         # Assign the new code to be used. Remove the unbound item first, so unique-check doesn't break.
         bound.access_key = unbound.access_key
+
+        self.log_access_key_move(request, unbound, bound)
         unbound.delete()
         bound.save(update_fields=["access_key"])
+
         self.message_user(request, ugettext(u"Access code set for '{0}'").format(bound.user))
     _move_clerk_code.short_description = ugettext(u"Move unused access code to existing Clerk.")
 
@@ -311,7 +319,6 @@ class ClerkAdmin(admin.ModelAdmin):
         return self.render_change_form(request, context)
 
     def log_bulk_addition(self, request, objects):
-        import json
         # noinspection PyProtectedMember
         change_message = json.dumps([{
             'added': {
@@ -320,10 +327,7 @@ class ClerkAdmin(admin.ModelAdmin):
             }
         } for added_object in objects])
 
-        from django.contrib.admin.options import get_content_type_for_model
-        from django.contrib.admin.models import LogEntry, ADDITION
         from .util import shorten_text
-
         object_repr = ", ".join([shorten_text(force_text(added_object), 5) for added_object in objects])
 
         return LogEntry.objects.create(
@@ -331,6 +335,28 @@ class ClerkAdmin(admin.ModelAdmin):
             content_type_id=get_content_type_for_model(objects[0]).pk,
             object_repr=object_repr[:200],
             action_flag=ADDITION,
+            change_message=change_message,
+        )
+
+    def log_access_key_move(self, request, unbound, target):
+        # noinspection PyProtectedMember
+        change_message = [{
+            'changed': {
+                'name': force_text(target._meta.verbose_name),
+                'object': force_text(target),
+                'fields': ["access_key"],
+            },
+            'deleted': {
+                'name': force_text(unbound._meta.verbose_name),
+                'object': force_text(unbound)
+            }
+        }]
+        return LogEntry.objects.log_action(
+            user_id=request.user.pk,
+            content_type_id=get_content_type_for_model(target).pk,
+            object_id=target.pk,
+            object_repr=force_text(target),
+            action_flag=CHANGE,
             change_message=change_message,
         )
 
