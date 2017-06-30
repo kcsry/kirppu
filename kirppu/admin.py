@@ -1,10 +1,14 @@
 from __future__ import unicode_literals, print_function, absolute_import
+
+from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
 from django.conf import settings
+from django.conf.urls import url
 from django.contrib import admin, messages
 from django.urls import reverse
+from django.utils.encoding import force_text
 from django.utils.html import escape, format_html
-from django.utils.translation import ugettext_lazy as ugettext
+from django.utils.translation import ugettext_lazy as ugettext, ngettext
 
 from .forms import (
     ClerkGenerationForm,
@@ -231,10 +235,6 @@ class ClerkAdmin(admin.ModelAdmin):
     _move_clerk_code.short_description = ugettext(u"Move unused access code to existing Clerk.")
 
     def get_form(self, request, obj=None, **kwargs):
-        if "unbound" in request.GET:
-            # Custom form for creating multiple Clerks at same time.
-            return ClerkGenerationForm
-
         # Custom creation form if SSO is enabled.
         if "sso" in request.GET and self.uses_sso:
             return ClerkSSOForm
@@ -247,12 +247,12 @@ class ClerkAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         # Don't allow changing unbound Clerks. That might create unusable codes (because they are not printed).
-        if obj is not None and not isinstance(obj, ClerkGenerationForm) and obj.user is None:
+        if obj is not None and obj.user is None:
             return False
         return True
 
     def save_related(self, request, form, formsets, change):
-        if isinstance(form, (ClerkGenerationForm, ClerkEditForm, ClerkSSOForm)):
+        if isinstance(form, (ClerkEditForm, ClerkSSOForm)):
             # No related fields...
             return
         return super(ClerkAdmin, self).save_related(request, form, formsets, change)
@@ -264,13 +264,75 @@ class ClerkAdmin(admin.ModelAdmin):
         else:
             super(ClerkAdmin, self).save_model(request, obj, form, change)
 
-    def log_addition(self, request, object, *args):
-        if isinstance(object, ClerkGenerationForm):
-            # Log all added items separately.
-            for item in object.saved_list:
-                super(ClerkAdmin, self).log_addition(request, item, *args)
-            return
-        super(ClerkAdmin, self).log_addition(request, object, *args)
+    def get_urls(self):
+        info = self.opts.app_label, self.opts.model_name
+        return super(ClerkAdmin, self).get_urls() + [
+            url(r'^bulk_unbound$', self.bulk_add_unbound, name="%s_%s_bulk" % info)
+        ]
+
+    def bulk_add_unbound(self, request):
+        if not self.has_add_permission(request):
+            raise PermissionDenied
+
+        from .util import get_form
+        form = get_form(ClerkGenerationForm, request)
+
+        if request.method == 'POST' and form.is_valid():
+            objs = form.generate()
+            self.log_bulk_addition(request, objs)
+
+            msg = format_html(
+                ngettext('One unbound clerk added.', '{count} unbound clerks added.', form.get_count()),
+                count=form.get_count()
+            )
+            self.message_user(request, msg, messages.SUCCESS)
+
+            from django.http import HttpResponseRedirect
+            return HttpResponseRedirect(reverse("admin:%s_%s_changelist" % (self.opts.app_label, self.opts.model_name)))
+
+        from django.contrib.admin.helpers import AdminForm
+        admin_form = AdminForm(
+            form,
+            form.get_fieldsets(),
+            {},
+            {},
+            model_admin=self)
+        media = self.media + admin_form.media
+
+        context = dict(
+            self.admin_site.each_context(request),
+            title=force_text(ugettext('Add unbound clerk')),
+            media=media,
+            adminform=admin_form,
+            is_popup=False,
+            show_save_and_continue=False,
+        )
+
+        return self.render_change_form(request, context)
+
+    def log_bulk_addition(self, request, objects):
+        import json
+        # noinspection PyProtectedMember
+        change_message = json.dumps([{
+            'added': {
+                'name': force_text(added_object._meta.verbose_name),
+                'object': force_text(added_object),
+            }
+        } for added_object in objects])
+
+        from django.contrib.admin.options import get_content_type_for_model
+        from django.contrib.admin.models import LogEntry, ADDITION
+        from .util import shorten_text
+
+        object_repr = ", ".join([shorten_text(force_text(added_object), 5) for added_object in objects])
+
+        return LogEntry.objects.create(
+            user_id=request.user.pk,
+            content_type_id=get_content_type_for_model(objects[0]).pk,
+            object_repr=object_repr[:200],
+            action_flag=ADDITION,
+            change_message=change_message,
+        )
 
 
 admin.site.register(Clerk, ClerkAdmin)

@@ -7,8 +7,8 @@
         }
     </style>
 {{ block.super }}
-{% if cl.opts.model_name == "clerk" %}
-    {% url cl.opts|admin_urlname:'add' as add_url %}
+    {% if has_add_permission %}
+    {% url opts|admin_urlname:'bulk' as add_url %}
     {% if cl.model_admin.uses_sso %}
         <li>
         <a href="{% add_preserved_filters add_url is_popup %}?sso" class="addlink">
@@ -18,9 +18,9 @@
     {% endif %}
 
     <li class="display-for-clerk">
-        <a href="{% add_preserved_filters add_url is_popup %}?unbound" class="addlink">
+        <a href="{% add_preserved_filters add_url is_popup %}" class="addlink">
             {% blocktrans with cl.opts.verbose_name as name %}Add unbound {{ name }}{% endblocktrans %}
         </a>
     </li>
-{% endif %}
+    {% endif %}
 {% endblock %}
