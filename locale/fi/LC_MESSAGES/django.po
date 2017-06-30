@@ -139,12 +139,8 @@ msgid "Clerk access code will be changed to this on save."
 msgstr "Käyttötunniste vaihdetaan valittuun arvoon tallennettaessa."
 
 #, python-format
-msgid "Either \"%(disabled)s\" or \"%(change)s\" must be cleared."
-msgstr "Joko \"%(disabled)s\" tai \"%(change)s\" on poistettava."
-
-#, python-format
-msgid "Either \"%(regen)s\" or \"%(change)s\" must be cleared."
-msgstr "Joko \"%(regen)s\" tai \"%(change)s\" on poistettava."
+msgid "Either \"%(0)s\" or \"%(1)s\" must be cleared."
+msgstr "Joko \"%(0)s\" tai \"%(1)s\" on poistettava."
 
 msgid "Only one option may be selected at a time."
 msgstr "Vain yksi valinta voidaan valita kerrallaan."

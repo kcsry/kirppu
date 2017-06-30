@@ -138,12 +138,8 @@ msgid "Clerk access code will be changed to this on save."
 msgstr "Clerk access code will be changed to this on save."
 
 #, python-format
-msgid "Either \"%(disabled)s\" or \"%(change)s\" must be cleared."
-msgstr "Either \"%(disabled)s\" or \"%(change)s\" must be cleared."
-
-#, python-format
-msgid "Either \"%(regen)s\" or \"%(change)s\" must be cleared."
-msgstr "Either \"%(regen)s\" or \"%(change)s\" must be cleared."
+msgid "Either \"%(0)s\" or \"%(1)s\" must be cleared."
+msgstr "Either \"%(0)s\" or \"%(1)s\" must be cleared."
 
 msgid "Only one option may be selected at a time."
 msgstr "Only one option may be selected at a time."

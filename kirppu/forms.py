@@ -163,19 +163,31 @@ class ClerkEditForm(forms.ModelForm):
             "change": self.fields["change_code"].label,
         }
 
+        msg_template = _('Either "%(0)s" or "%(1)s" must be cleared.')
+
+        def _map(*args):
+            return {str(i): v for i, v in enumerate(args)}
+
         if is_disabled and is_change_code:
-            msg = ValidationError(_('Either "%(disabled)s" or "%(change)s" must be cleared.'),
-                                  params=labels,
+            msg = ValidationError(msg_template,
+                                  params=_map(labels["disabled"], labels["change"]),
                                   code="set_disabled_and_change_code")
             self.add_error("disabled", msg)
             self.add_error("change_code", msg)
 
         if is_regen_code and is_change_code:
-            msg = ValidationError(_('Either "%(regen)s" or "%(change)s" must be cleared.'),
-                                  params=labels,
+            msg = ValidationError(msg_template,
+                                  params=_map(labels["regen"], labels["change"]),
                                   code="regenerate_and_change_code")
             self.add_error("regen_code", msg)
             self.add_error("change_code", msg)
+
+        if is_regen_code and is_disabled:
+            msg = ValidationError(msg_template,
+                                  params=_map(labels["disabled"], labels["regen"]),
+                                  code="set_disabled_and_regenerate_code")
+            self.add_error("disabled", msg)
+            self.add_error("regen_code", msg)
 
         if msg is not None:
             raise ValidationError(_("Only one option may be selected at a time."),
