@@ -343,7 +343,9 @@ def _vendor_menu_contents(request):
     """
     active = request.resolver_match.view_name
     menu_item = namedtuple("MenuItem", "name url active sub_items")
-    fill = lambda name, func, sub=None: menu_item(name, url.reverse(func) if func else None, func == active, sub)
+
+    def fill(name, func, sub=None):
+        return menu_item(name, url.reverse(func) if func else None, func == active, sub)
 
     items = [
         fill(_(u"Home"), "kirppu:vendor_view"),
