@@ -136,7 +136,7 @@
         </tr>
         {% for row in number_of_items %}
              <tr>
-                 <th>{{ row.type }}</th>
+                 <th>{{ row.name }}</th>
                  {% for col in row.property_values %}
                     <td>{{ col|safe }}</td>
                  {% endfor %}
@@ -156,7 +156,7 @@
         </tr>
         {% for row in number_of_euros %}
              <tr>
-                 <th>{{ row.type }}</th>
+                 <th>{{ row.name }}</th>
                  {% for col in row.property_values %}
                     <td>{{ col|safe }}</td>
                  {% endfor %}
@@ -176,7 +176,7 @@
         </tr>
         {% for row in vendor_items %}
              <tr>
-                 <th>{{ row.type }}</th>
+                 <th>{{ row.name }}</th>
                  {% for col in row.property_values %}
                     <td>{{ col|safe }}</td>
                  {% endfor %}

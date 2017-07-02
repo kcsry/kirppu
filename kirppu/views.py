@@ -1,5 +1,5 @@
 from __future__ import unicode_literals, print_function, absolute_import
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 import json
 
 from django.conf import settings
@@ -10,8 +10,8 @@ from django.core.exceptions import (
     ValidationError,
 )
 import django.urls as url
-from django.db.models import Sum
 from django.db import transaction
+from django.db.models import Sum
 from django.http.response import (
     HttpResponse,
     HttpResponseBadRequest,
@@ -42,6 +42,7 @@ from .models import (
     Vendor,
     UserAdapter,
 )
+from .stats import ItemCountData, ItemEurosData
 from .util import get_form
 from .utils import (
     barcode_view,
@@ -558,127 +559,30 @@ def stats_view(request):
         else:
             raise PermissionDenied()
 
-    class ItemStats(object):
-        """Interface for app_stats.html template.
+    ic = ItemCountData(ItemCountData.GROUP_ITEM_TYPE)
+    ie = ItemEurosData(ItemEurosData.GROUP_ITEM_TYPE)
+    sum_name = "Sum"
 
-        Constructors:
-            __init__: fetches property values for model.
-            sum_stats: takes a list of ItemStats instances and sums their properties.
+    number_of_items = [
+        ic.data_set(item_type, type_name)
+        for item_type, type_name in Item.ITEMTYPE
+    ]
+    number_of_items.append(ic.data_set("sum", sum_name))
 
-        Properties:
-            property_names: Iterates over all property names.
-            property_values: Iterates over all property values.
+    number_of_euros = [
+        ie.data_set(item_type, type_name)
+        for item_type, type_name in Item.ITEMTYPE
+    ]
+    number_of_euros.append(ie.data_set("sum", sum_name))
 
-            All properties listed in property_names are also accessible through attributes.
-
-        """
-        _properties = OrderedDict((
-            ('advertized', Item.ADVERTISED),
-            ('brought', Item.BROUGHT),
-            ('staged', Item.STAGED),
-            ('sold', Item.SOLD),
-            ('missing', Item.MISSING),
-            ('returned', Item.RETURNED),
-            ('compensated', Item.COMPENSATED),
-            ('sum', None),
-        ))
-
-        def __init__(self, item_type=None, type_name=None, vendor=None):
-            for property in self._properties:
-                setattr(self, property, 'NOT IMPLEMENTED')
-
-            if type_name:
-                self.type = type_name
-            else:
-                self.type = 'Vendor {}'.format(vendor)
-
-            self.values = {}
-
-            # Initialize self._items for subclass.
-            if not item_type and not vendor:
-                self._items = None
-            else:
-                items = Item.objects
-                if item_type:
-                    items = items.filter(itemtype=item_type)
-                if vendor:
-                    items = items.filter(vendor_id=vendor)
-                self._items = items
-
-                self.init_values()
-                self.init_properties()
-
-        def init_values(self):
-            # Call subclasses implementation of get_value to populate the property values.
-            for property_name, item_type in self._properties.items():
-                if property_name is 'sum':
-                    continue
-                self.values[property_name] = self.get_value(item_type)
-            self.values['sum'] = sum(self.values.values())
-
-        def get_value(self, item_type):
-            raise NotImplementedError()
-
-        @property
-        def property_values(self):
-            for property_name in self._properties:
-                yield getattr(self, property_name)
-
-        @property
-        def property_names(self):
-            for property_name in self._properties:
-                yield property_name
-
-        def init_properties(self):
-            raise NotImplementedError()
-
-        @classmethod
-        def sum_stats(cls, list_of_stats):
-            """Return a new instance with all properties the sum of the input stats properties."""
-            new_stats = cls(None, 'Sum')
-
-            for property_name in new_stats._properties:
-                property_sum = 0
-                for stats in list_of_stats:
-                    property_sum += stats.values[property_name]
-
-                new_stats.values[property_name] = property_sum
-
-            new_stats.init_properties()
-            return new_stats
-
-    class ItemCounts(ItemStats):
-        def get_value(self, item_state):
-            return self._items.filter(state=item_state).count()
-
-        def init_properties(self):
-            for _property in self._properties:
-                value = str(self.values[_property])
-                setattr(self, _property, value)
-
-    class ItemEuros(ItemStats):
-        def get_value(self, item_state):
-            query = self._items.filter(state=item_state).aggregate(Sum('price'))
-            price = query['price__sum'] or 0
-            return price
-
-        def init_properties(self):
-            currency = settings.KIRPPU_CURRENCY["html"]
-            for _property in self._properties:
-                value = "{}{}{}".format(currency[0], self.values[_property], currency[1])
-                setattr(self, _property, value)
-
-    number_of_items = [ItemCounts(item_type, type_name) for item_type, type_name in Item.ITEMTYPE]
-    number_of_items.append(ItemCounts.sum_stats(number_of_items))
-
-    number_of_euros = [ItemEuros(item_type, type_name) for item_type, type_name in Item.ITEMTYPE]
-    number_of_euros.append(ItemEuros.sum_stats(number_of_euros))
-
-    vendors = Vendor.objects.all()
     vendor_items = []
-    for vendor in vendors:
-        vendor_items.append(ItemCounts(vendor=vendor.id))
-        vendor_items.append(ItemEuros(vendor=vendor.id))
+    vic = ItemCountData(ItemCountData.GROUP_VENDOR)
+    vie = ItemEurosData(ItemEurosData.GROUP_VENDOR)
+
+    for vendor_id in vic.keys():
+        name = "Vendor %i" % vendor_id
+        vendor_items.append(vic.data_set(vendor_id, name))
+        vendor_items.append(vie.data_set(vendor_id, name))
 
     context = {
         'number_of_items': number_of_items,
