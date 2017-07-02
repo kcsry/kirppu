@@ -29,7 +29,7 @@ class @ItemCheckInMode extends ItemCheckoutMode
 
         row = @createRow(@itemIndex++, data.code, data.name, data.price)
         @receipt.body.prepend(row)
-      )
+      ).fail(@onResultError)
     else
       row = @createRow(@itemIndex++, data.code, data.name, data.price)
       @receipt.body.prepend(row)
