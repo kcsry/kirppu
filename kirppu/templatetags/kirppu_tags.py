@@ -10,17 +10,10 @@ from django.utils.encoding import force_text
 from django.utils.lru_cache import lru_cache
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.utils.six import text_type, PY2
+from django.utils.six import text_type
 
 import pubcode
 from ..models import UIText, UserAdapter
-
-if PY2:
-    # noinspection PyUnresolvedReferences
-    from cStringIO import StringIO
-else:
-    # noinspection PyUnresolvedReferences
-    from io import BytesIO as StringIO
 
 register = template.Library()
 
