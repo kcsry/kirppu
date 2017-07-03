@@ -6,9 +6,9 @@ class @VendorCheckoutMode extends ItemCheckoutMode
 
     @vendorId = if vendor? then vendor.id else null
 
-    @receipt = new ItemReceiptTable('Returned items')
+    @receipt = new ItemReceiptTable(gettext('Returned items'))
     @lastItem = new ItemReceiptTable()
-    @remainingItems = new ItemReceiptTable('Remaining items')
+    @remainingItems = new ItemReceiptTable(gettext('Remaining items'))
 
   enter: ->
     super
@@ -18,7 +18,7 @@ class @VendorCheckoutMode extends ItemCheckoutMode
     if @vendorId? then do @addVendorInfo
 
   glyph: -> "export"
-  title: -> "Vendor Check-Out"
+  title: -> gettext("Vendor Check-Out")
 
   actions: -> [
     ['', @returnItem]
@@ -30,7 +30,7 @@ class @VendorCheckoutMode extends ItemCheckoutMode
       @cfg.uiRef.body.prepend(
         $('<input type="button">')
           .addClass('btn btn-primary')
-          .attr('value', 'Open Report')
+          .attr('value', gettext('Open Report'))
           .click(=> @switcher.switchTo(VendorReport, vendor))
       )
       @cfg.uiRef.body.prepend(new VendorInfo(vendor).render())
@@ -58,7 +58,7 @@ class @VendorCheckoutMode extends ItemCheckoutMode
       @onItemFound
 
       () ->
-        safeAlert("Item not found: " + code)
+        safeAlert(gettext("Item not found: %s").replace("%s", code))
     )
 
   onItemFound: (item) =>
@@ -67,7 +67,7 @@ class @VendorCheckoutMode extends ItemCheckoutMode
       do @addVendorInfo
 
     else if @vendorId != item.vendor
-      safeAlert("Someone else's item!")
+      safeAlert(gettext("Someone else's item!"))
       return
 
     Api.item_checkout(code: item.code).then(

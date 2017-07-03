@@ -10,11 +10,11 @@ class @CounterMode extends ItemCheckoutMode
     @receipt.body.attr("id", "counter_receipt")
 
   glyph: -> "euro"
-  title: -> "Checkout"
+  title: -> gettext("Checkout")
   commands: ->
-    abort: ["abort", "Abort receipt"]
-    suspend: ["suspend", "Suspend active receipt"]
-    print: ["print", "Print receipt / return"]
+    abort: ["abort", gettext("Abort receipt")]
+    suspend: ["suspend", gettext("Suspend active receipt")]
+    print: ["print", gettext("Print receipt / return")]
 
   actions: -> [
     [@commands.abort,                 @onAbortReceipt]
@@ -60,11 +60,11 @@ class @CounterMode extends ItemCheckoutMode
 
   showError: (status, text, code) =>
     switch status
-      when 0 then errorMsg = "Network disconnected!"
-      when 404 then errorMsg = "Item is not registered."
+      when 0 then errorMsg = gettext("Network disconnected!")
+      when 404 then errorMsg = gettext("Item is not registered.")
       when 409 then errorMsg = text
       when 423 then errorMsg = text
-      else errorMsg = "Error " + status + "."
+      else errorMsg = gettext("Error %s.").replace("%s", status)
 
     safeAlert(errorMsg + ' ' + code)
 
@@ -73,7 +73,7 @@ class @CounterMode extends ItemCheckoutMode
     Api.receipt_activate(id: receipt.id).then(
       (data) => @_startOldReceipt(data)
       () =>
-        alert("Could not restore receipt!")
+        alert(gettext("Could not restore receipt!"))
         @switcher.setMenuEnabled(true)
     )
 
@@ -95,16 +95,16 @@ class @CounterMode extends ItemCheckoutMode
       if jqXHR.responseJSON? and jqXHR.responseJSON.receipt?
         receipt = jqXHR.responseJSON.receipt
         dialog = new Dialog()
-        dialog.title.text("Continue suspended receipt?")
+        dialog.title.text(gettext("Continue suspended receipt?"))
         table = Templates.render("receipt_info", receipt: receipt)
         dialog.body.append(table)
-        dialog.addPositive().text("Continue").click(() =>
+        dialog.addPositive().text(gettext("Continue")).click(() =>
           console.log("Continuing receipt #{receipt.id}")
           Api.receipt_continue(code: code).then((data) =>
             @_startOldReceipt(data)
           )
         )
-        dialog.addNegative().text("Cancel")
+        dialog.addNegative().text(gettext("Cancel"))
         dialog.show(
           keyboard: false
           backdrop: "static"
@@ -135,9 +135,15 @@ class @CounterMode extends ItemCheckoutMode
     )
 
   _setSum: (sum=0, ret=null) ->
-    text = "Total: " + CURRENCY.raw[0] + (sum).formatCents() + CURRENCY.raw[1]
+    sum_fmt = CURRENCY.raw[0] + (sum).formatCents() + CURRENCY.raw[1]
     if ret?
-      text += " / Return: " + CURRENCY.raw[0] + (ret).formatCents() + CURRENCY.raw[1]
+      text = dPrintF(gettext("Total: %t / Return: %r"),
+        t: sum_fmt
+        r: CURRENCY.raw[0] + (ret).formatCents() + CURRENCY.raw[1]
+      )
+    else
+      text = gettext("Total: %t").replace("%t", sum_fmt)
+
     @receiptSum.set(text)
     @receiptSum.setEnabled(@_receipt.isActive())
 
@@ -166,7 +172,7 @@ class @CounterMode extends ItemCheckoutMode
         @notifySuccess()
 
       () =>
-        safeAlert("Item not found on receipt: " + code)
+        safeAlert(gettext("Item not found on receipt: %s").replace("%s", code))
         return true
     )
 
@@ -189,11 +195,11 @@ class @CounterMode extends ItemCheckoutMode
       input = Math.round(input)
 
     if input < @_receipt.total
-      safeAlert("Not enough given money!")
+      safeAlert(gettext("Not enough given money!"))
       return
 
     if input > @cfg.settings.purchaseMax * 100
-      safeAlert("Not accepting THAT much money!")
+      safeAlert(gettext("Not accepting THAT much money!"))
       return
 
     # Convert previous payment calculations from success -> info,muted
@@ -202,9 +208,9 @@ class @CounterMode extends ItemCheckoutMode
     # Add (new) payment calculation rows.
     return_amount = input - @_receipt.total
     row.addClass("success receipt-ending") for row in [
-      @addRow(null, "Subtotal", @_receipt.total, true),
-      @addRow(null, "Cash", input),
-      @addRow(null, "Return", return_amount, true),
+      @addRow(null, gettext("Subtotal"), @_receipt.total, true),
+      @addRow(null, gettext("Cash"), input),
+      @addRow(null, gettext("Return"), return_amount, true),
     ]
 
     # Also display the return amount in the top.
@@ -234,7 +240,7 @@ class @CounterMode extends ItemCheckoutMode
         @_receipt.end(data)
         console.log(@_receipt)
 
-        @addRow(null, "Aborted", null).addClass("danger")
+        @addRow(null, gettext("Aborted"), null).addClass("danger")
         # Mode switching is safe to use again.
         @switcher.setMenuEnabled(true)
         @receiptSum.setEnabled(false)
@@ -249,16 +255,16 @@ class @CounterMode extends ItemCheckoutMode
     unless @_receipt.isActive() then return
 
     dialog = new Dialog()
-    dialog.title.text("Suspend receipt?")
+    dialog.title.text(gettext("Suspend receipt?"))
     form = Templates.render("receipt_suspend_form")
     dialog.body.append(form)
 
-    dialog.addPositive().text("Suspend").click(() =>
+    dialog.addPositive().text(gettext("Suspend")).click(() =>
       Api.receipt_suspend(note: $("#suspend_note", dialog.body).val()).then(
         (receipt) =>
           @_receipt.end(receipt)
 
-          @addRow(null, "Suspended", null).addClass("warning")
+          @addRow(null, gettext("Suspended"), null).addClass("warning")
           @switcher.setMenuEnabled(true)
           @receiptSum.setEnabled(false)
           @notifySuccess()
@@ -266,18 +272,18 @@ class @CounterMode extends ItemCheckoutMode
         () => safeAlert("Error suspending receipt!")
       )
     )
-    dialog.addNegative().text("Cancel")
+    dialog.addNegative().text(gettext("Cancel"))
     dialog.show()
 
   onPrintReceipt: =>
     unless @_receipt.data?
-      safeAlert("No receipt to print!")
+      safeAlert(gettext("No receipt to print!"))
       return
     else if @_receipt.isActive()
-      safeAlert("Cannot print while receipt is active!")
+      safeAlert(gettext("Cannot print while receipt is active!"))
       return
     else unless @_receipt.isFinished()
-      safeAlert("Cannot print. The receipt is not in finished state!")
+      safeAlert(gettext("Cannot print. The receipt is not in finished state!"))
       return
 
     Api.receipt_get(id: @_receipt.data.id).then(
@@ -285,13 +291,13 @@ class @CounterMode extends ItemCheckoutMode
         @switcher.switchTo( ReceiptPrintMode, receipt )
 
       () =>
-        safeAlert("Error printing receipt!")
+        safeAlert(gettext("Error printing receipt!"))
         return true
     )
 
   onLogout: =>
     if @_receipt.isActive()
-      safeAlert("Cannot logout while receipt is active!")
+      safeAlert(gettext("Cannot logout while receipt is active!"))
       return
 
     super

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-05 15:29+0200\n"
-"PO-Revision-Date: 2017-03-05 15:29+0200\n"
+"POT-Creation-Date: 2017-07-05 16:16+0300\n"
+"PO-Revision-Date: 2017-07-03 18:20+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -67,11 +67,206 @@ msgstr "status"
 msgid "No results."
 msgstr "No results."
 
+msgid "username"
+msgstr "username"
+
+msgid "id"
+msgstr "id"
+
+msgid "name"
+msgstr "name"
+
+msgid "email"
+msgstr "email"
+
+msgid "phone"
+msgstr "phone"
+
+msgid "Barcode"
+msgstr "Barcode"
+
+msgid "Log out"
+msgstr "Log out"
+
+msgid "Logout failed!"
+msgstr "Logout failed!"
+
+msgid "Locked"
+msgstr "Locked"
+
+msgid "Need to validate counter."
+msgstr "Need to validate counter."
+
+msgid "Login..."
+msgstr "Login…"
+
+#, javascript-format
+msgctxt "%s is a warning icon, leave a space after it."
+msgid "%s Multiple receipts active"
+msgstr "%s Multiple receipts active"
+
+msgid "Please select receipt, which you want to continue."
+msgstr "Please select receipt, which you want to continue."
+
+msgid "Select"
+msgstr "Select"
+
+msgid "Vendor Check-In"
+msgstr "Vendor Check-In"
+
+msgid "No such item"
+msgstr "No such item"
+
+#, javascript-format
+msgid "Error: %s"
+msgstr "Error: %s"
+
+msgid "Returned items"
+msgstr "Returned items"
+
+msgid "Remaining items"
+msgstr "Remaining items"
+
+msgid "Vendor Check-Out"
+msgstr "Vendor Check-Out"
+
+msgid "Open Report"
+msgstr "Open Report"
+
+#, javascript-format
+msgid "Item not found: %s"
+msgstr "Item not found: %s"
+
+msgid "Someone else's item!"
+msgstr "Someone else's item!"
+
+msgid "Checkout"
+msgstr "Checkout"
+
+msgid "Abort receipt"
+msgstr "Abort receipt"
+
+msgid "Suspend active receipt"
+msgstr "Suspend active receipt"
+
+msgid "Print receipt / return"
+msgstr "Print receipt / return"
+
+msgid "Network disconnected!"
+msgstr "Network disconnected!"
+
+msgid "Item is not registered."
+msgstr "Item is not registered."
+
+#, javascript-format
+msgid "Error %s."
+msgstr "Error %s."
+
+msgid "Could not restore receipt!"
+msgstr "Could not restore receipt!"
+
+msgid "Continue suspended receipt?"
+msgstr "Continue suspended receipt?"
+
+msgid "Continue"
+msgstr "Continue"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Total: %t / Return: %r"
+msgstr "Total: %t / Return: %r"
+
+msgid "Total: %t"
+msgstr "Total: %t"
+
+#, javascript-format
+msgid "Item not found on receipt: %s"
+msgstr "Item not found on receipt: %s"
+
+msgid "Not enough given money!"
+msgstr "Not enough given money!"
+
+msgid "Not accepting THAT much money!"
+msgstr "Not accepting THAT much money!"
+
+msgid "Subtotal"
+msgstr "Subtotal"
+
+msgid "Cash"
+msgstr "Cash"
+
+msgid "Return"
+msgstr "Return"
+
+msgid "Aborted"
+msgstr "Aborted"
+
+msgid "Suspend receipt?"
+msgstr "Suspend receipt?"
+
+msgid "Suspend"
+msgstr "Suspend"
+
+msgid "Suspended"
+msgstr "Suspended"
+
+msgid "No receipt to print!"
+msgstr "No receipt to print!"
+
+msgid "Cannot print while receipt is active!"
+msgstr "Cannot print while receipt is active!"
+
+msgid "Cannot print. The receipt is not in finished state!"
+msgstr "Cannot print. The receipt is not in finished state!"
+
+msgid "Error printing receipt!"
+msgstr "Error printing receipt!"
+
+msgid "Cannot logout while receipt is active!"
+msgstr "Cannot logout while receipt is active!"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Receipt"
+msgstr "Receipt"
+
+msgid "Find receipt"
+msgstr "Find receipt"
+
+#, javascript-format
+msgctxt "%d is date and time of the receipt, %c is name of the cashier."
+msgid "%d, cashier: %c"
+msgstr "%d, cashier: %c"
+
 msgid "Vendor Compensation"
 msgstr "Vendor Compensation"
 
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Retry"
+msgstr "Retry"
+
+msgid "Sold Items"
+msgstr "Sold Items"
+
+msgid "No compensable items"
+msgstr "No compensable items"
+
+msgid ""
+"Failed items will not be compensated. Check report for updated sum. Are you "
+"sure to skip failed items?"
+msgstr ""
+"Failed items will not be compensated. Check report for updated sum. Are you "
+"sure to skip failed items?"
+
 msgid "Compensation Receipt"
 msgstr "Compensation Receipt"
+
+msgid "Compensated Items"
+msgstr "Compensated Items"
 
 msgid "Compensable Items"
 msgstr "Compensable Items"
@@ -87,6 +282,9 @@ msgstr "Not brought to event"
 
 msgid "Item Report"
 msgstr "Item Report"
+
+msgid "Search vendor"
+msgstr "Search vendor"
 
 msgid "Compensate"
 msgstr "Compensate"
@@ -109,6 +307,15 @@ msgid ""
 msgstr ""
 "1) Have you asked for the vendors signature AND 2) Are you sure you want to "
 "mark all items on display or missing abandoned?"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Show"
+msgstr "Show"
+
+msgid "Vendor Search"
+msgstr "Vendor Search"
 
 msgid "state"
 msgstr "state"
@@ -138,15 +345,6 @@ msgstr "Click to edit…"
 msgid "<em>Click to edit</em>"
 msgstr "<em>Click to edit</em>"
 
-#~ msgid "#"
-#~ msgstr "#"
-
-#~ msgid "abandoned"
-#~ msgstr "abandoned"
-
-#~ msgid "Total:"
-#~ msgstr "Total:"
-
 #~ msgid "description"
 #~ msgstr "description"
 
@@ -159,5 +357,3 @@ msgstr "<em>Click to edit</em>"
 #~ msgid "brought"
 #~ msgstr "brought"
 
-#~ msgid "Vendor"
-#~ msgstr "Vendor"

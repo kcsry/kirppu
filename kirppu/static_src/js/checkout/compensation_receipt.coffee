@@ -28,7 +28,7 @@ class @CompensationReceipt extends CheckoutMode
 
   continueButton: (type="primary") =>
     $('<input type="button" class="btn btn-' + type + '">')
-      .attr('value', 'Continue')
+      .attr('value', gettext('Continue'))
       .click(@onDone)
 
   exit: ->
@@ -42,7 +42,7 @@ class @CompensationReceipt extends CheckoutMode
     # TODO: Add subtotal if receipt.extras
 
     table = Templates.render("item_report_table",
-      caption: "Compensated Items"
+      caption: gettext("Compensated Items")
       items: receipt.items
       sum: receipt.total
       topSum: true

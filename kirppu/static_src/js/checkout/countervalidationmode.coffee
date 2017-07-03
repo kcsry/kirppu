@@ -17,8 +17,8 @@ class @CounterValidationMode extends CheckoutMode
 
   @COOKIE = "mCV"
 
-  title: -> "Locked"
-  subtitle: -> "Need to validate counter."
+  title: -> gettext("Locked")
+  subtitle: -> gettext("Need to validate counter.")
 
   enter: ->
     super

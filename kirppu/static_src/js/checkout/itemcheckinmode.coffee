@@ -2,7 +2,7 @@ class @ItemCheckInMode extends ItemCheckoutMode
   ModeSwitcher.registerEntryPoint("vendor_check_in", @)
 
   glyph: -> "import"
-  title: -> "Vendor Check-In"
+  title: -> gettext("Vendor Check-In")
 
   constructor: (args..., query) ->
     super
@@ -37,7 +37,7 @@ class @ItemCheckInMode extends ItemCheckoutMode
 
   onResultError: (jqXHR) =>
     if jqXHR.status == 404
-      safeAlert("No such item")
+      safeAlert(gettext("No such item"))
       return
-    safeAlert("Error:" + jqXHR.responseText)
+    safeAlert(gettext("Error: %s").replace("%s", jqXHR.responseText))
     return true

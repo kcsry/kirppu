@@ -98,14 +98,6 @@
     UtilSound.error = new Audio("{% static "kirppu/audio/error-buzzer.mp3" %}");
     UtilSound.success = new Audio("{% static "kirppu/audio/bleep.mp3" %}");
 
-{# Until js localization domain is splitted from the public domain, using this. #}
-{% language settings.LANGUAGE_CODE %}
-    ReceiptPrintMode.strTotal = "{% trans "Total:" %}";
-    PrintReceiptTable.strVendor = "{% trans "vendor" %}";
-    PrintReceiptTable.strCode = "{% trans "code" %}";
-    PrintReceiptTable.strItem = "{% trans "name" %}";
-    PrintReceiptTable.strPrice = "{% trans "price" %}";
-{% endlanguage %}
 {% if auto_clerk %}
     ClerkLoginMode.autoClerk = "{{ auto_clerk }}";
 {% endif %}

@@ -1,10 +1,10 @@
 class @ReceiptPrintMode extends CheckoutMode
   ModeSwitcher.registerEntryPoint("reports", @)
 
-  @strTotal: "Total"
-  @strTitle: "Receipt"
-  @strTitleFind: "Find receipt"
-  @strSell: "%d, served by %c"
+  @strTotal: gettext("Total")
+  @strTitle: gettext("Receipt")
+  @strTitleFind: gettext("Find receipt")
+  @strSell: pgettext("%d is date and time of the receipt, %c is name of the cashier.", "%d, cashier: %c")
 
   constructor: (cfg, switcher, receiptData) ->
     super
@@ -24,7 +24,7 @@ class @ReceiptPrintMode extends CheckoutMode
   title: -> if not @hasReceipt then @constructor.strTitleFind else @constructor.strTitle
   subtitle: -> ""
   commands: ->
-    print: ["print", "Print receipt / return"]
+    print: ["print", gettext("Print receipt / return")]
 
   actions: -> [
     ["", @findReceipt]

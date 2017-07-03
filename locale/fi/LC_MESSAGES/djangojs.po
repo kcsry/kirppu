@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-05 15:29+0200\n"
-"PO-Revision-Date: 2017-03-05 15:37+0200\n"
+"POT-Creation-Date: 2017-07-05 16:16+0300\n"
+"PO-Revision-Date: 2017-07-04 11:26+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -66,11 +66,206 @@ msgstr "tila"
 msgid "No results."
 msgstr "Ei tuloksia."
 
+msgid "username"
+msgstr "käyttätunnus"
+
+msgid "id"
+msgstr "id"
+
+msgid "name"
+msgstr "nimi"
+
+msgid "email"
+msgstr "sähköposti"
+
+msgid "phone"
+msgstr "puhelin"
+
+msgid "Barcode"
+msgstr "Viivakoodi"
+
+msgid "Log out"
+msgstr "Kirjaudu ulos"
+
+msgid "Logout failed!"
+msgstr "Uloskirjautuminen epäonnistui!"
+
+msgid "Locked"
+msgstr "Lukittu"
+
+msgid "Need to validate counter."
+msgstr "Kassa on rekisteröitävä."
+
+msgid "Login..."
+msgstr "Kirjaudu…"
+
+#, javascript-format
+msgctxt "%s is a warning icon, leave a space after it."
+msgid "%s Multiple receipts active"
+msgstr "%s Useampi kuitti aktiivisena"
+
+msgid "Please select receipt, which you want to continue."
+msgstr "Valitse kuitti jota haluat jatkaa."
+
+msgid "Select"
+msgstr "Valitse"
+
+msgid "Vendor Check-In"
+msgstr "Tavaran tuonti"
+
+msgid "No such item"
+msgstr "Ei sellaista tavaraa"
+
+#, javascript-format
+msgid "Error: %s"
+msgstr "Virhe: %s"
+
+msgid "Returned items"
+msgstr "Palautetut tavarat"
+
+msgid "Remaining items"
+msgstr "Jäljelläolevat tavarat"
+
+msgid "Vendor Check-Out"
+msgstr "Tavaran poisvienti"
+
+msgid "Open Report"
+msgstr "Avaa Raportti"
+
+#, javascript-format
+msgid "Item not found: %s"
+msgstr "Tavaraa ei löydy: %s"
+
+msgid "Someone else's item!"
+msgstr "Jonkun toisen tavara!"
+
+msgid "Checkout"
+msgstr "Myynti"
+
+msgid "Abort receipt"
+msgstr "Hylkää kuitti"
+
+msgid "Suspend active receipt"
+msgstr "Keskeytä kuitin käsittely"
+
+msgid "Print receipt / return"
+msgstr "Tulosta kuitti / palaa takaisin"
+
+msgid "Network disconnected!"
+msgstr "Verkko katki!"
+
+msgid "Item is not registered."
+msgstr "Tuote ei ole rekisteröity."
+
+#, javascript-format
+msgid "Error %s."
+msgstr "Virhe %s."
+
+msgid "Could not restore receipt!"
+msgstr "Ei voitu palauttaa kuittia!"
+
+msgid "Continue suspended receipt?"
+msgstr "Jatka keskeytetyn kuitin käsittelyä?"
+
+msgid "Continue"
+msgstr "Jatka"
+
+msgid "Cancel"
+msgstr "Peru"
+
+msgid "Total: %t / Return: %r"
+msgstr "Yhteensä: %t / Takaisin: %r"
+
+msgid "Total: %t"
+msgstr "Yhteensä: %t"
+
+#, javascript-format
+msgid "Item not found on receipt: %s"
+msgstr "Tavaraa ei löydy kuitilta: %s"
+
+msgid "Not enough given money!"
+msgstr "Ei tarpeeksi rahaa!"
+
+msgid "Not accepting THAT much money!"
+msgstr "Liian suuri määrä rahaa!"
+
+msgid "Subtotal"
+msgstr "Välisumma"
+
+msgid "Cash"
+msgstr "Käteinen"
+
+msgid "Return"
+msgstr "Takaisin"
+
+msgid "Aborted"
+msgstr "Hylätty"
+
+msgid "Suspend receipt?"
+msgstr "Keskeytä kuitti?"
+
+msgid "Suspend"
+msgstr "Keskeytä"
+
+msgid "Suspended"
+msgstr "Keskeytetty"
+
+msgid "No receipt to print!"
+msgstr "Ei kuittia tulostettavaksi!"
+
+msgid "Cannot print while receipt is active!"
+msgstr "Kuittia ei voi tulostaa käsittelyn aikana!"
+
+msgid "Cannot print. The receipt is not in finished state!"
+msgstr "Ei voi tulostaa. Kuitin käsittelyä ei ole päätetty!"
+
+msgid "Error printing receipt!"
+msgstr "Kuitin tulostus epäonnistui!"
+
+msgid "Cannot logout while receipt is active!"
+msgstr "Ei voi kirjautua ulos kuitin käsittelyn aikana!"
+
+msgid "Total"
+msgstr "Yhteensä"
+
+msgid "Receipt"
+msgstr "Kuitti"
+
+msgid "Find receipt"
+msgstr "Etsi kuitti"
+
+#, javascript-format
+msgctxt "%d is date and time of the receipt, %c is name of the cashier."
+msgid "%d, cashier: %c"
+msgstr "%d, kassalla: %c"
+
 msgid "Vendor Compensation"
 msgstr "Myyjän Hyvitys"
 
+msgid "Confirm"
+msgstr "Vahvista"
+
+msgid "Retry"
+msgstr "Yritä uudelleen"
+
+msgid "Sold Items"
+msgstr "Myydyt tavarat"
+
+msgid "No compensable items"
+msgstr "Ei hyvitettäviä tavaroita"
+
+msgid ""
+"Failed items will not be compensated. Check report for updated sum. Are you "
+"sure to skip failed items?"
+msgstr ""
+"Epäonnistuneita rivejä ei hyvitetä. Tarkista raportista päivittynyt summa. "
+"Haluatko varmasti ohittaa epäonnistuneet rivit?"
+
 msgid "Compensation Receipt"
 msgstr "Hyvityskuitti"
+
+msgid "Compensated Items"
+msgstr "Hyvitetyt tavarat"
 
 msgid "Compensable Items"
 msgstr "Myydyt tavarat"
@@ -86,6 +281,9 @@ msgstr "Ei tuotu tapahtumaan"
 
 msgid "Item Report"
 msgstr "Raportti myyjän tavaroista"
+
+msgid "Search vendor"
+msgstr "Etsi myyjä"
 
 msgid "Compensate"
 msgstr "Anna rahat"
@@ -108,6 +306,15 @@ msgid ""
 msgstr ""
 "1) Oletko kysynyt myyjän allekirjoituksen JA 2) Oletko varma, että haluat "
 "merkitä kaikki näytteillä olevat tai hukkuneet tavarat hylätyiksi?"
+
+msgid "Close"
+msgstr "Sulje"
+
+msgid "Show"
+msgstr "Näytä"
+
+msgid "Vendor Search"
+msgstr "Myyjähaku"
 
 msgid "state"
 msgstr "tila"
@@ -137,15 +344,6 @@ msgstr "Klikkaa muokataksesi…"
 msgid "<em>Click to edit</em>"
 msgstr "<em>Klikkaa muokataksesi</em>"
 
-#~ msgid "#"
-#~ msgstr "#"
-
-#~ msgid "abandoned"
-#~ msgstr "hylätty"
-
-#~ msgid "Total:"
-#~ msgstr "Yhteensä:"
-
 #~ msgid "description"
 #~ msgstr "kuvaus"
 
@@ -158,5 +356,3 @@ msgstr "<em>Klikkaa muokataksesi</em>"
 #~ msgid "brought"
 #~ msgstr "tuotuja"
 
-#~ msgid "Vendor"
-#~ msgstr "Myyjä"

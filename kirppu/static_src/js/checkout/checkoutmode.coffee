@@ -41,7 +41,7 @@ class @CheckoutMode
   # @return [String, null] Subtitle string, if needed.
   subtitle: -> "#{@cfg.settings.clerkName} @ #{@cfg.settings.counterName}"
 
-  inputPlaceholder: -> "Barcode"
+  inputPlaceholder: -> gettext("Barcode")
 
   # Called after switching to this mode.
   enter: ->
@@ -57,7 +57,7 @@ class @CheckoutMode
   # @return [Object] Command prefixes with names.
   commands: ->
     # This is actually called by static reference.
-    logout: ["exit", "Log out"]
+    logout: ["exit", gettext("Log out")]
 
   # Return an Array where each element is a [prefix, handler function]
   # array. The handler will be called with (code, prefix) where code is
@@ -80,7 +80,7 @@ class @CheckoutMode
         @switcher.switchTo(ClerkLoginMode)
 
       () =>
-        safeAlert("Logout failed!")
+        safeAlert(gettext("Logout failed!"))
         return true
     )
 

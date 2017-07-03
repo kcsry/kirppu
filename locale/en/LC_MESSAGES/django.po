@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-05 15:29+0200\n"
-"PO-Revision-Date: 2017-03-05 15:29+0200\n"
+"POT-Creation-Date: 2017-07-05 16:16+0300\n"
+"PO-Revision-Date: 2017-07-03 17:13+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -52,6 +52,15 @@ msgstr "Access code set for '{0}'"
 
 msgid "Move unused access code to existing Clerk."
 msgstr "Move unused access code to existing Clerk."
+
+#, python-brace-format
+msgid "One unbound clerk added."
+msgid_plural "{count} unbound clerks added."
+msgstr[0] "One unbound clerk added."
+msgstr[1] "{count} unbound clerks added."
+
+msgid "Add unbound clerk"
+msgstr "Add unbound clerk"
 
 msgid "Item"
 msgstr "Item"
@@ -356,32 +365,32 @@ msgstr "Give this page to the clerk when bringing items."
 msgid "Price:"
 msgstr "Price:"
 
-msgid "Total:"
-msgstr "Total:"
 
 msgid "vendor"
 msgstr "vendor"
-
-msgid "code"
-msgstr "code"
-
-msgid "name"
-msgstr "name"
-
-msgid "price"
-msgstr "price"
-
 msgid "Clerk codes"
 msgstr "Clerk codes"
 
 msgid "Registered items"
 msgstr "Registered items"
 
+msgid "name"
+msgstr "name"
+
+msgid "code"
+msgstr "code"
+
+msgid "price"
+msgstr "price"
+
 msgid "printed"
 msgstr "printed"
 
 msgid "yes,no"
 msgstr "yes,no"
+
+msgid "Total:"
+msgstr "Total:"
 
 #, python-format
 msgid "%(num_printed)s of %(num_total)s"

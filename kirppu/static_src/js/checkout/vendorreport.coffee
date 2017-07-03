@@ -12,7 +12,7 @@ class @VendorReport extends CheckoutMode
     @vendor = vendor
 
   title: -> gettext("Item Report")
-  inputPlaceholder: -> "Search vendor"
+  inputPlaceholder: -> gettext("Search vendor")
 
   actions: -> [
     ["", (query) => @switcher.switchTo(VendorFindMode, query)]
@@ -116,15 +116,15 @@ class @VendorReport extends CheckoutMode
 
   onShowCompensations: =>
     dlg = new Dialog()
-    dlg.title.text("Compensation receipts")
+    dlg.title.text(gettext("Compensation receipts"))
 
     # TODO: customized Dialog class for listing things?
     table = $ Templates.render("receipt_list_table_compensations",
       items: @_compensations
     )
 
-    dlg.addNegative().text("Close").addClass("btn-primary")
-    buttonPositive = dlg.addPositive().text("Show")
+    dlg.addNegative().text(gettext("Close")).addClass("btn-primary")
+    buttonPositive = dlg.addPositive().text(gettext("Show"))
 
     $("tbody tr", table).click(() ->
       table.find(".success").removeClass("success")

@@ -4,7 +4,7 @@ class @VendorCompensation extends CheckoutMode
     super(cfg, switcher)
     @vendor = vendor
 
-  title: -> "Vendor Compensation"
+  title: -> gettext("Vendor Compensation")
 
   enter: ->
     super
@@ -31,22 +31,22 @@ class @VendorCompensation extends CheckoutMode
 
   confirmButton: ->
     $('<input type="button" class="btn btn-success">')
-      .attr('value', 'Confirm')
+      .attr('value', gettext('Confirm'))
       .click(@onConfirm)
 
   abortButton: ->
     $('<input type="button" class="btn btn-default">')
-      .attr('value', 'Cancel')
+      .attr('value', gettext('Cancel'))
       .click(@onCancel)
 
   continueButton: (type="primary", clickHandler=@onCancel) =>
     $('<input type="button" class="btn btn-' + type + '">')
-      .attr('value', 'Continue')
+      .attr('value', gettext('Continue'))
       .click(clickHandler)
 
   retryButton: ->
     $('<input type="button" class="btn btn-primary">')
-      .attr('value', 'Retry')
+      .attr('value', gettext('Retry'))
       .click(@onRetryFailed)
 
   onGotItems: (items) =>
@@ -60,7 +60,7 @@ class @VendorCompensation extends CheckoutMode
       rows.push(
         action: "EXTRA"
         type: "SUB"
-        type_display: "Subtotal"
+        type_display: gettext("Subtotal")
         value: compensableSum
       )
       rows = rows.concat(@compensableExtras)
@@ -72,7 +72,7 @@ class @VendorCompensation extends CheckoutMode
 
     if @compensableItems.length > 0
       table = Templates.render("item_report_table",
-        caption: "Sold Items"
+        caption: gettext("Sold Items")
         items: rows
         sum: compensableSum + provisionAmount
         topSum: true
@@ -82,7 +82,7 @@ class @VendorCompensation extends CheckoutMode
       @buttonForm.empty().append(@confirmButton(), @abortButton())
 
     else
-      @itemDiv.empty().append($('<em>').text('No compensable items'))
+      @itemDiv.empty().append($('<em>').text(gettext('No compensable items')))
       @buttonForm.empty().append(@continueButton())
 
   onCancel: => @switcher.switchTo(VendorReport, @vendor)
@@ -182,7 +182,7 @@ class @VendorCompensation extends CheckoutMode
 
   # Skip failed items and proceed to compensation with only the successful items.
   onSkipFailed: =>
-    r = confirm("Failed items will not be compensated. Check report for updated sum. Are you sure to skip failed items?")
+    r = confirm(gettext("Failed items will not be compensated. Check report for updated sum. Are you sure to skip failed items?"))
     if r
       safeAlertOff()
       @onCompensated()

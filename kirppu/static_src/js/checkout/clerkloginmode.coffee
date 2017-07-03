@@ -3,8 +3,8 @@ class @ClerkLoginMode extends CheckoutMode
 
   @autoClerk = null
 
-  title: -> "Locked"
-  subtitle: -> "Login..."
+  title: -> gettext("Locked")
+  subtitle: -> gettext("Login...")
 
   enter: ->
     super
@@ -47,14 +47,16 @@ class @ClerkLoginMode extends CheckoutMode
 
   multipleReceipts: (receipts) ->
     dialog = new Dialog()
-    dialog.title.html('<span class="glyphicon glyphicon-warning-sign text-warning"></span> Multiple receipts active')
+    icon = '<span class="glyphicon glyphicon-warning-sign text-warning"></span>'
+    dialog.title.html(pgettext("%s is a warning icon, leave a space after it.",
+      "%s Multiple receipts active").replace("%s", icon))
 
-    info = $("<div>").text("Please select receipt, which you want to continue.")
+    info = $("<div>").text(gettext("Please select receipt, which you want to continue."))
     table = $ Templates.render("receipt_list_table_simple",
       items: receipts
     )
 
-    buttonPositive = dialog.addPositive().text("Select")
+    buttonPositive = dialog.addPositive().text(gettext("Select"))
 
     # This may not use => version of function, as `this` of the row is needed.
     $("tbody tr", table).click(() ->

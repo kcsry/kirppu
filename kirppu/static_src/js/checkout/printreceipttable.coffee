@@ -1,8 +1,8 @@
 class @PrintReceiptTable
-  @strCode: "code"
-  @strItem: "item"
-  @strPrice: "price"
-  @strVendor: "vendor"
+  @strCode: gettext("code")
+  @strItem: gettext("item")
+  @strPrice: gettext("price")
+  @strVendor: gettext("vendor")
 
   constructor: (caption=null)->
     @table = $ Templates.render("receipt_table",

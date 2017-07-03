@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-05 15:29+0200\n"
-"PO-Revision-Date: 2017-03-05 15:36+0200\n"
+"POT-Creation-Date: 2017-07-05 16:16+0300\n"
+"PO-Revision-Date: 2017-07-04 11:21+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -53,6 +53,15 @@ msgstr "Käyttötunniste asetettu '{0}':lle"
 
 msgid "Move unused access code to existing Clerk."
 msgstr "Siirrä käyttämätön tunniste olemassaolevalle kassatädille"
+
+#, python-brace-format
+msgid "One unbound clerk added."
+msgid_plural "{count} unbound clerks added."
+msgstr[0] "Lisätty irrallinen kassatäti."
+msgstr[1] "Lisätty {count} irrallista kassatätiä."
+
+msgid "Add unbound clerk"
+msgstr "Lisää irrallinen kassatäti"
 
 msgid "Item"
 msgstr "Tavara"
@@ -357,20 +366,8 @@ msgstr "Anna tämä sivu kassahenkilökunnalle tuodessasi tavaroita."
 msgid "Price:"
 msgstr "Hinta:"
 
-msgid "Total:"
-msgstr "Yhteensä:"
-
 msgid "vendor"
 msgstr "myyjä"
-
-msgid "code"
-msgstr "koodi"
-
-msgid "name"
-msgstr "nimi"
-
-msgid "price"
-msgstr "hinta"
 
 msgid "Clerk codes"
 msgstr "Kassatätien tunnisteet"
@@ -378,11 +375,23 @@ msgstr "Kassatätien tunnisteet"
 msgid "Registered items"
 msgstr "Rekisteröidyt tavarat"
 
+msgid "name"
+msgstr "nimi"
+
+msgid "code"
+msgstr "koodi"
+
+msgid "price"
+msgstr "hinta"
+
 msgid "printed"
 msgstr "tulostettu"
 
 msgid "yes,no"
 msgstr "kyllä,ei"
+
+msgid "Total:"
+msgstr "Yhteensä:"
 
 #, python-format
 msgid "%(num_printed)s of %(num_total)s"

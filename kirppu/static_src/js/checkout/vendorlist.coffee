@@ -3,11 +3,11 @@ class @VendorList extends ResultTable
     super
     @head.append([
       '<th class="receipt_index">#</th>'
-      '<th class="receipt_username">username</th>'
-      '<th class="receipt_vendor_id">id</th>'
-      '<th class="receipt_name">name</th>'
-      '<th class="receipt_email">email</th>'
-      '<th class="receipt_phone">phone</th>'
+      '<th class="receipt_username">%s</th>'.replace("%s", gettext("username"))
+      '<th class="receipt_vendor_id">%s</th>'.replace("%s", gettext("id"))
+      '<th class="receipt_name">%s</th>'.replace("%s", gettext("name"))
+      '<th class="receipt_email">%s</th>'.replace("%s", gettext("email"))
+      '<th class="receipt_phone">%s</th>'.replace("%s", gettext("phone"))
     ].map($))
 
   append: (vendor, index, action) ->
