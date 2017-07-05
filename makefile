@@ -15,7 +15,7 @@ static:   ## Install npm dependencies and build static files.
 	cd kirppu && npm i && gulp pipeline
 
 compile:  ## Compile localizations for use.
-	${PYTHON} manage.py compilemessages
+	DEBUG=1 ${PYTHON} manage.py compilemessages
 
 c:        ## Clean compiled pyc files.
 	find kirppu -name \*.pyc -exec rm {} +
