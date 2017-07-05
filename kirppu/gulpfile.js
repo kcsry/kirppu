@@ -20,6 +20,7 @@ const log = require("fancy-log");
 const noop = require("through2");
 
 const _ = require("lodash");
+const trans = require("./nunjucks_trans");
 
 
 const pipeline = require("./pipeline");
@@ -100,8 +101,19 @@ const cssTasks = _.map(pipeline.css, function(def, name) {
     return taskName;
 });
 
-// Strip some newlines/whitespace from {%%} tags. Sadly, does not strip whitespace from html.
-const nunjucksEnv = nunjucks_compiler.configure({trimBlocks: true, lstripBlocks: true});
+const makeNunjucks = function(opts) {
+    // Strip some newlines/whitespace from {%%} tags. Sadly, does not strip whitespace from html.
+    const nunjucksEnv = nunjucks_compiler.configure({trimBlocks: true, lstripBlocks: true});
+    const transExt = new trans.Trans(opts);
+    nunjucksEnv.addExtension("Trans", transExt);
+    return {
+        env: nunjucksEnv,
+        trans: transExt,
+    };
+};
+
+const nunjucksEnv = makeNunjucks().env;
+
 const jstTasks = _.map(pipeline.jst, function(def, name) {
     const taskName = "jst:" + name;
     const nameFn = function(file) {
@@ -122,6 +134,23 @@ const jstTasks = _.map(pipeline.jst, function(def, name) {
             .pipe(gulp.dest(DEST + "/jst/"));
     });
     return taskName;
+});
+
+const extractNunjucks = makeNunjucks({output: "./template-strings.js"});
+gulp.task("messages", function() {
+    const srcs = [];
+    _.forEach(pipeline.jst, function(def) {
+        Array.prototype.push.apply(srcs, srcPrepend(def));
+    });
+
+    return gulp.src(srcs)
+        .pipe(gif(/\.jinja2?$/, nunjucks.precompile({
+            env: extractNunjucks.env
+        }), noop.obj()))
+        .on('error', handleError)
+        .on('end', function() {
+            extractNunjucks.trans.close();
+        });
 });
 
 const staticTasks = _.map(pipeline.static, function(def, name) {

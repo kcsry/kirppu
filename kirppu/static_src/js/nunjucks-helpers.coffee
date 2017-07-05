@@ -39,4 +39,5 @@ class @Templates
       env.addFilter("displayPrice", displayPrice)
       env.addFilter("yesno", yesnoHelper)
       env.addFilter("dateTime", dateTime)
+      env.addExtension("Trans", new Trans())
     return Templates._env

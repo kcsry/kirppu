@@ -8,4 +8,10 @@ class @VendorInfo
   render: -> Templates.render("vendor_info",
     vendor: @_vendor,
     title: @_title,
+    text:
+      name: gettext("name")
+      email: gettext("email")
+      phone: gettext("phone")
+      id: gettext("id")
+      terms_accepted_str: gettext("terms accepted?")
   )

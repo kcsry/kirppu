@@ -4,12 +4,12 @@
 <thead>
     <tr>
         <th class="receipt_index numeric">#</th>
-        <th>description</th>
-        <th class="receipt_price numeric">price</th>
-        <th class="receipt_count numeric">brought</th>
-        <th class="receipt_count numeric">compensable</th>
-        <th class="receipt_count numeric">compensated</th>
-        <th class="receipt_count numeric">returnable</th>
+        <th>{% trans "description" %}</th>
+        <th class="receipt_price numeric">{% trans "price" %}</th>
+        <th class="receipt_count numeric">{% trans "brought" %}</th>
+        <th class="receipt_count numeric">{% trans "compensable" %}</th>
+        <th class="receipt_count numeric">{% trans "compensated" %}</th>
+        <th class="receipt_count numeric">{% trans "returnable" %}</th>
     </tr>
 </thead>
 <tbody>
@@ -25,12 +25,12 @@
     </tr>
 {% else %}
     <tr>
-        <td colspan="6">No boxes.</td>
+        <td colspan="6">{% trans "No boxes." %}</td>
     </tr>
 {% endfor %}
 {% if items %}
     <tr{% if hideSumInPrint %} class="hidden-print"{% endif %}>
-        <th colspan="3">Total:</th>
+        <th colspan="3">{% trans "Total:" %}</th>
         <th class="receipt_price numeric">{{ sums.brought|displayPrice }} ({{ counts.brought }})</th>
         <th class="receipt_price numeric">{{ sums.sold|displayPrice }} ({{ counts.sold }})</th>
         <th class="receipt_price numeric" style="font-weight: normal">{{ sums.compensated|displayPrice }} ({{ counts.compensated }})</th>

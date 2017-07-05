@@ -3,13 +3,13 @@
 {% if caption %}<caption class="h3">{{ caption }}</caption>{% endif %}
 <thead>
     <tr>
-        <th class="receipt_index numeric">#</th>
-        <th class="receipt_code">code</th>
-        <th class="receipt_item">item</th>
-        <th class="receipt_price numeric">price</th>
+        <th class="receipt_index numeric">{% trans "#" %}</th>
+        <th class="receipt_code">{% trans "code" %}</th>
+        <th class="receipt_item">{% trans "item" %}</th>
+        <th class="receipt_price numeric">{% trans "price" %}</th>
         {% if not hide_status %}
-        <th class="receipt_status">status</th>
-        <th class="receipt_abandoned">abandoned</th>
+        <th class="receipt_status">{% trans "status" %}</th>
+        <th class="receipt_abandoned">{% trans "abandoned" %}</th>
         {% endif %}
         {% if extra_col %}<th class="receipt_extra_col"></th>{% endif %}
     </tr>
@@ -17,7 +17,7 @@
 <tbody>
 {% macro total(sum) %}
     <tr>
-        <th colspan="3">Total:</th>
+        <th colspan="3">{% trans "Total:" %}</th>
         <th class="receipt_price numeric">{{ sum|displayPrice }}</th>
     {% if not hide_status %}
         <th></th>
@@ -51,7 +51,7 @@
     </tr>
 {% else %}
     <tr>
-        <td colspan="{% if extra_col %}7{% else %}6{% endif %}">No items.</td>
+        <td colspan="{% if extra_col %}7{% else %}6{% endif %}">{% trans "No items." %}</td>
     </tr>
 {% endfor %}
 {% if items %}

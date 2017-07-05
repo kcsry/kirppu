@@ -3,23 +3,23 @@
 {% if caption %}<caption class="h3{% if hidePrint %} text-muted{% endif %}">{{ caption }}</caption>{% endif %}
 <thead>
     <tr>
-        <th class="receipt_index numeric">#</th>
-        <th class="receipt_code">code</th>
-        <th class="receipt_item">item</th>
-        <th>item type</th>
-        <th class="receipt_price numeric">price</th>
-        <th class="receipt_status">status</th>
-        <th class="receipt_abandoned">abandoned</th>
+        <th class="receipt_index numeric">{% trans "#" %}</th>
+        <th class="receipt_code">{% trans "code" %}</th>
+        <th class="receipt_item">{% trans "item" %}</th>
+        <th>{% trans "item type" %}</th>
+        <th class="receipt_price numeric">{% trans "price" %}</th>
+        <th class="receipt_status">{% trans "status" %}</th>
+        <th class="receipt_abandoned">{% trans "abandoned" %}</th>
     </tr>
 </thead>
 <tbody>
 {% macro total(sum) %}
     <tr class="hidden-print">
     {% if isExpectedSum %}
-        <th colspan="4">Expected total:</th>
+        <th colspan="4">{% trans "Expected total:" %}</th>
         <th class="receipt_price numeric">~ {{ sum|displayPrice }} ~</th>
     {% else %}
-        <th colspan="4">Total:</th>
+        <th colspan="4">{% trans "Total:" %}</th>
         <th class="receipt_price numeric">{{ sum|displayPrice }}</th>
     {% endif %}
         <th></th>
@@ -38,7 +38,7 @@
     </tr>
 {% else %}
     <tr>
-        <td colspan="6">No items.</td>
+        <td colspan="6">{% trans "No items." %}</td>
     </tr>
 {% endfor %}
 {% if items %}

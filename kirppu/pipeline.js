@@ -115,6 +115,7 @@ module.exports.js = {
             "../node_modules/nunjucks/browser/nunjucks-slim.js",
             "../node_modules/lodash/index.js",
             "js/nunjucks-helpers.coffee",
+            "js/nunjucks_trans_runtime.js",
         ],
         "output_filename": "checkout_comp.js",
         "compress": true

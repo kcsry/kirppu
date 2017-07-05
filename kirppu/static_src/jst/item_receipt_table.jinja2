@@ -3,15 +3,15 @@
 {% if caption %}<caption class="h3">{{ caption }}</caption>{% endif %}
 <thead>
     <tr>
-        <th class="receipt_index numeric">#</th>
-        <th class="receipt_code">code</th>
+        <th class="receipt_index numeric">{% trans "#" %}</th>
+        <th class="receipt_code">{% trans "code" %}</th>
         {% if splitTitle %}
-            <th class="receipt_item">item</th>
+            <th class="receipt_item">{% trans "item" %}</th>
             <th class="receipt_item_detail"></th>
         {% else %}
-            <th colspan="2" class="receipt_item">item</th>
+            <th colspan="2" class="receipt_item">{% trans "item" %}</th>
         {% endif %}
-        <th class="receipt_price">price</th>
+        <th class="receipt_price">{% trans "price" %}</th>
     </tr>
 </thead>
 <tbody></tbody>

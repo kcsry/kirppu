@@ -2,6 +2,7 @@
 *.mo
 /static/
 kirppu/local_settings.py
+kirppu/template-strings.js
 kirppu_project/local_settings.py
 node_modules
 /KirppuVenv*/

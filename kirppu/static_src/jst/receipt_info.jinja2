@@ -1,22 +1,22 @@
 {# -*- mode: django; -*- #}
 <dl class="dl-horizontal">
-    <dt>began</dt>
+    <dt>{% trans "began" %}</dt>
     <dd>{{ receipt.start_time|dateTime }}</dd>
 
-    <dt>sum</dt>
+    <dt>{% trans "sum" %}</dt>
     <dd>{{ receipt.total|displayPrice }}</dd>
 
-    <dt>status</dt>
+    <dt>{% trans "status" %}</dt>
     <dd>{{ receipt.status_display }}</dd>
 
-    <dt>clerk</dt>
+    <dt>{% trans "clerk" %}</dt>
     <dd>{{ receipt.clerk.print }}</dd>
 
-    <dt>counter</dt>
+    <dt>{% trans "counter" %}</dt>
     <dd>{{ receipt.counter }}</dd>
 </dl>
 {% if receipt.notes and receipt.notes.length %}
-    <h4>Notes</h4>
+    <h4>{% trans "Notes" %}</h4>
     <ul>
 {% for note in receipt.notes %}
         <li>{{ note.timestamp|dateTime }} <em>{{ note.clerk.print }}</em>: {{ note.text }}</li>
@@ -24,7 +24,7 @@
     </ul>
 {% endif %}
 {% if receipt.items and receipt.items.length %}
-    <h4>Items</h4>
+    <h4>{% trans "Items" %}</h4>
     <table class="table table-condensed table-striped">
     <tbody>
     {% for item in receipt.items %}
