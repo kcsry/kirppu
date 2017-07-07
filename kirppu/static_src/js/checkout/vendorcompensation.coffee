@@ -147,7 +147,7 @@ class @VendorCompensation extends CheckoutMode
 
     # Compensate an item. When successful, set the item state. If failure, add it to list of failed items.
     Api.item_compensate(code: item.code)
-      .done(() => item.state = "CO")
+      .done(() => item.state = ItemState.compensated)
       .done(cb("ok", "success"))
       .fail((jqXHR) => @_addFailedItem(jqXHR, item))
       .fail(cb("remove", "danger"))
@@ -193,7 +193,7 @@ class @VendorCompensation extends CheckoutMode
     # Create list of succeeded i.e. compensated items.
     items = []
     for item in @compensableItems
-      if item.state == "CO"
+      if item.state == ItemState.compensated
         items.push(item)
 
     if @compensableExtras
