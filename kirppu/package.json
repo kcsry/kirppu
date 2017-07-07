@@ -5,6 +5,7 @@
   "main": "gulpfile.js",
   "directories": {},
   "scripts": {
+    "build": "gulp",
     "gulp": "gulp"
   },
   "author": "",

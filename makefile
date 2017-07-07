@@ -12,7 +12,7 @@ messages: ## Extract strings from sources for localization.
 	${PYTHON} manage.py makemessages -d django ${MM_ARGS}
 
 static:   ## Install npm dependencies and build static files.
-	cd kirppu && npm i && gulp pipeline
+	cd kirppu && npm i && npm run build
 
 compile:  ## Compile localizations for use.
 	DEBUG=1 ${PYTHON} manage.py compilemessages
