@@ -1,10 +1,60 @@
-tables = [
-  # title, included modes, hideInPrint, isExpectedValue (not to be trusted)
-  [gettext('Compensable Items'), {SO: 0}, false, true]
-  [gettext('Returnable Items'),  {BR: 0, ST: 0}, false, false]
-  [gettext('Other Items'),       {MI: 0, RE: 0, CO: 0}, false, false]
-  [gettext('Not brought to event'), {AD: 0}, true, false]
-]
+@ItemState = (Object.freeze ? (x) -> x)(
+  advertized: "AD"
+  brought: "BR"
+  staged: "ST"
+  sold: "SO"
+  missing: "MI"
+  returned: "RE"
+  compensated: "CO"
+)
+
+class Table
+  @create: (opts) ->
+    freeze = (Object.freeze ? (x) -> x)
+    states = {}
+    for state in opts.states
+      states[state] = true
+    opts.states = freeze states
+    opts.untrustedValue ||= false
+    opts.hidden ||= false
+    opts = freeze opts
+    t = new Table(opts)
+    t.states = opts.states
+    t.hidden = opts.hidden
+    t.untrustedValue = opts.untrustedValue
+    freeze t
+
+  constructor: (@_opts) ->
+  title: -> @_opts.title()
+  filter: (list) ->
+    if @_opts.filter
+      (i for i in list when @_opts.filter(i))
+    else
+      (i for i in list when @_opts.states[i.state]?)
+
+
+tables =
+  compensable: Table.create
+    states: [ItemState.sold]
+    untrustedValue: true
+    title: -> gettext('Compensable Items')
+  returnable: Table.create
+    states: [ItemState.brought, ItemState.staged]
+    title: -> gettext('Returnable Items')
+  other: Table.create
+    states: [ItemState.missing, ItemState.returned, ItemState.compensated]
+    title: -> gettext('Other Items')
+  registered: Table.create
+    states: [ItemState.advertized]
+    title: -> gettext('Not brought to event')
+    hidden: true
+    filter: (i) -> @states[i.state]? and not i.hidden
+  deleted: Table.create
+    states: [ItemState.advertized]
+    title: -> gettext('Deleted')
+    hidden: true
+    filter: (i) -> @states[i.state]? and i.hidden
+
 
 class @VendorReport extends CheckoutMode
   constructor: (cfg, switcher, vendor) ->
@@ -70,14 +120,16 @@ class @VendorReport extends CheckoutMode
 
     @_compensations = compensations
 
-    for [name, states, hidePrint, isExpectedSum] in tables
-      matchingItems = (i for i in items when states[i.state]?)
+    for table_name, table of tables
+      matchingItems = table.filter(items)
+
       rendered_table = Templates.render("item_report_table",
-         caption: name
+         id: table_name
+         caption: table.title()
          items: matchingItems
          sum: _.reduce(matchingItems, ((acc, item) -> acc + item.price), 0)
-         hidePrint: hidePrint
-         isExpectedSum: isExpectedSum
+         hidePrint: table.hidden
+         isExpectedSum: table.untrustedValue
          hideSumInPrint: true
       )
       @cfg.uiRef.body.append(rendered_table)
@@ -101,7 +153,7 @@ class @VendorReport extends CheckoutMode
       )
 
       # Insert box list before Not Brought list.
-      @cfg.uiRef.body.children().last().before(rendered_table)
+      @cfg.uiRef.body.find("table#registered").before(rendered_table)
     return
 
   onCompensate: => @switcher.switchTo(VendorCompensation, @vendor)

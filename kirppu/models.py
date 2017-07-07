@@ -582,6 +582,7 @@ class Item(models.Model):
         "state",
         "itemtype",
         "abandoned",
+        "hidden",
         price="price_cents",
         vendor="vendor_id",
         state_display="get_state_display",
