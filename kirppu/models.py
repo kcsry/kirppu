@@ -916,3 +916,13 @@ class ItemStateLog(models.Model):
 
     clerk = models.ForeignKey(Clerk, null=True, on_delete=models.CASCADE)
     counter = models.ForeignKey(Counter, null=True, on_delete=models.CASCADE)
+
+    def __repr__(self):
+        return "<ItemStateLog item={} time={} old={} new={} clerk={} counter={}>".format(
+            self.item.code,
+            self.time,
+            self.old_state,
+            self.new_state,
+            self.clerk.pk,
+            self.counter.pk,
+        )
