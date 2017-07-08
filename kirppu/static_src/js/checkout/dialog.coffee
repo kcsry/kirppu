@@ -21,19 +21,27 @@ class @Dialog
   # @param clazz [optional] Initial btn-class to set to the button.
   # @return [$] Button object.
   addPositive: (clazz="success") ->
-    return @addButton(clazz)
+    return @addDismissButton(clazz)
 
   # Add negative button to the dialog.
   # @param clazz [optional] Initial btn-class to set to the button.
   # @return [$] Button object.
   addNegative: (clazz="default") ->
-    return @addButton(clazz)
+    return @addDismissButton(clazz)
+
+  # Add a button to the dialog that will dismiss the dialog when clicked.
+  # @params clazz Initial btn-class to set to the button.
+  # @return [$] Button object.
+  addDismissButton: (clazz) ->
+    btn = @_button(clazz)
+    @_buttonList.push(btn)
+    return btn
 
   # Add a button to the dialog.
   # @params clazz Initial btn-class to set to the button.
   # @return [$] Button object.
   addButton: (clazz) ->
-    btn = @_button(clazz)
+    btn = $("""<button type="button" class="btn btn-#{clazz}">""")
     @_buttonList.push(btn)
     return btn
 

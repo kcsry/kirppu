@@ -88,6 +88,10 @@ class @VendorReport extends CheckoutMode
       .addClass('btn btn-default')
       .attr('value', gettext('Compensation receipts'))
       .click(@onShowCompensations)
+    mobileCode = $('<input type="button">')
+      .addClass('btn btn-default')
+      .attr('value', gettext('Mobile code'))
+      .click(@onCreateMobileCode)
 
     @cfg.uiRef.body.append(
       $('<form class="hidden-print">').append(
@@ -97,7 +101,9 @@ class @VendorReport extends CheckoutMode
         " ",
         abandonButton,
         " ",
-        compensationsButton
+        compensationsButton,
+        " ",
+        mobileCode,
       )
     )
 
@@ -197,4 +203,39 @@ class @VendorReport extends CheckoutMode
     dlg.setEnabled(buttonPositive, false)
 
     dlg.body.append(table)
+    dlg.show()
+
+  onCreateMobileCode: =>
+    dlg = new Dialog()
+    dlg.title.text(gettext("Mobile code"))
+
+    buttonClose = dlg.addNegative().text(gettext("Close"))
+    buttonCreate = dlg.addButton("warning").text(gettext("Create new code"))
+
+    codeDisplay = $("<div>").addClass("short-code-display")
+    bodyText = $("<p>").text(gettext("Creating a code will invalidate all old codes."))
+
+    body = $("<div>")
+    body.append(bodyText, codeDisplay)
+
+    buttonCreate.click(() =>
+      dlg.setEnabled(buttonCreate, false)
+      dlg.setEnabled(buttonClose, false)
+      Api.vendor_token_create(
+        vendor_id: @vendor.id
+      ).then(
+        (data) =>
+          codeDisplay.text(data.code)
+          setTimeout(
+            () => dlg.setEnabled(buttonClose),
+            2000)
+
+        (jqXHR) =>
+          dlg.setEnabled(buttonCreate)
+          dlg.setEnabled(buttonClose)
+          bodyText.text(jqXHR.responseText)
+      )
+    )
+
+    dlg.body.append(body)
     dlg.show()

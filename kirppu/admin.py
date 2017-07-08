@@ -36,6 +36,8 @@ from .models import (
     UIText,
     ItemStateLog,
     Box,
+    TemporaryAccessPermit,
+    TemporaryAccessPermitLog,
 )
 
 __author__ = 'jyrkila'
@@ -465,3 +467,27 @@ class BoxAdmin(admin.ModelAdmin):
     list_display_links = ['box_number', 'description']
 
 admin.site.register(Box, BoxAdmin)
+
+
+class TemporaryAccessPermitAdmin(admin.ModelAdmin):
+    model = TemporaryAccessPermit
+    readonly_fields = ("vendor", "creator", "short_code")
+    list_display = (
+        "__str__",
+        RefLinkAccessor("vendor", ugettext("Vendor")),
+    )
+
+admin.site.register(TemporaryAccessPermit, TemporaryAccessPermitAdmin)
+
+
+class TemporaryAccessPermitLogAdmin(admin.ModelAdmin):
+    model = TemporaryAccessPermitLog
+    readonly_fields = ("permit", "timestamp", "action", "address", "peer")
+    list_display = (
+        "__str__",
+        RefLinkAccessor("permit", ugettext("Permit")),
+        "timestamp",
+        "action",
+    )
+
+admin.site.register(TemporaryAccessPermitLog, TemporaryAccessPermitLogAdmin)

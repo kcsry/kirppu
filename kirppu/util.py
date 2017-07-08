@@ -278,7 +278,7 @@ def get_form(form, request, *args, **kwargs):
         return form(*args, **kwargs)
 
 
-def shorten_text(text, length=80):
+def shorten_text(text, length=80, cut_on_dot=True):
     """
     Get excerpt of 'text' from beginning.
     The text may contain one extra character after given length.
@@ -287,11 +287,13 @@ def shorten_text(text, length=80):
     :type text: unicode
     :param length: Length to cut the string.
     :type length: int
+    :param cut_on_dot: If `True` (default), cutting will happen primarily on first dot.
+    :type cut_on_dot: bool
     :return: Shortened text.
     :rtype: unicode
     """
     # Find out where to cut the text.
-    dot = text.find(".")
+    dot = text.find(".") if cut_on_dot else -1
     if dot == -1:
         # No dot. Give result for whole string.
         dot = len(text)
@@ -307,3 +309,20 @@ def shorten_text(text, length=80):
     if dot < len(text):
         result += u"…"
     return result
+
+
+def first(a_list, predicate):
+    """
+    Find first item of `a_list` matching `predicate`.
+
+    :param a_list: A list of items.
+    :type a_list: list[T]
+    :param predicate: Predicate function. When this returns `True`, the tested item is returned.
+    :type predicate: callable
+    :return: First matched item or `None` if none is found.
+    :rtype T|None
+    """
+    for item in a_list:
+        if predicate(item):
+            return item
+    return None

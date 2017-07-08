@@ -330,6 +330,9 @@ KIRPPU_MIN_MAX_PRICE = ('1', '400')
 # Maximum purchase amount.
 KIRPPU_MAX_PURCHASE = '450'
 
+KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES = 10
+KIRPPU_EXHAUST_SHORT_CODE_ON_LOGOUT = False
+
 
 # Function to calculate provision amount. Must return always None or a Decimal instance.
 def KIRPPU_POST_PROVISION(sold_and_compensated):

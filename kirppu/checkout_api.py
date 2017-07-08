@@ -7,7 +7,7 @@ import random
 from django.contrib.auth import get_user_model
 
 from django.core.exceptions import ValidationError
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.db.models import Q, F
 from django.http.response import (
     HttpResponse,
@@ -21,6 +21,7 @@ from django.shortcuts import (
 from django.utils.six import string_types, text_type, iteritems, PY3
 from django.utils.translation import ugettext as _
 from django.utils.timezone import now
+from ipware.ip import get_ip
 
 from .api.common import (
     get_item_or_404 as _get_item_or_404,
@@ -39,6 +40,8 @@ from .models import (
     UserAdapter,
     ItemStateLog,
     Box,
+    TemporaryAccessPermit,
+    TemporaryAccessPermitLog,
 )
 from .fields import ItemPriceField
 from .forms import ItemRemoveForm
@@ -597,6 +600,48 @@ def vendor_find(request, q):
         u.vendor.as_dict()
         for u in get_user_model().objects.filter(*clauses).all()
     ]
+
+
+@ajax_func('^vendor/token/create$', method='POST', atomic=True)
+def vendor_token_create(request, vendor_id):
+    clerk = get_clerk(request)
+    vendor = Vendor.objects.get(id=int(vendor_id))
+
+    old_permits = TemporaryAccessPermit.objects.select_for_update().filter(vendor=vendor)
+    for permit in old_permits:
+        TemporaryAccessPermitLog.objects.create(
+            permit=permit,
+            action=TemporaryAccessPermitLog.ACTION_INVALIDATE,
+            address=get_ip(request),
+            peer="{0}/{1}".format(clerk.user.username, clerk.pk),
+        )
+    old_permits.update(state=TemporaryAccessPermit.STATE_INVALIDATED)
+
+    numbers = 5
+    permit, code = None, None
+    for retry in range(60):
+        try:
+            code = random.randint(10 ** (numbers - 1), 10 ** numbers - 1)
+            permit = TemporaryAccessPermit.objects.create(
+                vendor=vendor,
+                creator=clerk,
+                short_code=str(code),
+            )
+            TemporaryAccessPermitLog.objects.create(
+                permit=permit,
+                action=TemporaryAccessPermitLog.ACTION_ADD,
+                address=get_ip(request),
+                peer="{0}/{1}".format(clerk.user.username, clerk.pk),
+            )
+            break
+        except IntegrityError as e:
+            continue
+    if permit and code:
+        return {
+            "code": code,
+        }
+    else:
+        raise AjaxError(RET_CONFLICT, _("Gave up code generation."))
 
 
 @ajax_func('^receipt/start$', atomic=True)

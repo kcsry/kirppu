@@ -29,6 +29,7 @@ from .views import (
     lost_and_found_list,
 )
 from .checkout_api import AJAX_FUNCTIONS, checkout_js
+from .mobile import index as mobile_index, logout as mobile_logout
 
 __author__ = 'jyrkila'
 
@@ -58,6 +59,9 @@ _urls = [
     url(r'^vendor/box/(?P<box_id>\w+?)/content$', box_content, name='box_content'),
     url(r'^vendor/box/(?P<box_id>\w+?)/hide$', box_hide, name='box_hide'),
     url(r'^vendor/box/(?P<box_id>\w+?)/print', box_print, name='box_print'),
+
+    url(r'^vendor/status/$', mobile_index, name='mobile'),
+    url(r'^vendor/status/logout/$', mobile_logout, name='mobile_logout'),
 ]
 
 if settings.KIRPPU_CHECKOUT_ACTIVE:  # Only activate API when checkout is active.

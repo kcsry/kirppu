@@ -80,6 +80,10 @@ tr.receipt_tr_clickable:hover {
     text-align: right;
 }
 
+.short-code-display {
+    font-size: x-large;
+}
+
 .alert-blink {
     /* Container class when blinking. */
     background-color: deeppink;

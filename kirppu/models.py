@@ -2,10 +2,11 @@ from __future__ import unicode_literals, print_function, absolute_import
 import random
 from decimal import Decimal
 from django.core.exceptions import ValidationError, ImproperlyConfigured
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinLengthValidator
 from django.db import models
 from django.db.models import Sum
 from django.db import transaction
+from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.module_loading import import_string
@@ -985,4 +986,66 @@ class ItemStateLog(models.Model):
             self.new_state,
             self.clerk.pk,
             self.counter.pk,
+        )
+
+
+def default_temporary_access_permit_expiry():
+    return timezone.now() + timezone.timedelta(minutes=settings.KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES)
+
+
+@python_2_unicode_compatible
+class TemporaryAccessPermit(models.Model):
+    STATE_UNUSED = "new"
+    STATE_IN_USE = "use"
+    STATE_EXHAUSTED = "exh"
+    STATE_INVALIDATED = "inv"
+    STATES = (
+        (STATE_UNUSED, _("Unused")),
+        (STATE_IN_USE, _("In use")),
+        (STATE_EXHAUSTED, _("Exhausted")),
+        (STATE_INVALIDATED, _("Invalidated")),
+    )
+
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, db_index=True)
+    creation_time = models.DateTimeField(auto_now_add=True)
+    expiration_time = models.DateTimeField(default=default_temporary_access_permit_expiry)
+    state = models.CharField(choices=STATES, default=STATE_UNUSED, max_length=8)
+    creator = models.ForeignKey(Clerk, on_delete=models.DO_NOTHING)
+    short_code = models.CharField(max_length=128, unique=True, validators=[MinLengthValidator(4)])
+
+    def __str__(self):
+        return "{vendor} ({state} / {expiry})".format(
+            vendor=UserAdapter.print_name(self.vendor.user),
+            state=self.get_state_display(),
+            expiry=self.expiration_time,
+        )
+
+
+@python_2_unicode_compatible
+class TemporaryAccessPermitLog(models.Model):
+    ACTION_ADD = "add"
+    ACTION_TRY = "try"
+    ACTION_USE = "use"
+    ACTION_DELETE = "del"
+    ACTION_INVALIDATE = "inv"
+    ACTIONS = (
+        (ACTION_ADD, _("Add")),
+        (ACTION_TRY, _("Try using")),
+        (ACTION_USE, _("Use")),
+        (ACTION_DELETE, _("Delete")),
+        (ACTION_INVALIDATE, _("Invalidate")),
+    )
+
+    permit = models.ForeignKey(TemporaryAccessPermit, on_delete=models.DO_NOTHING, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    action = models.CharField(max_length=16, choices=ACTIONS)
+    address = models.CharField(max_length=512)
+    peer = models.CharField(max_length=1024)
+
+    def __str__(self):
+        return "{action} ({code}) / {vendor} / {timestamp}".format(
+            action=self.get_action_display(),
+            code=self.permit.short_code,
+            vendor=self.permit.vendor,
+            timestamp=self.timestamp,
         )

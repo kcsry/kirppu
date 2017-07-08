@@ -1,0 +1,190 @@
+{% extends "kirppu/common.html" %}{% load i18n %}{% load kirppu_login %}
+
+{% block title %}Kirppu{% endblock %}
+{% block navbar_root %}
+    {{ block.super }}
+    <a href="{% url "kirppu:mobile_logout" %}" class="pull-right btn btn-link"><span class="glyphicon glyphicon-log-out"></span></a>
+{% endblock %}
+{% block navbar_right %}
+    <li><a href="{% url "kirppu:mobile_logout" %}"><span class="glyphicon glyphicon-log-out"></span> {% trans "Log out" %}</a></li>
+{% endblock %}
+{% block body %}
+<h3>{% trans "Item status" %}</h3>
+    {% for table_key, table in tables.items %}
+        {% if table.items or not table.spec.hidden %}
+        <h4 id="h_{{ table_key }}">{{ table.spec.title }}
+            <button class="btn btn-link collapse-btn{% if not table.spec.hidden %} toggled{% endif %}" type="button" aria-controls="{{ table_key }}">
+                <span class="glyphicon glyphicon-expand" data-toggled="false"></span> <span class="small" data-toggled="false">{% trans "Click to show" %}</span>
+                <span class="glyphicon glyphicon-collapse-down" data-toggled="true"></span>
+            </button>
+        </h4>
+            {% if table.spec.checkable %}
+            <p class="p_{{ table_key }}{% if table.spec.hidden %} hidden{% endif %}">
+            {% trans "Tap the icon on the line to keep track of which items you have found." %}
+            </p>
+            {% endif %}
+            {% if table.items  %}
+        <table class="table table-striped table-condensed{% if table.spec.checkable %} checkable{% endif %}{% if table.spec.hidden %} hidden{% endif %}"
+               id="{{ table_key }}" aria-labelledby="h_{{ table_key }}">
+        <thead>
+        <tr>
+            {% if table.spec.checkable %}
+            <th class="check-controls"></th>
+            {% endif %}
+            <th class="index">#</th>
+            <th class="code">{% trans "code" %}</th>
+            <th class="name">{% trans "name" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in table.items %}
+        <tr data-index="{{ forloop.counter0 }}"{% if table.spec.checkable %} class="checkable"{% endif %}>
+            {% if table.spec.checkable %}
+            {# Keep this td without whitespace to prevent overly stupid caret navigation. #}
+            <td class="check-controls"
+            ><input type="checkbox" name="checked" value="{{ item.code }}" id="cb_{{ item.code }}"
+            /><label class="glyphicon" for="cb_{{ item.code }}"></label></td>
+            {% endif %}
+            <td class="index">{{ forloop.counter }}</td>
+            <td class="code">{{ item.code }}</td>
+            <td class="name">{{ item.name }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+        {% else %}
+        <p class="no-content p_{{ table_key }}{% if table.spec.hidden %} hidden{% endif %}">{% trans "No items" %}</p>
+        {% endif %}
+
+        {% endif %}
+    {% endfor %}
+
+    <script type="text/javascript"><!--
+    function mkHighlight(context) {
+        $("td.check-controls", context).on("click", function (event) {
+            // This is triggered from label and input -chain too.
+            if (event.target.tagName === "TD") {
+                event.preventDefault();
+                var self = $(this);
+                var input = self.children("input");
+                input.prop("checked", !input.prop("checked"));
+                hl_fn.apply(self.parent(), [event, "from_check"]);
+                return false;
+            }
+        });
+        $("td.check-controls input", context).on("click", function (event) {
+            // Trigger bg update from native controls too.
+            hl_fn.apply($(this).parent("tr"), [event, "from_check"]);
+        });
+        var last_highlight = {target: null, index: null};
+        var hl_fn = function (event, from_check) {
+            var self = $(this);
+            var index = self.attr("data-index");
+            if (last_highlight.target) {
+                last_highlight.target.removeClass("info");
+            }
+            if (last_highlight.index !== index || from_check === "from_check") {
+                self.addClass("info");
+                last_highlight.target = self;
+                last_highlight.index = index;
+            } else {
+                last_highlight.target = null;
+                last_highlight.index = null;
+            }
+        };
+        $("tr.checkable", context).on("click", hl_fn);
+    }
+    $("table.checkable").each(function (i, e) { mkHighlight(e); });
+
+    $("button.collapse-btn").on("click", function () {
+        var self = $(this);
+        var target = self.attr("aria-controls");
+        if (self.hasClass("toggled")) {
+            self.removeClass("toggled");
+            $("#" + target).addClass("hidden");
+            $(".p_" + target).addClass("hidden");
+        } else {
+            self.addClass("toggled");
+            $("#" + target).removeClass("hidden");
+            $(".p_" + target).removeClass("hidden");
+        }
+    });
+    //--></script>
+
+    <style type="text/css">
+    /* Checkable rows checkbox stuff. */
+    tr.checkable td.check-controls input ~ label:before {
+        content: "\e014";
+        color: darkred;
+    }
+    tr.checkable td.check-controls input:checked ~ label:before {
+        content: "\e013";
+        color: inherit;
+    }
+
+    tr.checkable td.check-controls input:focus ~ label {
+        outline: hsl(210, 98%, 76%) auto thin;
+        -moz-outline-radius: 5px;
+        outline-offset: 1px;
+    }
+    td.check-controls input {
+        -moz-appearance: none;
+        opacity: 0;
+        width: 0;
+    }
+
+    /* Group separation from each other. */
+    table ~ h4, p ~ h4 {
+        padding-top: 0.7em;
+    }
+
+    /* Cell content sizing. */
+    .index {
+        width:     2em;
+        max-width: 3em;
+    }
+    .check-controls {
+        width:     3em;
+        max-width: 3em;
+    }
+    .name {
+        width: auto;
+    }
+    .code {
+        width:     5em;
+        max-width: 8em;
+    }
+    td.code {
+        font-family: monospace;
+        font-size: smaller;
+    }
+    table > tbody > tr > td.index, table > tbody > tr > td.code {
+        vertical-align: baseline;
+    }
+
+    /* Collapse and expand -button logic. */
+    button.collapse-btn span[data-toggled="true"] {
+        display: none;
+    }
+    button.collapse-btn span[data-toggled="false"] {
+        display: inline;
+    }
+    button.collapse-btn.toggled span[data-toggled="true"] {
+        display: inline;
+    }
+    button.collapse-btn.toggled span[data-toggled="false"] {
+        display: none;
+    }
+
+    /* Extra button at right. */
+    a.pull-right.btn.btn-link {
+        margin-top: 8px;
+        margin-right: 15px;
+    }
+    @media (min-width: 768px) {
+        a.pull-right.btn.btn-link {
+            display: none;
+        }
+    }
+    </style>
+{% endblock %}
