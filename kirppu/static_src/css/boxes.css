@@ -194,6 +194,16 @@
     font-weight:bold;
 }
 
+#box_content .item_adult_tag,
+#box_content .item_price,
+#box_content .item_name,
+#box_content .item_vendor_id {
+    display: none;
+}
+#box_content .item_container {
+    border: none;
+}
+
 @media screen, projection, handheld {
 
 }

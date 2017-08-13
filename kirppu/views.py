@@ -276,8 +276,7 @@ def box_hide(request, box_id):
         if box_vendor.id != vendor.id:
             raise Http404()
 
-        items = box.get_items()
-        items.update(hidden=True)
+        box.set_hidden(True)
 
     return HttpResponse()
 
@@ -294,8 +293,7 @@ def box_print(request, box_id):
         if box_vendor.id != vendor.id:
             raise Http404()
 
-        items = box.get_items()
-        items.update(printed=True)
+        box.set_printed(True)
 
     return HttpResponse()
 
@@ -318,11 +316,11 @@ def box_content(request, box_id, bar_type):
     if boxes.count() == 0:
         raise Http404()
     box = boxes[0]
-    items = box.get_items()
+    item = box.get_representative_item()
 
     render_params = {
         'box': box,
-        'content': items,
+        'item': item,
         'bar_type': bar_type,
         'CURRENCY': settings.KIRPPU_CURRENCY,
     }

@@ -288,7 +288,8 @@ def validate_positive(value):
 class Box(models.Model):
 
     description = models.CharField(max_length=256)
-    _representative_item = None
+    representative_item = models.ForeignKey("Item", on_delete=models.CASCADE, related_name="+")
+    box_number = models.IntegerField(blank=True, null=True, unique=True)
 
     def __str__(self):
         return u"{id} ({description})".format(id=self.id, description=self.description)
@@ -303,6 +304,7 @@ class Box(models.Model):
     )
 
     as_dict = model_dict_fn(
+        "box_number",
         item_price=lambda self: self._get_representative_item().price_cents,
         item_count=None,
         __extend=as_public_dict
@@ -330,13 +332,16 @@ class Box(models.Model):
 
     def get_items(self):
         """
-        Gets items in the box that are not hidden.
+        Gets items in the box.
 
         :return: List of Item of objects
         :rtype: Array
         """
-        items = Item.objects.filter(box=self.id).exclude(hidden=True)
+        items = Item.objects.filter(box=self.id)
         return items
+
+    def get_representative_item(self):
+        return self._get_representative_item()
 
     def get_price_fmt(self):
         """
@@ -395,10 +400,12 @@ class Box(models.Model):
         The box is hidden if all the items within the box are hidden.
 
         :return: True if the box is hidden
-        :rtype: Boolean
+        :rtype: bool
         """
-        visible_item_count = Item.objects.filter(box=self.id).exclude(hidden=False).count()
-        return visible_item_count == 0
+        return self._get_representative_item().hidden
+
+    def set_hidden(self, value):
+        Item.objects.filter(box=self).update(hidden=value)
 
     def is_printed(self):
         """
@@ -407,44 +414,51 @@ class Box(models.Model):
         The box is printed if all the items within the box are printed.
 
         :return: True if the box is printed
-        :rtype: Boolean
+        :rtype: bool
         """
-        visible_item_count = Item.objects.filter(box=self.id).exclude(printed=True).count()
-        return visible_item_count == 0
+        return self._get_representative_item().printed
+
+    def set_printed(self, value):
+        Item.objects.filter(box=self).update(printed=value)
 
     def _get_representative_item(self):
-        if self._representative_item is None:
-            self._representative_item = Item.objects.filter(box=self.id).all()[:1][0]
-        return self._representative_item
+        return self.representative_item
 
     @classmethod
     def new(cls, *args, **kwargs):
         """
-        Construct new Item and generate its barcode.
+        Construct new Box and Item and generate its barcode.
 
-        :param args: Item Constructor arguments
+        :param args: Box Constructor arguments
         :param kwargs: Item Constructor arguments
-        :return: New stored Item object with calculated code.
+        :return: New stored Box object with calculated code.
         :rtype: Box
         """
-        def generate_item_name(item_title_in, id_):
-            item_name = u"{0} #{1}".format(item_title_in, id_)
-            return item_name
-
         with transaction.atomic():
+            item_title = kwargs.pop("name")
+            description = kwargs.pop("description")
+            count = kwargs.pop("count")
+
+            representative_item = Item.new(
+                name=item_title,
+                **kwargs
+            )
             obj = cls(*args,
-                      description=kwargs.pop("description")
+                      description=description,
+                      representative_item=representative_item
                       )
             obj.full_clean()
             obj.save()
 
-            # Create items for the box.
-            count = kwargs.pop("count")
-            item_title = kwargs.pop("name")
-            for i in range(count):
-                generated_name = generate_item_name(item_title, i + 1)
+            representative_item.box = obj
+            representative_item.save(
+                update_fields=["box"],
+            )
+
+            # Create rest of the items for the box.
+            for i in range(count - 1):
                 Item.new(
-                    name=generated_name,
+                    name=item_title,
                     box=obj,
                     **kwargs
                 )
