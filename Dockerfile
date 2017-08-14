@@ -1,4 +1,4 @@
-FROM python:2.7
+FROM python:3.6
 WORKDIR /usr/src/app
 
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
