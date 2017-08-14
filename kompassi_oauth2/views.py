@@ -1,4 +1,4 @@
-from django import __version__ as django_version
+from django import VERSION
 from django.http import HttpResponse
 from django.utils.http import is_safe_url
 from django.views.generic import View
@@ -61,7 +61,7 @@ class CallbackView(View):
 
         self._finish(request)
 
-        if django_version >= (1, 11):
+        if VERSION[:2] >= (1, 11):
             user = authenticate(request=request, oauth2_session=session)
         else:
             # Django <1.11 compatibility.
