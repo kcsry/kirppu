@@ -4,6 +4,7 @@ from __future__ import unicode_literals, print_function, absolute_import
 
 from decimal import Decimal
 import os.path
+import re
 from django.utils.translation import ugettext_lazy as _
 
 import environ
@@ -19,6 +20,11 @@ def _path(path):
 
 
 DEBUG = env.bool('DEBUG', default=False)
+
+ADMINS = [
+    re.match(r"^\s*(.+?)\s*<(.+)>\s*$", entry).groups()
+    for entry in env.list("ADMINS", default=[])
+]
 
 DATABASES = {
     'default': env.db(default='sqlite:///db.sqlite3'),
