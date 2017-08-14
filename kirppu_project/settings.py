@@ -26,6 +26,13 @@ ADMINS = [
     for entry in env.list("ADMINS", default=[])
 ]
 
+if env.str("EMAIL_HOST", None) is not None:
+    EMAIL_HOST = env.str("EMAIL_HOST")
+
+if env.str("DEFAULT_FROM_EMAIL", None) is not None:
+    DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL")
+    SERVER_EMAIL = env.str("DEFAULT_FROM_EMAIL")
+
 DATABASES = {
     'default': env.db(default='sqlite:///db.sqlite3'),
 }
