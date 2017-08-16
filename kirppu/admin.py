@@ -105,6 +105,8 @@ class RefLinkAccessor(FieldAccessor):
         field = getattr(obj, self._field_name)
         if field is None:
             return u"(None)"
+        if callable(field):
+            field = field()
         # noinspection PyProtectedMember
         info = field._meta.app_label, field._meta.model_name
         return format_html(
@@ -431,4 +433,35 @@ class ItemStateLogAdmin(admin.ModelAdmin):
 
 admin.site.register(ItemStateLog, ItemStateLogAdmin)
 
-admin.site.register(Box)
+
+class BoxItemAdmin(admin.TabularInline):
+    model = Item
+    exclude = ["name", "price", "type", "itemtype", "adult", "vendor"]
+    readonly_fields = ["code", "state", "printed", "hidden", "abandoned", "lost_property"]
+    can_delete = False
+    extra = 0
+    show_change_link = True
+
+    def has_add_permission(self, request):
+        return False
+
+
+class BoxAdmin(admin.ModelAdmin):
+    model = Box
+    inlines = [
+        BoxItemAdmin,
+    ]
+    readonly_fields = ['representative_item', 'get_item_type_for_display', 'get_item_adult_for_display']
+    search_fields = ['box_number', 'description', 'representative_item__code']
+    ordering = ['box_number']
+    list_display = [
+        'box_number',
+        'description',
+        'code',
+        'get_price',
+        'get_item_count',
+        RefLinkAccessor("get_vendor", ugettext("Vendor")),
+    ]
+    list_display_links = ['box_number', 'description']
+
+admin.site.register(Box, BoxAdmin)

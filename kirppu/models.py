@@ -310,6 +310,10 @@ class Box(models.Model):
         __extend=as_public_dict
     )
 
+    @property
+    def code(self):
+        return self.representative_item.code
+
     def get_vendor(self):
         """
         Gets the vendor of the box
@@ -343,6 +347,10 @@ class Box(models.Model):
     def get_representative_item(self):
         return self._get_representative_item()
 
+    @short_description(_("Price"))
+    def get_price(self):
+        return self._get_representative_item().price
+
     def get_price_fmt(self):
         """
         Gets the price of the items in the box
@@ -353,6 +361,7 @@ class Box(models.Model):
         first_item = self._get_representative_item()
         return first_item.price_fmt
 
+    @short_description(_("Item count"))
     def get_item_count(self):
         """
         Gets the number of items in the box.
@@ -373,6 +382,7 @@ class Box(models.Model):
         first_item = self._get_representative_item()
         return first_item.itemtype
 
+    @short_description(_("Item type"))
     def get_item_type_for_display(self):
         """
         Gets the type of the items in the box for display purpose
@@ -392,6 +402,10 @@ class Box(models.Model):
         """
         first_item = self._get_representative_item()
         return first_item.adult
+
+    @short_description(_("Adult material"))
+    def get_item_adult_for_display(self):
+        return self._get_representative_item().get_adult_display()
 
     def is_hidden(self):
         """
