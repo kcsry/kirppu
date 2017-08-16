@@ -354,10 +354,21 @@ def _vendor_menu_contents(request):
     manage_sub = []
     if request.user.is_staff or UserAdapter.is_clerk(request.user):
         manage_sub.append(fill(_(u"Checkout commands"), "kirppu:commands"))
+        if settings.KIRPPU_CHECKOUT_ACTIVE:
+            manage_sub.append(fill(_(u"Checkout"), "kirppu:checkout_view"))
+
     if request.user.is_staff:
         manage_sub.append(fill(_(u"Clerk codes"), "kirppu:clerks"))
         manage_sub.append(fill(_(u"Lost and Found"), "kirppu:lost_and_found"))
+
+    if request.user.is_staff or UserAdapter.is_clerk(request.user):
         manage_sub.append(fill(_(u"Statistics"), "kirppu:stats_view"))
+
+    if request.user.is_staff:
+        try:
+            manage_sub.append(fill(_(u"Site administration"), "admin:index"))
+        except url.NoReverseMatch as e:
+            pass
 
     if manage_sub:
         items.append(fill(_(u"Management"), "", manage_sub))
