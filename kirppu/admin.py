@@ -60,14 +60,6 @@ def _regen_ean(modeladmin, request, queryset):
 _regen_ean.short_description = ugettext(u"Re-generate bar codes for items")
 
 
-class ItemAdmin(admin.ModelAdmin):
-    actions = [_gen_ean, _del_ean, _regen_ean]
-    list_display = ('name', 'code', 'price', 'state', 'vendor')
-    ordering = ('vendor', 'name')
-    search_fields = ['name', 'code']
-admin.site.register(Item, ItemAdmin)
-
-
 class FieldAccessor(object):
     """
     Abstract base class for field-links to be used in Admin.list_display.
@@ -374,6 +366,14 @@ class UITextAdmin(admin.ModelAdmin):
     list_display = ["identifier", "text_excerpt"]
 
 admin.site.register(UIText, UITextAdmin)
+
+
+class ItemAdmin(admin.ModelAdmin):
+    actions = [_gen_ean, _del_ean, _regen_ean]
+    list_display = ('name', 'code', 'price', 'state', RefLinkAccessor('vendor', ugettext("Vendor")))
+    ordering = ('vendor', 'name')
+    search_fields = ['name', 'code']
+admin.site.register(Item, ItemAdmin)
 
 
 class ReceiptItemAdmin(admin.TabularInline):
