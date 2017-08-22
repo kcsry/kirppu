@@ -8,7 +8,6 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
-from django.http import Http404
 from django.http.response import (
     HttpResponse,
     JsonResponse,
@@ -22,6 +21,10 @@ from django.utils.six import string_types, text_type, iteritems
 from django.utils.translation import ugettext as _
 from django.utils.timezone import now
 
+from .api.common import (
+    get_item_or_404 as _get_item_or_404,
+    item_state_conflict as _item_state_conflict,
+)
 from .provision import Provision
 from .models import (
     Item,
@@ -142,17 +145,6 @@ def checkout_js(request):
     )
 
 
-def _get_item_or_404(code, **kwargs):
-    try:
-        item = Item.get_item_by_barcode(code, **kwargs)
-    except Item.DoesNotExist:
-        item = None
-
-    if item is None:
-        raise Http404(_(u"No item found matching '{0}'").format(code))
-    return item
-
-
 @transaction.atomic
 def item_mode_change(request, code, from_, to, message_if_not_first=None):
     item = _get_item_or_404(code)
@@ -175,13 +167,7 @@ def item_mode_change(request, code, from_, to, message_if_not_first=None):
 
     else:
         # Item not in expected state.
-        raise AjaxError(
-            RET_CONFLICT,
-            _(u"Unexpected item state: {state_name} ({state})").format(
-                state=item.state,
-                state_name=item.get_state_display()
-            ),
-        )
+        _item_state_conflict(item)
 
 
 @ajax_func('^clerk/login$', clerk=False, counter=False)
