@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.http import Http404
 from django.http.response import (
     HttpResponse,
+    JsonResponse,
     StreamingHttpResponse,
 )
 from django.shortcuts import (
@@ -268,9 +269,8 @@ def item_find(request, code):
             if len(suspended) == 1:
                 suspended = suspended[0]
                 value.update(receipt=suspended.as_dict())
-                import json
-                return HttpResponse(
-                    json.dumps(value),
+                return JsonResponse(
+                    value,
                     status=RET_LOCKED,
                     content_type='application/json',
                 )
