@@ -286,10 +286,10 @@ class ItemRemoveForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ItemRemoveForm, self).__init__(*args, **kwargs)
-        self.last_added_item = None
-        self.item = None
-        self.receipt = None
-        self.removal_entry = None
+        self.last_added_item = None  # type: ReceiptItem
+        self.item = None  # type: Item
+        self.receipt = None  # type: Receipt
+        self.removal_entry = None  # type: ReceiptItem
 
     def clean_receipt(self):
         data = self.cleaned_data["receipt"]

@@ -26,6 +26,28 @@ class @CounterMode extends ItemCheckoutMode
     ["",                              @onAddItem]
   ]
 
+  _box_exp: /^(?:(\d+)\s*[*x.]\s*)?box\s*(\d+)$/
+
+  _match_box_exp: (code) ->
+    box_match = @_box_exp.exec(code)
+    if box_match
+      box_item_count = if box_match[1]? then Number.parseInt(box_match[1]) else null
+      box_number = Number.parseInt(box_match[2])
+      if Number.isNaN(box_item_count) or Number.isNaN(box_number)
+        throw new Error("NaN")
+      return (
+        number: box_number
+        item_count: box_item_count
+        input: code
+      )
+    return null
+
+  _create_box_arg: (box) ->
+    r = box_number: box.number
+    if box.item_count?
+      r.box_item_count = box.item_count
+    return r
+
   enter: ->
     @cfg.uiRef.body.append(@receiptSum.render())
     super
@@ -47,26 +69,41 @@ class @CounterMode extends ItemCheckoutMode
     return row
 
   onAddItem: (code) =>
-    if code.trim() == "" then return
+    code = code.trim()
+    if code == "" then return
 
-    code = fixToUppercase(code)
-    if not @_receipt.isActive()
-      Api.item_find(code: code, available: true).then(
-        () => @startReceipt(code)
-        (jqXHR) => @_onInitialItemFailed(jqXHR, code)
-      )
+    box = @_match_box_exp(code)
+    if box
+      if not @_receipt.isActive()
+        Api.box_find(box_number: box.number).then(
+          () => @startReceipt(null, box)
+          (jqXHR) => @_onInitialItemFailed(jqXHR, null, box)
+        )
+      else
+        @reserveItem(null, box)
+
     else
-      @reserveItem(code)
 
-  showError: (status, text, code) =>
+      code = fixToUppercase(code)
+      if not @_receipt.isActive()
+        Api.item_find(code: code, available: true).then(
+          () => @startReceipt(code)
+          (jqXHR) => @_onInitialItemFailed(jqXHR, code)
+        )
+      else
+        @reserveItem(code)
+
+  showError: (status, text, code, box) =>
     switch status
       when 0 then errorMsg = gettext("Network disconnected!")
-      when 404 then errorMsg = gettext("Item is not registered.")
+      when 404 then errorMsg =
+        if code? then gettext("Item is not registered.") else gettext("Invalid box number.")
       when 409 then errorMsg = text
       when 423 then errorMsg = text
       else errorMsg = gettext("Error %s.").replace("%s", status)
 
-    safeAlert(errorMsg + ' ' + code)
+    data = if code? then code else box.input
+    safeAlert(errorMsg + ' ' + data)
 
   restoreReceipt: (receipt) ->
     @switcher.setMenuEnabled(false)
@@ -89,7 +126,7 @@ class @CounterMode extends ItemCheckoutMode
       @addRow(item.code, item.name, price)
     @_setSum(@_receipt.total)
 
-  _onInitialItemFailed: (jqXHR, code) =>
+  _onInitialItemFailed: (jqXHR, code, box=null) =>   # TODO
     if jqXHR.status == 423
       # Locked. Is it suspended?
       if jqXHR.responseJSON? and jqXHR.responseJSON.receipt?
@@ -111,9 +148,9 @@ class @CounterMode extends ItemCheckoutMode
         )
         return
     # else:
-    @showError(jqXHR.status, jqXHR.responseText, code)
+    @showError(jqXHR.status, jqXHR.responseText, code, box)
 
-  startReceipt: (code) ->
+  startReceipt: (code, box=null) ->
     @_receipt.start()
 
     # Changes to other modes now would result in fatal errors.
@@ -124,7 +161,7 @@ class @CounterMode extends ItemCheckoutMode
         @_receipt.data = data
         @receipt.body.empty()
         @_setSum()
-        @reserveItem(code)
+        @reserveItem(code, box)
 
       (jqHXR) =>
         safeAlert("Could not start receipt! " + jqHXR.responseText)
@@ -147,12 +184,20 @@ class @CounterMode extends ItemCheckoutMode
     @receiptSum.set(text)
     @receiptSum.setEnabled(@_receipt.isActive())
 
-  reserveItem: (code) ->
+  reserveItem: (code, box) ->
+    if (!code? and !box?) or (code? and box?)
+      throw Error("Invalid arguments")
+
+    if code?
       Api.item_reserve(code: code).then(
         (data) =>
           if data._message?
             safeWarning(data._message)
           @_receipt.total += data.price
+
+          if Math.abs(data.total - @_receipt.total) >= 1
+            console.error("Inconsistency: " + @_receipt.total + " != " + data.total)
+
           @addRow(data.code, data.name, data.price)
           @notifySuccess()
 
@@ -161,20 +206,73 @@ class @CounterMode extends ItemCheckoutMode
           return true
       )
 
+    else
+      Api.box_item_reserve(
+        @_create_box_arg(box)
+      ).then(
+        (data) =>
+          @_receipt.total += data.item_price * data.changed
+
+          if Math.abs(data.total - @_receipt.total) >= 1
+            console.error("Inconsistency: " + @_receipt.total + " != " + data.total)
+
+          for code in data.item_codes
+            @addRow(code, data.item_name, data.item_price)
+          @notifySuccess()
+
+        (jqXHR) =>
+          @showError(jqXHR.status, jqXHR.responseText, code, box)
+          return true
+      )
+
   onRemoveItem: (code) =>
     unless @_receipt.isActive() then return
 
-    code = fixToUppercase(code)
-    Api.item_release(code: code).then(
-      (data) =>
-        @_receipt.total -= data.price
-        @addRow(data.code, data.name, -data.price)
-        @notifySuccess()
+    box = @_match_box_exp(code)
+    if !box?
 
-      () =>
-        safeAlert(gettext("Item not found on receipt: %s").replace("%s", code))
-        return true
-    )
+      code = fixToUppercase(code)
+      Api.item_release(code: code).then(
+        (data) =>
+          @_receipt.total -= data.price
+
+          if Math.abs(data.total - @_receipt.total) >= 1
+            console.error("Inconsistency: " + @_receipt.total + " != " + data.total)
+
+          @addRow(data.code, data.name, -data.price)
+          @notifySuccess()
+
+        (jqXHR) =>
+          if jqXHR.status == 404
+            safeAlert(gettext("Item not found on receipt: %s").replace("%s", code))
+          else
+            safeAlert(jqXHR.responseText)
+          return true
+      )
+
+    else
+
+      Api.box_item_release(
+        @_create_box_arg(box)
+      ).then(
+        (data) =>
+          @_receipt.total -= data.item_price * data.changed
+
+          if Math.abs(data.total - @_receipt.total) >= 1
+            console.error("Inconsistency: " + @_receipt.total + " != " + data.total)
+
+          for code in data.item_codes
+            @addRow(code, data.item_name, -data.item_price)
+          @notifySuccess()
+
+        (jqXHR) =>
+          if jqXHR.status == 404
+            safeAlert(gettext("Item not found on receipt: %s").replace("%s", code))
+          else
+            safeAlert(jqXHR.responseText)
+          return true
+      )
+
 
   onPayReceipt: (input) =>
     unless Number.isConvertible(input)

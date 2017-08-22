@@ -48,6 +48,7 @@ from .ajax_util import (
     get_counter,
     get_clerk,
     require_user_features,
+    RET_ACCEPTED,
     RET_BAD_REQUEST,
     RET_CONFLICT,
     RET_AUTH_FAILED,
@@ -126,7 +127,10 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
 
 # Must be after ajax_func to ensure circular import works. Must be imported, for part to be included at all in the API.
 # noinspection PyUnresolvedReferences
-from .api import receipt as receipt_api
+from .api import (
+    boxes_api,
+    receipt as receipt_api,
+)
 
 
 def checkout_js(request):
@@ -433,18 +437,49 @@ def box_list(request, vendor):
     return out_boxes
 
 
-@ajax_func('^item/checkin$')
+@ajax_func('^item/checkin$', atomic=True)
 def item_checkin(request, code):
     item = _get_item_or_404(code)
     if not item.vendor.terms_accepted:
         raise AjaxError(500, _(u"Vendor has not accepted terms!"))
+
+    if item.state != Item.ADVERTISED:
+        _item_state_conflict(item)
+
+    if item.box is not None:
+        # Client did not expect box, but this is a box.
+        # Assign box number and return box information to client.
+        # Expecting a retry to box_checkin.
+        box = item.box
+        box.assign_box_number()
+
+        response = item.as_dict()
+        response["box"] = box.as_dict()
+
+        # TODO: Consider returning bad request to clearly separate actual success.
+        return JsonResponse(response, status=RET_ACCEPTED, reason="OTHER API")
+
     return item_mode_change(request, code, Item.ADVERTISED, Item.BROUGHT)
 
 
-@ajax_func('^item/checkout$')
+@ajax_func('^item/checkout$', atomic=True)
 def item_checkout(request, code):
-    return item_mode_change(request, code, (Item.BROUGHT, Item.ADVERTISED), Item.RETURNED,
-                            _(u"Item was not brought to event."))
+    item = _get_item_or_404(code)
+    box = item.box
+    if box:
+        items = box.get_items().select_for_update().filter(state=Item.BROUGHT)
+
+        ItemStateLog.objects.log_states(item_set=items, new_state=Item.RETURNED, request=request)
+        items.update(state=Item.RETURNED)
+        ret = {
+            "box": box.as_dict(),
+            "changed": items.count(),
+            "code": box.representative_item.code,
+        }
+        return ret
+    else:
+        return item_mode_change(request, code, (Item.BROUGHT, Item.ADVERTISED), Item.RETURNED,
+                                _(u"Item was not brought to event."))
 
 
 @ajax_func('^item/compensate/start$')

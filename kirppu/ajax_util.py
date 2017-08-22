@@ -20,6 +20,7 @@ Utility functions for writing AJAX views.
 """
 
 # Some HTTP Status codes that are used here.
+RET_ACCEPTED = 202  # Accepted, but not completed.
 RET_BAD_REQUEST = 400  # Bad request
 RET_UNAUTHORIZED = 401  # Unauthorized, though, not expecting Basic Auth...
 RET_FORBIDDEN = 403     # Forbidden

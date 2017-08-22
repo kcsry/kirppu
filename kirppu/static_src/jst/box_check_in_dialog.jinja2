@@ -1,0 +1,14 @@
+{# -*- mode: django; -*- #}
+<dl class="dl-horizontal">
+    <dt>{{ text.description }}</dt>
+    <dd>{{ item.box.description }}</dd>
+
+    <dt>{{ text.count }}</dt>
+    <dd>{{ item.box.item_count }}</dd>
+
+    <dt>{{ text.code }}</dt>
+    <dd>{{ item.code }}</dd>
+
+    <dt>{{ text.box_number }}</dt>
+    <dd style="font-size: 170%">{{ item.box.box_number }}</dd>
+</dl>

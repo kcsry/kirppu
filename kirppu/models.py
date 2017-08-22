@@ -306,7 +306,6 @@ class Box(models.Model):
     as_dict = model_dict_fn(
         "box_number",
         item_price=lambda self: self._get_representative_item().price_cents,
-        item_count=None,
         __extend=as_public_dict
     )
 
@@ -437,6 +436,14 @@ class Box(models.Model):
 
     def _get_representative_item(self):
         return self.representative_item
+
+    def assign_box_number(self):
+        if self.box_number is None:
+            box_state = Box.objects.aggregate(last_number=models.Max("box_number"))
+            new_number = (box_state["last_number"] or 0) + 1
+
+            self.box_number = new_number
+            self.save(update_fields=["box_number"])
 
     @classmethod
     def new(cls, *args, **kwargs):
@@ -910,7 +917,8 @@ class ReceiptNote(models.Model):
 
 
 class ItemStateLogManager(models.Manager):
-    def log_state(self, item, new_state, request):
+    @staticmethod
+    def _make_log_state(request, doit):
         from .ajax_util import get_clerk, get_counter, AjaxError
         counter = None
         clerk = None
@@ -923,9 +931,33 @@ class ItemStateLogManager(models.Manager):
                     clerk = Clerk.objects.get(user=request.user)
                 except Clerk.DoesNotExist:
                     clerk = None
-        log_entry = self.create(item=item, old_state=item.state, new_state=new_state,
-                                clerk=clerk, counter=counter)
-        return log_entry
+
+        return doit(counter, clerk)
+
+    def log_state(self, item, new_state, request):
+        def actual(counter, clerk):
+            return self.create(
+                item=item,
+                old_state=item.state,
+                new_state=new_state,
+                clerk=clerk,
+                counter=counter)
+        return self._make_log_state(request, actual)
+
+    def log_states(self, item_set, new_state, request):
+        def actual(counter, clerk):
+            objs = [
+                ItemStateLog(
+                    item=item,
+                    old_state=item.state,
+                    new_state=new_state,
+                    clerk=clerk,
+                    counter=counter
+                )
+                for item in item_set
+            ]
+            return self.bulk_create(objs)
+        return self._make_log_state(request, actual)
 
 
 class ItemStateLog(models.Model):
