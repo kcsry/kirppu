@@ -3,7 +3,7 @@ from django.http import Http404
 from django.utils.translation import ugettext as _
 
 from ..ajax_util import AjaxError, RET_BAD_REQUEST, RET_CONFLICT
-from ..models import Box, Item
+from ..models import Box, Item, Receipt
 
 __author__ = 'codez'
 
@@ -54,3 +54,10 @@ def item_state_conflict(item):
             state_name=item.get_state_display()
         ),
     )
+
+
+def get_receipt(receipt_id):
+    try:
+        return Receipt.objects.get(pk=receipt_id, type=Receipt.TYPE_PURCHASE)
+    except Receipt.DoesNotExist:
+        raise AjaxError(500, "Receipt {} does not exist.".format(receipt_id))

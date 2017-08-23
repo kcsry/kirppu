@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 from itertools import chain
 
-from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
 from .common import (
     get_item_or_404 as _get_item_or_404,
     get_box_or_404 as _get_box_or_404,
     item_state_conflict as _item_state_conflict,
+    get_receipt,
 )
 from ..ajax_util import AjaxError, RET_BAD_REQUEST, RET_CONFLICT
 from ..checkout_api import ajax_func
 from ..forms import ItemRemoveForm
-from ..models import Item, ItemStateLog, ReceiptItem, Receipt
+from ..models import Item, ItemStateLog, ReceiptItem
 
 __author__ = 'codez'
 
@@ -86,7 +86,7 @@ def box_item_reserve(request, box_number, box_item_count="1"):
     box = _get_box_or_404(box_number)
 
     receipt_id = request.session["receipt"]
-    receipt = get_object_or_404(Receipt, pk=receipt_id, type=Receipt.TYPE_PURCHASE)
+    receipt = get_receipt(receipt_id)
 
     # Must force id-list to ensure stability.
     # Otherwise the "list" is considered as a subquery which may not be stable.
@@ -127,7 +127,7 @@ def box_item_release(request, box_number, box_item_count="1"):
     box = _get_box_or_404(box_number)
 
     receipt_id = request.session["receipt"]
-    receipt = get_object_or_404(Receipt, pk=receipt_id, type=Receipt.TYPE_PURCHASE)
+    receipt = get_receipt(receipt_id)
 
     box_items = receipt.items.filter(receiptitem__action=ReceiptItem.ADD, box=box)[:box_item_count]
     if box_items.count() != box_item_count:

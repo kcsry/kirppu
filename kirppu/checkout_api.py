@@ -24,6 +24,7 @@ from django.utils.timezone import now
 from .api.common import (
     get_item_or_404 as _get_item_or_404,
     item_state_conflict as _item_state_conflict,
+    get_receipt,
 )
 from .provision import Provision
 from .models import (
@@ -614,7 +615,7 @@ def receipt_start(request):
 def item_reserve(request, code):
     item = _get_item_or_404(code)
     receipt_id = request.session["receipt"]
-    receipt = get_object_or_404(Receipt, pk=receipt_id, type=Receipt.TYPE_PURCHASE)
+    receipt = receipt = get_receipt(receipt_id)
 
     message = raise_if_item_not_available(item)
     if item.state in (Item.ADVERTISED, Item.BROUGHT, Item.MISSING):
@@ -665,7 +666,7 @@ def _get_active_receipt(request, id, allowed_states=(Receipt.PENDING,)):
         receipt_id = arg_id
         logger.warning("Active receipt is being read without it being in session: %i", receipt_id)
 
-    receipt = get_object_or_404(Receipt, pk=receipt_id, type=Receipt.TYPE_PURCHASE)
+    receipt = receipt = get_receipt(receipt_id)
     if receipt.status not in allowed_states:
         if not in_session and receipt.status == Receipt.FINISHED:
             raise AjaxError(RET_CONFLICT, "Receipt {} was already ended at {}".format(receipt_id, receipt.end_time))
