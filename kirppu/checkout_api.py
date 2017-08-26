@@ -2,12 +2,13 @@ from __future__ import unicode_literals, print_function, absolute_import
 import functools
 import inspect
 import logging
+import random
 
 from django.contrib.auth import get_user_model
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, F
 from django.http.response import (
     HttpResponse,
     JsonResponse,
@@ -889,8 +890,11 @@ def iterate_logs(entries, hide_advertised=False, hide_sales=False, show_prices=F
     bucket_td = timedelta(seconds=60)
 
     # Modify the query to include item price, because we need it.
+    only = "old_state", "new_state", "time"
     if show_prices:
-        entries = entries.select_related('item__price')
+        entries = entries.only("item__price", *only).annotate(price=F("item__price"))
+    else:
+        entries = entries.only(*only)
 
     for entry in entries.order_by("time"):
         if bucket_time is None:
@@ -904,7 +908,7 @@ def iterate_logs(entries, hide_advertised=False, hide_sales=False, show_prices=F
 
         item_weight = 1
         if show_prices:
-            item_weight = entry.item.price
+            item_weight = entry.price
 
         if entry.old_state:
             balance[entry.old_state] -= item_weight
