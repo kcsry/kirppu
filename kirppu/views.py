@@ -249,7 +249,7 @@ def box_add(request):
     elif max_items < count + item_cnt:
         error_msg = _(u"You have %(item_cnt)s items. "
                       u"Creating this box would cause the items to exceed the maximum number of allowed items.")
-        return HttpResponseBadRequest(error_msg % {'max_items': max_items})
+        return HttpResponseBadRequest(error_msg % {'item_cnt': item_cnt})
 
     # Create the box and items. and construct a response containing box and all the items that have been added.
     box = Box.new(
