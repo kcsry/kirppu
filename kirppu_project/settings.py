@@ -308,7 +308,7 @@ KIRPPU_CHECKOUT_ACTIVE = env.bool('KIRPPU_CHECKOUT_ACTIVE', default=False)
 KIRPPU_AUTO_CLERK = False
 
 KIRPPU_COPY_ITEM_WHEN_UNPRINTED = False
-KIRPPU_MAX_ITEMS_PER_VENDOR = 1000
+KIRPPU_MAX_ITEMS_PER_VENDOR = 2000
 
 # Datetime of the instant of which Item registration is open until, in "YYYY-MM-DD HH:MM:SS" format.
 # The specified date is expected to be in TIME_ZONE timezone.
