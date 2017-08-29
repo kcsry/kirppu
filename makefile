@@ -1,7 +1,7 @@
 PYTHON=python
-.PHONY: default none messages compile c help
+.PHONY: default none messages compile c apistub help
 LOCS=-l fi -l en
-MM_ARGS=${LOCS} -i KirppuVenv -i node_modules --no-location
+MM_ARGS=${LOCS} -i KirppuVenv -i node_modules -i __pycache__ --no-location
 
 default: help
 
@@ -23,15 +23,7 @@ c:        ## Clean compiled pyc files.
 	find kirppu_project -name \*.pyc -exec rm {} +
 
 apistub:  ## Create/update ajax_api stub file helping navigation from frontend code to backend.
-	find kirppu -name \*.py -exec grep -A 1 '@ajax_func' {} + | awk '\
-	BEGIN { print("throw \"Don'\''t use\";\nApi = {"); }\
-	/py-def/ { a[0] = "";\
-		match($$0, "^(.*/)?(.+).py-def ([[:alnum:]_]+)\\(", a);\
-		printf("    %s: function() {/**\n", a[3]);\
-		printf("        %s.%s", a[2], a[3]);\
-		printf("\n    */},\n");\
-	}\
-	END { print("};"); }' > kirppu/static_src/js/api_stub.js
+	find kirppu -name \*.py -exec python3 make_api_stub.py {} + > kirppu/static_src/js/api_stub.js
 
 help:     ## This help.
 	@fgrep -h "#""#" $(MAKEFILE_LIST) | sed -e "s/:\\s*#""#/\n\t/"
