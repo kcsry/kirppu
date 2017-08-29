@@ -1,0 +1,10 @@
+
+table.auto-number {
+    counter-reset: rowNumber;
+}
+table.auto-number tbody tr {
+    counter-increment: rowNumber;
+}
+table.auto-number tbody td.row-number::before {
+    content: counter(rowNumber);
+}

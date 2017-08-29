@@ -1,7 +1,8 @@
 class @ItemReceiptTable
-  constructor: (caption=null) ->
+  constructor: (caption=null, autoNumber=false) ->
     @_table = Templates.render("item_receipt_table",
       caption: caption
+      autoNumber: autoNumber
     )
     @_table = $(@_table)
     @body = @_table.find("tbody")

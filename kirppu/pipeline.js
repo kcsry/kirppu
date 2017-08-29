@@ -28,6 +28,7 @@ module.exports.css = {
     'checkout': {
         "source_filenames": [
             "css/checkout.css",
+            "css/table_row_auto_numbering.css",
         ],
         "output_filename": "checkout.css",
     }

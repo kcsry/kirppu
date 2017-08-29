@@ -6,15 +6,17 @@ class @VendorCheckoutMode extends ItemCheckoutMode
 
     @vendorId = if vendor? then vendor.id else null
 
-    @receipt = new ItemReceiptTable(gettext('Returned items'))
+    @receipt = new ItemReceiptTable(gettext('Returned items'), true)
     @lastItem = new ItemReceiptTable()
-    @remainingItems = new ItemReceiptTable(gettext('Remaining items'))
+    @remainingItems = new ItemReceiptTable(gettext('Remaining items'), true)
 
   enter: ->
     super
 
     @cfg.uiRef.body.prepend(@remainingItems.render())
-    @cfg.uiRef.body.prepend(@lastItem.render())
+    lastItem = @lastItem.render()
+    $(".receipt_item", lastItem).text("last returned item")
+    @cfg.uiRef.body.prepend(lastItem)
     if @vendorId? then do @addVendorInfo
 
   glyph: -> "export"
@@ -85,6 +87,7 @@ class @VendorCheckoutMode extends ItemCheckoutMode
     returnable_item = $('#' + item.code, @remainingItems.body)
     if returnable_item.size() == 0
       # Item was not in "remaining" list, but it was still returned. (Transition from state AD.)
+      console.warn("Item not found in list of remaining items: " + item.code)
       returnable_item = @createRow("", item.code, item.name, item.price)
     @receipt.body.prepend(returnable_item.clone())
 
