@@ -70,10 +70,10 @@ tr.receipt_tr_clickable:hover {
     background: white;
 }
 .vendor-info-box > h3 {
-    margin: 0px;
+    margin: 0;
 }
 .vendor-info-box > dl {
-    margin: 0px;
+    margin: 0;
 }
 .vendor-info-key {
     font-weight: bold;
@@ -100,8 +100,8 @@ tr.receipt_tr_clickable:hover {
     body
     {
         /* this affects the margin on the content before sending to printer */
-        margin: 0px;
-        padding: 0px;
+        margin: 0;
+        padding: 0;
     }
 
 }
