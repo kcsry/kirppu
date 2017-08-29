@@ -18,7 +18,7 @@ from django.shortcuts import (
     get_object_or_404,
     render,
 )
-from django.utils.six import string_types, text_type, iteritems
+from django.utils.six import string_types, text_type, iteritems, PY3
 from django.utils.translation import ugettext as _
 from django.utils.timezone import now
 
@@ -106,14 +106,18 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
 
     def decorator(func):
         # Get argspec before any decoration.
-        (args, _, _, defaults) = inspect.getargspec(func)
+        if PY3:
+            spec = inspect.getfullargspec(func)
+        else:
+            # noinspection PyDeprecation
+            spec = inspect.getargspec(func)
 
         func = require_user_features(counter, clerk, overseer, staff_override=staff_override)(func)
 
         fn = ajax_util.ajax_func(
             method,
-            args[1:],
-            defaults
+            spec.args[1:],
+            spec.defaults
         )(func)
         if atomic:
             fn = transaction.atomic(fn)
