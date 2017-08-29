@@ -103,7 +103,7 @@ class StaticTextWidget(django.forms.widgets.Widget):
     def has_text(self):
         return self._static_text is not None
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         return self._static_text or value or u""
 
 
@@ -115,7 +115,7 @@ class ButtonWidget(StaticTextWidget):
     def set_click(self, click):
         self._click = click
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         from django.utils.html import format_html
         from django.utils.encoding import force_text
 
