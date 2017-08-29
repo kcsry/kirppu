@@ -473,6 +473,9 @@ def item_checkout(request, code):
     item = _get_item_or_404(code)
     box = item.box
     if box:
+        if box.representative_item.pk != item.pk:
+            raise AjaxError(RET_CONFLICT,
+                            "This is not returnable! Boxes have only one returnable item code which returns all!")
         items = box.get_items().select_for_update().filter(state=Item.BROUGHT)
 
         ItemStateLog.objects.log_states(item_set=items, new_state=Item.RETURNED, request=request)
