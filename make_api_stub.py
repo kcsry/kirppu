@@ -8,7 +8,7 @@ try:
     from typing import List
 except ImportError:
     class _AbstractType(object):
-        def __getattr__(self, item): pass
+        def __getitem__(self, item): pass
     List = _AbstractType()
 
 
