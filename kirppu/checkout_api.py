@@ -52,6 +52,7 @@ from .ajax_util import (
     AjaxFunc,
     get_counter,
     get_clerk,
+    empty_as_none,
     require_user_features,
     RET_ACCEPTED,
     RET_BAD_REQUEST,
@@ -472,8 +473,15 @@ def item_checkin(request, code):
 
 
 @ajax_func('^item/checkout$', atomic=True)
-def item_checkout(request, code):
+def item_checkout(request, code, vendor=None):
     item = _get_item_or_404(code)
+    if vendor == "":
+        vendor = None
+    if vendor is not None:
+        vendor_id = int(vendor)
+        if item.vendor_id != vendor_id:
+            raise AjaxError(RET_LOCKED, _("Someone else's item!"))
+
     box = item.box
     if box:
         if box.representative_item.pk != item.pk:
@@ -568,7 +576,18 @@ def item_compensate_end(request):
 
 
 @ajax_func('^vendor/get$', method='GET')
-def vendor_get(request, id):
+def vendor_get(request, id=None, code=None):
+    id = empty_as_none(id)
+    code = empty_as_none(code)
+
+    if id is None and code is None:
+        raise AjaxError(RET_BAD_REQUEST, "Either id or code must be given")
+    if id and code:
+        raise AjaxError(RET_BAD_REQUEST, "Only id or code must be given")
+
+    if code:
+        id = _get_item_or_404(code).vendor_id
+
     try:
         vendor = Vendor.objects.get(pk=int(id))
     except (ValueError, Vendor.DoesNotExist):

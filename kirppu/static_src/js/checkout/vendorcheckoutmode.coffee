@@ -10,6 +10,9 @@ class @VendorCheckoutMode extends ItemCheckoutMode
     @lastItem = new ItemReceiptTable()
     @remainingItems = new ItemReceiptTable(gettext('Remaining items'), true)
 
+    @_asyncReturnedCodes = []
+    @_vendorInfoAdded = 0  # 0=No, 1=Pending, 2=Done
+
   enter: ->
     super
 
@@ -17,18 +20,43 @@ class @VendorCheckoutMode extends ItemCheckoutMode
     lastItem = @lastItem.render()
     $(".receipt_item", lastItem).text("last returned item")
     @cfg.uiRef.body.prepend(lastItem)
-    if @vendorId? then do @addVendorInfo
+    if @vendorId? then do @_addVendorInfo
 
   glyph: -> "export"
   title: -> gettext("Vendor Check-Out")
 
   actions: -> [
-    ['', @returnItem]
+    ['', @addCodeToReturn]
     [@commands.logout, @onLogout]
   ]
 
-  addVendorInfo: ->
-    Api.vendor_get(id: @vendorId).done((vendor) =>
+
+  addCodeToReturn: (code) =>
+    # Add code to pending list and depending on current UI state, either
+    # fetch the vendor info and item list, do nothing or process the pending list.
+    # List processing may not be done before vendor info and item list has been
+    # added, as otherwise some items are not removed from "remaining items" list.
+    @_asyncReturnedCodes.push(code)
+    switch @_vendorInfoAdded
+      when 0 then @_addVendorInfo()
+      #when 1: Wait for completion. Code is added to list so it is processed later.
+      when 2 then @_processList()
+    return
+
+
+  _addVendorInfo: ->
+    @_vendorInfoAdded = 1
+    if @vendorId?
+      request = id: @vendorId
+    else
+      request = code: @_asyncReturnedCodes[0]
+
+    next = () => Api.item_list(
+      vendor: @vendorId
+      include_box_items: true
+    ).done(@_onGotItems)
+
+    Api.vendor_get(request).done((vendor) =>
       @cfg.uiRef.body.prepend(
         $('<input type="button">')
           .addClass('btn btn-primary')
@@ -36,14 +64,16 @@ class @VendorCheckoutMode extends ItemCheckoutMode
           .click(=> @switcher.switchTo(VendorReport, vendor))
       )
       @cfg.uiRef.body.prepend(new VendorInfo(vendor).render())
+      if not @vendorId?
+        @vendorId = vendor.id
+        next()
     )
 
-    Api.item_list(
-      vendor: @vendorId
-      include_box_items: true
-    ).done(@onGotItems)
+    if @vendorId?
+      next()
 
-  onGotItems: (items) =>
+
+  _onGotItems: (items) =>
     remaining = {BR: 0, ST: 0, MI: 0}
     for item in items when remaining[item.state]?
       row = @createRow("", item.code, item.name, item.price)
@@ -54,30 +84,36 @@ class @VendorCheckoutMode extends ItemCheckoutMode
       row = @createRow("", item.code, item.name, item.price)
       @receipt.body.prepend(row)
 
-  returnItem: (code) =>
-    code = fixToUppercase(code)
-    Api.item_find(code: code).then(
-      @onItemFound
+    @_vendorInfoAdded = 2
+    @_processList()
 
-      () ->
-        safeAlert(gettext("Item not found: %s").replace("%s", code))
-    )
 
-  onItemFound: (item) =>
+  _processList: ->
+    if @_asyncReturnedCodes.length > 0
+      codeToReturn = @_asyncReturnedCodes.shift()
+      @_doReturnItem(codeToReturn)
+
+
+  _doReturnItem: (code) =>
     if not @vendorId?
-      @vendorId = item.vendor
-      do @addVendorInfo
+      # Need vendorId before the item is actually returned.
+      throw "IllegalState"
 
-    else if @vendorId != item.vendor
-      safeAlert(gettext("Someone else's item!"))
-      return
-
-    Api.item_checkout(code: item.code).then(
+    code = fixToUppercase(code)
+    Api.item_checkout(
+      code: code
+      vendor: @vendorId
+    ).then(
       @onCheckedOut
 
-      (jqHXR) ->
-        safeAlert(jqHXR.responseText)
+      (jqXHR) ->
+        switch jqXHR.status
+          when 404 then message = gettext("Item not found: %s").replace("%s", code)
+          when 423 then message = jqXHR.responseText
+          else message = gettext("Error: %s").replace("%s", jqXHR.responseText)
+        safeAlert(message)
     )
+
 
   onCheckedOut: (item) =>
     if item._message?
@@ -94,4 +130,5 @@ class @VendorCheckoutMode extends ItemCheckoutMode
     # Add the just returned item to "last item" list.
     @lastItem.body.empty().append(returnable_item)
     @notifySuccess()
+    @_processList()
     return

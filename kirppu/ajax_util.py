@@ -187,3 +187,7 @@ def require_user_features(counter=True, clerk=True, overseer=False, staff_overri
             return func(request, *args, **kwargs)
         return wrapper
     return out_w
+
+
+def empty_as_none(value):
+    return None if (value or "").strip() == "" else value
