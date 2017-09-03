@@ -6,9 +6,19 @@ class @VendorCheckoutMode extends ItemCheckoutMode
 
     @vendorId = if vendor? then vendor.id else null
 
-    @receipt = new ItemReceiptTable(gettext('Returned items'), true)
-    @lastItem = new ItemReceiptTable()
-    @remainingItems = new ItemReceiptTable(gettext('Remaining items'), true)
+    @receipt = new ItemReceiptTable(
+      caption: gettext('Returned items')
+      autoNumber: true
+      splitTitle: true
+    )
+    @lastItem = new ItemReceiptTable(
+      splitTitle: true
+    )
+    @remainingItems = new ItemReceiptTable(
+      caption: gettext('Remaining items')
+      autoNumber: true
+      splitTitle: true
+    )
 
     @_asyncReturnedCodes = []
     @_vendorInfoAdded = 0  # 0=No, 1=Pending, 2=Done
@@ -51,9 +61,8 @@ class @VendorCheckoutMode extends ItemCheckoutMode
     else
       request = code: @_asyncReturnedCodes[0]
 
-    next = () => Api.item_list(
+    next = () => Api.vendor_returnable_items(
       vendor: @vendorId
-      include_box_items: true
     ).done(@_onGotItems)
 
     Api.vendor_get(request).done((vendor) =>
@@ -76,16 +85,35 @@ class @VendorCheckoutMode extends ItemCheckoutMode
   _onGotItems: (items) =>
     remaining = {BR: 0, ST: 0, MI: 0}
     for item in items when remaining[item.state]?
-      row = @createRow("", item.code, item.name, item.price)
+      rowData = @_rowData(item)
+      row = @remainingItems.row(rowData)
       @remainingItems.body.prepend(row)
 
     returned = {RE: 0, CO: 0}
     for item in items when returned[item.state]?
-      row = @createRow("", item.code, item.name, item.price)
+      rowData = @_rowData(item)
+      row = @receipt.row(rowData)
       @receipt.body.prepend(row)
 
     @_vendorInfoAdded = 2
     @_processList()
+
+
+  _rowData: (item) ->
+    rowData =
+      code: item.code
+      name: item.name
+      price: displayPrice(item.price, false)
+    if item.box?
+      box = item.box
+      rowData.name = box.description
+      rowData["details"] = dPrintF(gettext("box# %n: %r\u00A0returned / %b\u00A0returnable / %t\u00A0total"),
+        n: box.box_number
+        b: box.returnable_count
+        r: box.returned_count
+        t: box.item_count
+      )
+    return rowData
 
 
   _processList: ->
@@ -104,7 +132,7 @@ class @VendorCheckoutMode extends ItemCheckoutMode
       code: code
       vendor: @vendorId
     ).then(
-      @onCheckedOut
+      @_onCheckedOut
 
       (jqXHR) ->
         switch jqXHR.status
@@ -115,7 +143,7 @@ class @VendorCheckoutMode extends ItemCheckoutMode
     )
 
 
-  onCheckedOut: (item) =>
+  _onCheckedOut: (item) =>
     if item._message?
       safeWarning(item._message)
 
@@ -124,11 +152,16 @@ class @VendorCheckoutMode extends ItemCheckoutMode
     if returnable_item.size() == 0
       # Item was not in "remaining" list, but it was still returned. (Transition from state AD.)
       console.warn("Item not found in list of remaining items: " + item.code)
-      returnable_item = @createRow("", item.code, item.name, item.price)
-    @receipt.body.prepend(returnable_item.clone())
+    else
+      returnable_item.remove()
+
+    result_item = @receipt.row(@_rowData(item))
+
+    # Add to "returned items" list.
+    @receipt.body.prepend(result_item.clone())
 
     # Add the just returned item to "last item" list.
-    @lastItem.body.empty().append(returnable_item)
+    @lastItem.body.empty().append(result_item)
     @notifySuccess()
     @_processList()
     return

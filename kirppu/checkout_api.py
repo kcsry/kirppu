@@ -7,8 +7,8 @@ import random
 from django.contrib.auth import get_user_model
 
 from django.core.exceptions import ValidationError
-from django.db import transaction, IntegrityError
-from django.db.models import Q, F
+from django.db import models, transaction, IntegrityError
+from django.db.models import Q, F, Count
 from django.http.response import (
     HttpResponse,
     JsonResponse,
@@ -391,13 +391,51 @@ def item_edit(request, code, price, state):
 
 
 @ajax_func('^item/list$', method='GET')
-def item_list(request, vendor, state=None, include_box_items=False):
-    items = Item.objects.filter(vendor__id=vendor)
-    if state is not None:
-        items = items.filter(state=state)
-    if not include_box_items:
-        items = items.filter(box__isnull=True)
+def item_list(request, vendor):
+    items = Item.objects.filter(vendor__id=vendor, box__isnull=True)
     return [i.as_dict() for i in items]
+
+
+@ajax_func('^vendor/returnable$', method='GET')
+def vendor_returnable_items(request, vendor):
+    # Items that can be returned with box representative items (without other box items).
+    items = Item.objects \
+        .exclude(state=Item.ADVERTISED) \
+        .filter(Q(vendor__id=vendor) & (Q(box__isnull=True) | Q(box__representative_item__pk=F("pk")))) \
+        .select_related("box")
+
+    # Shrink boxes to single representative items with box information.
+    boxes = Box.objects \
+        .exclude(item__state=Item.ADVERTISED) \
+        .filter(item__vendor__id=vendor) \
+        .annotate(
+            item_count=Count("item"),
+            returnable_count=Count(models.Case(models.When(item__state=Item.BROUGHT, then=1),
+                                               output_field=models.IntegerField())),
+            returned_count=Count(models.Case(models.When(item__state=Item.RETURNED, then=1),
+                                             output_field=models.IntegerField()))
+        )
+    boxes = {b.representative_item_id: b for b in boxes}
+
+    # Merge the two queries to a single response.
+    r = []
+    for i in items:
+        box = boxes.get(i.pk)  # type: Box
+        element = i.as_dict()
+        if box is not None:
+            element.update(
+                box={
+                    "id": box.id,
+                    "description": box.description,
+                    "box_number": box.box_number,
+                    "item_count": box.item_count,
+                    "returnable_count": box.returnable_count,
+                    "returned_count": box.returned_count,
+                }
+            )
+        r.append(element)
+
+    return r
 
 
 @ajax_func('^item/compensable', method='GET', atomic=True)
@@ -491,10 +529,27 @@ def item_checkout(request, code, vendor=None):
 
         ItemStateLog.objects.log_states(item_set=items, new_state=Item.RETURNED, request=request)
         items.update(state=Item.RETURNED)
-        ret = {
-            "box": box.as_dict(),
+
+        box_info = Box.objects \
+            .filter(pk=box.pk) \
+            .annotate(
+                item_count=Count("item"),
+                returnable_count=Count(models.Case(models.When(item__state=Item.BROUGHT, then=1),
+                                                   output_field=models.IntegerField())),
+                returned_count=Count(models.Case(models.When(item__state=Item.RETURNED, then=1),
+                                                 output_field=models.IntegerField()))
+            ) \
+            .values("item_count", "returnable_count", "returned_count")[0]
+
+        ret = box.representative_item.as_dict()
+        ret["box"] = {
+            "id": box.id,
+            "description": box.description,
+            "box_number": box.box_number,
+            "item_count": box_info["item_count"],
+            "returnable_count": box_info["returnable_count"],
+            "returned_count": box_info["returned_count"],
             "changed": items.count(),
-            "code": box.representative_item.code,
         }
         return ret
     else:

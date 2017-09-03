@@ -5,7 +5,12 @@
     <tr>
         <th class="receipt_index numeric">#</th>
         <th class="receipt_code">code</th>
-        <th class="receipt_item">item</th>
+        {% if splitTitle %}
+            <th class="receipt_item">item</th>
+            <th class="receipt_item_detail"></th>
+        {% else %}
+            <th colspan="2" class="receipt_item">item</th>
+        {% endif %}
         <th class="receipt_price">price</th>
     </tr>
 </thead>

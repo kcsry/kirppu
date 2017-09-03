@@ -1,9 +1,16 @@
 class @ItemReceiptTable
-  constructor: (caption=null, autoNumber=false) ->
-    @_table = Templates.render("item_receipt_table",
-      caption: caption
-      autoNumber: autoNumber
+  # @param {Object} options
+  # @param {str} [optional] options.caption
+  # @param {bool} [optional] options.autoNumber
+  constructor: (options=null) ->
+    options = Object.assign(
+      caption: null
+      autoNumber: false
+      splitTitle: false
+      , options
     )
+
+    @_table = Templates.render("item_receipt_table", options)
     @_table = $(@_table)
     @body = @_table.find("tbody")
 
@@ -14,6 +21,10 @@ class @ItemReceiptTable
       name: name
       price: displayPrice(price, rounded)
     )
+    return $(row)
+
+  row: (args) ->
+    row = Templates.render("item_receipt_table_row", args)
     return $(row)
 
   render: () -> @_table
