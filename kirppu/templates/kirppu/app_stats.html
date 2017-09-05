@@ -10,11 +10,11 @@
     <script src="{% static "kirppu/js/checkout.js" %}"></script>
     <script src="{% static "kirppu/js/dygraph-combined.js" %}"></script>
 
-    <style>
-    .sum_table tr:last-child {
+    <style type="text/css">
+    .sum_table_below tr:last-child {
         font-weight: bold;
     }
-    .sum_table td:last-child {
+    .sum_table_right td:last-child {
         font-weight: bold;
     }
     </style>
@@ -125,7 +125,7 @@
 
 
     <h2>Number of items:</h2>
-    <table class="table table-striped sum_table">
+    <table class="table table-striped sum_table_below sum_table_right">
         <tr>
             <th></th>
             {% with number_of_items|first as row %}
@@ -145,7 +145,7 @@
     </table>
 
     <h2>Sum of prices:</h2>
-    <table class="table table-striped sum_table">
+    <table class="table table-striped sum_table_below sum_table_right">
         <tr>
             <th></th>
             {% with number_of_euros|first as row %}
@@ -165,7 +165,7 @@
     </table>
 
     <h2>Vendors:</h2>
-    <table class="table table-striped sum_table">
+    <table class="table table-striped sum_table_right">
         <tr>
             <th></th>
             {% with vendor_items|first as row %}
