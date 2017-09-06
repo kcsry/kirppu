@@ -4,6 +4,7 @@ import inspect
 import logging
 import random
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from django.core.exceptions import ValidationError
@@ -691,7 +692,7 @@ def vendor_token_create(request, vendor_id):
         )
     old_permits.update(state=TemporaryAccessPermit.STATE_INVALIDATED)
 
-    numbers = 5
+    numbers = settings.KIRPPU_SHORT_CODE_LENGTH
     permit, code = None, None
     for retry in range(60):
         try:
