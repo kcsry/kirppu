@@ -2,7 +2,8 @@
 from collections import OrderedDict
 
 from django.conf import settings
-from django.db import transaction
+from django.db import transaction, models
+from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -11,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from ipware.ip import get_ip
 
 from .util import first, shorten_text
-from .models import Item, TemporaryAccessPermit, Vendor, TemporaryAccessPermitLog
+from .models import Item, TemporaryAccessPermit, Vendor, TemporaryAccessPermitLog, Box
 
 __author__ = 'codez'
 _PERMIT_SESSION_KEY = "temporary_permit_key"
@@ -54,13 +55,6 @@ TABLES = {
         [Item.ADVERTISED],
         title=_('Not brought to event'),
         hidden=True,
-        custom_filter=lambda self, i: i.state in self.states and not i.hidden,
-    ),
-    "deleted": Table(
-        [Item.ADVERTISED],
-        title=_('Deleted'),
-        hidden=True,
-        custom_filter=lambda self, i: i.state in self.states and i.hidden,
     ),
 }
 
@@ -86,6 +80,7 @@ class TableContents(object):
     def __init__(self, spec):
         self.spec = spec
         self.items = []
+        self.boxes = set()
 
 
 def _login_view(request):
@@ -136,20 +131,60 @@ def _data_view(request, permit):
     else:
         vendor = Vendor.objects.get(user_id=request.user.pk)
 
-    items = Item.objects.filter(vendor=vendor, box__isnull=True)
+    items = Item.objects \
+        .filter(vendor=vendor, hidden=False) \
+        .select_related("box") \
+        .only("id", "hidden", "state", "code", "name", "box__id")
+
+    box_extras = {
+        "items_%s" % key: models.Count(models.Case(models.When(item__state__in=table.states, then=1),
+                                                   output_field=models.IntegerField()))
+        for key, table in TABLES.items()
+    }
+
+    box_objects = Box.objects \
+        .filter(item__vendor=vendor) \
+        .select_related("representative_item") \
+        .annotate(item_count=Count("item"), **box_extras)
+
+    boxes = {box.pk: box for box in box_objects}
 
     tables = OrderedDict((k, TableContents(spec=TABLES[k])) for k in TABLES_ORDER)
     for item in items:
         table_key = TABLE_FOR_STATE[item.state]
         for candidate in table_key:
-            table = TABLES[candidate]
-            if table.filter(item) and candidate in tables:
-                tables[candidate].items.append(item)
+            table_spec = TABLES[candidate]
+            if table_spec.filter(item) and candidate in tables:
+                table = tables[candidate]  # type: TableContents
+                if item.box is not None:
+                    pk = item.box.pk
+                    if pk not in table.boxes:
+                        table.boxes.add(pk)
+                        table.items.append(_box(boxes[pk], candidate))
+                else:
+                    table.items.append(_item(item))
                 break
 
     return render(request, "kirppu/vendor_status.html", {
         "tables": tables,
     })
+
+
+def _item(item):
+    return {
+        "code": item.code,
+        "name": item.name,
+    }
+
+
+def _box(box, table_key):
+    return {
+        "box": True,
+        "code": box.representative_item.code,
+        "name": box.description,
+        "value": getattr(box, "items_%s" % table_key),
+        "total": box.item_count,
+    }
 
 
 def _is_permit_valid(request):
