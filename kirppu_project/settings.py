@@ -333,6 +333,7 @@ KIRPPU_MAX_PURCHASE = '450'
 KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES = 10
 KIRPPU_EXHAUST_SHORT_CODE_ON_LOGOUT = False
 KIRPPU_SHORT_CODE_LENGTH = 5
+KIRPPU_MOBILE_LOGIN_RATE_LIMIT = "5/m"
 
 
 # Function to calculate provision amount. Must return always None or a Decimal instance.

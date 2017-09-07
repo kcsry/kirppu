@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from ipware.ip import get_ip
+from ratelimit.utils import is_ratelimited
 
 from .models import Item, TemporaryAccessPermit, Vendor, TemporaryAccessPermitLog, Box
 from .templatetags.kirppu_tags import format_price
@@ -87,17 +88,28 @@ class TableContents(object):
         self.sum = Decimal(0)
 
 
+def _ratelimit_key(group, request):
+    return get_ip(request)
+
+
 def _login_view(request):
     errors = []
     if request.method == "POST":
         key = request.POST.get("key", "")
         if len(key) == 0:
             errors.append(_("Access key must be given"))
+        elif is_ratelimited(
+                request,
+                fn=_login_view,
+                key=_ratelimit_key,
+                rate=settings.KIRPPU_MOBILE_LOGIN_RATE_LIMIT,
+                increment=True):
+            errors.append(_("You are trying too much. Try again later."))
         else:
             with transaction.atomic():
                 try:
                     permit = TemporaryAccessPermit.objects.get(short_code=key)
-                except TemporaryAccessPermit.DoesNotExist as e:
+                except TemporaryAccessPermit.DoesNotExist:
                     errors.append(_("Invalid access key"))
                 else:
                     can_use = permit.state == TemporaryAccessPermit.STATE_UNUSED\
