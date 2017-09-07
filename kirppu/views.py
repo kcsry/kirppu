@@ -41,6 +41,7 @@ from .models import (
     Item,
     Vendor,
     UserAdapter,
+    UIText,
 )
 from .stats import ItemCountData, ItemEurosData
 from .util import get_form
@@ -350,6 +351,14 @@ def _vendor_menu_contents(request):
         fill(_(u"Item list"), "kirppu:page"),
         fill(_(u"Box list"), "kirppu:vendor_boxes"),
     ]
+
+    try:
+        # FIXME: Implement a better way to enable the link. db-options...
+        login_text = UIText.objects.get(identifier="mobile_login")
+        if "--enable--" in login_text.text:
+            items.append(fill(_("Mobile"), "kirppu:mobile"))
+    except UIText.DoesNotExist:
+        pass
 
     manage_sub = []
     if request.user.is_staff or UserAdapter.is_clerk(request.user):
