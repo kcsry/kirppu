@@ -1,0 +1,7 @@
+{# -*- mode: django; -*- #}{% load i18n kirppu_tags %}{% for table_key, table in tables.items %}{% if table.items and not table.spec.hidden %}
+{{ table.spec.title }}
+{% if table.items  %}   #  {% trans "code"|ljust:"8" %}  {% trans "price"|ljust:price_width %}  {% trans "name" %}
+{% for item in table.items %}{{ forloop.counter|rjust:"4" }}  {{ item.code }}  {{ item.price|format_price|ljust:price_width }}  {{ item.name|ljust:"10" }}{% if item.box %} [[{{ item.value }} / {{ item.total }}]]{% endif %}
+{% endfor %} {% trans "total:" %} {{ table.sum|format_price }}
+{% else %}{% trans "No items" %}
+{% endif %}{% endif %}{% endfor %}

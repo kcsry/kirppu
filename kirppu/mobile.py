@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
+from decimal import Decimal
 
 from django.conf import settings
 from django.db import transaction, models
@@ -11,8 +12,9 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from ipware.ip import get_ip
 
-from .util import first, shorten_text
 from .models import Item, TemporaryAccessPermit, Vendor, TemporaryAccessPermitLog, Box
+from .templatetags.kirppu_tags import format_price
+from .util import first, shorten_text
 
 __author__ = 'codez'
 _PERMIT_SESSION_KEY = "temporary_permit_key"
@@ -81,6 +83,7 @@ class TableContents(object):
         self.spec = spec
         self.items = []
         self.boxes = set()
+        self.sum = Decimal(0)
 
 
 def _login_view(request):
@@ -134,7 +137,7 @@ def _data_view(request, permit):
     items = Item.objects \
         .filter(vendor=vendor, hidden=False) \
         .select_related("box") \
-        .only("id", "hidden", "state", "code", "name", "box__id")
+        .only("id", "hidden", "price", "state", "code", "name", "box__id")
 
     box_extras = {
         "items_%s" % key: models.Count(models.Case(models.When(item__state__in=table.states, then=1),
@@ -149,38 +152,68 @@ def _data_view(request, permit):
 
     boxes = {box.pk: box for box in box_objects}
 
+    currency_length = len(format_price(Decimal(0))) - 1
+
     tables = OrderedDict((k, TableContents(spec=TABLES[k])) for k in TABLES_ORDER)
+    max_price_width = 0
     for item in items:
         table_key = TABLE_FOR_STATE[item.state]
         for candidate in table_key:
             table_spec = TABLES[candidate]
             if table_spec.filter(item) and candidate in tables:
                 table = tables[candidate]  # type: TableContents
+                row = None
+
+                price_value = None
+                price_multiplier = 1
+
                 if item.box is not None:
                     pk = item.box.pk
                     if pk not in table.boxes:
                         table.boxes.add(pk)
-                        table.items.append(_box(boxes[pk], candidate))
+                        box = boxes[pk]
+                        row = _box(box, candidate)
+
+                        price_multiplier = getattr(box, "items_%s" % candidate)
+                        price_value = box.representative_item.price
                 else:
-                    table.items.append(_item(item))
+                    row = _item(item)
+                    price_value = item.price
+
+                if row is not None:
+                    max_price_width = max(max_price_width, len(str(row["price"])) + currency_length)
+                    table.items.append(row)
+                    table.sum += price_value * price_multiplier
                 break
 
+    if request.GET.get("type") == "txt":
+        return render(request, "kirppu/vendor_status.txt", {
+            "tables": tables,
+            "price_width": max_price_width,
+        }, content_type="text/plain; charset=utf-8")
     return render(request, "kirppu/vendor_status.html", {
         "tables": tables,
+        "CURRENCY": settings.KIRPPU_CURRENCY,
     })
 
 
 def _item(item):
     return {
         "code": item.code,
+        "price": item.price_fmt,
         "name": item.name,
     }
 
 
 def _box(box, table_key):
+    """
+    :type box: Box
+    :type table_key: str
+    """
     return {
         "box": True,
         "code": box.representative_item.code,
+        "price": box.representative_item.price_fmt,
         "name": box.description,
         "value": getattr(box, "items_%s" % table_key),
         "total": box.item_count,

@@ -168,3 +168,12 @@ split_list = register.tag(split_list)
 def as_json(obj):
     return mark_safe(json.dumps(obj))
 register.filter("json", as_json)
+
+
+@register.filter
+def format_price(value, format_type="raw"):
+    return "{}{}{}".format(
+        settings.KIRPPU_CURRENCY[format_type][0],
+        str(value),
+        settings.KIRPPU_CURRENCY[format_type][1]
+    )

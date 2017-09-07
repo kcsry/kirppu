@@ -1,6 +1,12 @@
 {% extends "kirppu/common.html" %}{% load i18n %}{% load kirppu_login %}
 
 {% block title %}Kirppu{% endblock %}
+{% block head %}
+    {{ block.super }}
+    <style type="text/css">
+        {% include "kirppu/currency_style.css" %}
+    </style>
+{% endblock %}
 {% block navbar_root %}
     {{ block.super }}
     <a href="{% url "kirppu:mobile_logout" %}" class="pull-right btn btn-link"><span class="glyphicon glyphicon-log-out"></span></a>
@@ -34,6 +40,7 @@
             <th class="index">#</th>
             <th class="code">{% trans "code" %}</th>
             <th class="name">{% trans "name" %}</th>
+            <th>{% trans "price" %}</th>
         </tr>
         </thead>
         <tbody>
@@ -48,8 +55,10 @@
             <td class="index">{{ forloop.counter }}</td>
             <td class="code">{{ item.code }}</td>
             <td class="name">{{ item.name }}{% if item.box %} <span class="label label-info">{{ item.value }} / {{ item.total }}</span>{% endif %}</td>
+            <td class="price">{{ item.price }}</td>
         </tr>
         {% endfor %}
+        <tr><td {% if table.spec.checkable %}colspan="2"{% endif %}></td><td>{% trans "total:" %}</td><td class="price" colspan="2">{{ table.sum }}</td></tr>
         </tbody>
         </table>
         {% else %}
@@ -58,6 +67,11 @@
 
         {% endif %}
     {% endfor %}
+
+    <div style="padding-top: 1em; padding-bottom: 1em;">
+        <hr/>
+        <a href="?type=txt" class="btn btn-default btn-sm">{% trans "View as text" %}</a>
+    </div>
 
     <script type="text/javascript"><!--
     function mkHighlight(context) {
