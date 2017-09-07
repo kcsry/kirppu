@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.views.i18n import JavaScriptCatalog
 from django.views.decorators.http import last_modified
 
-from kirppu.views import index
+from kirppu.views import index, MobileRedirect
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -30,5 +30,6 @@ urlpatterns = [
     url(r'^jsi18n/$', last_modified(lambda req, **kw: last_modified_date)(
         JavaScriptCatalog.as_view(packages=js_packages)),
         name="javascript-catalog"),
+    url(r'^m/?$', MobileRedirect.as_view()),
     url(r'^', include('kompassi_oauth2.urls')),
 ]

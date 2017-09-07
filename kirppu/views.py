@@ -30,6 +30,7 @@ from django.utils.six import string_types
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
+from django.views.generic import RedirectView
 
 from .checkout_api import clerk_logout_fn
 from . import ajax_util
@@ -58,6 +59,11 @@ import pubcode
 
 def index(request):
     return redirect("kirppu:vendor_view")
+
+
+class MobileRedirect(RedirectView):
+    permanent = False
+    pattern_name = "kirppu:mobile"
 
 
 @login_required
