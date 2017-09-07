@@ -6,6 +6,7 @@ from django.conf import settings
 from django.db import transaction, models
 from django.db.models import Count
 from django.http import HttpResponseRedirect
+from django.http.response import HttpResponseForbidden
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
@@ -242,6 +243,12 @@ def _is_permit_valid(request):
 
 
 def index(request):
+    # FIXME: Implement a better way to enable the link. db-options...
+    from .models import UIText
+    login_text = UIText.objects.get(identifier="mobile_login")
+    if "--enable--" not in login_text.text:
+        return HttpResponseForbidden(_("This location is not in use."))
+
     if request.user.is_authenticated:
         return _data_view(request, None)
     else:
