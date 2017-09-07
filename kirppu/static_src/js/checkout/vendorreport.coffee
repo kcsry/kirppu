@@ -39,10 +39,10 @@ tables =
     untrustedValue: true
     title: -> gettext('Compensable Items')
   returnable: Table.create
-    states: [ItemState.brought, ItemState.staged]
+    states: [ItemState.brought]
     title: -> gettext('Returnable Items')
   other: Table.create
-    states: [ItemState.missing, ItemState.returned, ItemState.compensated]
+    states: [ItemState.missing, ItemState.returned, ItemState.compensated, ItemState.staged]
     title: -> gettext('Other Items')
   registered: Table.create
     states: [ItemState.advertized]

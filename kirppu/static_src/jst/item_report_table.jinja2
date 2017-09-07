@@ -35,7 +35,7 @@
     {{ total(sum) }}
 {% endif %}
 {% for item in items %}
-    <tr class="table_row_{{ loop.index }}">
+    <tr class="table_row_{{ loop.index }}{% if item.state == "ST" %} bg-warning{% endif %}">
     {% if item.action != "EXTRA" %}
         <td class="receipt_index numeric">{{ loop.index }}</td>
         <td class="receipt_code">{{ item.code }}</td>
