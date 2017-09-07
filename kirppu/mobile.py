@@ -190,10 +190,12 @@ def _data_view(request, permit):
         return render(request, "kirppu/vendor_status.txt", {
             "tables": tables,
             "price_width": max_price_width,
+            "vendor": vendor.id,
         }, content_type="text/plain; charset=utf-8")
     return render(request, "kirppu/vendor_status.html", {
         "tables": tables,
         "CURRENCY": settings.KIRPPU_CURRENCY,
+        "vendor": vendor.id,
     })
 
 
