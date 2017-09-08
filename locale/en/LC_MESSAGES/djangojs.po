@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-05 16:16+0300\n"
-"PO-Revision-Date: 2017-07-03 18:20+0200\n"
+"POT-Creation-Date: 2017-09-08 08:57+0300\n"
+"PO-Revision-Date: 2017-09-07 18:35+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -121,6 +121,37 @@ msgstr "No such item"
 msgid "Error: %s"
 msgstr "Error: %s"
 
+#, javascript-format
+msgid "no. %d"
+msgstr "no. %d"
+
+#, javascript-format
+msgid "Box item count: %d"
+msgstr "Box item count: %d"
+
+#, javascript-format
+msgid "á %s"
+msgstr "á %s"
+
+msgid "Mark the box number"
+msgstr "Mark the box number"
+
+msgid "description"
+msgstr "description"
+
+msgctxt "count of items"
+msgid "items in the box"
+msgstr "items in the box"
+
+msgid "box number"
+msgstr "box number"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Accept"
+msgstr "Accept"
+
 msgid "Returned items"
 msgstr "Returned items"
 
@@ -133,12 +164,12 @@ msgstr "Vendor Check-Out"
 msgid "Open Report"
 msgstr "Open Report"
 
+msgid "box# %n: %r returned / %b returnable / %t total"
+msgstr "box# %n: %r returned / %b returnable / %t total"
+
 #, javascript-format
 msgid "Item not found: %s"
 msgstr "Item not found: %s"
-
-msgid "Someone else's item!"
-msgstr "Someone else's item!"
 
 msgid "Checkout"
 msgstr "Checkout"
@@ -158,6 +189,9 @@ msgstr "Network disconnected!"
 msgid "Item is not registered."
 msgstr "Item is not registered."
 
+msgid "Invalid box number."
+msgstr "Invalid box number."
+
 #, javascript-format
 msgid "Error %s."
 msgstr "Error %s."
@@ -170,9 +204,6 @@ msgstr "Continue suspended receipt?"
 
 msgid "Continue"
 msgstr "Continue"
-
-msgid "Cancel"
-msgstr "Cancel"
 
 msgid "Total: %t / Return: %r"
 msgstr "Total: %t / Return: %r"
@@ -280,6 +311,9 @@ msgstr "Other Items"
 msgid "Not brought to event"
 msgstr "Not brought to event"
 
+msgid "Deleted"
+msgstr "Deleted"
+
 msgid "Item Report"
 msgstr "Item Report"
 
@@ -298,6 +332,9 @@ msgstr "Abandon All Items Currently On Display"
 msgid "Compensation receipts"
 msgstr "Compensation receipts"
 
+msgid "Mobile code"
+msgstr "Mobile code"
+
 msgid "Boxes"
 msgstr "Boxes"
 
@@ -313,6 +350,12 @@ msgstr "Close"
 
 msgid "Show"
 msgstr "Show"
+
+msgid "Create new code"
+msgstr "Create new code"
+
+msgid "Creating a code will invalidate all old codes."
+msgstr "Creating a code will invalidate all old codes."
 
 msgid "Vendor Search"
 msgstr "Vendor Search"
@@ -345,8 +388,8 @@ msgstr "Click to edit…"
 msgid "<em>Click to edit</em>"
 msgstr "<em>Click to edit</em>"
 
-#~ msgid "description"
-#~ msgstr "description"
+#~ msgid "Someone else's item!"
+#~ msgstr "Someone else's item!"
 
 #~ msgid "compensable"
 #~ msgstr "compensable"
@@ -356,4 +399,3 @@ msgstr "<em>Click to edit</em>"
 
 #~ msgid "brought"
 #~ msgstr "brought"
-

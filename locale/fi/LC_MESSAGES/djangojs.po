@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-05 16:16+0300\n"
-"PO-Revision-Date: 2017-07-04 11:26+0200\n"
+"POT-Creation-Date: 2017-09-08 08:57+0300\n"
+"PO-Revision-Date: 2017-09-07 19:53+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -120,6 +120,37 @@ msgstr "Ei sellaista tavaraa"
 msgid "Error: %s"
 msgstr "Virhe: %s"
 
+#, javascript-format
+msgid "no. %d"
+msgstr "no. %d"
+
+#, javascript-format
+msgid "Box item count: %d"
+msgstr "Laatikon tavaroiden määrä: %d"
+
+#, javascript-format
+msgid "á %s"
+msgstr "á %s"
+
+msgid "Mark the box number"
+msgstr "Merkitse laatikon numero"
+
+msgid "description"
+msgstr "kuvaus"
+
+msgctxt "count of items"
+msgid "items in the box"
+msgstr "tavaraa laatikossa"
+
+msgid "box number"
+msgstr "laatikon numero"
+
+msgid "Cancel"
+msgstr "Peru"
+
+msgid "Accept"
+msgstr "Hyväksy"
+
 msgid "Returned items"
 msgstr "Palautetut tavarat"
 
@@ -132,12 +163,12 @@ msgstr "Tavaran poisvienti"
 msgid "Open Report"
 msgstr "Avaa Raportti"
 
+msgid "box# %n: %r returned / %b returnable / %t total"
+msgstr "box# %n: %r palautettu / %b palautettavissa / %t yhteensä"
+
 #, javascript-format
 msgid "Item not found: %s"
 msgstr "Tavaraa ei löydy: %s"
-
-msgid "Someone else's item!"
-msgstr "Jonkun toisen tavara!"
 
 msgid "Checkout"
 msgstr "Myynti"
@@ -157,6 +188,9 @@ msgstr "Verkko katki!"
 msgid "Item is not registered."
 msgstr "Tuote ei ole rekisteröity."
 
+msgid "Invalid box number."
+msgstr "Virheellinen laatikon numero."
+
 #, javascript-format
 msgid "Error %s."
 msgstr "Virhe %s."
@@ -169,9 +203,6 @@ msgstr "Jatka keskeytetyn kuitin käsittelyä?"
 
 msgid "Continue"
 msgstr "Jatka"
-
-msgid "Cancel"
-msgstr "Peru"
 
 msgid "Total: %t / Return: %r"
 msgstr "Yhteensä: %t / Takaisin: %r"
@@ -279,6 +310,9 @@ msgstr "Muut tavarat"
 msgid "Not brought to event"
 msgstr "Ei tuotu tapahtumaan"
 
+msgid "Deleted"
+msgstr "Poistettu"
+
 msgid "Item Report"
 msgstr "Raportti myyjän tavaroista"
 
@@ -289,13 +323,16 @@ msgid "Compensate"
 msgstr "Anna rahat"
 
 msgid "Return Items"
-msgstr "Ota vastaan tavaroita"
+msgstr "Palauta tavaroita"
 
 msgid "Abandon All Items Currently On Display"
 msgstr "Hylkää kaikki näytteillä olevat tavarat"
 
 msgid "Compensation receipts"
 msgstr "Hyvityskuitit"
+
+msgid "Mobile code"
+msgstr "Mobiilikoodi"
 
 msgid "Boxes"
 msgstr "Laatikot"
@@ -312,6 +349,12 @@ msgstr "Sulje"
 
 msgid "Show"
 msgstr "Näytä"
+
+msgid "Create new code"
+msgstr "Luo uusi koodi"
+
+msgid "Creating a code will invalidate all old codes."
+msgstr "Uuden koodin luominen mitätöi kaikki vanhat koodit."
 
 msgid "Vendor Search"
 msgstr "Myyjähaku"
@@ -344,8 +387,8 @@ msgstr "Klikkaa muokataksesi…"
 msgid "<em>Click to edit</em>"
 msgstr "<em>Klikkaa muokataksesi</em>"
 
-#~ msgid "description"
-#~ msgstr "kuvaus"
+#~ msgid "Someone else's item!"
+#~ msgstr "Jonkun toisen tavara!"
 
 #~ msgid "compensable"
 #~ msgstr "hyvitettäviä"
@@ -355,4 +398,3 @@ msgstr "<em>Klikkaa muokataksesi</em>"
 
 #~ msgid "brought"
 #~ msgstr "tuotuja"
-

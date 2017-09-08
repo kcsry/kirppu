@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-05 16:16+0300\n"
-"PO-Revision-Date: 2017-07-03 17:13+0200\n"
+"POT-Creation-Date: 2017-09-08 08:57+0300\n"
+"PO-Revision-Date: 2017-09-08 08:58+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -62,11 +62,17 @@ msgstr[1] "{count} unbound clerks added."
 msgid "Add unbound clerk"
 msgstr "Add unbound clerk"
 
+msgid "Vendor"
+msgstr "Vendor"
+
 msgid "Item"
 msgstr "Item"
 
 msgid "Clerk"
 msgstr "Clerk"
+
+msgid "Permit"
+msgstr "Permit"
 
 msgid "Not logged in."
 msgstr "Not logged in."
@@ -83,9 +89,30 @@ msgstr "Bye."
 msgid "Access denied."
 msgstr "Access denied."
 
+msgid "Not enough available box items, only {} exist"
+msgstr "Not enough available box items, only {} exist"
+
+msgid "Vendor has not accepted terms!"
+msgstr "Vendor has not accepted terms!"
+
+msgid "Unexpected box number conflict"
+msgstr "Unexpected box number conflict"
+
+msgid "Some box items ({}/{}) are in unexpected state."
+msgstr "Some box items ({}/{}) are in unexpected state."
+
+msgid "Only {} items of {} available for reservation."
+msgstr "Only {} items of {} available for reservation."
+
+msgid "Only {} items of {} available for removal."
+msgstr "Only {} items of {} available for removal."
+
 #, python-brace-format
 msgid "No item found matching '{0}'"
 msgstr "No item found matching '{0}'"
+
+msgid "Box #{} does not exist."
+msgstr "Box #{} does not exist."
 
 #, python-brace-format
 msgid "Unexpected item state: {state_name} ({state})"
@@ -94,8 +121,8 @@ msgstr "Unexpected item state: {state_name} ({state})"
 msgid "No such clerk."
 msgstr "No such clerk."
 
-msgid "Vendor has not accepted terms!"
-msgstr "Vendor has not accepted terms!"
+msgid "Someone else's item!"
+msgstr "Someone else's item!"
 
 msgid "Item was not brought to event."
 msgstr "Item was not brought to event."
@@ -108,6 +135,9 @@ msgstr "No compensation started!"
 
 msgid "Invalid vendor id"
 msgstr "Invalid vendor id"
+
+msgid "Gave up code generation."
+msgstr "Gave up code generation."
 
 msgid "Price must be numeric."
 msgstr "Price must be numeric."
@@ -159,6 +189,33 @@ msgstr "Name is required."
 msgid "Item must have a type."
 msgstr "Item must have a type."
 
+msgid "Returnable Items"
+msgstr "Returnable Items"
+
+msgid "Compensable Items"
+msgstr "Compensable Items"
+
+msgid "Compensated Items"
+msgstr "Compensated Items"
+
+msgid "Other Items"
+msgstr "Other Items"
+
+msgid "Not brought to event"
+msgstr "Not brought to event"
+
+msgid "Access key must be given"
+msgstr "Access key must be given"
+
+msgid "You are trying too much. Try again later."
+msgstr "You are trying too much. Try again later."
+
+msgid "Invalid access key"
+msgstr "Invalid access key"
+
+msgid "This location is not in use."
+msgstr "This location is not in use."
+
 msgid "Access key value"
 msgstr "Access key value"
 
@@ -170,6 +227,18 @@ msgstr "Is enabled?"
 
 msgid "Value cannot be negative"
 msgstr "Value cannot be negative"
+
+msgid "Price"
+msgstr "Price"
+
+msgid "Item count"
+msgstr "Item count"
+
+msgid "Item type"
+msgstr "Item type"
+
+msgid "Adult material"
+msgstr "Adult material"
 
 msgid "Advertised"
 msgstr "Advertised"
@@ -291,6 +360,33 @@ msgstr "Provision"
 msgid "Provision balancing"
 msgstr "Provision balancing"
 
+msgid "Unused"
+msgstr "Unused"
+
+msgid "In use"
+msgstr "In use"
+
+msgid "Exhausted"
+msgstr "Exhausted"
+
+msgid "Invalidated"
+msgstr "Invalidated"
+
+msgid "Add"
+msgstr "Add"
+
+msgid "Try using"
+msgstr "Try using"
+
+msgid "Use"
+msgstr "Use"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Invalidate"
+msgstr "Invalidate"
+
 msgid "Admin note: Registration is closed for users."
 msgstr "Admin note: Registration is closed for users."
 
@@ -365,9 +461,6 @@ msgstr "Give this page to the clerk when bringing items."
 msgid "Price:"
 msgstr "Price:"
 
-
-msgid "vendor"
-msgstr "vendor"
 msgid "Clerk codes"
 msgstr "Clerk codes"
 
@@ -496,6 +589,27 @@ msgstr "Accept"
 msgid "Accepted at %(terms_time)s."
 msgstr "Accepted at %(terms_time)s."
 
+msgid "Item status"
+msgstr "Item status"
+
+msgid "Click to show"
+msgstr "Click to show"
+
+msgid "Tap the icon on the line to keep track of which items you have found."
+msgstr "Tap the icon on the line to keep track of which items you have found."
+
+msgid "total:"
+msgstr "total:"
+
+msgid "No items"
+msgstr "No items"
+
+msgid "View as text"
+msgstr "View as text"
+
+msgid "Access key"
+msgstr "Access key"
+
 msgid "Image extension not supported"
 msgstr "Image extension not supported"
 
@@ -524,14 +638,23 @@ msgstr "Item list"
 msgid "Box list"
 msgstr "Box list"
 
+msgid "Mobile"
+msgstr "Mobile"
+
 msgid "Checkout commands"
 msgstr "Checkout commands"
+
+msgid "Checkout"
+msgstr "Checkout"
 
 msgid "Lost and Found"
 msgstr "Lost and Found"
 
 msgid "Statistics"
 msgstr "Statistics"
+
+msgid "Site administration"
+msgstr "Site administration"
 
 msgid "Management"
 msgstr "Management"
@@ -570,6 +693,12 @@ msgstr "Add %(name)s from SSO provider"
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Add unbound %(name)s"
+
+#~ msgid "Deleted"
+#~ msgstr "Deleted"
+
+#~ msgid "vendor"
+#~ msgstr "vendor"
 
 #~ msgid "Long"
 #~ msgstr "18 cm (bookmark)"

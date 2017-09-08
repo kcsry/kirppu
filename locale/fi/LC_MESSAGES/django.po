@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-05 16:16+0300\n"
-"PO-Revision-Date: 2017-07-04 11:21+0200\n"
+"POT-Creation-Date: 2017-09-08 08:57+0300\n"
+"PO-Revision-Date: 2017-09-08 08:58+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -63,11 +63,17 @@ msgstr[1] "Lisätty {count} irrallista kassatätiä."
 msgid "Add unbound clerk"
 msgstr "Lisää irrallinen kassatäti"
 
+msgid "Vendor"
+msgstr "Myyjä"
+
 msgid "Item"
 msgstr "Tavara"
 
 msgid "Clerk"
 msgstr "Kassatäti"
+
+msgid "Permit"
+msgstr "Lupa"
 
 msgid "Not logged in."
 msgstr "Ei kirjautuneena."
@@ -84,9 +90,30 @@ msgstr "Moi."
 msgid "Access denied."
 msgstr "Käyttö estetty."
 
+msgid "Not enough available box items, only {} exist"
+msgstr "Laatikossa ei ole tarpeeksi tavaroita, vain {} on saatavilla"
+
+msgid "Vendor has not accepted terms!"
+msgstr "Myyjä ei ole hyväksynyt ehtoja!"
+
+msgid "Unexpected box number conflict"
+msgstr "Odottamaton laatikkonumeron ristiriita"
+
+msgid "Some box items ({}/{}) are in unexpected state."
+msgstr "Jotkin laatikon tavarat ({}/{}) ovat odottamattomassa tilassa."
+
+msgid "Only {} items of {} available for reservation."
+msgstr "Vain {} tuotetta {} tuotteesta on varattavissa."
+
+msgid "Only {} items of {} available for removal."
+msgstr "Vain {} tuotetta {} tuotteesta on poistettavissa."
+
 #, python-brace-format
 msgid "No item found matching '{0}'"
 msgstr "Ei löydy tavaraa '{0}'"
+
+msgid "Box #{} does not exist."
+msgstr "Laatikkoa #{} ei ole."
 
 #, python-brace-format
 msgid "Unexpected item state: {state_name} ({state})"
@@ -95,8 +122,8 @@ msgstr "Odottamaton tavaran tila: {state_name} ({state})"
 msgid "No such clerk."
 msgstr "Ei sellaista kassatätiä."
 
-msgid "Vendor has not accepted terms!"
-msgstr "Myyjä ei ole hyväksynyt ehtoja!"
+msgid "Someone else's item!"
+msgstr "Jonkun toisen tuote!"
 
 msgid "Item was not brought to event."
 msgstr "Tavaraa ei ole tuotu tapahtumaan."
@@ -109,6 +136,9 @@ msgstr "Hyvitystapahtumaa ei ole aloitettu!"
 
 msgid "Invalid vendor id"
 msgstr "Virheellinen myyjän id"
+
+msgid "Gave up code generation."
+msgstr "Luovutus koodin generoinnista."
 
 msgid "Price must be numeric."
 msgstr "Hinnan täytyy olla numero."
@@ -160,6 +190,33 @@ msgstr "Nimi on vaadittu."
 msgid "Item must have a type."
 msgstr "Tavaralla täytyy olla tyyppi."
 
+msgid "Returnable Items"
+msgstr "Palautettavat tavarat"
+
+msgid "Compensable Items"
+msgstr "Hyvitettävät tavarat"
+
+msgid "Compensated Items"
+msgstr "Hyvitetyt tavarat"
+
+msgid "Other Items"
+msgstr "Muut tavarat"
+
+msgid "Not brought to event"
+msgstr "Tuomatta tapahtumaan"
+
+msgid "Access key must be given"
+msgstr "Koodiavain on annettava"
+
+msgid "You are trying too much. Try again later."
+msgstr "Olet yrittänyt liian monta kertaa. Yritä myöhemmin uudelleen."
+
+msgid "Invalid access key"
+msgstr "Virheellinen koodiavain"
+
+msgid "This location is not in use."
+msgstr "Tämä sivu ei ole käytössä."
+
 msgid "Access key value"
 msgstr "Käyttötunnisteen arvo"
 
@@ -171,6 +228,18 @@ msgstr "Käytössä?"
 
 msgid "Value cannot be negative"
 msgstr "Arvo ei voi olla negatiivinen"
+
+msgid "Price"
+msgstr "Hinta"
+
+msgid "Item count"
+msgstr "Tavaramäärä"
+
+msgid "Item type"
+msgstr "Tavaran tyyppi"
+
+msgid "Adult material"
+msgstr "Aikuisille"
 
 msgid "Advertised"
 msgstr "Ilmoitettu"
@@ -292,6 +361,33 @@ msgstr "Provisio"
 msgid "Provision balancing"
 msgstr "Provision tasaus"
 
+msgid "Unused"
+msgstr "Käyttämätön"
+
+msgid "In use"
+msgstr "Käytössä"
+
+msgid "Exhausted"
+msgstr "Kulutettu"
+
+msgid "Invalidated"
+msgstr "Mitätöity"
+
+msgid "Add"
+msgstr "Lisäys"
+
+msgid "Try using"
+msgstr "Käytön yritys"
+
+msgid "Use"
+msgstr "Käyttö"
+
+msgid "Delete"
+msgstr "Poisto"
+
+msgid "Invalidate"
+msgstr "Mitätöinti"
+
 msgid "Admin note: Registration is closed for users."
 msgstr "Ylläpitohuomautus: Rekisteröinti on suljettu käyttäjiltä"
 
@@ -365,9 +461,6 @@ msgstr "Anna tämä sivu kassahenkilökunnalle tuodessasi tavaroita."
 
 msgid "Price:"
 msgstr "Hinta:"
-
-msgid "vendor"
-msgstr "myyjä"
 
 msgid "Clerk codes"
 msgstr "Kassatätien tunnisteet"
@@ -497,6 +590,27 @@ msgstr "Hyväksy"
 msgid "Accepted at %(terms_time)s."
 msgstr "Hyväksytty %(terms_time)s."
 
+msgid "Item status"
+msgstr "Tavaroiden tila"
+
+msgid "Click to show"
+msgstr "Näytä klikkaamalla"
+
+msgid "Tap the icon on the line to keep track of which items you have found."
+msgstr "Täppää rivillä olevaa ikonia merkitäksesi löytämäsi tavarat."
+
+msgid "total:"
+msgstr "yhteensä:"
+
+msgid "No items"
+msgstr "Ei tavaroita"
+
+msgid "View as text"
+msgstr "Näytä tekstinä"
+
+msgid "Access key"
+msgstr "Koodiavain"
+
 msgid "Image extension not supported"
 msgstr "Kuvatyyppi ei ole tuettu"
 
@@ -525,14 +639,23 @@ msgstr "Tavaralista"
 msgid "Box list"
 msgstr "Laatikkolista"
 
+msgid "Mobile"
+msgstr "Mobiili"
+
 msgid "Checkout commands"
 msgstr "Kassan komennot"
+
+msgid "Checkout"
+msgstr "Kassa"
 
 msgid "Lost and Found"
 msgstr "Löytötavarat"
 
 msgid "Statistics"
 msgstr "Tilastot"
+
+msgid "Site administration"
+msgstr "Sivuston hallinta"
 
 msgid "Management"
 msgstr "Hallinta"
@@ -571,6 +694,12 @@ msgstr "Lisää %(name)s SSO-tarjoajalta"
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Lisää irrallinen %(name)s"
+
+#~ msgid "Deleted"
+#~ msgstr "Poistettu"
+
+#~ msgid "vendor"
+#~ msgstr "myyjä"
 
 #~ msgid "Long"
 #~ msgstr "18 cm (kirjanmerkki)"
