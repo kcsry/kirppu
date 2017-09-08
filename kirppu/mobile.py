@@ -257,8 +257,11 @@ def _is_permit_valid(request):
 def index(request):
     # FIXME: Implement a better way to enable the link. db-options...
     from .models import UIText
-    login_text = UIText.objects.get(identifier="mobile_login")
-    if "--enable--" not in login_text.text:
+    try:
+        login_text = UIText.objects.get(identifier="mobile_login")
+        if "--enable--" not in login_text.text:
+            raise UIText.DoesNotExist()
+    except UIText.DoesNotExist:
         return HttpResponseForbidden(_("This location is not in use."))
 
     if request.user.is_authenticated:
