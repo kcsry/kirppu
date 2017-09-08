@@ -118,9 +118,9 @@ def _login_view(request):
                     TemporaryAccessPermitLog.objects.create(
                         permit=permit,
                         action=TemporaryAccessPermitLog.ACTION_USE if can_use else TemporaryAccessPermitLog.ACTION_TRY,
-                        address=shorten_text(get_ip(request) + "; " + request.META["REMOTE_HOST"],
+                        address=shorten_text(get_ip(request) + "; " + request.META.get("REMOTE_HOST", ""),
                                              TemporaryAccessPermitLog._meta.get_field("address").max_length, False),
-                        peer=shorten_text(request.META["HTTP_USER_AGENT"],
+                        peer=shorten_text(request.META.get("HTTP_USER_AGENT", ""),
                                           TemporaryAccessPermitLog._meta.get_field("peer").max_length, False)
                     )
 
