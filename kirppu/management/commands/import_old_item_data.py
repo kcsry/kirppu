@@ -125,7 +125,7 @@ UserColumnTypes = {
 }
 
 VendorColumnTypes = {
-    "terms_accepted": "str",
+    "terms_accepted": "datetime",
     "id": "int",
 }
 
@@ -192,6 +192,7 @@ class DbConverter(object):
         attrs = {
             col: getattr(TypeConverter, VendorColumnTypes[col])(row[col])
             for col in [
+                "terms_accepted",
             ]
         }
         r = Vendor(**attrs)
