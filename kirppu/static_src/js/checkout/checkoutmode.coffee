@@ -79,8 +79,8 @@ class @CheckoutMode
         @switcher.setStatsVisible(false)
         @switcher.switchTo(ClerkLoginMode)
 
-      () =>
-        safeAlert(gettext("Logout failed!"))
+      (jqXHR) =>
+        safeAlert(gettext("Logout failed!") + " " + jqXHR.responseText)
         return true
     )
 

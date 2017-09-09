@@ -28,6 +28,7 @@ from django.utils import timezone
 from django.utils.formats import localize
 from django.utils.six import string_types
 from django.utils.translation import ugettext as _
+from django.views.csrf import csrf_failure as django_csrf_failure
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from django.views.generic import RedirectView
@@ -711,3 +712,14 @@ def lost_and_found_list(request):
         'menu': _vendor_menu_contents(request),
         'items': vendor_list,
     })
+
+
+def kirppu_csrf_failure(request, reason=""):
+    if request.is_ajax() or request.META.get("HTTP_ACCEPT", "") == "text/json":
+        # TODO: Unify the response to match requested content type.
+        return HttpResponseForbidden(
+            _("CSRF verification failed. Request aborted."),
+            content_type="text/plain; charset=utf-8",
+        )
+    else:
+        return django_csrf_failure(request, reason=reason)

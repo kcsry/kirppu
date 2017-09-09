@@ -335,6 +335,8 @@ KIRPPU_EXHAUST_SHORT_CODE_ON_LOGOUT = False
 KIRPPU_SHORT_CODE_LENGTH = 5
 KIRPPU_MOBILE_LOGIN_RATE_LIMIT = "5/m"
 
+CSRF_FAILURE_VIEW = "kirppu.views.kirppu_csrf_failure"
+
 
 # Function to calculate provision amount. Must return always None or a Decimal instance.
 def KIRPPU_POST_PROVISION(sold_and_compensated):
