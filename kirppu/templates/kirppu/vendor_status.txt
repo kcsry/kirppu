@@ -6,3 +6,8 @@
 {% endfor %} {% trans "total:" %} {{ table.sum|format_price }}
 {% else %}{% trans "No items" %}
 {% endif %}{% endif %}{% endfor %}
+{% if signature %}
+---- BEGIN SIGNATURE ----
+{{ signature }}
+---- END SIGNATURE ----
+{% endif %}

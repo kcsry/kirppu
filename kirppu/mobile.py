@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 from decimal import Decimal
+import textwrap
 
 from django.conf import settings
+from django.core import signing
 from django.db import transaction, models
 from django.db.models import Count
 from django.http import HttpResponseRedirect
@@ -200,10 +202,28 @@ def _data_view(request, permit):
                 break
 
     if request.GET.get("type") == "txt":
+        sign_data = {}
+        total_items = 0
+        for key, table in tables.items():
+            if key == "registered":
+                continue
+            items = [_sign_data(i) for i in table.items]
+            total_items += len(items)
+            sign_data[key] = items
+            sign_data[key + "_s"] = str(table.sum)
+
+        if total_items > 0:
+            sign_data["vendor"] = vendor.id
+            signature = signing.dumps(sign_data, compress=True)
+            signature = "\n".join(textwrap.wrap(signature, 78, break_on_hyphens=False))
+        else:
+            signature = None
+
         return render(request, "kirppu/vendor_status.txt", {
             "tables": tables,
             "price_width": max_price_width,
             "vendor": vendor.id,
+            "signature": signature,
         }, content_type="text/plain; charset=utf-8")
     return render(request, "kirppu/vendor_status.html", {
         "tables": tables,
@@ -233,6 +253,12 @@ def _box(box, table_key):
         "value": getattr(box, "items_%s" % table_key),
         "total": box.item_count,
     }
+
+
+def _sign_data(item_dict):
+    if "box" in item_dict:
+        return "{}@{}:{}/{}".format(item_dict["code"], item_dict["price"], item_dict["value"], item_dict["total"])
+    return "{}@{}".format(item_dict["code"], item_dict["price"])
 
 
 def _is_permit_valid(request):
