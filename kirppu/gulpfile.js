@@ -141,18 +141,14 @@ const staticTasks = _.map(pipeline.static, function(def, name) {
     return taskName;
 });
 
-gulp.task("pipeline", []
+gulp.task("pipeline", gulp.series([]
     .concat(jsTasks)
     .concat(cssTasks)
     .concat(jstTasks)
     .concat(staticTasks)
-    , function() {
+));
 
-});
-
-gulp.task("default", ["pipeline"], function() {
-
-});
+gulp.task("default", gulp.series("pipeline"));
 
 /**
  * Find name of pipeline task by source filename.
