@@ -7,7 +7,17 @@ var uglify = require("gulp-uglify");
 var minify = require("gulp-cssnano");
 var nunjucks = require("gulp-nunjucks");
 var nunjucks_compiler = require("nunjucks");
-var gutil = require("gulp-util");
+
+const args = require("minimist")(process.argv.slice(2));
+const withColor = (c) => (s) => `\x1b[${ c }m${ s }\x1b[39m`;
+const colors = {
+    // for more colors, see: https://en.wikipedia.org/wiki/ANSI_escape_code#3/4_bit
+    red: withColor(31),
+    cyan: withColor(36)
+};
+const log = require("fancy-log");
+const noop = require("through2");
+
 var _ = require("lodash");
 
 
@@ -16,7 +26,7 @@ var SRC = "static_src";
 var DEST = "static/kirppu";
 
 // Compression enabled, if run with arguments: --type production
-var shouldCompress = gutil.env.type === "production";
+var shouldCompress = args.type === "production";
 
 var jsHeader = "// ================ <%= index %>: <%= original %> ================\n\n";
 var cssHeader = "/* ================ <%= index %>: <%= original %> ================ */\n\n";
@@ -43,7 +53,7 @@ var srcPrepend = function(def) {
             fs.statSync(resultName);
         }
         catch (ignored) {
-            gutil.log(gutil.colors.red("File not found (or error): ") + n);
+            log(colors.red("File not found (or error): ") + n);
         }
         return resultName;
     })
@@ -63,12 +73,12 @@ var fileHeader = function(header) {
         }
         var original = /[/\\]?([^/\\]*)$/.exec(this.history[0]);
         if (original != null) original = original[1]; else original = "?";
-        return gutil.template(header, {file: this, index: index++, original: original}) + src;
+        return _.template(header)({file: this, index: index++, original: original}) + src;
     };
 };
 
 var handleError = function(err) {
-    gutil.log(gutil.colors.red("Error: ") + err);
+    log(colors.red("Error: ") + err);
     return this.emit('end');
 };
 
@@ -76,7 +86,7 @@ var jsTasks = _.map(pipeline.js, function(def, name) {
     var taskName = "js:" + name;
     gulp.task(taskName, function() {
         return gulp.src(srcPrepend(def))
-            .pipe(gif(/\.coffee$/, coffee(), gutil.noop()))
+            .pipe(gif(/\.coffee$/, coffee(), noop.obj()))
             .on('error', handleError)
             .pipe(concat(def.output_filename, {process: fileHeader(jsHeader)}))
             .pipe(gif(shouldCompress && def.compress, uglify()))
@@ -112,7 +122,7 @@ var jstTasks = _.map(pipeline.jst, function(def, name) {
             .pipe(gif(/\.jinja2?$/, nunjucks.precompile({
                 env: nunjucksEnv,
                 name: nameFn
-            }), gutil.noop()))
+            }), noop.obj()))
             .on('error', handleError)
             .pipe(concat(def.output_filename, {process: fileHeader(jsHeader)}))
             .pipe(gif(shouldCompress, uglify()))
@@ -192,12 +202,12 @@ var startFileTask = function(file) {
 
 // For file watcher:  build --file $FilePathRelativeToProjectRoot$
 gulp.task("build", function() {
-    var file = gutil.env.file;
+    var file = args.file;
     if (file == null) {
-        gutil.log(gutil.colors.red("Need argument: --file FILE"));
+        log(colors.red("Need argument: --file FILE"));
     }
     else if (!(startFileTask(file))) {
-        gutil.log(gutil.colors.red("Target file not found in pipeline.js: " + file));
+        log(colors.red("Target file not found in pipeline.js: " + file));
     }
 });
 
@@ -208,17 +218,17 @@ var watcher = function(event) {
     var file = event.path;
     if (event.type != "changed") {
         // "added" / "deleted"
-        gutil.log("Unhandled event: " + event.type + " " + file);
+        log("Unhandled event: " + event.type + " " + file);
         return;
     }
     if (!(startFileTask(file))) {
-        gutil.log(gutil.colors.red("Target file not found in pipeline.js: " + file));
+        log(colors.red("Target file not found in pipeline.js: " + file));
     }
 };
 
 gulp.task("watch", function() {
     gulp.watch(SRC + "/**/*", watcher);
     gulp.watch("pipeline.js", function() {
-        gutil.log("Pipeline configuration changed. Please restart " + gutil.colors.cyan("gulp watch"));
+        log("Pipeline configuration changed. Please restart " + colors.cyan("gulp watch"));
     })
 });
