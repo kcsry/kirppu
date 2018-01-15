@@ -106,6 +106,13 @@ Installed 10 object(s) from 1 fixture(s)
 
 ### Testing Kirppu
 
+Install the dependencies from `requirements-dev.txt`.
+You can then run unit tests with
+
+```
+py.test -vvv --cov . --doctest-modules
+```
+
 - Admin interface
     - `localhost:9874/admin/`
     - Login with the local superuser credentials.

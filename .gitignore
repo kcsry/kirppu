@@ -9,3 +9,6 @@ kirppu/static/kirppu/*
 kirppu/static_src/js/api_stub.js
 *.sqlite3
 .vscode/
+.cache
+htmlcov
+.coverage
