@@ -1,13 +1,13 @@
-var gulp = require("gulp");
-var gif = require("gulp-if");
-var concat = require("gulp-concat-util");
-var coffee = require("gulp-coffee");
-var fs = require("fs");
-var path = require("path");
-var uglify = require("gulp-uglify");
-var minify = require("gulp-cssnano");
-var nunjucks = require("gulp-nunjucks");
-var nunjucks_compiler = require("nunjucks");
+const gulp = require("gulp");
+const gif = require("gulp-if");
+const concat = require("gulp-concat-util");
+const coffee = require("gulp-coffee");
+const fs = require("fs");
+const path = require("path");
+const uglify = require("gulp-uglify");
+const minify = require("gulp-cssnano");
+const nunjucks = require("gulp-nunjucks");
+const nunjucks_compiler = require("nunjucks");
 
 const args = require("minimist")(process.argv.slice(2));
 const withColor = (c) => (s) => `\x1b[${ c }m${ s }\x1b[39m`;
@@ -19,18 +19,18 @@ const colors = {
 const log = require("fancy-log");
 const noop = require("through2");
 
-var _ = require("lodash");
+const _ = require("lodash");
 
 
-var pipeline = require("./pipeline");
-var SRC = "static_src";
-var DEST = "static/kirppu";
+const pipeline = require("./pipeline");
+const SRC = "static_src";
+const DEST = "static/kirppu";
 
 // Compression enabled, if run with arguments: --type production
-var shouldCompress = args.type === "production";
+const shouldCompress = args.type === "production";
 
-var jsHeader = "// ================ <%= index %>: <%= original %> ================\n\n";
-var cssHeader = "/* ================ <%= index %>: <%= original %> ================ */\n\n";
+const jsHeader = "// ================ <%= index %>: <%= original %> ================\n\n";
+const cssHeader = "/* ================ <%= index %>: <%= original %> ================ */\n\n";
 
 
 /**
@@ -39,9 +39,9 @@ var cssHeader = "/* ================ <%= index %>: <%= original %> =============
  * @param {Object} def Pipeline group definition value.
  * @returns {Array} Prefixed source files.
  */
-var srcPrepend = function(def) {
+const srcPrepend = function(def) {
     return _.map(def.source_filenames, function (n) {
-        var resultName = path.join(SRC, n);
+        const resultName = path.join(SRC, n);
         try {
             fs.statSync(resultName);
         }
@@ -58,25 +58,25 @@ var srcPrepend = function(def) {
  * @param header {string} Header template to use.
  * @returns {Function} Function for concat:process.
  */
-var fileHeader = function(header) {
-    var index = 1;
+const fileHeader = function(header) {
+    let index = 1;
     return function(src) {
         if (shouldCompress) {
             return src;
         }
-        var original = /[/\\]?([^/\\]*)$/.exec(this.history[0]);
+        let original = /[/\\]?([^/\\]*)$/.exec(this.history[0]);
         if (original != null) original = original[1]; else original = "?";
         return _.template(header)({file: this, index: index++, original: original}) + src;
     };
 };
 
-var handleError = function(err) {
+const handleError = function(err) {
     log(colors.red("Error: ") + err);
     return this.emit('end');
 };
 
-var jsTasks = _.map(pipeline.js, function(def, name) {
-    var taskName = "js:" + name;
+const jsTasks = _.map(pipeline.js, function(def, name) {
+    const taskName = "js:" + name;
     gulp.task(taskName, function() {
         return gulp.src(srcPrepend(def))
             .pipe(gif(/\.coffee$/, coffee(), noop.obj()))
@@ -88,8 +88,8 @@ var jsTasks = _.map(pipeline.js, function(def, name) {
     return taskName;
 });
 
-var cssTasks = _.map(pipeline.css, function(def, name) {
-    var taskName = "css:" + name;
+const cssTasks = _.map(pipeline.css, function(def, name) {
+    const taskName = "css:" + name;
     gulp.task(taskName, function() {
         return gulp.src(srcPrepend(def))
             .pipe(concat(def.output_filename, {process: fileHeader(cssHeader)}))
@@ -101,10 +101,10 @@ var cssTasks = _.map(pipeline.css, function(def, name) {
 });
 
 // Strip some newlines/whitespace from {%%} tags. Sadly, does not strip whitespace from html.
-var nunjucksEnv = nunjucks_compiler.configure({trimBlocks: true, lstripBlocks: true});
-var jstTasks = _.map(pipeline.jst, function(def, name) {
-    var taskName = "jst:" + name;
-    var nameFn = function(file) {
+const nunjucksEnv = nunjucks_compiler.configure({trimBlocks: true, lstripBlocks: true});
+const jstTasks = _.map(pipeline.jst, function(def, name) {
+    const taskName = "jst:" + name;
+    const nameFn = function(file) {
         // VinylFS 1.1.0 has stem-helper.
         // Fallback-re for older VFS that should get the basename without extension.
         // Fallback to original relative result if the re fails for some reason.
@@ -124,11 +124,11 @@ var jstTasks = _.map(pipeline.jst, function(def, name) {
     return taskName;
 });
 
-var staticTasks = _.map(pipeline.static, function(def, name) {
-    var taskName = "static:" + name;
+const staticTasks = _.map(pipeline.static, function(def, name) {
+    const taskName = "static:" + name;
     gulp.task(taskName, function() {
-        var _to = DEST;
-        var options = {};
+        let _to = DEST;
+        const options = {};
         if (def.dest) {
             _to = path.join(_to, def.dest);
         }
@@ -161,7 +161,7 @@ gulp.task("default", ["pipeline"], function() {
  * @param file {string} Filename to find for.
  * @returns {string|undefined|*} Pipeline group name or undefined.
  */
-var findTask = function(haystack, file) {
+const findTask = function(haystack, file) {
     return _.findKey(haystack, function(def) {
         // Match if 'file' ends with any source filename.
         return _.find(def.source_filenames, function(src) {
@@ -176,13 +176,13 @@ var findTask = function(haystack, file) {
  * @param file Filename argument, which file has been changed.
  * @returns {boolean} True if task was run. Otherwise false.
  */
-var startFileTask = function(file) {
+const startFileTask = function(file) {
     // Replace '\' with '/' so Windows file paths work.
-    var filename = file.replace(/\\/g, "/");
+    const filename = file.replace(/\\/g, "/");
 
     // Find first matching task from pipeline groups.
-    var task = _.find(_.map(_.keys(pipeline), function(group) {
-        var taskName = findTask(_.result(pipeline, group), filename);
+    const task = _.find(_.map(_.keys(pipeline), function(group) {
+        const taskName = findTask(_.result(pipeline, group), filename);
         return taskName != null ? group + ":" + taskName : null;
     }));
 
@@ -195,7 +195,7 @@ var startFileTask = function(file) {
 
 // For file watcher:  build --file $FilePathRelativeToProjectRoot$
 gulp.task("build", function() {
-    var file = args.file;
+    const file = args.file;
     if (file == null) {
         log(colors.red("Need argument: --file FILE"));
     }
@@ -207,8 +207,8 @@ gulp.task("build", function() {
 /**
  * Watcher function for gulp.watch. This will start file task for changed files.
  */
-var watcher = function(event) {
-    var file = event.path;
+const watcher = function(event) {
+    const file = event.path;
     if (event.type != "changed") {
         // "added" / "deleted"
         log("Unhandled event: " + event.type + " " + file);
