@@ -3,6 +3,7 @@ var gif = require("gulp-if");
 var concat = require("gulp-concat-util");
 var coffee = require("gulp-coffee");
 var fs = require("fs");
+var path = require("path");
 var uglify = require("gulp-uglify");
 var minify = require("gulp-cssnano");
 var nunjucks = require("gulp-nunjucks");
@@ -31,14 +32,6 @@ var shouldCompress = args.type === "production";
 var jsHeader = "// ================ <%= index %>: <%= original %> ================\n\n";
 var cssHeader = "/* ================ <%= index %>: <%= original %> ================ */\n\n";
 
-var pathJoin = function() {
-    return _.reduce(_.slice(arguments, 1), function(acc, item) {
-        acc = _.trimRight(acc, "/");
-        item = _.trimLeft(item, "/");
-        if (!item) return acc;
-        return (acc ? (acc + "/") : acc) + item;
-    }, arguments[0]);
-};
 
 /**
  * Add source (SRC) prefix for all source file names from pipeline definition.
@@ -48,7 +41,7 @@ var pathJoin = function() {
  */
 var srcPrepend = function(def) {
     return _.map(def.source_filenames, function (n) {
-        var resultName = pathJoin(SRC, n);
+        var resultName = path.join(SRC, n);
         try {
             fs.statSync(resultName);
         }
@@ -137,7 +130,7 @@ var staticTasks = _.map(pipeline.static, function(def, name) {
         var _to = DEST;
         var options = {};
         if (def.dest) {
-            _to = pathJoin(_to, def.dest);
+            _to = path.join(_to, def.dest);
         }
         else {
             options["base"] = SRC;
