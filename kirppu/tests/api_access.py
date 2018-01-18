@@ -24,7 +24,10 @@ class Api(object):
             self._end_points[name] = gen(func.method.lower(), func.view)
 
     def __getattr__(self, function):
+        if function == '__wrapped__':  # Placate inspect.is_wrapper
+            return False
         return self._end_points[function]
+
 
 api = Api(False)
 api.__doc__ = "Checkout Api request handler."

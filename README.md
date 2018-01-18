@@ -14,7 +14,7 @@ It consists of a high level guide outlining the steps, example guide that has mo
 
 ### High level guide
 
-1. Install python.
+1. Install Python 3.4+.
     1. Install pip.
        Pip is used for downloading and installing dependencies. It is included
        by default in Python since 2.7.9 and 3.4.
@@ -105,6 +105,13 @@ Installed 10 object(s) from 1 fixture(s)
 ```
 
 ### Testing Kirppu
+
+Install the dependencies from `requirements-dev.txt`.
+You can then run unit tests with
+
+```
+py.test -vvv --cov . --doctest-modules
+```
 
 - Admin interface
     - `localhost:9874/admin/`

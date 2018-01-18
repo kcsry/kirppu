@@ -15,7 +15,7 @@ stage("Build") {
 //         --link jenkins.tracon.fi-postgres:postgres \
 //         --env-file ~/.kirppu.env \
 //         ${image} \
-//         python manage.py test --keepdb
+//         pip install -r requirements-dev.txt && py.test --cov . --doctest-modules
 //     """
 //   }
 // }
