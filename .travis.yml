@@ -1,0 +1,16 @@
+sudo: false
+language: python
+env:
+  DEBUG: 1
+  SECRET_KEY: 'x'
+  ALLOWED_HOSTS: '*'
+  KIRPPU_CHECKOUT_ACTIVE: true
+python: "3.5"
+install:
+  - pip install -r requirements.txt
+  - pip install -r requirements-oauth.txt
+  - pip install -r requirements-dev.txt
+script:
+  - py.test -vvv --cov . --doctest-modules
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
