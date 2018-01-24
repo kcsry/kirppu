@@ -5,3 +5,4 @@ omit =
     *migrations*
     */wsgi.py
     manage.py
+    KirppuVenv/*
