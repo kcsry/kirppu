@@ -50,9 +50,9 @@ class @Dialog
   # @param enabled [Boolean, optional] Whether to enable (default) or disable the button.
   setEnabled: (button, enabled = true) ->
     if enabled
-      button.removeAttr("disabled")
+      button.prop("disabled", false)
     else
-      button.attr("disabled", "disabled")
+      button.prop("disabled", "disabled")
 
   # Display the dialog. This will append added buttons to `buttons`-container.
   # @param modalArgs [optional] Arguments for BootStrap `modal()`.

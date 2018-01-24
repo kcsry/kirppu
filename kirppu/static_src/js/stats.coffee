@@ -7,6 +7,6 @@ populateChart = (chart, api_func) ->
   onError = (jqXHR) ->
     safeAlert("Fetching chart data failed.")
 
-  api_func().done(appendToChart).error(onError)
+  api_func().done(appendToChart).fail(onError)
 
 window.populateChart = populateChart
