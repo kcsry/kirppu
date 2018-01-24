@@ -110,6 +110,7 @@ def main(args):
         exit(1)
 
     print("""throw "Don't use";  // Automatically generated with make_api_stub""")
+    print("// noinspection UnreachableCodeJS")
     print("Api = {")
 
     for f in args:
