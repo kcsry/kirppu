@@ -1,5 +1,7 @@
 # Kirppu – Second-hand sales POS and vendor signup for conventions
 
+[![Build Status](https://travis-ci.org/jlaunonen/kirppu.svg?branch=master)](https://travis-ci.org/jlaunonen/kirppu)
+
 ## Getting started using Docker
 
 Install Docker and `docker-compose` and run
