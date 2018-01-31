@@ -6,9 +6,9 @@
         <th class="receipt_index numeric">#</th>
         <th>description</th>
         <th class="receipt_price numeric">price</th>
+        <th class="receipt_count numeric">brought</th>
         <th class="receipt_count numeric">compensable</th>
         <th class="receipt_count numeric">returnable</th>
-        <th class="receipt_count numeric">brought</th>
     </tr>
 </thead>
 <tbody>
@@ -17,9 +17,9 @@
         <td class="receipt_index numeric">{{ loop.index }}</td>
         <td>{{ item.description }}</td>
         <td class="receipt_price numeric">{{ item.item_price|displayPrice }}</td>
+        <td class="receipt_price numeric">{{ item.items_brought_total }}</td>
         <td class="receipt_price numeric">{{ item.items_sold }}</td>
         <td class="receipt_price numeric">{{ item.items_returnable }}</td>
-        <td class="receipt_price numeric">{{ item.items_brought_total }}</td>
     </tr>
 {% else %}
     <tr>
@@ -29,9 +29,9 @@
 {% if items %}
     <tr{% if hideSumInPrint %} class="hidden-print"{% endif %}>
         <th colspan="3">Total:</th>
+        <th class="receipt_price numeric">{{ sum_brought|displayPrice }} ({{ sum_brought_count }})</th>
         <th class="receipt_price numeric">{{ sum_sold|displayPrice }} ({{ sum_sold_count }})</th>
         <th></th>
-        <th class="receipt_price numeric">{{ sum_brought|displayPrice }} ({{ sum_brought_count }})</th>
     </tr>
 {% endif %}
 </tbody>
