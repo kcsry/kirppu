@@ -481,6 +481,7 @@ def box_list(request, vendor):
         data["items_brought_total"] = items.filter(state__in=(Item.BROUGHT, Item.STAGED, Item.SOLD, Item.RETURNED))\
             .count()
         data["items_sold"] = items.filter(state=Item.SOLD).count()
+        data["items_compensated"] = items.filter(state=Item.COMPENSATED).count()
         data["items_returnable"] = items.filter(state__in=(Item.BROUGHT, Item.STAGED)).count()
         out_boxes.append(data)
     return out_boxes

@@ -8,6 +8,7 @@
         <th class="receipt_price numeric">price</th>
         <th class="receipt_count numeric">brought</th>
         <th class="receipt_count numeric">compensable</th>
+        <th class="receipt_count numeric">compensated</th>
         <th class="receipt_count numeric">returnable</th>
     </tr>
 </thead>
@@ -19,6 +20,7 @@
         <td class="receipt_price numeric">{{ item.item_price|displayPrice }}</td>
         <td class="receipt_price numeric">{{ item.items_brought_total }}</td>
         <td class="receipt_price numeric">{{ item.items_sold }}</td>
+        <td class="receipt_price numeric">{{ item.items_compensated }}</td>
         <td class="receipt_price numeric">{{ item.items_returnable }}</td>
     </tr>
 {% else %}
@@ -31,6 +33,7 @@
         <th colspan="3">Total:</th>
         <th class="receipt_price numeric">{{ sums.brought|displayPrice }} ({{ counts.brought }})</th>
         <th class="receipt_price numeric">{{ sums.sold|displayPrice }} ({{ counts.sold }})</th>
+        <th class="receipt_price numeric" style="font-weight: normal">{{ sums.compensated|displayPrice }} ({{ counts.compensated }})</th>
         <th></th>
     </tr>
 {% endif %}

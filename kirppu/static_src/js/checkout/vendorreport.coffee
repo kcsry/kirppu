@@ -144,9 +144,11 @@ class @VendorReport extends CheckoutMode
       sum =
         brought: 0
         sold: 0
+        compensated: 0
       count =
         brought: 0
         sold: 0
+        compensated: 0
 
       for box in boxes
         unit_price = box.item_price
@@ -155,6 +157,8 @@ class @VendorReport extends CheckoutMode
         sum.brought += box.items_brought_total * unit_price
         count.sold += box.items_sold
         sum.sold += box.items_sold * unit_price
+        count.compensated += box.items_compensated
+        sum.compensated += box.items_compensated * unit_price
 
       rendered_table = Templates.render("box_report_table",
         caption: gettext("Boxes")
