@@ -6,6 +6,7 @@
         <th class="receipt_index numeric">#</th>
         <th class="receipt_code">code</th>
         <th class="receipt_item">item</th>
+        <th>item type</th>
         <th class="receipt_price numeric">price</th>
         <th class="receipt_status">status</th>
         <th class="receipt_abandoned">abandoned</th>
@@ -15,10 +16,10 @@
 {% macro total(sum) %}
     <tr class="hidden-print">
     {% if isExpectedSum %}
-        <th colspan="3">Expected total:</th>
+        <th colspan="4">Expected total:</th>
         <th class="receipt_price numeric">~ {{ sum|displayPrice }} ~</th>
     {% else %}
-        <th colspan="3">Total:</th>
+        <th colspan="4">Total:</th>
         <th class="receipt_price numeric">{{ sum|displayPrice }}</th>
     {% endif %}
         <th></th>
@@ -33,6 +34,7 @@
         <td class="receipt_index numeric">{{ loop.index }}</td>
         <td class="receipt_code">{{ item.code }}</td>
         <td class="receipt_item">{{ item.name }}</td>
+        <td>{{ item.itemtype_display }}</td>
         <td class="receipt_price numeric">{{ item.price|displayPrice }}</td>
         <td class="receipt_status">{{ item.state_display }}</td>
         <td class="receipt_abandoned">{{ item.abandoned|yesno|title }}</td>
