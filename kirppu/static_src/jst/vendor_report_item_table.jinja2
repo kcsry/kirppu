@@ -26,9 +26,6 @@
         <th></th>
     </tr>
 {% endmacro %}
-{% if items and topSum %}
-    {{ total(sum) }}
-{% endif %}
 {% for item in items %}
     <tr class="table_row_{{ loop.index }}{% if item.state == "ST" %} bg-warning{% endif %}">
         <td class="receipt_index numeric">{{ loop.index }}</td>

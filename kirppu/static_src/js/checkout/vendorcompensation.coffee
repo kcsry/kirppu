@@ -75,7 +75,6 @@ class @VendorCompensation extends CheckoutMode
         caption: gettext("Sold Items")
         items: rows
         sum: compensableSum + provisionAmount
-        topSum: true
         extra_col: true
       )
       @itemDiv.empty().append(table)

@@ -45,7 +45,6 @@ class @CompensationReceipt extends CheckoutMode
       caption: gettext("Compensated Items")
       items: receipt.items
       sum: receipt.total
-      topSum: true
       hide_status: true
     )
     @itemDiv.empty().append(table)
