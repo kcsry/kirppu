@@ -141,20 +141,26 @@ class @VendorReport extends CheckoutMode
       @cfg.uiRef.body.append(rendered_table)
 
     if boxes.length > 0
-      [sum_brought_count, sum_brought, sum_sold_count, sum_sold] = [0, 0, 0, 0]
+      sum =
+        brought: 0
+        sold: 0
+      count =
+        brought: 0
+        sold: 0
+
       for box in boxes
-        sum_brought_count += box.items_brought_total
-        sum_brought += box.items_brought_total * box.item_price
-        sum_sold_count += box.items_sold
-        sum_sold += box.items_sold * box.item_price
+        unit_price = box.item_price
+
+        count.brought += box.items_brought_total
+        sum.brought += box.items_brought_total * unit_price
+        count.sold += box.items_sold
+        sum.sold += box.items_sold * unit_price
 
       rendered_table = Templates.render("box_report_table",
         caption: gettext("Boxes")
         items: boxes
-        sum_brought_count: sum_brought_count
-        sum_brought: sum_brought
-        sum_sold_count: sum_sold_count
-        sum_sold: sum_sold
+        counts: count
+        sums: sum
         hideSumInPrint: true
       )
 
