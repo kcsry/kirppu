@@ -183,7 +183,7 @@ const startFileTask = function(file) {
     }));
 
     if (task != null) {
-        gulp.start(task);
+        gulp.series(task)();
         return true;
     }
     return false;
@@ -200,24 +200,14 @@ gulp.task("build", function() {
     }
 });
 
-/**
- * Watcher function for gulp.watch. This will start file task for changed files.
- */
-const watcher = function(event) {
-    const file = event.path;
-    if (event.type != "changed") {
-        // "added" / "deleted"
-        log("Unhandled event: " + event.type + " " + file);
-        return;
-    }
-    if (!(startFileTask(file))) {
-        log(colors.red("Target file not found in pipeline.js: " + file));
-    }
-};
 
 gulp.task("watch", function() {
-    gulp.watch(SRC + "/**/*", watcher);
-    gulp.watch("pipeline.js", function() {
+    gulp.watch(SRC + "/**/*").on("change", function(file) {
+        if (!(startFileTask(file))) {
+            log(colors.red("Target file not found in pipeline.js: " + file));
+        }
+    });
+    gulp.watch("pipeline.js").on("change", function() {
         log("Pipeline configuration changed. Please restart " + colors.cyan("gulp watch"));
     })
 });
