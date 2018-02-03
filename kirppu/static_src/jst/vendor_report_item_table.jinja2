@@ -1,0 +1,49 @@
+{# -*- mode: django; -*- #}
+<table class="table table-striped table-hover table-condensed{% if hidePrint %} hidden-print{% endif %}"{% if id %} id="{{ id }}"{% endif %}>
+{% if caption %}<caption class="h3{% if hidePrint %} text-muted{% endif %}">{{ caption }}</caption>{% endif %}
+<thead>
+    <tr>
+        <th class="receipt_index numeric">#</th>
+        <th class="receipt_code">code</th>
+        <th class="receipt_item">item</th>
+        <th class="receipt_price numeric">price</th>
+        <th class="receipt_status">status</th>
+        <th class="receipt_abandoned">abandoned</th>
+    </tr>
+</thead>
+<tbody>
+{% macro total(sum) %}
+    <tr class="hidden-print">
+    {% if isExpectedSum %}
+        <th colspan="3">Expected total:</th>
+        <th class="receipt_price numeric">~ {{ sum|displayPrice }} ~</th>
+    {% else %}
+        <th colspan="3">Total:</th>
+        <th class="receipt_price numeric">{{ sum|displayPrice }}</th>
+    {% endif %}
+        <th></th>
+        <th></th>
+    </tr>
+{% endmacro %}
+{% if items and topSum %}
+    {{ total(sum) }}
+{% endif %}
+{% for item in items %}
+    <tr class="table_row_{{ loop.index }}{% if item.state == "ST" %} bg-warning{% endif %}">
+        <td class="receipt_index numeric">{{ loop.index }}</td>
+        <td class="receipt_code">{{ item.code }}</td>
+        <td class="receipt_item">{{ item.name }}</td>
+        <td class="receipt_price numeric">{{ item.price|displayPrice }}</td>
+        <td class="receipt_status">{{ item.state_display }}</td>
+        <td class="receipt_abandoned">{{ item.abandoned|yesno|title }}</td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="6">No items.</td>
+    </tr>
+{% endfor %}
+{% if items %}
+    {{ total(sum) }}
+{% endif %}
+</tbody>
+</table>

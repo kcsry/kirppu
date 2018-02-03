@@ -129,14 +129,13 @@ class @VendorReport extends CheckoutMode
     for table_name, table of tables
       matchingItems = table.filter(items)
 
-      rendered_table = Templates.render("item_report_table",
+      rendered_table = Templates.render("vendor_report_item_table",
          id: table_name
          caption: table.title()
          items: matchingItems
          sum: _.reduce(matchingItems, ((acc, item) -> acc + item.price), 0)
          hidePrint: table.hidden
          isExpectedSum: table.untrustedValue
-         hideSumInPrint: true
       )
       @cfg.uiRef.body.append(rendered_table)
 
