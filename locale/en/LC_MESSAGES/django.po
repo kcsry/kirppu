@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016, 2017.
+# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-08 08:57+0300\n"
-"PO-Revision-Date: 2017-09-08 08:58+0200\n"
+"POT-Creation-Date: 2018-02-04 14:30+0200\n"
+"PO-Revision-Date: 2018-02-04 14:33+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -661,6 +661,9 @@ msgstr "Management"
 
 msgid "Counter commands"
 msgstr "Counter commands"
+
+msgid "CSRF verification failed. Request aborted."
+msgstr "CSRF verification failed. Request aborted."
 
 msgid "Finnish"
 msgstr "Suomi"

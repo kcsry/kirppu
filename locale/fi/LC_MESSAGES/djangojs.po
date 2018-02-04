@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2017.
+# Jyrki Launonen, 2014, 2015, 2017, 2018.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-08 08:57+0300\n"
-"PO-Revision-Date: 2017-09-07 19:53+0200\n"
+"POT-Creation-Date: 2018-02-04 14:30+0200\n"
+"PO-Revision-Date: 2018-02-04 14:37+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -80,6 +80,9 @@ msgstr "sähköposti"
 
 msgid "phone"
 msgstr "puhelin"
+
+msgid "terms accepted?"
+msgstr "ehdot hyväksytty?"
 
 msgid "Barcode"
 msgstr "Viivakoodi"
@@ -387,14 +390,62 @@ msgstr "Klikkaa muokataksesi…"
 msgid "<em>Click to edit</em>"
 msgstr "<em>Klikkaa muokataksesi</em>"
 
+msgid "#"
+msgstr "#"
+
+msgid "abandoned"
+msgstr "hylätty"
+
+msgid "Total:"
+msgstr "Yhteensä:"
+
+msgid "No items."
+msgstr "Ei tavaroita."
+
+msgid "brought"
+msgstr "tuotuja"
+
+msgid "compensable"
+msgstr "hyvitettäviä"
+
+msgid "compensated"
+msgstr "hyvitetty"
+
+msgid "returnable"
+msgstr "palautettavia"
+
+msgid "No boxes."
+msgstr "Ei laatkoita."
+
+msgid "Vendor"
+msgstr "Myyjä"
+
+msgid "began"
+msgstr "alkoi"
+
+msgid "sum"
+msgstr "summa"
+
+msgid "compensated at"
+msgstr "hyvitetty"
+
+msgid "clerk (counter)"
+msgstr "kassahenkilö (kassa)"
+
+msgid "Notes"
+msgstr "Huomiot"
+
+msgid "Items"
+msgstr "Tavarat"
+
+msgid "Note for suspend"
+msgstr "Huomio keskeytykseen"
+
+msgid "item type"
+msgstr "tavaran tyyppi"
+
+msgid "Expected total:"
+msgstr "Odotettu summa:"
+
 #~ msgid "Someone else's item!"
 #~ msgstr "Jonkun toisen tavara!"
-
-#~ msgid "compensable"
-#~ msgstr "hyvitettäviä"
-
-#~ msgid "returnable"
-#~ msgstr "palautettavia"
-
-#~ msgid "brought"
-#~ msgstr "tuotuja"

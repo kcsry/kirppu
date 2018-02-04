@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2017.
+# Jyrki Launonen, 2014, 2015, 2017, 2018.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-08 08:57+0300\n"
-"PO-Revision-Date: 2017-09-07 18:35+0200\n"
+"POT-Creation-Date: 2018-02-04 14:30+0200\n"
+"PO-Revision-Date: 2018-02-04 14:34+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -81,6 +81,9 @@ msgstr "email"
 
 msgid "phone"
 msgstr "phone"
+
+msgid "terms accepted?"
+msgstr "terms accepted?"
 
 msgid "Barcode"
 msgstr "Barcode"
@@ -388,14 +391,62 @@ msgstr "Click to edit…"
 msgid "<em>Click to edit</em>"
 msgstr "<em>Click to edit</em>"
 
+msgid "#"
+msgstr "#"
+
+msgid "abandoned"
+msgstr "abandoned"
+
+msgid "Total:"
+msgstr "Total:"
+
+msgid "No items."
+msgstr "No items."
+
+msgid "brought"
+msgstr "brought"
+
+msgid "compensable"
+msgstr "compensable"
+
+msgid "compensated"
+msgstr "compensated"
+
+msgid "returnable"
+msgstr "returnable"
+
+msgid "No boxes."
+msgstr "No boxes."
+
+msgid "Vendor"
+msgstr "Vendor"
+
+msgid "began"
+msgstr "began"
+
+msgid "sum"
+msgstr "sum"
+
+msgid "compensated at"
+msgstr "compensated at"
+
+msgid "clerk (counter)"
+msgstr "clerk (counter)"
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Items"
+msgstr "Items"
+
+msgid "Note for suspend"
+msgstr "Note for suspend"
+
+msgid "item type"
+msgstr "item type"
+
+msgid "Expected total:"
+msgstr "Expected total:"
+
 #~ msgid "Someone else's item!"
 #~ msgstr "Someone else's item!"
-
-#~ msgid "compensable"
-#~ msgstr "compensable"
-
-#~ msgid "returnable"
-#~ msgstr "returnable"
-
-#~ msgid "brought"
-#~ msgstr "brought"
