@@ -8,7 +8,7 @@ from django.core import signing
 from django.db import transaction, models
 from django.db.models import Count
 from django.http import HttpResponseRedirect
-from django.http.response import HttpResponseForbidden
+from django.http.response import HttpResponseForbidden, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
@@ -147,7 +147,16 @@ def _data_view(request, permit):
     if permit:
         vendor = permit.vendor
     else:
-        vendor = Vendor.objects.get(user_id=request.user.pk)
+        try:
+            vendor = Vendor.objects.get(user_id=request.user.pk)
+        except Vendor.DoesNotExist:
+            if request.GET.get("type") == "txt":
+                return HttpResponse(_("Unregistered vendor."), content_type="text/plain; charset=utf-8")
+            return render(request, "kirppu/vendor_status.html", {
+                "tables": {},
+                "CURRENCY": settings.KIRPPU_CURRENCY,
+                "vendor": request.user,
+            })
 
     items = Item.objects \
         .filter(vendor=vendor, hidden=False) \
