@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-17 12:31+0200\n"
-"PO-Revision-Date: 2018-02-17 12:32+0200\n"
+"POT-Creation-Date: 2018-03-25 11:54+0300\n"
+"PO-Revision-Date: 2018-03-25 11:54+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -463,6 +463,37 @@ msgstr "Give this page to the clerk when bringing items."
 
 msgid "Price:"
 msgstr "Price:"
+
+#| msgid "Counter commands"
+msgid "Counter mode"
+msgstr "Counter mode"
+
+msgid "Checkout counter"
+msgstr "Checkout counter"
+
+msgid "Vendor Check-In"
+msgstr "Vendor Check-In"
+
+msgid "Receipt Search"
+msgstr "Receipt Search"
+
+msgid "Vendor Check-Out"
+msgstr "Vendor Check-Out"
+
+msgid "Vendor Search"
+msgstr "Vendor Search"
+
+msgid "Stats"
+msgstr "Stats"
+
+msgid "Overseer Dashboard"
+msgstr "Overseer Dashboard"
+
+msgid "Help"
+msgstr "Help"
+
+msgid "CapsLock is probably ON!"
+msgstr "CapsLock is probably ON!"
 
 msgid "Clerk codes"
 msgstr "Clerk codes"

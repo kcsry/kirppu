@@ -16,35 +16,35 @@
 {% endblock %}
 
 {% block navbar_left %}
-    <li class="dropdown" id="modeMenu"><a href="javascript:void(1)" class="dropdown-toggle" data-toggle="dropdown">Counter mode <b class="caret"></b></a>
+    <li class="dropdown" id="modeMenu"><a href="javascript:void(1)" class="dropdown-toggle" data-toggle="dropdown">{% trans "Counter mode" %} <b class="caret"></b></a>
         <ul class="dropdown-menu">
         <li>
-            <a href="javascript:void(1)" data-entrypoint="customer_checkout" class="color-CounterMode"><span class="glyphicon glyphicon-euro"></span> Checkout counter</a>
+            <a href="javascript:void(1)" data-entrypoint="customer_checkout" class="color-CounterMode"><span class="glyphicon glyphicon-euro"></span> {% trans "Checkout counter" %}</a>
         </li>
         <li>
-            <a href="javascript:void(1)" data-entrypoint="vendor_check_in" class="color-ItemCheckInMode"><span class="glyphicon glyphicon-import"></span> Vendor Check-In</a>
+            <a href="javascript:void(1)" data-entrypoint="vendor_check_in" class="color-ItemCheckInMode"><span class="glyphicon glyphicon-import"></span> {% trans "Vendor Check-In" %}</a>
         </li>
         <li>
-            <a href="javascript:void(1)" data-entrypoint="reports" class="color-ReceiptPrintMode"><span class="glyphicon glyphicon-list-alt"></span> Receipt Search</a>
+            <a href="javascript:void(1)" data-entrypoint="reports" class="color-ReceiptPrintMode"><span class="glyphicon glyphicon-list-alt"></span> {% trans "Receipt Search" %}</a>
         </li>
         <li>
-            <a href="javascript:void(1)" data-entrypoint="vendor_check_out" class="color-VendorCheckoutMode"><span class="glyphicon glyphicon-export"></span> Vendor Check-Out</a>
+            <a href="javascript:void(1)" data-entrypoint="vendor_check_out" class="color-VendorCheckoutMode"><span class="glyphicon glyphicon-export"></span> {% trans "Vendor Check-Out" %}</a>
         </li>
         <li>
-            <a href="javascript:void(1)" data-entrypoint="vendor_find" class="color-VendorFindMode"><span class="glyphicon glyphicon-user"></span> Vendor Search</a>
+            <a href="javascript:void(1)" data-entrypoint="vendor_find" class="color-VendorFindMode"><span class="glyphicon glyphicon-user"></span> {% trans "Vendor Search" %}</a>
         </li>
         </ul>
     </li>
 {% endblock %}
 {% block navbar_right %}
     <li id="stats_link" class="hidden check_enabled">
-        <a href="{% url 'kirppu:stats_view' %}" title="Stats">Stats</a>
+        <a href="{% url 'kirppu:stats_view' %}" title="Stats">{% trans "Stats" %}</a>
     </li>
     <li id="overseer_link" class="hidden check_enabled">
-        <a href="{% url 'kirppu:overseer_view' %}" title="Overseer Dashboard">Overseer Dashboard</a>
+        <a href="{% url 'kirppu:overseer_view' %}" title="Overseer Dashboard">{% trans "Overseer Dashboard" %}</a>
     </li>
     <li>
-        <button type="button" class="btn navbar-btn btn-link" data-toggle="modal" data-target="#help_dialog"><span class="glyphicon glyphicon-question-sign"></span> Help</button>
+        <button type="button" class="btn navbar-btn btn-link" data-toggle="modal" data-target="#help_dialog"><span class="glyphicon glyphicon-question-sign"></span> {% trans "Help" %}</button>
     </li>
 {% endblock %}
 
@@ -57,7 +57,7 @@
         </button>
         <small id="subtitle_text" class="hidden-print"></small>
     </h1>
-    <div class="alert alert-warning alert-off" role="alert" id="capslock_container"><span class="glyphicon glyphicon-warning-sign"></span> CapsLock is probably ON!</div>
+    <div class="alert alert-warning alert-off" role="alert" id="capslock_container"><span class="glyphicon glyphicon-warning-sign"></span> {% trans "CapsLock is probably ON!" %}</div>
     <div class="alert alert-danger alert-off" role="alert" id="error_container"></div>
     <div class="alert alert-warning alert-off" role="alert" id="warning_container"></div>
     <form role="form" id="code_form" class="hidden-print">

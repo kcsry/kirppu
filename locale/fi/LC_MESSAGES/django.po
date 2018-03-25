@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-17 12:31+0200\n"
-"PO-Revision-Date: 2018-02-17 12:31+0200\n"
+"POT-Creation-Date: 2018-03-25 11:54+0300\n"
+"PO-Revision-Date: 2018-03-25 11:55+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -464,6 +464,37 @@ msgstr "Anna tämä sivu kassahenkilökunnalle tuodessasi tavaroita."
 
 msgid "Price:"
 msgstr "Hinta:"
+
+#| msgid "Counter commands"
+msgid "Counter mode"
+msgstr "Kassan tila"
+
+msgid "Checkout counter"
+msgstr "Myyntikassa"
+
+msgid "Vendor Check-In"
+msgstr "Tavaran tuonti"
+
+msgid "Receipt Search"
+msgstr "Kuittihaku"
+
+msgid "Vendor Check-Out"
+msgstr "Tavaran poisvienti"
+
+msgid "Vendor Search"
+msgstr "Myyjähaku"
+
+msgid "Stats"
+msgstr "Tilastot"
+
+msgid "Overseer Dashboard"
+msgstr "Valvojan näkymä"
+
+msgid "Help"
+msgstr "Apua"
+
+msgid "CapsLock is probably ON!"
+msgstr "CapsLock on luultavasti päällä!"
 
 msgid "Clerk codes"
 msgstr "Kassatätien tunnisteet"
