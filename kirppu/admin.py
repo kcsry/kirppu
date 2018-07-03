@@ -43,23 +43,30 @@ from .models import (
 __author__ = 'jyrkila'
 
 
+def with_description(short_description):
+    def decorator(action_function):
+        action_function.short_description = short_description
+        return action_function
+    return decorator
+
+
+@with_description(ugettext(u"Generate bar codes for items missing it"))
 def _gen_ean(modeladmin, request, queryset):
     for item in queryset:
         if item.code is None or len(item.code) == 0:
             item.code = Item.gen_barcode()
             item.save(update_fields=["code"])
-_gen_ean.short_description = ugettext(u"Generate bar codes for items missing it")
 
 
+@with_description(ugettext(u"Delete generated bar codes"))
 def _del_ean(modeladmin, request, queryset):
     queryset.update(code="")
-_del_ean.short_description = ugettext(u"Delete generated bar codes")
 
 
+@with_description(ugettext(u"Re-generate bar codes for items"))
 def _regen_ean(modeladmin, request, queryset):
     _del_ean(modeladmin, request, queryset)
     _gen_ean(modeladmin, request, queryset)
-_regen_ean.short_description = ugettext(u"Re-generate bar codes for items")
 
 
 class FieldAccessor(object):
@@ -129,6 +136,7 @@ Admin UI list column that displays user name with link to the user model itself.
 _user_link = RefLinkAccessor("user", ugettext(u"User"))
 
 
+@admin.register(Vendor)
 class VendorAdmin(admin.ModelAdmin):
     ordering = ('user__first_name', 'user__last_name')
     search_fields = ['id', 'user__first_name', 'user__last_name', 'user__username']
@@ -150,8 +158,6 @@ class VendorAdmin(admin.ModelAdmin):
         fields = ["user"] if obj is not None and not self._can_set_user(request, obj) else []
         fields.append("terms_accepted")
         return fields
-
-admin.site.register(Vendor, VendorAdmin)
 
 
 class ClerkEditLink(FieldAccessor):
@@ -177,6 +183,7 @@ _clerk_access_code_link = ClerkEditLink("access_code", ugettext("Access code"))
 
 
 # noinspection PyMethodMayBeStatic
+@admin.register(Clerk)
 class ClerkAdmin(admin.ModelAdmin):
     uses_sso = settings.KIRPPU_USE_SSO  # Used by the overridden template.
     actions = ["_gen_clerk_code", "_del_clerk_code", "_move_clerk_code"]
@@ -186,13 +193,14 @@ class ClerkAdmin(admin.ModelAdmin):
     exclude = ['access_key']
     list_display_links = None
 
+    @with_description(ugettext(u"Generate missing Clerk access codes"))
     def _gen_clerk_code(self, request, queryset):
         for clerk in queryset:
             if not clerk.is_valid_code:
                 clerk.generate_access_key()
                 clerk.save(update_fields=["access_key"])
-    _gen_clerk_code.short_description = ugettext(u"Generate missing Clerk access codes")
 
+    @with_description(ugettext(u"Delete Clerk access codes"))
     def _del_clerk_code(self, request, queryset):
         for clerk in queryset:
             while True:
@@ -203,13 +211,13 @@ class ClerkAdmin(admin.ModelAdmin):
                     continue
                 else:
                     break
-    _del_clerk_code.short_description = ugettext(u"Delete Clerk access codes")
 
     def _move_error(self, request):
         self.message_user(request,
                           ugettext(u"Must select exactly one 'unbound' and one 'bound' Clerk for this operation"),
                           messages.ERROR)
 
+    @with_description(ugettext(u"Move unused access code to existing Clerk."))
     @transaction.atomic
     def _move_clerk_code(self, request, queryset):
         if len(queryset) != 2:
@@ -236,7 +244,6 @@ class ClerkAdmin(admin.ModelAdmin):
         bound.save(update_fields=["access_key"])
 
         self.message_user(request, ugettext(u"Access code set for '{0}'").format(bound.user))
-    _move_clerk_code.short_description = ugettext(u"Move unused access code to existing Clerk.")
 
     def get_form(self, request, obj=None, **kwargs):
         # Custom creation form if SSO is enabled.
@@ -357,27 +364,24 @@ class ClerkAdmin(admin.ModelAdmin):
         )
 
 
-admin.site.register(Clerk, ClerkAdmin)
-
 admin.site.register(Counter)
 admin.site.register(ReceiptExtraRow)
 
 
+@admin.register(UIText)
 class UITextAdmin(admin.ModelAdmin):
     model = UIText
     ordering = ["identifier"]
     form = UITextForm
     list_display = ["identifier", "text_excerpt"]
 
-admin.site.register(UIText, UITextAdmin)
 
-
+@admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
     actions = [_gen_ean, _del_ean, _regen_ean]
     list_display = ('name', 'code', 'price', 'state', RefLinkAccessor('vendor', ugettext("Vendor")))
     ordering = ('vendor', 'name')
     search_fields = ['name', 'code']
-admin.site.register(Item, ItemAdmin)
 
 
 class ReceiptItemAdmin(admin.TabularInline):
@@ -397,6 +401,7 @@ class ReceiptNoteAdmin(admin.TabularInline):
     readonly_fields = ["clerk", "text"]
 
 
+@admin.register(Receipt)
 class ReceiptAdmin(admin.ModelAdmin):
     inlines = [
         ReceiptItemAdmin,
@@ -412,17 +417,17 @@ class ReceiptAdmin(admin.ModelAdmin):
     search_fields = ["items__code", "items__name"]
     actions = ["re_calculate_total"]
 
+    @with_description("Re-calculate total sum of receipt")
     def re_calculate_total(self, request, queryset):
         for i in queryset:  # type: Receipt
             i.calculate_total()
             i.save(update_fields=["total"])
-    re_calculate_total.short_description = "Re-calculate total sum of receipt"
 
     def has_delete_permission(self, request, obj=None):
         return False
-admin.site.register(Receipt, ReceiptAdmin)
 
 
+@admin.register(ItemStateLog)
 class ItemStateLogAdmin(admin.ModelAdmin):
     model = ItemStateLog
     ordering = ["-id"]
@@ -432,8 +437,6 @@ class ItemStateLogAdmin(admin.ModelAdmin):
                     'old_state', 'new_state',
                     RefLinkAccessor("clerk", ugettext("Clerk")),
                     'counter']
-
-admin.site.register(ItemStateLog, ItemStateLogAdmin)
 
 
 class BoxItemAdmin(admin.TabularInline):
@@ -448,6 +451,7 @@ class BoxItemAdmin(admin.TabularInline):
         return False
 
 
+@admin.register(Box)
 class BoxAdmin(admin.ModelAdmin):
     model = Box
     inlines = [
@@ -466,9 +470,8 @@ class BoxAdmin(admin.ModelAdmin):
     ]
     list_display_links = ['box_number', 'description']
 
-admin.site.register(Box, BoxAdmin)
 
-
+@admin.register(TemporaryAccessPermit)
 class TemporaryAccessPermitAdmin(admin.ModelAdmin):
     model = TemporaryAccessPermit
     readonly_fields = ("vendor", "creator", "short_code")
@@ -477,9 +480,8 @@ class TemporaryAccessPermitAdmin(admin.ModelAdmin):
         RefLinkAccessor("vendor", ugettext("Vendor")),
     )
 
-admin.site.register(TemporaryAccessPermit, TemporaryAccessPermitAdmin)
 
-
+@admin.register(TemporaryAccessPermitLog)
 class TemporaryAccessPermitLogAdmin(admin.ModelAdmin):
     model = TemporaryAccessPermitLog
     readonly_fields = ("permit", "timestamp", "action", "address", "peer")
@@ -489,5 +491,3 @@ class TemporaryAccessPermitLogAdmin(admin.ModelAdmin):
         "timestamp",
         "action",
     )
-
-admin.site.register(TemporaryAccessPermitLog, TemporaryAccessPermitLogAdmin)
