@@ -1,6 +1,6 @@
 from __future__ import unicode_literals, print_function, absolute_import
-from django.conf.urls import url
 from django.conf import settings
+from django.urls import path, re_path
 from django.utils.six import itervalues
 
 from .views import (
@@ -40,46 +40,46 @@ __author__ = 'jyrkila'
 app_name = "kirppu"
 
 _urls = [
-    url(r'^clerks/$', get_clerk_codes, name='clerks'),
-    url(r'^commands/$', get_counter_commands, name='commands'),
-    url(r'^boxes/$', get_boxes_codes, name="box_codes"),
-    url(r'^checkout/$', checkout_view, name='checkout_view'),
-    url(r'^overseer/$', overseer_view, name='overseer_view'),
-    url(r'^stats/$', stats_view, name='stats_view'),
-    url(r'^stats/type/(?P<type_id>\d+)$', type_stats_view, name='type_stats_view'),
-    url(r'^stats/statistical/$', statistical_stats_view, name='statistical_stats_view'),
-    url(r'^vendor/$', vendor_view, name='vendor_view'),
-    url(r'^vendor/accept_terms$', accept_terms, name='accept_terms'),
-    url(r'^vendor/items/$', get_items, name='page'),
-    url(r'^vendor/items/move_to_print$', all_to_print, name='all_to_print'),
-    url(r'^vendor/item/$', item_add, name='item_add'),
-    url(r'^vendor/item/(?P<code>\w+?)/to_printed$', item_to_printed, name='item_to_printed'),
-    url(r'^vendor/item/(?P<code>\w+?)/price$', item_update_price, name='item_update_price'),
-    url(r'^vendor/item/(?P<code>\w+?)/name$', item_update_name, name='item_update_name'),
-    url(r'^vendor/item/(?P<code>\w+?)/type$', item_update_type, name='item_update_type'),
-    url(r'^vendor/item/(?P<code>\w+?)/to_not_printed$', item_to_not_printed, name='item_to_not_printed'),
-    url(r'^vendor/item/(?P<code>\w+?)/hide$', item_hide, name='item_hide'),
-    url(r'^remove_item', remove_item_from_receipt, name='remove_item_from_receipt'),
-    url(r'^lost_and_found/$', lost_and_found_list, name='lost_and_found'),
-    url(r'^vendor/boxes/$', get_boxes, name='vendor_boxes'),
-    url(r'^vendor/box/$', box_add, name='box_add'),
-    url(r'^vendor/box/(?P<box_id>\w+?)/content$', box_content, name='box_content'),
-    url(r'^vendor/box/(?P<box_id>\w+?)/hide$', box_hide, name='box_hide'),
-    url(r'^vendor/box/(?P<box_id>\w+?)/print', box_print, name='box_print'),
+    path(r'clerks/', get_clerk_codes, name='clerks'),
+    path(r'commands/', get_counter_commands, name='commands'),
+    path(r'boxes/', get_boxes_codes, name="box_codes"),
+    path(r'checkout/', checkout_view, name='checkout_view'),
+    path(r'overseer/', overseer_view, name='overseer_view'),
+    path(r'stats/', stats_view, name='stats_view'),
+    path(r'stats/type/<str:type_id>', type_stats_view, name='type_stats_view'),
+    path(r'stats/statistical/', statistical_stats_view, name='statistical_stats_view'),
+    path(r'vendor/', vendor_view, name='vendor_view'),
+    path(r'vendor/accept_terms', accept_terms, name='accept_terms'),
+    path(r'vendor/items/', get_items, name='page'),
+    path(r'vendor/items/move_to_print', all_to_print, name='all_to_print'),
+    path(r'vendor/item/', item_add, name='item_add'),
+    path(r'vendor/item/<str:code>/to_printed', item_to_printed, name='item_to_printed'),
+    path(r'vendor/item/<str:code>/price', item_update_price, name='item_update_price'),
+    path(r'vendor/item/<str:code>/name', item_update_name, name='item_update_name'),
+    path(r'vendor/item/<str:code>/type', item_update_type, name='item_update_type'),
+    path(r'vendor/item/<str:code>/to_not_printed', item_to_not_printed, name='item_to_not_printed'),
+    path(r'vendor/item/<str:code>/hide', item_hide, name='item_hide'),
+    path(r'remove_item', remove_item_from_receipt, name='remove_item_from_receipt'),
+    path(r'lost_and_found/', lost_and_found_list, name='lost_and_found'),
+    path(r'vendor/boxes/', get_boxes, name='vendor_boxes'),
+    path(r'vendor/box/', box_add, name='box_add'),
+    path(r'vendor/box/<str:box_id>/content', box_content, name='box_content'),
+    path(r'vendor/box/<str:box_id>/hide', box_hide, name='box_hide'),
+    path(r'vendor/box/<str:box_id>/print', box_print, name='box_print'),
 
-    url(r'^vendor/status/$', mobile_index, name='mobile'),
-    url(r'^vendor/status/logout/$', mobile_logout, name='mobile_logout'),
+    path(r'vendor/status/', mobile_index, name='mobile'),
+    path(r'vendor/status/logout/', mobile_logout, name='mobile_logout'),
 ]
 
 if settings.KIRPPU_CHECKOUT_ACTIVE:  # Only activate API when checkout is active.
-    _urls.append(url('^api/checkout.js$', checkout_js, name='checkout_js'))
+    _urls.append(path('api/checkout.js', checkout_js, name='checkout_js'))
 
 if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER:
-    _urls.append(url('^vendor/change$', change_vendor, name="change_vendor"))
-    _urls.append(url('^vendor/create$', create_vendor, name="create_vendor"))
+    _urls.append(path('vendor/change', change_vendor, name="change_vendor"))
+    _urls.append(path('vendor/create', create_vendor, name="create_vendor"))
 
 _urls.extend([
-    url(func.url, func.func, name=func.view_name)
+    re_path(func.url, func.func, name=func.view_name)
     for func in itervalues(AJAX_FUNCTIONS)
     if func.is_public or settings.KIRPPU_CHECKOUT_ACTIVE
 ])
