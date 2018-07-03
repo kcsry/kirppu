@@ -316,6 +316,8 @@ def box_content(request, box_id, bar_type):
 
     :param request: HttpRequest object.
     :type request: django.http.request.HttpRequest
+    :param bar_type: Image type of the generated bar. See `kirppu_tags.barcode_dataurl`.
+    :type bar_type: str
     :return: HttpResponse or HttpResponseBadRequest
     """
 

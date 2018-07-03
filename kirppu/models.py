@@ -70,6 +70,7 @@ class UserAdapterBase(object):
     def full_name(cls, user):
         return user.get_full_name()
 
+
 # The actual class is found by string in settings.
 UserAdapter = import_string(settings.KIRPPU_USER_ADAPTER)
 
@@ -222,6 +223,8 @@ class Clerk(models.Model):
 
         :param count: Count of unbound Clerks to generate, default 1.
         :type count: int
+        :param commit: If `True` the item(s) are saved instead of just returned in the list.
+        :type commit: bool
         :return: List of generated rows.
         :rtype: list[Clerk]
         """
