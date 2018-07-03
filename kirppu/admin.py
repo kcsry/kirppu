@@ -50,25 +50,6 @@ def with_description(short_description):
     return decorator
 
 
-@with_description(ugettext(u"Generate bar codes for items missing it"))
-def _gen_ean(modeladmin, request, queryset):
-    for item in queryset:
-        if item.code is None or len(item.code) == 0:
-            item.code = Item.gen_barcode()
-            item.save(update_fields=["code"])
-
-
-@with_description(ugettext(u"Delete generated bar codes"))
-def _del_ean(modeladmin, request, queryset):
-    queryset.update(code="")
-
-
-@with_description(ugettext(u"Re-generate bar codes for items"))
-def _regen_ean(modeladmin, request, queryset):
-    _del_ean(modeladmin, request, queryset)
-    _gen_ean(modeladmin, request, queryset)
-
-
 class FieldAccessor(object):
     """
     Abstract base class for field-links to be used in Admin.list_display.
@@ -378,6 +359,22 @@ class UITextAdmin(admin.ModelAdmin):
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
+    @with_description(ugettext(u"Generate bar codes for items missing it"))
+    def _gen_ean(self, request, queryset):
+        for item in queryset:
+            if item.code is None or len(item.code) == 0:
+                item.code = Item.gen_barcode()
+                item.save(update_fields=["code"])
+
+    @with_description(ugettext(u"Delete generated bar codes"))
+    def _del_ean(self, request, queryset):
+        queryset.update(code="")
+
+    @with_description(ugettext(u"Re-generate bar codes for items"))
+    def _regen_ean(self, request, queryset):
+        self._del_ean(request, queryset)
+        self._gen_ean(request, queryset)
+
     actions = [_gen_ean, _del_ean, _regen_ean]
     list_display = ('name', 'code', 'price', 'state', RefLinkAccessor('vendor', ugettext("Vendor")))
     ordering = ('vendor', 'name')
