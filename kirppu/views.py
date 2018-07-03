@@ -41,6 +41,7 @@ from .models import (
     Box,
     Clerk,
     Item,
+    ItemType,
     Vendor,
     UserAdapter,
     UIText,
@@ -434,7 +435,7 @@ def get_items(request, bar_type):
         'is_registration_open': is_vendor_open(request),
         'is_registration_closed_for_users': not is_vendor_open(),
         'menu': _vendor_menu_contents(request),
-        'Item': Item,
+        'itemTypes': ItemType.as_tuple(),
         'CURRENCY': settings.KIRPPU_CURRENCY,
         'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
     }
@@ -477,7 +478,7 @@ def get_boxes(request):
         'is_registration_open': is_vendor_open(request),
         'is_registration_closed_for_users': not is_vendor_open(),
         'menu': _vendor_menu_contents(request),
-        'Item': Item,
+        'itemTypes': ItemType.as_tuple(),
         'CURRENCY': settings.KIRPPU_CURRENCY,
         'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
     }
@@ -570,7 +571,7 @@ def overseer_view(request):
         return redirect('kirppu:checkout_view')
     else:
         context = {
-            'itemtypes': Item.ITEMTYPE,
+            'itemtypes': ItemType.as_tuple(),
             'itemstates': Item.STATE,
             'CURRENCY': settings.KIRPPU_CURRENCY,
         }
@@ -591,16 +592,17 @@ def stats_view(request):
     ic = ItemCountData(ItemCountData.GROUP_ITEM_TYPE)
     ie = ItemEurosData(ItemEurosData.GROUP_ITEM_TYPE)
     sum_name = "Sum"
+    item_types = ItemType.as_tuple()
 
     number_of_items = [
         ic.data_set(item_type, type_name)
-        for item_type, type_name in Item.ITEMTYPE
+        for item_type, type_name in item_types
     ]
     number_of_items.append(ic.data_set("sum", sum_name))
 
     number_of_euros = [
         ie.data_set(item_type, type_name)
-        for item_type, type_name in Item.ITEMTYPE
+        for item_type, type_name in item_types
     ]
     number_of_euros.append(ie.data_set("sum", sum_name))
 

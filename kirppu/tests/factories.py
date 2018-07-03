@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from django.utils.timezone import now
 from kirppuauth.models import User
-from kirppu.models import Receipt, Item, Vendor, Clerk, Counter, ReceiptItem
+from kirppu.models import Receipt, Item, ItemType, Vendor, Clerk, Counter, ReceiptItem
 
 import factory
 import factory.django
@@ -53,6 +53,13 @@ class ClerkFactory(Factory):
         return obj
 
 
+class ItemTypeFactory(Factory):
+    class Meta:
+        model = ItemType
+    key = factory.Sequence(lambda n: "type_{}".format(n))
+    title = factory.Faker("sentence", nb_words=2)
+
+
 class ItemFactory(Factory):
     class Meta:
         model = Item
@@ -60,6 +67,7 @@ class ItemFactory(Factory):
     price = Decimal("1.25")
     code = factory.LazyFunction(lambda: Item.gen_barcode())
     name = factory.Faker("sentence", nb_words=2)
+    itemtype = factory.SubFactory(ItemTypeFactory)
 
 
 class ReceiptFactory(Factory):

@@ -65,7 +65,7 @@
                     <div class="col-sm-6">
                         <select id="box-add-itemtype" name="box-add-itemtype" class="form-control">
                             <option selected="selected" disabled="disabled">{% trans "Select…" %}</option>
-                            {% for key, title in Item.ITEMTYPE %}
+                            {% for key, title in itemTypes %}
                                 <option value="{{ key }}">{{ title }}</option>
                             {% endfor %}
                         </select>

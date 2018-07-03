@@ -492,6 +492,22 @@ class Box(models.Model):
 
 
 @python_2_unicode_compatible
+class ItemType(models.Model):
+    key = models.CharField(max_length=24, unique=True)
+    title = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return u"ItemType(key={key}, title={title})".format(key=repr(self.key), title=repr(self.title))
+
+    @classmethod
+    def as_tuple(cls):
+        return cls.objects.values_list("key", "title")
+
+
+@python_2_unicode_compatible
 class Item(models.Model):
     ADVERTISED = "AD"
     BROUGHT = "BR"
@@ -518,29 +534,6 @@ class Item(models.Model):
         (TYPE_TINY, _(u"Tiny price tag")),
         (TYPE_SHORT, _(u"Short price tag")),
         (TYPE_LONG, _(u"Long price tag")),
-    )
-
-    ITEMTYPE_MANGA_FINNISH = "manga-finnish"
-    ITEMTYPE_MANGA_ENGLISH = "manga-english"
-    ITEMTYPE_MANGA_OTHER = "manga-other"
-    ITEMTYPE_BOOK = "book"
-    ITEMTYPE_MAGAZINE = "magazine"
-    ITEMTYPE_MOVIE_TV = "movie-tv"
-    ITEMTYPE_GAME = "game"
-    ITEMTYPE_FIGURINE_PLUSHIE = "figurine-plushie"
-    ITEMTYPE_CLOTHING = "clothing"
-    ITEMTYPE_OTHER = "other"
-    ITEMTYPE = (
-        (ITEMTYPE_MANGA_FINNISH, _(u"Finnish manga book")),
-        (ITEMTYPE_MANGA_ENGLISH, _(u"English manga book")),
-        (ITEMTYPE_MANGA_OTHER, _(u"Manga book in another language")),
-        (ITEMTYPE_BOOK, _(u"Non-manga book")),
-        (ITEMTYPE_MAGAZINE, _(u"Magazine")),
-        (ITEMTYPE_MOVIE_TV, _(u"Movie or TV-series")),
-        (ITEMTYPE_GAME, _(u"Game")),
-        (ITEMTYPE_FIGURINE_PLUSHIE, _(u"Figurine or a stuffed toy")),
-        (ITEMTYPE_CLOTHING, _(u"Clothing")),
-        (ITEMTYPE_OTHER, _(u"Other item")),
     )
 
     ADULT_YES = "yes"
@@ -582,11 +575,7 @@ class Item(models.Model):
         max_length=8,
         default=TYPE_SHORT
     )
-    itemtype = models.CharField(
-        choices=ITEMTYPE,
-        max_length=24,
-        default=ITEMTYPE_OTHER
-    )
+    itemtype = models.ForeignKey(ItemType)
     adult = models.CharField(
         choices=ADULT,
         max_length=8,
@@ -619,12 +608,12 @@ class Item(models.Model):
         "code",
         "name",
         "state",
-        "itemtype",
         "abandoned",
         "hidden",
         price="price_cents",
         vendor="vendor_id",
         state_display="get_state_display",
+        itemtype=lambda self: self.itemtype.key,
         itemtype_display="get_itemtype_display",
         adult=lambda self: self.adult == Item.ADULT_YES,
     )
@@ -637,6 +626,9 @@ class Item(models.Model):
         "adult",
         price=lambda self: str(self.price).replace(".", ","),
     )
+
+    def get_itemtype_display(self):
+        return self.itemtype.title
 
     @property
     def price_cents(self):

@@ -14,6 +14,7 @@ from .models import (
     ReceiptItem,
     Receipt,
     Item,
+    ItemType,
     UIText,
     Vendor,
     ItemStateLog,
@@ -387,8 +388,11 @@ class VendorItemForm(forms.Form):
     )
     suffixes = SuffixField()
     item_type = forms.ChoiceField(
-        choices=Item.ITEMTYPE,
-        error_messages={"required": _(u"Item must have a type.")}
+        choices=lambda: ItemType.as_tuple(),
+        error_messages={
+            "required": _(u"Item must have a type."),
+            "invalid_choice": _(u"Invalid item type.")
+        }
     )
     adult = forms.BooleanField(required=False)
 
@@ -405,6 +409,10 @@ class VendorItemForm(forms.Form):
         if not value:
             return Item.TYPE_SHORT
         return value
+
+    def clean_item_type(self):
+        value = self.cleaned_data["item_type"]
+        return ItemType.objects.get(key=value)
 
     db_values = model_dict_fn(
         "name",

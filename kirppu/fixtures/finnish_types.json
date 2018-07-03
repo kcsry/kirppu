@@ -1,0 +1,82 @@
+[
+    {
+        "model": "kirppu.itemtype",
+        "pk": 1,
+        "fields": {
+            "key": "manga-finnish",
+            "title": "Manga (suomeksi)"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 2,
+        "fields": {
+            "key": "manga-english",
+            "title": "Manga (englanniksi)"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 3,
+        "fields": {
+            "key": "manga-other",
+            "title": "Manga (muu kieli)"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 4,
+        "fields": {
+            "key": "book",
+            "title": "Kirja"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 5,
+        "fields": {
+            "key": "magazine",
+            "title": "Lehti"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 6,
+        "fields": {
+            "key": "movie-tv",
+            "title": "Elokuva/TV-sarja"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 7,
+        "fields": {
+            "key": "game",
+            "title": "Peli"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 8,
+        "fields": {
+            "key": "figurine-plushie",
+            "title": "Figuuri/pehmolelu"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 9,
+        "fields": {
+            "key": "clothing",
+            "title": "Vaate"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 10,
+        "fields": {
+            "key": "other",
+            "title": "Muu"
+        }
+    }
+]

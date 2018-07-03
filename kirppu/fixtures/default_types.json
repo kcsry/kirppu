@@ -1,0 +1,82 @@
+[
+    {
+        "model": "kirppu.itemtype",
+        "pk": 1,
+        "fields": {
+            "key": "manga-finnish",
+            "title": "Finnish manga book"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 2,
+        "fields": {
+            "key": "manga-english",
+            "title": "English manga book"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 3,
+        "fields": {
+            "key": "manga-other",
+            "title": "Manga book in another language"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 4,
+        "fields": {
+            "key": "book",
+            "title": "Non-manga book"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 5,
+        "fields": {
+            "key": "magazine",
+            "title": "Magazine"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 6,
+        "fields": {
+            "key": "movie-tv",
+            "title": "Movie or TV-series"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 7,
+        "fields": {
+            "key": "game",
+            "title": "Game"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 8,
+        "fields": {
+            "key": "figurine-plushie",
+            "title": "Figurine or a stuffed toy"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 9,
+        "fields": {
+            "key": "clothing",
+            "title": "Clothing"
+        }
+    },
+    {
+        "model": "kirppu.itemtype",
+        "pk": 10,
+        "fields": {
+            "key": "other",
+            "title": "Other item"
+        }
+    }
+]

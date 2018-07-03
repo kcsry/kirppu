@@ -27,6 +27,7 @@ from .forms import (
 from .models import (
     Clerk,
     Item,
+    ItemType,
     Vendor,
     Counter,
     Receipt,
@@ -355,6 +356,9 @@ class UITextAdmin(admin.ModelAdmin):
     ordering = ["identifier"]
     form = UITextForm
     list_display = ["identifier", "text_excerpt"]
+
+
+admin.site.register(ItemType)
 
 
 @admin.register(Item)

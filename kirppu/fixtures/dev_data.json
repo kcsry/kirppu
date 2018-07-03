@@ -1,7 +1,16 @@
 [
     {
+        "model": "kirppu.itemtype",
+        "pk": 1,
+        "fields": {
+            "key": "manga-finnish",
+            "title": "Finnish manga book"
+        }
+    },
+    {
         "fields": {
             "code": "CMAAAIAA",
+            "itemtype": 1,
             "name": "Superman comics #1",
             "price": "1",
             "state": "AD",
@@ -14,6 +23,7 @@
     {
         "fields": {
             "code": "EAAAAIAA",
+            "itemtype": 1,
             "name": "Superman comics #2",
             "price": "0.2",
             "state": "AD",
@@ -26,6 +36,7 @@
     {
         "fields": {
             "code": "GIAAAEAA",
+            "itemtype": 1,
             "name": "Superman comics #3",
             "price": "1.4",
             "state": "AD",
@@ -38,6 +49,7 @@
     {
         "fields": {
             "code": "IUAAAEAA",
+            "itemtype": 1,
             "name": "Superman comics #4",
             "price": "1.99",
             "state": "AD",
@@ -50,6 +62,7 @@
     {
         "fields": {
             "code": "KQAAAEAA",
+            "itemtype": 1,
             "name": "Batman strikes back",
             "price": "20",
             "state": "AD",
@@ -62,6 +75,7 @@
     {
         "fields": {
             "code": "M4AAAEAA",
+            "itemtype": 1,
             "name": "Batman and secrets of the stone",
             "price": "19.99",
             "state": "AD",

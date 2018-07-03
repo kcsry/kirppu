@@ -3,7 +3,7 @@ from collections import OrderedDict
 from django.conf import settings
 from django.db import models
 
-from .models import Item
+from .models import Item, ItemType
 
 __author__ = 'codez'
 
@@ -80,7 +80,7 @@ class ItemCollectionData(object):
         # Fill possible gaps and order correctly.
         self._data = OrderedDict(
             (key, data.get(key, self._DEFAULT_VALUES))
-            for key, _ in Item.ITEMTYPE
+            for key in ItemType.objects.values_list("key", flat=True)
         )
 
         # Append calculated sum row.
