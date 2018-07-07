@@ -375,6 +375,7 @@ def _vendor_menu_contents(request):
         manage_sub.append(fill(_(u"Checkout commands"), "kirppu:commands"))
         if settings.KIRPPU_CHECKOUT_ACTIVE:
             manage_sub.append(fill(_(u"Checkout"), "kirppu:checkout_view"))
+            manage_sub.append(fill(_("Box codes"), "kirppu:box_codes"))
 
     if request.user.is_staff:
         manage_sub.append(fill(_(u"Clerk codes"), "kirppu:clerks"))
@@ -527,6 +528,31 @@ def get_clerk_codes(request, bar_type):
 def get_counter_commands(request, bar_type):
     return render(request, "kirppu/app_commands.html", {
         'title': _(u"Counter commands"),
+    })
+
+
+@login_required
+@require_test(lambda request: request.user.is_staff or UserAdapter.is_clerk(request.user))
+@barcode_view
+def get_boxes_codes(request, bar_type):
+    boxes = Box.objects.filter(box_number__isnull=False).order_by("box_number")
+    vm = []
+    for box in boxes:
+        code = "box%d" % box.box_number
+        img = pubcode.Code128(code, charset='B').data_url(image_format=bar_type, add_quiet_zone=True)
+        r = box.get_representative_item()  # type: Item
+
+        vm.append({
+            "name": box.description,
+            "code": code,
+            "data_url": img,
+            "adult": r.adult,
+            "vendor_id": r.vendor_id,
+        })
+
+    return render(request, "kirppu/boxes_list.html", {
+        "bar_type": bar_type,
+        "boxes": vm
     })
 
 

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.utils.six import itervalues
 
 from .views import (
+    get_boxes_codes,
     get_clerk_codes,
     get_counter_commands,
     checkout_view,
@@ -38,6 +39,7 @@ app_name = "kirppu"
 _urls = [
     url(r'^clerks/$', get_clerk_codes, name='clerks'),
     url(r'^commands/$', get_counter_commands, name='commands'),
+    url(r'^boxes/$', get_boxes_codes, name="box_codes"),
     url(r'^checkout/$', checkout_view, name='checkout_view'),
     url(r'^overseer/$', overseer_view, name='overseer_view'),
     url(r'^stats/$', stats_view, name='stats_view'),

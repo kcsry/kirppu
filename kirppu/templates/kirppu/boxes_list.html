@@ -1,0 +1,65 @@
+{% load kirppu_tags i18n static %}
+<!doctype html>
+<html>
+<head>
+    <title>{{ title|default:_("Box codes") }}</title>
+    <link href="{% static "kirppu/css/general.css" %}" rel="stylesheet">
+    <link href="{% static "kirppu/css/price_tags.css" %}" rel="stylesheet">
+    <script src="{% static "kirppu/js/general.js" %}"></script>
+    <style type="text/css">
+        .item_container {
+            height: auto;
+            min-height: 2.7cm;
+        }
+        .item_extra_code {
+            width: 70%;
+            min-width: 4em;
+        }
+        .item_name {
+            height: auto;
+            min-height: 1.5em;
+            margin-left: 1em;
+            font-size: larger;
+            font-weight: bold;
+        }
+        .item_vendor_id {
+            position: relative;
+            top: 0;
+            left: 0.5cm;
+        }
+        .item_adult_tag {
+            top: initial;
+            bottom: 0.7cm;
+            left: 0.5cm;
+        }
+
+        {# "Notfiy" of missing css rules. #}
+        .item_container .barcode_container {
+            background-color: red;
+        }
+        {% barcode_css target=".item_container .barcode_img{0}" container=".item_container .barcode_container{0}" %}
+    </style>
+</head>
+<body style="padding-left: 0.5cm;">
+<div id="items">
+    {% for i in boxes %}
+    <div class="item_container item_short">
+        <div class="item_body">
+            <div class="item_name">{{ i.name }}</div>
+            <div class="barcode_container barcode_container_{{ i.code|length }}_2">
+                <img class="barcode_img barcode_img_{{ i.code|length }}_2" src="{{ i.data_url }}" alt="Barcode: {{ i.code }}" />
+                <div class="item_extra_code">{{ i.code }}</div>
+            </div>
+            {% if i.adult == "yes" %}
+                <div class="item_adult_tag">K-18</div>
+            {% else %}
+                <div class="item_adult_tag"></div>
+            {% endif %}
+            <div class="item_vendor_id">{{ i.vendor_id }}</div>
+        </div>
+    </div>
+    {% endfor %}
+    <div style="clear:both;"></div>
+</div>
+</body>
+</html>
