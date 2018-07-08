@@ -61,6 +61,7 @@ class ItemCollectionData(object):
 
     def _init_for_item_type(self):
         # Make the list data associative by item type.
+        # The item type in raw_data is pk of ItemType.
         data = {
             row["itemtype"]: row
             for row in self._raw_data
@@ -80,7 +81,7 @@ class ItemCollectionData(object):
         # Fill possible gaps and order correctly.
         self._data = OrderedDict(
             (key, data.get(key, self._DEFAULT_VALUES))
-            for key in ItemType.objects.order_by("order").values_list("key", flat=True)
+            for key in ItemType.objects.order_by("order").values_list("id", flat=True)
         )
 
         # Append calculated sum row.
