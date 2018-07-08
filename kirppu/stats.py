@@ -80,7 +80,7 @@ class ItemCollectionData(object):
         # Fill possible gaps and order correctly.
         self._data = OrderedDict(
             (key, data.get(key, self._DEFAULT_VALUES))
-            for key in ItemType.objects.values_list("key", flat=True)
+            for key in ItemType.objects.order_by("order").values_list("key", flat=True)
         )
 
         # Append calculated sum row.

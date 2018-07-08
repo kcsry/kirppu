@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import RegexValidator, MinLengthValidator
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.db import transaction
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
@@ -494,17 +494,22 @@ class Box(models.Model):
 @python_2_unicode_compatible
 class ItemType(models.Model):
     key = models.CharField(max_length=24, unique=True)
+    order = models.IntegerField(unique=True)
     title = models.CharField(max_length=255)
 
     def __str__(self):
         return self.title
 
     def __repr__(self):
-        return u"ItemType(key={key}, title={title})".format(key=repr(self.key), title=repr(self.title))
+        return u"ItemType(key={key}, order={order}, title={title})".format(
+            key=repr(self.key),
+            order=self.order,
+            title=repr(self.title)
+        )
 
     @classmethod
     def as_tuple(cls):
-        return cls.objects.values_list("key", "title")
+        return cls.objects.order_by("order").values_list("key", "title")
 
 
 @python_2_unicode_compatible

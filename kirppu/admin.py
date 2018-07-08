@@ -358,7 +358,10 @@ class UITextAdmin(admin.ModelAdmin):
     list_display = ["identifier", "text_excerpt"]
 
 
-admin.site.register(ItemType)
+@admin.register(ItemType)
+class ItemTypeAdmin(admin.ModelAdmin):
+    ordering = ["order"]
+    list_display = ["title", "order", "key"]
 
 
 @admin.register(Item)
