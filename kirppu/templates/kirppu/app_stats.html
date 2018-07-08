@@ -124,7 +124,7 @@
 
 
 
-    <h2>Number of items:</h2>
+    <h2>{% trans "Number of items:" %}</h2>
     <table class="table table-striped sum_table_below sum_table_right">
         <tr>
             <th></th>
@@ -144,7 +144,7 @@
         {% endfor %}
     </table>
 
-    <h2>Sum of prices:</h2>
+    <h2>{% trans "Sum of prices:" %}</h2>
     <table class="table table-striped sum_table_below sum_table_right">
         <tr>
             <th></th>
@@ -164,23 +164,85 @@
         {% endfor %}
     </table>
 
-    <h2>Vendors:</h2>
+    <h2>{% trans "Vendors:" %}</h2>
+    <div id="grouping_container">
+    {% trans "Group by:" %}
+    <div class="btn-group btn-group-sm" role="group" aria-label="Grouping" id="grouping_buttons">
+        <button id="group_by_vendor" type="button" class="btn btn-default">{% trans "Vendor" %}</button>
+        <button id="group_by_value" type="button" class="btn btn-default">{% trans "Value type" %}</button>
+    </div>
+    </div>
     <table class="table table-striped sum_table_right">
+    <thead>
         <tr>
             <th></th>
-            {% with vendor_items|first as row %}
+            {% with vendor_item_data_counts|first as row %}
                 {% for col in row.property_names %}
                     <th>{{ col }}</th>
                 {% endfor %}
             {% endwith %}
         </tr>
-        {% for row in vendor_items %}
-             <tr>
-                 <th>{{ row.name }}</th>
-                 {% for col in row.property_values %}
-                    <td>{{ col|safe }}</td>
-                 {% endfor %}
-            </tr>
-        {% endfor %}
+    </thead>
+    <tbody id="vendor_statistics">
+    </tbody>
     </table>
+
+    <script type="application/javascript"><!--
+        (function() {
+            const stat_table = $("#vendor_statistics");
+            const stat_count = [
+                {% for row in vendor_item_data_counts %}
+                    ["{{ row.name|escapejs }}"{% for col in row.property_values %}, "{{ col|safe }}"{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
+            ];
+            const stat_euros = [
+                {% for row in vendor_item_data_euros %}
+                    ["{{ row.name|escapejs }}"{% for col in row.property_values %}, "{{ col|safe }}"{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
+            ];
+            const createRow = function(row) {
+                const hRow = $("<tr>");
+                hRow.append($("<th>").text(row[0]));
+                for (let v = 1; v< row.length; v++) {
+                    hRow.append($("<td>").html(row[v]));
+                }
+                return hRow;
+            };
+            const createHeaderRow = function(span, text) {
+                return $("<tr class='info'>").append($("<th colspan='" + span + "'>").text(text));
+            };
+            const row_length = stat_count.length > 0 ? stat_count[0].length : 0;
+
+            const by_value = $("#group_by_value");
+            const by_vendor = $("#group_by_vendor");
+
+            const show_by_value = function() {
+                stat_table.empty();
+                by_vendor.removeClass("active");
+                by_value.addClass("active");
+
+                stat_table.append(createHeaderRow(row_length, "{% trans "Number of items:" %}"));
+                for (let i = 0; i < stat_count.length; i++) {
+                    stat_table.append(createRow(stat_count[i]));
+                }
+                stat_table.append(createHeaderRow(row_length, "{% trans "Sum of prices:" %}"));
+                for (let i = 0; i < stat_euros.length; i++) {
+                    stat_table.append(createRow(stat_euros[i]));
+                }
+            };
+            const show_by_vendor = function() {
+                stat_table.empty();
+                by_value.removeClass("active");
+                by_vendor.addClass("active");
+
+                for (let i = 0; i < stat_count.length; i++) {
+                    stat_table.append(createRow(stat_count[i]));
+                    stat_table.append(createRow(stat_euros[i]));
+                }
+            };
+
+            by_value.on("click", show_by_value);
+            by_vendor.on("click", show_by_vendor);
+            show_by_vendor();
+        })();
+    //--></script>
+
 {% endblock  %}

@@ -638,19 +638,24 @@ def stats_view(request):
     ]
     number_of_euros.append(ie.data_set("sum", sum_name))
 
-    vendor_items = []
+    vendor_item_data_counts = []
+    vendor_item_data_euros = []
     vic = ItemCountData(ItemCountData.GROUP_VENDOR)
     vie = ItemEurosData(ItemEurosData.GROUP_VENDOR)
 
     for vendor_id in vic.keys():
-        name = "Vendor %i" % vendor_id
-        vendor_items.append(vic.data_set(vendor_id, name))
-        vendor_items.append(vie.data_set(vendor_id, name))
+        name = _("Vendor %i") % vendor_id
+        counts = vic.data_set(vendor_id, name)
+        euros = vie.data_set(vendor_id, name)
+
+        vendor_item_data_counts.append(counts)
+        vendor_item_data_euros.append(euros)
 
     context = {
         'number_of_items': number_of_items,
         'number_of_euros': number_of_euros,
-        'vendor_items': vendor_items,
+        'vendor_item_data_counts': vendor_item_data_counts,
+        'vendor_item_data_euros': vendor_item_data_euros,
         'checkout_active': settings.KIRPPU_CHECKOUT_ACTIVE,
     }
 
