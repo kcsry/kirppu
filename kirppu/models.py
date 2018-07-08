@@ -751,6 +751,13 @@ class UIText(models.Model):
     def text_excerpt(self):
         return shorten_text(self.text)
 
+    @classmethod
+    def get_text(cls, identifier, default=None):
+        try:
+            return UIText.objects.values_list("text", flat=True).get(identifier=identifier)
+        except UIText.DoesNotExist:
+            return default
+
 
 @python_2_unicode_compatible
 class Counter(models.Model):

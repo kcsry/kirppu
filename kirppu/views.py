@@ -424,11 +424,14 @@ def get_items(request, bar_type):
     # down.
     items = items.order_by('-id')
 
+    item_name_placeholder = UIText.get_text("item_placeholder", _("Ranma ½ Vol."))
+
     render_params = {
         'items': items,
         'printed_items': printed_items,
         'bar_type': bar_type,
         'tag_type': tag_type,
+        'item_name_placeholder': item_name_placeholder,
 
         'profile_url': settings.PROFILE_URL,
         'terms_accepted': vendor.terms_accepted if vendor is not None else False,
@@ -470,8 +473,11 @@ def get_boxes(request):
     # down.
     boxes = boxes.order_by('-id')
 
+    box_name_placeholder = UIText.get_text("box_placeholder", _("Box full of Ranma"))
+
     render_params = {
         'boxes': boxes,
+        'box_name_placeholder': box_name_placeholder,
 
         'profile_url': settings.PROFILE_URL,
         'terms_accepted': vendor.terms_accepted if vendor is not None else False,
