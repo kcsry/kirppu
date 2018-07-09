@@ -40,6 +40,12 @@ class ItemCollectionData(object):
         ('sum', None),
     ))
 
+    ABANDONED_PROPERTIES = OrderedDict((
+        ("brought_abandoned", Item.BROUGHT),
+        ("staged_abandoned", Item.STAGED),
+        ("sold_abandoned", Item.SOLD),
+    ))
+
     _DEFAULT_VALUES = {
         p: 0
         for p in PROPERTIES.keys()
@@ -139,6 +145,11 @@ class ItemCollectionRow(object):
         for property_name in ItemCollectionData.PROPERTIES:
             yield property_name
 
+    @property
+    def abandoned(self):
+        for property_name in ItemCollectionData.ABANDONED_PROPERTIES:
+            yield self.fmt(self._data[property_name])
+
     def fmt(self, value):
         raise NotImplementedError()
 
@@ -151,6 +162,12 @@ class ItemCountData(ItemCollectionData):
             for key, p in self.PROPERTIES.items()
             if p is not None
         }
+        abandoned = {
+            key: models.Count(models.Case(models.When(
+                models.Q(state=p) & models.Q(abandoned=True), then=1), output_field=models.IntegerField()))
+            for key, p in self.ABANDONED_PROPERTIES.items()
+        }
+        states.update(abandoned)
         # Return a result list that contains counts for all states, sum and the value for group_by per list item.
         return query.annotate(
             sum=models.Count("id"),
@@ -167,6 +184,10 @@ class ItemCountRow(ItemCollectionRow):
 
 
 class ItemEurosData(ItemCollectionData):
+    def __init__(self, *args, **kwargs):
+        super(ItemEurosData, self).__init__(*args, **kwargs)
+        self.use_cents = False
+
     def _populate(self, query):
         # Count item prices per state. query must be already made group_by with query.values.
         p_field = Item._meta.get_field("price")
@@ -177,6 +198,13 @@ class ItemEurosData(ItemCollectionData):
             for key, p in self.PROPERTIES.items()
             if p is not None
         }
+        abandoned = {
+            key: models.Sum(models.Case(models.When(
+                models.Q(state=p) & models.Q(abandoned=True),
+                then=models.F("price")), output_field=models.DecimalField(decimal_places=decimals, max_digits=digits)))
+            for key, p in self.ABANDONED_PROPERTIES.items()
+        }
+        states.update(abandoned)
         # Return a result list that contains prices for all states, sum and the value for group_by per list item.
         return query.annotate(
             sum=models.Sum("price"),
@@ -184,14 +212,17 @@ class ItemEurosData(ItemCollectionData):
         )
 
     def data_set(self, key, name):
-        return ItemEurosRow(self._data[key], name)
+        return ItemEurosRow(self.use_cents, self._data[key], name)
 
 
 class ItemEurosRow(ItemCollectionRow):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, use_cents, *args, **kwargs):
         super(ItemEurosRow, self).__init__(*args, **kwargs)
+        self._use_cents = use_cents
         self._currency = settings.KIRPPU_CURRENCY["html"]
 
     def fmt(self, value):
+        if self._use_cents:
+            return int((value or 0) * 100)
         value = "{}{}{}".format(self._currency[0], value or 0, self._currency[1])
         return value

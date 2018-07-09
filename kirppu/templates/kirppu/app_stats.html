@@ -172,6 +172,7 @@
         }
     }
     </style>
+    <p>{% trans "Values in parenthesis indicate part of the value that has been abandoned." %}</p>
     <div id="grouping_container">
     <div class="btn-toolbar" role="toolbar" aria-label="Table content settings">
         <div class="btn-group btn-group-sm" role="group" aria-label="Grouping" id="grouping_buttons">
@@ -184,7 +185,7 @@
         </div>
     </div>
     </div>
-    <table class="table table-striped sum_table_right">
+    <table id="vendor_statistics" class="table table-striped sum_table_right">
     <thead>
         <tr>
             <th></th>
@@ -195,37 +196,66 @@
             {% endwith %}
         </tr>
     </thead>
-    <tbody id="vendor_statistics">
+    <tbody>
     </tbody>
     </table>
 
     <script type="application/javascript"><!--
         (function() {
-            const stat_table = $("#vendor_statistics");
+            const CURRENCY = ["{{ CURRENCY.0 }}", "{{ CURRENCY.1 }}"];
+            const row_length = {{ vendor_item_data_row_size }} + 0;
+
+            // Indices in stat_*; there is one leading item before row contents begin.
+            const index_brought = 2;  {# FIXME: These probably should be retrieved from data engine #}
+            const index_staged = 3;
+            const index_sold = 4;
+            const index_abandoned_brought = row_length + 1;
+            const index_abandoned_staged = row_length + 2;
+            const index_abandoned_sold = row_length + 3;
+            const map_abandoned = {};
+            map_abandoned[index_brought] = index_abandoned_brought;
+            map_abandoned[index_staged] = index_abandoned_staged;
+            map_abandoned[index_sold] = index_abandoned_sold;
+
+            const stat_table = $("#vendor_statistics tbody");
             const stat_count = [
                 {% for row in vendor_item_data_counts %}
-                    ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
+                    ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}{% for col in row.abandoned %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
             ];
             const stat_euros = [
                 {% for row in vendor_item_data_euros %}
-                    ["{{ row.name|escapejs }}"{% for col in row.property_values %}, "{{ col|safe }}"{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
+                    ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}{% for col in row.abandoned %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
             ];
-            const createRow = function(row, skip_name=false) {
+
+            const format_plain = function(value) { return value; };
+            const format_currency = function(value) {
+                return CURRENCY[0] + value.formatCents() + CURRENCY[1];
+            };
+
+            const createRow = function(row, skip_name, formatter) {
                 const hRow = $("<tr>");
                 if (!skip_name) {
                     hRow.append($("<th>").text(row[0]));
                 } else {
                     hRow.append($("<th>"))
                 }
-                for (let v = 1; v< row.length; v++) {
-                    hRow.append($("<td>").html(row[v]));
+                // 1 is name, not included in row_length.
+                for (let v = 1; v <= row_length; v++) {
+                    if (v in map_abandoned) {
+                        const src_col = map_abandoned[v];
+                        if (row[src_col] > 0) {
+                            hRow.append($("<td>").html(formatter(row[v]) + " (-" + formatter(row[src_col]) + ")"));
+                            continue;
+                        }
+                    }
+
+                    hRow.append($("<td>").html(formatter(row[v])));
                 }
                 return hRow;
             };
             const createHeaderRow = function(span, text) {
                 return $("<tr class='info'>").append($("<th colspan='" + span + "'>").text(text));
             };
-            const row_length = stat_count.length > 0 ? stat_count[0].length : 0;
 
             const btn_by_value = $("#group_by_value");
             const btn_by_vendor = $("#group_by_vendor");
@@ -237,13 +267,13 @@
                 const counts = input[0];
                 const euros = input[1];
 
-                stat_table.append(createHeaderRow(row_length, "{% trans "Number of items:" %}"));
+                stat_table.append(createHeaderRow(row_length + 1, "{% trans "Number of items:" %}"));
                 for (let i = 0; i < counts.length; i++) {
-                    stat_table.append(createRow(counts[i]));
+                    stat_table.append(createRow(counts[i], false, format_plain));
                 }
-                stat_table.append(createHeaderRow(row_length, "{% trans "Sum of prices:" %}"));
+                stat_table.append(createHeaderRow(row_length + 1, "{% trans "Sum of prices:" %}"));
                 for (let i = 0; i < euros.length; i++) {
-                    stat_table.append(createRow(euros[i]));
+                    stat_table.append(createRow(euros[i], false, format_currency));
                 }
             };
             const show_by_vendor = function(input) {
@@ -251,16 +281,12 @@
                 const euros = input[1];
 
                 for (let i = 0; i < counts.length; i++) {
-                    stat_table.append(createRow(counts[i]));
-                    stat_table.append(createRow(euros[i], true));
+                    stat_table.append(createRow(counts[i], false, format_plain));
+                    stat_table.append(createRow(euros[i], true, format_currency));
                 }
             };
 
             // Filtering
-            const index_brought = 2;  {# FIXME: These probably should be retrieved from data engine #}
-            const index_staged = 3;
-            const index_sold = 4;
-
             const do_filter = function(input, test) {
                 const input_counts = input[0];
                 const input_euros = input[1];
