@@ -166,10 +166,15 @@
 
     <h2>{% trans "Vendors:" %}</h2>
     <div id="grouping_container">
-    {% trans "Group by:" %}
-    <div class="btn-group btn-group-sm" role="group" aria-label="Grouping" id="grouping_buttons">
-        <button id="group_by_vendor" type="button" class="btn btn-default">{% trans "Vendor" %}</button>
-        <button id="group_by_value" type="button" class="btn btn-default">{% trans "Value type" %}</button>
+    <div class="btn-toolbar" role="toolbar" aria-label="Table content settings">
+        <div class="btn-group btn-group-sm" role="group" aria-label="Grouping" id="grouping_buttons">
+            <button id="group_by_vendor" type="button" class="btn btn-default">{% trans "Vendor" %}</button>
+            <button id="group_by_value" type="button" class="btn btn-default">{% trans "Value type" %}</button>
+        </div>
+        <div class="btn-group btn-group-sm" role="group" aria-label="Filtering" id="filtering_buttons">
+            <button id="filter_has_brought" type="button" class="btn btn-default">{% trans "Has brought items" %}</button>
+            <button id="filter_has_sold" type="button" class="btn btn-default">{% trans "Has uncompensated items" %}</button>
+        </div>
     </div>
     </div>
     <table class="table table-striped sum_table_right">
@@ -192,7 +197,7 @@
             const stat_table = $("#vendor_statistics");
             const stat_count = [
                 {% for row in vendor_item_data_counts %}
-                    ["{{ row.name|escapejs }}"{% for col in row.property_values %}, "{{ col|safe }}"{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
+                    ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
             ];
             const stat_euros = [
                 {% for row in vendor_item_data_euros %}
@@ -211,37 +216,133 @@
             };
             const row_length = stat_count.length > 0 ? stat_count[0].length : 0;
 
-            const by_value = $("#group_by_value");
-            const by_vendor = $("#group_by_vendor");
+            const btn_by_value = $("#group_by_value");
+            const btn_by_vendor = $("#group_by_vendor");
+            const btn_filter_brought = $("#filter_has_brought");
+            const btn_filter_sold = $("#filter_has_sold");
 
-            const show_by_value = function() {
-                stat_table.empty();
-                by_vendor.removeClass("active");
-                by_value.addClass("active");
+            // Grouping (with actual output)
+            const show_by_value = function(input) {
+                const counts = input[0];
+                const euros = input[1];
 
                 stat_table.append(createHeaderRow(row_length, "{% trans "Number of items:" %}"));
-                for (let i = 0; i < stat_count.length; i++) {
-                    stat_table.append(createRow(stat_count[i]));
+                for (let i = 0; i < counts.length; i++) {
+                    stat_table.append(createRow(counts[i]));
                 }
                 stat_table.append(createHeaderRow(row_length, "{% trans "Sum of prices:" %}"));
-                for (let i = 0; i < stat_euros.length; i++) {
-                    stat_table.append(createRow(stat_euros[i]));
+                for (let i = 0; i < euros.length; i++) {
+                    stat_table.append(createRow(euros[i]));
                 }
             };
-            const show_by_vendor = function() {
+            const show_by_vendor = function(input) {
+                const counts = input[0];
+                const euros = input[1];
+
+                for (let i = 0; i < counts.length; i++) {
+                    stat_table.append(createRow(counts[i]));
+                    stat_table.append(createRow(euros[i]));
+                }
+            };
+
+            // Filtering
+            const index_brought = 2;  {# FIXME: These probably should be retrieved from data engine #}
+            const index_staged = 3;
+            const index_sold = 4;
+
+            const do_filter = function(input, test) {
+                const input_counts = input[0];
+                const input_euros = input[1];
+                const result_counts = [];
+                const result_euros = [];
+                for (let i = 0; i < input_counts.length; i++) {
+                    const row = input_counts[i];
+                    if (test(row)) {
+                        result_counts.push(row);
+                        result_euros.push(input_euros[i]);
+                    }
+                }
+                return [result_counts, result_euros];
+            };
+
+            const filter_none = function(input) {
+                return input;
+            };
+            const filter_brought = function(input) {
+                return do_filter(input, function(row) {
+                    return row[index_brought] > 0
+                });
+            };
+            const filter_sold = function(input) {
+                return do_filter(input, function(row) {
+                    return row[index_sold] > 0 || row[index_staged] > 0;
+                });
+            };
+            const filter_brought_or_sold = function(input) {
+                return do_filter(input, function(row) {
+                    return row[index_brought] > 0 || row[index_sold] > 0 || row[index_staged] > 0;
+                });
+            };
+
+            // State
+            let current_filter = filter_none;
+            let current_group = show_by_vendor;
+            btn_by_vendor.addClass("active");
+
+            // State handling
+            const refresh = function() {
                 stat_table.empty();
-                by_value.removeClass("active");
-                by_vendor.addClass("active");
+                const filtered = current_filter([stat_count, stat_euros]);
+                current_group(filtered);
+            };
 
-                for (let i = 0; i < stat_count.length; i++) {
-                    stat_table.append(createRow(stat_count[i]));
-                    stat_table.append(createRow(stat_euros[i]));
+            btn_by_value.on("click", function() {
+                current_group = show_by_value;
+                btn_by_vendor.removeClass("active");
+                btn_by_value.addClass("active");
+                refresh();
+            });
+            btn_by_vendor.on("click", function() {
+                current_group = show_by_vendor;
+                btn_by_value.removeClass("active");
+                btn_by_vendor.addClass("active");
+                refresh();
+            });
+
+            const set_filters = function() {
+                const br = btn_filter_brought.hasClass("active");
+                const so = btn_filter_sold.hasClass("active");
+                if (br && so) {
+                    current_filter = filter_brought_or_sold;
+                } else if (br) {
+                    current_filter = filter_brought;
+                } else if (so) {
+                    current_filter = filter_sold;
+                } else {
+                    current_filter = filter_none;
                 }
             };
 
-            by_value.on("click", show_by_value);
-            by_vendor.on("click", show_by_vendor);
-            show_by_vendor();
+            btn_filter_brought.on("click", function() {
+                if (btn_filter_brought.hasClass("active")) {
+                    btn_filter_brought.removeClass("active");
+                } else {
+                    btn_filter_brought.addClass("active");
+                }
+                set_filters();
+                refresh();
+            });
+            btn_filter_sold.on("click", function () {
+                if (btn_filter_sold.hasClass("active")) {
+                    btn_filter_sold.removeClass("active");
+                } else {
+                    btn_filter_sold.addClass("active");
+                }
+                set_filters();
+                refresh();
+            });
+
+            refresh();
         })();
     //--></script>
 
