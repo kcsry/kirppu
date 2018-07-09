@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-09 09:16+0300\n"
-"PO-Revision-Date: 2018-07-09 09:16+0200\n"
+"POT-Creation-Date: 2018-07-09 16:37+0300\n"
+"PO-Revision-Date: 2018-07-09 16:39+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -557,15 +557,22 @@ msgstr "Tavaroiden lukumäärä:"
 msgid "Sum of prices:"
 msgstr "Hintojen summat:"
 
-#| msgid "Vendor:"
 msgid "Vendors:"
 msgstr "Myyjät:"
 
-msgid "Group by:"
-msgstr "Ryhmittele:"
+msgid ""
+"Values in parenthesis indicate part of the value that has been abandoned."
+msgstr "Suluissa olevat arvot ilmaisevat hylättyä määrää."
 
 msgid "Value type"
 msgstr "Arvon tyyppi"
+
+msgid "Has brought items"
+msgstr "On tuotuja tavaroita"
+
+#| msgid "Compensated Items"
+msgid "Has uncompensated items"
+msgstr "On hyvittämättömiä tavaroita"
 
 msgid "Profile"
 msgstr "Profiili"
@@ -726,6 +733,9 @@ msgstr "Lisää %(name)s SSO-tarjoajalta"
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Lisää irrallinen %(name)s"
+
+#~ msgid "Group by:"
+#~ msgstr "Ryhmittele:"
 
 #~ msgid "Finnish manga book"
 #~ msgstr "Manga (suomeksi)"

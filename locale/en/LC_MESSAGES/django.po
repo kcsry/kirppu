@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-09 09:16+0300\n"
-"PO-Revision-Date: 2018-07-09 09:16+0200\n"
+"POT-Creation-Date: 2018-07-09 16:37+0300\n"
+"PO-Revision-Date: 2018-07-09 16:37+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -556,15 +556,23 @@ msgstr "Number of items:"
 msgid "Sum of prices:"
 msgstr "Sum of prices:"
 
-#| msgid "Vendor:"
 msgid "Vendors:"
 msgstr "Vendors:"
 
-msgid "Group by:"
-msgstr "Group by:"
+msgid ""
+"Values in parenthesis indicate part of the value that has been abandoned."
+msgstr ""
+"Values in parenthesis indicate part of the value that has been abandoned."
 
 msgid "Value type"
 msgstr "Value type"
+
+msgid "Has brought items"
+msgstr "Has brought items"
+
+#| msgid "Compensated Items"
+msgid "Has uncompensated items"
+msgstr "Has uncompensated items"
 
 msgid "Profile"
 msgstr "Profile"
@@ -725,6 +733,9 @@ msgstr "Add %(name)s from SSO provider"
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Add unbound %(name)s"
+
+#~ msgid "Group by:"
+#~ msgstr "Group by:"
 
 #~ msgid "Finnish manga book"
 #~ msgstr "Manga (Finnish)"
