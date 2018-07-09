@@ -317,11 +317,11 @@ KIRPPU_REGISTER_ACTIVE_UNTIL = env.str("KIRPPU_REGISTER_ACTIVE_UNTIL", default="
 # Prefix- and postfix content of currency values.
 KIRPPU_CURRENCY = {
     # Content text for currency spans.
-    "css": ("", " \\20AC"),  # euro.
+    "css": ("", "\\00a0\\20AC"),  # euro.
     # Content for html elements (that cannot be styled with css content).
-    "html": ("", "&euro;"),
+    "html": ("", "&nbsp;&euro;"),
     # Content for raw text use (js).
-    "raw": ("", " €"),
+    "raw": ("", "\u00a0€"),
 }
 
 # Minimum and maximum price for an item.

@@ -1,10 +1,10 @@
 {% if CURRENCY.css.0 %}
 .{{ class|default:"price" }}:before {
-    content: "{{ CURRENCY.css.0 }}"
+    content: "{{ CURRENCY.css.0 }}";
 }
 {% endif %}
 {% if CURRENCY.css.1 %}
 .{{ class|default:"price" }}:after {
-    content: "{{ CURRENCY.css.1 }}"
+    content: "{{ CURRENCY.css.1 }}";
 }
 {% endif %}
