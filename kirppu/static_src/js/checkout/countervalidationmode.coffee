@@ -22,7 +22,7 @@ class @CounterValidationMode extends CheckoutMode
 
   enter: ->
     super
-    @switcher.setMenuEnabled(false)
+    @switcher.setMenuEnabled(false, true)
 
     # If we have values for Counter in cookie storage, use them and
     # immediately switch to clerk login.

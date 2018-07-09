@@ -12,6 +12,7 @@ class Config
     modeMenu: null
     overseerLink: null
     statsLink: null
+    languageSelection: null
     dialog: null
     printButton: null
   uiRef:
@@ -26,6 +27,7 @@ class Config
     modeMenu: null
     overseerLink: null
     statsLink: null
+    languageSelection: ""  # optional ref.
     dialog: null
     printButton: null
   settings:
@@ -46,8 +48,11 @@ class Config
     for key, value of @uiId
       element = $("#" + value)
       unless element? and element.length == 1
-        console.error("Name #{value} does not identify an element for #{key}.")
-        errors = true
+        if not @uiRef[key]?
+          console.error("Name #{value} does not identify an element for #{key}.")
+          errors = true
+        else
+          @uiRef[key] = $()  # mark optionals as empty.
         continue
       @uiRef[key] = element
     return errors

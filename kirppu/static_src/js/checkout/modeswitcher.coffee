@@ -161,12 +161,14 @@ class @ModeSwitcher
   # Enable or disable mode switching menu.
   #
   # @param enabled [Boolean] If true, menu will be enabled. If false, menu will be disabled.
-  setMenuEnabled: (enabled) ->
+  setMenuEnabled: (enabled, allowLanguageWhenDisabled=false) ->
     menu = @cfg.uiRef.modeMenu
     setClass(menu, "disabled", not enabled)
     setClass(menu.find("a:first"), "disabled", not enabled)
     setCheckedLinkEnabled(@cfg.uiRef.overseerLink, enabled and not @cfg.uiRef.overseerLink.hasClass("hidden"))
     setCheckedLinkEnabled(@cfg.uiRef.statsLink, enabled and not @cfg.uiRef.statsLink.hasClass("hidden"))
+    @cfg.uiRef.languageSelection.prop("disabled", if ((enabled or allowLanguageWhenDisabled)) then "" else "disabled")
+    return
 
   # Enable or disable the link to overseer dashboard
   #

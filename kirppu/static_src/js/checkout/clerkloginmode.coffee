@@ -8,7 +8,7 @@ class @ClerkLoginMode extends CheckoutMode
 
   enter: ->
     super
-    @switcher.setMenuEnabled(false)
+    @switcher.setMenuEnabled(false, true)
     if @constructor.autoClerk?
       @cfg.uiRef.codeInput.val(@constructor.autoClerk)
 
