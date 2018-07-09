@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-25 11:54+0300\n"
-"PO-Revision-Date: 2018-03-25 11:55+0200\n"
+"POT-Creation-Date: 2018-07-09 09:16+0300\n"
+"PO-Revision-Date: 2018-07-09 09:16+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -16,15 +16,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 2.0\n"
-
-msgid "Generate bar codes for items missing it"
-msgstr "Luo viivakoodit tuotteille joilta se puuttuu"
-
-msgid "Delete generated bar codes"
-msgstr "Poista luodut viivakoodit"
-
-msgid "Re-generate bar codes for items"
-msgstr "Luo tavaroiden viivakoodit uudelleen"
 
 msgid "User"
 msgstr "Käyttäjä"
@@ -47,12 +38,12 @@ msgstr ""
 "On valittava tasan yksi 'irrallinen' ja yksi 'kiinnitetty' kassatäti tähän "
 "operaatioon."
 
+msgid "Move unused access code to existing Clerk."
+msgstr "Siirrä käyttämätön tunniste olemassaolevalle kassatädille"
+
 #, python-brace-format
 msgid "Access code set for '{0}'"
 msgstr "Käyttötunniste asetettu '{0}':lle"
-
-msgid "Move unused access code to existing Clerk."
-msgstr "Siirrä käyttämätön tunniste olemassaolevalle kassatädille"
 
 #, python-brace-format
 msgid "One unbound clerk added."
@@ -62,6 +53,15 @@ msgstr[1] "Lisätty {count} irrallista kassatätiä."
 
 msgid "Add unbound clerk"
 msgstr "Lisää irrallinen kassatäti"
+
+msgid "Generate bar codes for items missing it"
+msgstr "Luo viivakoodit tuotteille joilta se puuttuu"
+
+msgid "Delete generated bar codes"
+msgstr "Poista luodut viivakoodit"
+
+msgid "Re-generate bar codes for items"
+msgstr "Luo tavaroiden viivakoodit uudelleen"
 
 msgid "Vendor"
 msgstr "Myyjä"
@@ -190,6 +190,9 @@ msgstr "Nimi on vaadittu."
 msgid "Item must have a type."
 msgstr "Tavaralla täytyy olla tyyppi."
 
+msgid "Invalid item type."
+msgstr "Virheellinen tavaran tyyppi."
+
 msgid "Returnable Items"
 msgstr "Palautettavat tavarat"
 
@@ -273,36 +276,6 @@ msgstr "Lyhyt hintalappu"
 
 msgid "Long price tag"
 msgstr "Pitkä hintalappu"
-
-msgid "Finnish manga book"
-msgstr "Manga (suomeksi)"
-
-msgid "English manga book"
-msgstr "Manga (englanniksi)"
-
-msgid "Manga book in another language"
-msgstr "Manga (muu kieli)"
-
-msgid "Non-manga book"
-msgstr "Kirja"
-
-msgid "Magazine"
-msgstr "Lehti"
-
-msgid "Movie or TV-series"
-msgstr "Elokuva/TV-sarja"
-
-msgid "Game"
-msgstr "Peli"
-
-msgid "Figurine or a stuffed toy"
-msgstr "Figuuri/pehmolelu"
-
-msgid "Clothing"
-msgstr "Vaate"
-
-msgid "Other item"
-msgstr "Muu"
 
 msgid "Item allowed only to adult shoppers, contains porn etc."
 msgstr "Vain aikuisille sallittu tavara, sisältää pornoa tms."
@@ -400,9 +373,6 @@ msgstr "Lisää uusi laatikko"
 msgid "Description for box label:"
 msgstr "Kuvaus laatikkoon:"
 
-msgid "Box full of Ranma"
-msgstr "Laatikollinen Ranmaa"
-
 msgid "Items #:"
 msgstr "Tavaroita:"
 
@@ -465,7 +435,6 @@ msgstr "Anna tämä sivu kassahenkilökunnalle tuodessasi tavaroita."
 msgid "Price:"
 msgstr "Hinta:"
 
-#| msgid "Counter commands"
 msgid "Counter mode"
 msgstr "Kassan tila"
 
@@ -549,9 +518,6 @@ msgstr "Lisää uusi tavara"
 msgid "Name:"
 msgstr "Nimi:"
 
-msgid "Ranma ½ Vol."
-msgstr "Ranma ½ Vol."
-
 msgid "Suffixes:"
 msgstr "Päätteet:"
 
@@ -585,6 +551,22 @@ msgstr "Siirrä tavara tulostettujen listaan tai sieltä takaisin."
 msgid "Toggle size."
 msgstr "Vaihda kokoa."
 
+msgid "Number of items:"
+msgstr "Tavaroiden lukumäärä:"
+
+msgid "Sum of prices:"
+msgstr "Hintojen summat:"
+
+#| msgid "Vendor:"
+msgid "Vendors:"
+msgstr "Myyjät:"
+
+msgid "Group by:"
+msgstr "Ryhmittele:"
+
+msgid "Value type"
+msgstr "Arvon tyyppi"
+
 msgid "Profile"
 msgstr "Profiili"
 
@@ -593,6 +575,9 @@ msgstr "Kirjaudu ulos"
 
 msgid "Log in"
 msgstr "Kirjaudu sisään"
+
+msgid "Box codes"
+msgstr "Laatikkokoodit"
 
 #, python-format
 msgid ""
@@ -694,8 +679,18 @@ msgstr "Sivuston hallinta"
 msgid "Management"
 msgstr "Hallinta"
 
+msgid "Ranma ½ Vol."
+msgstr "Ranma ½ Vol."
+
+msgid "Box full of Ranma"
+msgstr "Laatikollinen Ranmaa"
+
 msgid "Counter commands"
 msgstr "Kassan komennot"
+
+#, python-format
+msgid "Vendor %i"
+msgstr "Myyjä %i"
 
 msgid "CSRF verification failed. Request aborted."
 msgstr "CSRF-tarkistus epäonnistui. Pyyntö keskeytetty."
@@ -731,6 +726,36 @@ msgstr "Lisää %(name)s SSO-tarjoajalta"
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Lisää irrallinen %(name)s"
+
+#~ msgid "Finnish manga book"
+#~ msgstr "Manga (suomeksi)"
+
+#~ msgid "English manga book"
+#~ msgstr "Manga (englanniksi)"
+
+#~ msgid "Manga book in another language"
+#~ msgstr "Manga (muu kieli)"
+
+#~ msgid "Non-manga book"
+#~ msgstr "Kirja"
+
+#~ msgid "Magazine"
+#~ msgstr "Lehti"
+
+#~ msgid "Movie or TV-series"
+#~ msgstr "Elokuva/TV-sarja"
+
+#~ msgid "Game"
+#~ msgstr "Peli"
+
+#~ msgid "Figurine or a stuffed toy"
+#~ msgstr "Figuuri/pehmolelu"
+
+#~ msgid "Clothing"
+#~ msgstr "Vaate"
+
+#~ msgid "Other item"
+#~ msgstr "Muu"
 
 #~ msgid "Deleted"
 #~ msgstr "Poistettu"

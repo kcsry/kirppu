@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-25 11:54+0300\n"
-"PO-Revision-Date: 2018-03-25 11:54+0200\n"
+"POT-Creation-Date: 2018-07-09 09:16+0300\n"
+"PO-Revision-Date: 2018-07-09 09:16+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -16,15 +16,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 2.0\n"
-
-msgid "Generate bar codes for items missing it"
-msgstr "Generate bar codes for items missing it"
-
-msgid "Delete generated bar codes"
-msgstr "Delete generated bar codes"
-
-msgid "Re-generate bar codes for items"
-msgstr "Re-generate bar codes for items"
 
 msgid "User"
 msgstr "User "
@@ -46,12 +37,12 @@ msgid ""
 msgstr ""
 "Must select exactly one 'unbound' and one 'bound' Clerk for this operation"
 
+msgid "Move unused access code to existing Clerk."
+msgstr "Move unused access code to existing Clerk."
+
 #, python-brace-format
 msgid "Access code set for '{0}'"
 msgstr "Access code set for '{0}'"
-
-msgid "Move unused access code to existing Clerk."
-msgstr "Move unused access code to existing Clerk."
 
 #, python-brace-format
 msgid "One unbound clerk added."
@@ -61,6 +52,15 @@ msgstr[1] "{count} unbound clerks added."
 
 msgid "Add unbound clerk"
 msgstr "Add unbound clerk"
+
+msgid "Generate bar codes for items missing it"
+msgstr "Generate bar codes for items missing it"
+
+msgid "Delete generated bar codes"
+msgstr "Delete generated bar codes"
+
+msgid "Re-generate bar codes for items"
+msgstr "Re-generate bar codes for items"
 
 msgid "Vendor"
 msgstr "Vendor"
@@ -189,6 +189,9 @@ msgstr "Name is required."
 msgid "Item must have a type."
 msgstr "Item must have a type."
 
+msgid "Invalid item type."
+msgstr "Invalid item type."
+
 msgid "Returnable Items"
 msgstr "Returnable Items"
 
@@ -272,36 +275,6 @@ msgstr "Short price tag"
 
 msgid "Long price tag"
 msgstr "Long price tag"
-
-msgid "Finnish manga book"
-msgstr "Manga (Finnish)"
-
-msgid "English manga book"
-msgstr "Manga (English)"
-
-msgid "Manga book in another language"
-msgstr "Manga (other language)"
-
-msgid "Non-manga book"
-msgstr "Book"
-
-msgid "Magazine"
-msgstr "Magazine"
-
-msgid "Movie or TV-series"
-msgstr "Movie/TV-series"
-
-msgid "Game"
-msgstr "Game"
-
-msgid "Figurine or a stuffed toy"
-msgstr "Figurine/Plushie"
-
-msgid "Clothing"
-msgstr "Clothing"
-
-msgid "Other item"
-msgstr "Other"
 
 msgid "Item allowed only to adult shoppers, contains porn etc."
 msgstr "Item allowed only to adult shoppers, contains porn etc."
@@ -399,9 +372,6 @@ msgstr "Add new box"
 msgid "Description for box label:"
 msgstr "Description for box label:"
 
-msgid "Box full of Ranma"
-msgstr "Box full of Ranma"
-
 msgid "Items #:"
 msgstr "Items #:"
 
@@ -464,7 +434,6 @@ msgstr "Give this page to the clerk when bringing items."
 msgid "Price:"
 msgstr "Price:"
 
-#| msgid "Counter commands"
 msgid "Counter mode"
 msgstr "Counter mode"
 
@@ -548,9 +517,6 @@ msgstr "Add new item"
 msgid "Name:"
 msgstr "Name:"
 
-msgid "Ranma ½ Vol."
-msgstr "Ranma ½ Vol."
-
 msgid "Suffixes:"
 msgstr "Suffixes:"
 
@@ -584,6 +550,22 @@ msgstr "Switch item between printed and not printed lists."
 msgid "Toggle size."
 msgstr "Toggle size."
 
+msgid "Number of items:"
+msgstr "Number of items:"
+
+msgid "Sum of prices:"
+msgstr "Sum of prices:"
+
+#| msgid "Vendor:"
+msgid "Vendors:"
+msgstr "Vendors:"
+
+msgid "Group by:"
+msgstr "Group by:"
+
+msgid "Value type"
+msgstr "Value type"
+
 msgid "Profile"
 msgstr "Profile"
 
@@ -592,6 +574,9 @@ msgstr "Log out"
 
 msgid "Log in"
 msgstr "Log in"
+
+msgid "Box codes"
+msgstr "Box codes"
 
 #, python-format
 msgid ""
@@ -693,8 +678,18 @@ msgstr "Site administration"
 msgid "Management"
 msgstr "Management"
 
+msgid "Ranma ½ Vol."
+msgstr "Ranma ½ Vol."
+
+msgid "Box full of Ranma"
+msgstr "Box full of Ranma"
+
 msgid "Counter commands"
 msgstr "Counter commands"
+
+#, python-format
+msgid "Vendor %i"
+msgstr "Vendor %i"
 
 msgid "CSRF verification failed. Request aborted."
 msgstr "CSRF verification failed. Request aborted."
@@ -730,6 +725,36 @@ msgstr "Add %(name)s from SSO provider"
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Add unbound %(name)s"
+
+#~ msgid "Finnish manga book"
+#~ msgstr "Manga (Finnish)"
+
+#~ msgid "English manga book"
+#~ msgstr "Manga (English)"
+
+#~ msgid "Manga book in another language"
+#~ msgstr "Manga (other language)"
+
+#~ msgid "Non-manga book"
+#~ msgstr "Book"
+
+#~ msgid "Magazine"
+#~ msgstr "Magazine"
+
+#~ msgid "Movie or TV-series"
+#~ msgstr "Movie/TV-series"
+
+#~ msgid "Game"
+#~ msgstr "Game"
+
+#~ msgid "Figurine or a stuffed toy"
+#~ msgstr "Figurine/Plushie"
+
+#~ msgid "Clothing"
+#~ msgstr "Clothing"
+
+#~ msgid "Other item"
+#~ msgstr "Other"
 
 #~ msgid "Deleted"
 #~ msgstr "Deleted"
