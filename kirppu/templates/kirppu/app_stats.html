@@ -165,6 +165,13 @@
     </table>
 
     <h2>{% trans "Vendors:" %}</h2>
+    <style type="text/css">
+    @media print {
+        #grouping_container button.active::before {
+            content: "\02022  "
+        }
+    }
+    </style>
     <div id="grouping_container">
     <div class="btn-toolbar" role="toolbar" aria-label="Table content settings">
         <div class="btn-group btn-group-sm" role="group" aria-label="Grouping" id="grouping_buttons">
