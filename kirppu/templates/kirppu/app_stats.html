@@ -203,9 +203,13 @@
                 {% for row in vendor_item_data_euros %}
                     ["{{ row.name|escapejs }}"{% for col in row.property_values %}, "{{ col|safe }}"{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
             ];
-            const createRow = function(row) {
+            const createRow = function(row, skip_name=false) {
                 const hRow = $("<tr>");
-                hRow.append($("<th>").text(row[0]));
+                if (!skip_name) {
+                    hRow.append($("<th>").text(row[0]));
+                } else {
+                    hRow.append($("<th>"))
+                }
                 for (let v = 1; v< row.length; v++) {
                     hRow.append($("<td>").html(row[v]));
                 }
@@ -241,7 +245,7 @@
 
                 for (let i = 0; i < counts.length; i++) {
                     stat_table.append(createRow(counts[i]));
-                    stat_table.append(createRow(euros[i]));
+                    stat_table.append(createRow(euros[i], true));
                 }
             };
 
