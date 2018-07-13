@@ -2,13 +2,13 @@
 
 [![Build Status](https://travis-ci.org/jlaunonen/kirppu.svg?branch=master)](https://travis-ci.org/jlaunonen/kirppu)
 
-## Getting started using Docker
+## Getting development started using Docker
 
 Install Docker and `docker-compose` and run
 
     docker-compose up
 
-## Getting started without Docker
+## Getting development started without Docker
 
 This guide is meant for setting up a basic Kirppu development environment for testing.
 It consists of a high level guide outlining the steps, example guide that has more detail and finally some pointers on how to access Kirppu once it's running.
@@ -99,7 +99,7 @@ Successfully installed django-1.6.10 django-pipeline-1.3.27 pillow-2.4.0 pyBarco
 Installed 0 object(s) from 0 fixture(s)
 
 # Load some fake data to play with.
-(venv) ~/kirppu$ python manage.py loaddata dev_data
+(venv) ~/kirppu$ python manage.py loaddata dev_data default_text groups default_types
 Installed 10 object(s) from 1 fixture(s)
 
 # Run Django dev server in some port, I like 9874.
@@ -185,6 +185,7 @@ To compile frontend sources for use in browser, there is two choices, which can 
     Copyright (c) 2014–2017 Santtu Pajukanta
     Copyright (c) 2016 Aarni Koskela, Jyrki Launonen
     Copyright (c) 2017 Jyrki Launonen
+    Copyright (c) 2018 Jyrki Launonen
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
