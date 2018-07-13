@@ -57,7 +57,7 @@ class Trans extends runtime.Trans {
     }
 
     preprocess(src, name) {
-        this.currentName = name;
+        //this.currentName = name;
         return src;
     }
 
