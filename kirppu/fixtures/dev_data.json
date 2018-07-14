@@ -4,6 +4,7 @@
         "pk": 1,
         "fields": {
             "key": "manga-finnish",
+            "order": 10,
             "title": "Finnish manga book"
         }
     },

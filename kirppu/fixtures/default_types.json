@@ -4,6 +4,7 @@
         "pk": 1,
         "fields": {
             "key": "manga-finnish",
+            "order": 10,
             "title": "Finnish manga book"
         }
     },
@@ -12,6 +13,7 @@
         "pk": 2,
         "fields": {
             "key": "manga-english",
+            "order": 20,
             "title": "English manga book"
         }
     },
@@ -20,6 +22,7 @@
         "pk": 3,
         "fields": {
             "key": "manga-other",
+            "order": 30,
             "title": "Manga book in another language"
         }
     },
@@ -28,6 +31,7 @@
         "pk": 4,
         "fields": {
             "key": "book",
+            "order": 40,
             "title": "Non-manga book"
         }
     },
@@ -36,6 +40,7 @@
         "pk": 5,
         "fields": {
             "key": "magazine",
+            "order": 50,
             "title": "Magazine"
         }
     },
@@ -44,6 +49,7 @@
         "pk": 6,
         "fields": {
             "key": "movie-tv",
+            "order": 60,
             "title": "Movie or TV-series"
         }
     },
@@ -52,6 +58,7 @@
         "pk": 7,
         "fields": {
             "key": "game",
+            "order": 70,
             "title": "Game"
         }
     },
@@ -60,6 +67,7 @@
         "pk": 8,
         "fields": {
             "key": "figurine-plushie",
+            "order": 80,
             "title": "Figurine or a stuffed toy"
         }
     },
@@ -68,6 +76,7 @@
         "pk": 9,
         "fields": {
             "key": "clothing",
+            "order": 90,
             "title": "Clothing"
         }
     },
@@ -76,6 +85,7 @@
         "pk": 10,
         "fields": {
             "key": "other",
+            "order": 100,
             "title": "Other item"
         }
     }
