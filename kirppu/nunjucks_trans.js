@@ -57,7 +57,7 @@ class Trans extends runtime.Trans {
     }
 
     preprocess(src, name) {
-        //this.currentName = name;
+        this.currentName = name;
         return src;
     }
 
@@ -79,6 +79,12 @@ class Trans extends runtime.Trans {
         return new nodes.CallExtension(this, 'run', args);
     }
 
+    // NJ has a bug and it reads wrong property from instance in CallExtension constructor.
+    // noinspection JSMethodCanBeStatic, JSUnusedGlobalSymbols
+    get __name() {
+        return "Trans";
+    }
+
     static escape(str) {
         return str.replace(/"'\\/, function(m) {
             return "\\" + m;
@@ -86,4 +92,14 @@ class Trans extends runtime.Trans {
     }
 }
 
-module.exports.Trans = Trans;
+// Version of the (strict) Trans class that does the sloppy autoboxing assumed by caller.
+function TransSloppyFix(opts) {
+    const r = new Trans(opts);
+    this.tags = r.tags;
+    this.preprocess = function(src, name) { return r.preprocess(src, name) };
+    this.close = function() { r.close(); };
+    this.parse = function(parser, nodes, lexer) { return r.parse(parser, nodes, lexer); };
+    return this;
+}
+
+module.exports.Trans = TransSloppyFix;
