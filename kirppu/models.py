@@ -580,7 +580,7 @@ class Item(models.Model):
         max_length=8,
         default=TYPE_SHORT
     )
-    itemtype = models.ForeignKey(ItemType)
+    itemtype = models.ForeignKey(ItemType, on_delete=models.CASCADE)
     adult = models.CharField(
         choices=ADULT,
         max_length=8,
