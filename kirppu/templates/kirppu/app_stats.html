@@ -56,11 +56,11 @@
     $(document).ready(function() {
         setupAjax();
 
-        var g1 = new Dygraph(
+        const g1 = new Dygraph(
                 document.getElementById("graph1"),
                 '{% url "kirppu:api_stats_registration_data" %}',
                 {
-                    labels: ['Time', 'Registered', 'Brought to event', 'Unsold inventory', 'Sold inventory', 'Redeemed by vendor'],
+                    labels: ['Time', 'Registered'],
                     labelsDiv: 'graph1_legend',
                     legend: 'always',
                     ylabel: 'Items',
@@ -80,11 +80,11 @@
                 }
         );
 
-        var g2 = new Dygraph(
+        const g2 = new Dygraph(
                 document.getElementById("graph2"),
                 '{% url "kirppu:api_stats_sales_data" %}',
                 {
-                    labels: ['Time', 'Registered', 'Brought to event', 'Unsold inventory', 'Sold inventory', 'Redeemed by vendor'],
+                    labels: ['Time', 'Brought to event', 'Unsold inventory', 'Sold inventory', 'Redeemed by vendor'],
                     labelsDiv: 'graph2_legend',
                     legend: 'always',
                     ylabel: 'Items',

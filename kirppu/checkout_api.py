@@ -46,9 +46,8 @@ from .models import (
 )
 from .fields import ItemPriceField
 from .forms import ItemRemoveForm
-from .stats import iterate_logs
 
-from . import ajax_util
+from . import ajax_util, stats
 from .ajax_util import (
     AjaxError,
     AjaxFunc,
@@ -969,27 +968,27 @@ def item_mark_lost(request, code):
 
 @ajax_func('^stats/get_sales_data$', method='GET', staff_override=True)
 def stats_sales_data(request):
-    entries = ItemStateLog.objects.exclude(new_state=Item.ADVERTISED)
-    log_generator = iterate_logs(entries, hide_advertised=True)
+    formatter = stats.SalesData(as_prices=False)
+    log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
 @ajax_func('^stats/get_registration_data$', method='GET', staff_override=True)
 def stats_registration_data(request):
-    entries = ItemStateLog.objects.filter(new_state=Item.ADVERTISED)
-    log_generator = iterate_logs(entries, hide_sales=True)
+    formatter = stats.RegistrationData(as_prices=False)
+    log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
 @ajax_func('^stats/get_sales_data_prices$', method='GET', staff_override=True)
 def stats_sales_data_prices(request):
-    entries = ItemStateLog.objects.exclude(new_state=Item.ADVERTISED)
-    log_generator = iterate_logs(entries, hide_advertised=True, show_prices=True)
+    formatter = stats.SalesData(as_prices=True)
+    log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
 @ajax_func('^stats/get_registration_data_prices$', method='GET', staff_override=True)
 def stats_registration_data_prices(request):
-    entries = ItemStateLog.objects.filter(new_state=Item.ADVERTISED)
-    log_generator = iterate_logs(entries, hide_sales=True, show_prices=True)
+    formatter = stats.RegistrationData(as_prices=True)
+    log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
