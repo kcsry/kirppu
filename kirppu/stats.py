@@ -6,6 +6,7 @@ import pytz
 from django.conf import settings
 from django.db import models
 from django.db.models import F
+from django.utils.translation import ugettext as _
 
 from .models import Item, ItemType, ItemStateLog
 
@@ -44,7 +45,6 @@ class ItemCollectionData(object):
         ('brought', Item.BROUGHT),
         ('staged', Item.STAGED),
         ('sold', Item.SOLD),
-        ('missing', Item.MISSING),
         ('returned', Item.RETURNED),
         ('compensated', Item.COMPENSATED),
         ('sum', None),
@@ -152,8 +152,12 @@ class ItemCollectionRow(object):
 
     @property
     def property_names(self):
-        for property_name in ItemCollectionData.PROPERTIES:
-            yield property_name
+        states = dict(Item.STATE)
+        for property_name, property_state in ItemCollectionData.PROPERTIES.items():
+            if property_name == "sum":
+                yield _("Sum")
+            else:
+                yield states[property_state]
 
     @property
     def abandoned(self):

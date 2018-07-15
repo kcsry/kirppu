@@ -623,7 +623,7 @@ def stats_view(request):
 
     ic = ItemCountData(ItemCountData.GROUP_ITEM_TYPE)
     ie = ItemEurosData(ItemEurosData.GROUP_ITEM_TYPE)
-    sum_name = "Sum"
+    sum_name = _("Sum")
     item_types = ItemType.objects.order_by("order").values_list("id", "title")
 
     number_of_items = [
