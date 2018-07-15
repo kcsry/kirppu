@@ -17,6 +17,9 @@
     .sum_table_right td:last-child {
         font-weight: bold;
     }
+    dd + dt {
+        margin-top: 0.5em;
+    }
     </style>
 {% endblock %}
 
@@ -29,6 +32,11 @@
 {% block body %}
 {% trans "Number of items" as tlItemCount %}
 {% trans "Sum of prices" as tlPricesSum %}
+{% trans "Brought to event" as tlBrought %}
+{% trans "Unsold inventory" as tlUnsold %}
+{% trans "Sold inventory" as tlSold %}
+{% trans "Redeemed by vendor" as tlRedeemed %}
+
     <h1>
         <span id="mode_glyph" class="glyphicon glyphicon glyphicon-signal"></span>
         <span id="title_text">{% trans "Stats" %}</span>
@@ -38,7 +46,7 @@
     <div id="graph1" style="width:100%; height:300px;"></div>
 
     <div class="btn-group btn-group-xs hidden-print">
-        <button type="button" id="graph1_items_link" class="btn btn-default">{{ tlItemCount }}</button>
+        <button type="button" id="graph1_items_link" class="btn btn-default active">{{ tlItemCount }}</button>
         <button type="button" id="graph1_prices_link" class="btn btn-default">{{ tlPricesSum }}</button>
     </div>
 
@@ -47,9 +55,22 @@
     <div id="graph2_legend"></div>
     <div id="graph2" style="width:100%; height:300px;"></div>
 
-    <div class="btn-group btn-group-xs hidden-print">
-        <button type="button" id="graph2_items_link" class="btn btn-default">{{ tlItemCount }}</button>
+    <div class="btn-group btn-group-xs hidden-print" style="width: 80%;">{# width set to allow popover be more wider than the buttons #}
+        <button type="button" id="graph2_items_link" class="btn btn-default active">{{ tlItemCount }}</button>
         <button type="button" id="graph2_prices_link" class="btn btn-default">{{ tlPricesSum }}</button>
+        <button type="button" id="graph2_legend_tip" class="btn btn-link"><span class="glyphicon glyphicon-info-sign"></span> </button>
+    </div>
+    <div id="legend_content" style="display: none;">
+    <dl>
+        <dt>{{ tlBrought }}</dt>
+        <dd>{% trans "Items cumulatively brought to the event." %}</dd>
+        <dt>{{ tlUnsold }}</dt>
+        <dd>{% trans "Items brought but not sold nor returned." %}</dd>
+        <dt>{{ tlSold }}</dt>
+        <dd>{% trans "Items sold but not redeemed." %}</dd>
+        <dt>{{ tlRedeemed }}</dt>
+        <dd>{% trans "Items sold and redeemed." %}</dd>
+    </dl>
     </div>
 
     <script>
@@ -80,16 +101,19 @@
                 }
         );
 
+        const graphColors = ["rgb(102,128,0)", "rgb(0,51,128)", "rgb(0,128,51)", "rgb(102,0,128)"];
         const g2 = new Dygraph(
                 document.getElementById("graph2"),
                 '{% url "kirppu:api_stats_sales_data" %}',
                 {
-                    labels: ["{% trans "Time" %}", "{% trans "Brought to event" %}", "{% trans "Unsold inventory" %}",
-                        "{% trans "Sold inventory" %}", "{% trans "Redeemed by vendor" %}"],
+                    labels: ["{% trans "Time" %}",
+                        "{{ tlBrought }}", "{{ tlUnsold }}",
+                        "{{ tlSold }}", "{{ tlRedeemed }}"],
                     labelsDiv: 'graph2_legend',
                     legend: 'always',
                     ylabel: "{{ tlItemCount }}",
                     strokeWidth: 2,
+                    colors: graphColors,
                     highlightSeriesOpts: {
                         strokeWidth: 3,
                         strokeBorderWidth: 2,
@@ -105,30 +129,56 @@
                 }
         );
 
-        document.getElementById('graph1_items_link').onclick = function() {
+        const g1_items = $("#graph1_items_link");
+        const g1_prices = $("#graph1_prices_link");
+        const g2_items = $("#graph2_items_link");
+        const g2_prices = $("#graph2_prices_link");
+
+        function activate(active, non_active) {
+            active.addClass("active");
+            non_active.removeClass("active");
+        }
+
+        g1_items.on("click", function() {
+            activate(g1_items, g1_prices);
             g1.updateOptions({
                 file: '{% url "kirppu:api_stats_registration_data" %}',
                 ylabel: "{{ tlItemCount }}"
             });
-        };
-        document.getElementById('graph1_prices_link').onclick = function() {
+        });
+        g1_prices.on("click", function() {
+            activate(g1_prices, g1_items);
             g1.updateOptions({
                 file: '{% url "kirppu:api_stats_registration_data" %}?prices=true',
                 ylabel: "{{ tlPricesSum }}"
             });
-        };
-        document.getElementById('graph2_items_link').onclick = function() {
+        });
+        g2_items.on("click", function() {
+            activate(g2_items, g2_prices);
             g2.updateOptions({
                 file: '{% url "kirppu:api_stats_sales_data" %}',
                 ylabel: "{{ tlItemCount }}"
             });
-        };
-        document.getElementById('graph2_prices_link').onclick = function() {
+        });
+        g2_prices.on("click", function() {
+            activate(g2_prices, g2_items);
             g2.updateOptions({
                 file: '{% url "kirppu:api_stats_sales_data" %}?prices=true',
                 ylabel: "{{ tlPricesSum }}"
             });
-        };
+        });
+
+        const legend = $("#legend_content");
+        legend.find("dt").each(function(index) {
+            this.style = "color: " + graphColors[index];
+        });
+
+        $("#graph2_legend_tip").popover({
+            placement: "bottom",
+            title: "{% trans "Graph legend" %}",
+            html: true,
+            content: legend.html()
+        });
 
         //populateChart(g1, Api.stats_registration_data);
         //populateChart(g2, Api.stats_sales_data);
