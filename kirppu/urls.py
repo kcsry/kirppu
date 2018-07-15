@@ -27,6 +27,7 @@ from .views import (
     box_hide,
     box_print,
     stats_view,
+    type_stats_view,
     lost_and_found_list,
 )
 from .checkout_api import AJAX_FUNCTIONS, checkout_js
@@ -43,6 +44,7 @@ _urls = [
     url(r'^checkout/$', checkout_view, name='checkout_view'),
     url(r'^overseer/$', overseer_view, name='overseer_view'),
     url(r'^stats/$', stats_view, name='stats_view'),
+    url(r'^stats/type/(?P<type_id>\d+)$', type_stats_view, name='type_stats_view'),
     url(r'^vendor/$', vendor_view, name='vendor_view'),
     url(r'^vendor/accept_terms$', accept_terms, name='accept_terms'),
     url(r'^vendor/items/$', get_items, name='page'),

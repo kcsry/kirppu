@@ -668,6 +668,24 @@ def stats_view(request):
     return render(request, 'kirppu/app_stats.html', context)
 
 
+@ensure_csrf_cookie
+def type_stats_view(request, type_id):
+    try:
+        ajax_util.require_user_features(counter=True, clerk=True, staff_override=True)(lambda _: None)(request)
+    except ajax_util.AjaxError:
+        if settings.KIRPPU_CHECKOUT_ACTIVE:
+            return redirect('kirppu:checkout_view')
+        else:
+            raise PermissionDenied()
+
+    item_type = get_object_or_404(ItemType, id=int(type_id))
+
+    return render(request, "kirppu/type_stats.html", {
+        "type_id": item_type.id,
+        "type_title": item_type.title,
+    })
+
+
 def vendor_view(request):
     """
     Render main view for vendors.

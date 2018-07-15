@@ -138,7 +138,8 @@ class ItemCollectionRow(object):
     """
     Base class for row data in `ItemCollectionData` mainly used for template to iterate over the row.
     """
-    def __init__(self, data, name):
+    def __init__(self, key, data, name):
+        self.key = key
         self.name = name
         self._data = data
 
@@ -189,7 +190,7 @@ class ItemCountData(ItemCollectionData):
         )
 
     def data_set(self, key, name):
-        return ItemCountRow(self._data[key], name)
+        return ItemCountRow(key, self._data[key], name)
 
 
 class ItemCountRow(ItemCollectionRow):
@@ -226,7 +227,7 @@ class ItemEurosData(ItemCollectionData):
         )
 
     def data_set(self, key, name):
-        return ItemEurosRow(self.use_cents, self._data[key], name)
+        return ItemEurosRow(self.use_cents, key, self._data[key], name)
 
 
 class ItemEurosRow(ItemCollectionRow):
@@ -253,11 +254,13 @@ class ItemEurosRow(ItemCollectionRow):
 class GraphLog(object):
     unix_epoch = datetime(1970, 1, 1, tzinfo=pytz.utc)
 
-    def __init__(self, as_prices=False):
+    def __init__(self, as_prices=False, extra_filter=None):
         self._as_prices = as_prices
+        self._filter = extra_filter or dict()
 
     def query(self, only):
         query = self._create_query()
+        query = query.filter(**self._filter)
         if self._as_prices:
             return query.only("item__price", *only).annotate(value=F("item__price"))
         return query.only(*only).annotate(value=models.Value(1, output_field=models.IntegerField()))

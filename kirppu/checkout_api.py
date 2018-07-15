@@ -32,6 +32,7 @@ from .api.common import (
 from .provision import Provision
 from .models import (
     Item,
+    ItemType,
     Receipt,
     Clerk,
     Counter,
@@ -980,3 +981,9 @@ def stats_registration_data(request, prices="false"):
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
+@ajax_func('^stats/group_sales$', method='GET', staff_override=True)
+def stats_group_sales_data(request, type_id, prices="false"):
+    item_type = ItemType.objects.get(id=int(type_id))
+    formatter = stats.SalesData(as_prices=prices == "true", extra_filter=dict(item__itemtype=item_type))
+    log_generator = stats.iterate_logs(formatter)
+    return StreamingHttpResponse(log_generator, content_type='text/csv')

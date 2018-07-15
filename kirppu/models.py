@@ -991,8 +991,8 @@ class ItemStateLog(models.Model):
             self.time,
             self.old_state,
             self.new_state,
-            self.clerk.pk,
-            self.counter.pk,
+            self.clerk.pk if self.clerk is not None else "",
+            self.counter.pk if self.counter is not None else "",
         )
 
 

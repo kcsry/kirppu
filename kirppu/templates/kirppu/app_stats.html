@@ -183,6 +183,11 @@
         //populateChart(g1, Api.stats_registration_data);
         //populateChart(g2, Api.stats_sales_data);
     });
+    function typePopup(url) {
+        window.open(url, "kirppuTypeStats",
+            "menubar=false,location=false,height=450px,width=800px");
+        return false;
+    }
     </script>
 
 
@@ -199,7 +204,8 @@
         </tr>
         {% for row in number_of_items %}
              <tr>
-                 <th>{{ row.name }}</th>
+                 <th>{% if row.key != "sum" %}<a onclick='return typePopup("{% url "kirppu:type_stats_view" row.key %}")' href="{% url "kirppu:type_stats_view" row.key %}">{{ row.name }}</a>
+                 {% else %}{{ row.name }}{% endif %}</th>
                  {% for col in row.property_values %}
                     <td>{{ col|safe }}</td>
                  {% endfor %}
