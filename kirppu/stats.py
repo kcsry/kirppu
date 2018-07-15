@@ -2,6 +2,7 @@
 from collections import OrderedDict
 from django.conf import settings
 from django.db import models
+from django.db.models import F
 
 from .models import Item, ItemType
 
@@ -10,7 +11,11 @@ __author__ = 'codez'
 __all__ = (
     "ItemCountData",
     "ItemEurosData",
+    "iterate_logs",
 )
+
+
+# region Terse statistics generators.
 
 
 class ItemCollectionData(object):
@@ -226,3 +231,96 @@ class ItemEurosRow(ItemCollectionRow):
             return int((value or 0) * 100)
         value = "{}{}{}".format(self._currency[0], value or 0, self._currency[1])
         return value
+
+
+# endregion
+
+
+########################
+
+
+# region Statistics graphs generators.
+
+
+def iterate_logs(entries, hide_advertised=False, hide_sales=False, show_prices=False):
+    """ Iterate through ItemStateLog objects returning current sum of each type of object at each timestamp.
+
+    Example of returned CVS: js_time, advertized, brought, unsold, money, compensated
+
+    js_time is milliseconds from unix_epoch.
+    advertized is the number of items registered to the event at any time.
+    brought is the cumulative sum of all items brought to the event.
+    unsold is the number of items physically at the event. Should aproach zero by the end of the event.
+    money is the number of sold items not yet redeemed by the seller. Should aproach zero by the end of the event.
+    compensated is the number of sold and unsold items redeemed by the seller. Should aproach brought.
+
+    :param entries: iterator to ItemStateLog objects.
+    :return: JSON presentation of the objects, one item at a time.
+
+    """
+    from datetime import datetime, timedelta
+    import pytz
+
+    advertised_status = (Item.ADVERTISED,)
+    brought_status = (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.MISSING, Item.RETURNED, Item.COMPENSATED)
+    unsold_status = (Item.BROUGHT, Item.STAGED)
+    money_status = (Item.SOLD,)
+    compensated_status = (Item.COMPENSATED, Item.RETURNED)
+    unix_epoch = datetime(1970, 1, 1, tzinfo=pytz.utc)
+
+    def datetime_to_js_time(dt):
+        return int((dt - unix_epoch).total_seconds() * 1000)
+
+    def get_log_str(bucket_time, balance):
+        entry_time = datetime_to_js_time(bucket_time)
+        advertised = sum(balance[status] for status in advertised_status)
+        brought = sum(balance[status] for status in brought_status)
+        unsold = sum(balance[status] for status in unsold_status)
+        money = sum(balance[status] for status in money_status)
+        compensated = sum(balance[status] for status in compensated_status)
+        return '%d,%s,%s,%s,%s,%s\n' % (
+            entry_time,
+            advertised if not hide_advertised else '',
+            brought if not hide_sales else '',
+            unsold if not hide_sales else '',
+            money if not hide_sales else '',
+            compensated if not hide_sales else '',
+        )
+
+    # Collect the data into buckets of size bucket_td to reduce the amount of data that has to be sent
+    # and parsed at client side.
+    balance = { item_type: 0 for item_type, _item_desc in Item.STATE }
+    bucket_time = None
+    bucket_td = timedelta(seconds=60)
+
+    # Modify the query to include item price, because we need it.
+    only = "old_state", "new_state", "time"
+    if show_prices:
+        entries = entries.only("item__price", *only).annotate(price=F("item__price"))
+    else:
+        entries = entries.only(*only)
+
+    for entry in entries.order_by("time"):
+        if bucket_time is None:
+            bucket_time = entry.time
+            # Start the graph before the first entry, such that everything starts at zero.
+            yield get_log_str(bucket_time - bucket_td, balance)
+        if (entry.time - bucket_time) > bucket_td:
+            # Fart out what was in the old bucket and start a new bucket.
+            yield get_log_str(bucket_time, balance)
+            bucket_time = entry.time
+
+        item_weight = 1
+        if show_prices:
+            item_weight = entry.price
+
+        if entry.old_state:
+            balance[entry.old_state] -= item_weight
+        balance[entry.new_state] += item_weight
+
+    # Fart out the last bucket.
+    if bucket_time is not None:
+        yield get_log_str(bucket_time, balance)
+
+
+# endregion
