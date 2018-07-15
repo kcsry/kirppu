@@ -1,0 +1,98 @@
+{% extends "kirppu/common.html" %}{% load i18n kirppu_tags %}
+
+{% load static %}
+
+{% block title %}Kirppu - Stats{% endblock %}
+
+{% block head %}
+    {{ block.super }}
+    <script src="{% static "kirppu/js/dygraph-combined.js" %}" defer></script>
+    <script src="{% static "kirppu/js/stats.js" %}" defer></script>
+
+    <style type="text/css">
+    .sum_table_below tr:last-child {
+        font-weight: bold;
+    }
+    .sum_table_right td:last-child {
+        font-weight: bold;
+    }
+    dd + dt {
+        margin-top: 0.5em;
+    }
+    .info-key {
+        font-weight: bold;
+        text-align: right;
+    }
+    </style>
+{% endblock %}
+
+{% block navbar_right %}
+    {% if checkout_active %}
+    <li><a href="{% url 'kirppu:checkout_view' %}" title="{% trans "Return to checkout" %}">{% trans "Checkout" %}</a></li>
+    <li><a href="{% url 'kirppu:stats_view' %}" title="{% trans "Return to vendor statistics" %}">{% trans "Stats" %}</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+{% trans "Compensations" as tlCompensations %}
+{% trans "Purchases" as tlPurchases %}
+
+    <h1>
+        <span id="mode_glyph" class="glyphicon glyphicon glyphicon-signal"></span>
+        <span id="title_text">{% trans "Stats" %}</span>
+    </h1>
+
+    <div id="graph1_legend"></div>
+    <div id="graph1" style="width:100%; height:300px;"></div>
+
+    {% comment %}
+    <div class="btn-group btn-group-xs hidden-print">
+        <button type="button" id="graph1_compensations_link" class="btn btn-default active">{{ tlCompensations }}</button>
+        <button type="button" id="graph1_purchases_link" class="btn btn-default">{{ tlPurchases }}</button>
+    </div>
+    {% endcomment %}
+
+    <p style="margin-bottom: 1.5em;"></p>
+
+    <script type="application/json" data-id="compensations">{{ compensations }}</script>
+    <script type="application/json" data-id="purchases">{{ purchases }}</script>
+    <script type="application/json" data-id="config">{
+        "stats": "general",
+        "ids": {
+            "bucket": "graph1",
+            "bucketLegend": "graph1_legend"
+        },
+        "CURRENCY": {{ CURRENCY|json }}
+    }</script>
+
+    <div style="margin-bottom: 1em;">
+        <div id="general_statistics">
+            <div class="well">
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Registered" %}</div>
+                    <div class="col-xs-10">{{ general.registered }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Deleted" %}</div>
+                    <div class="col-xs-10">{{ general.deleted }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Brought" %}</div>
+                    <div class="col-xs-10">{% blocktrans with brought=general.brought broughtOfRegistered=general.broughtOfRegistered|floatformat %}{{ brought }} ({{ broughtOfRegistered }}% of registered){% endblocktrans %}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Sold" %}</div>
+                    <div class="col-xs-10">{% blocktrans with sold=general.sold soldOfBrought=general.soldOfBrought|floatformat %}{{ sold }} ({{ soldOfBrought }}% of brought){% endblocktrans %}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Purchases" %}</div>
+                    <div class="col-xs-10">{{ general.purchases|length }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Vendors" %}</div>
+                    <div class="col-xs-10">{% blocktrans with vendors=general.vendors total=general.vendorsTotal %}{{ vendors }} ({{ total }} total){% endblocktrans %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock  %}

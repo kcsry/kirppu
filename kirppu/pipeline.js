@@ -109,7 +109,6 @@ module.exports.js = {
             "js/overseer/receipt_list_mode.coffee",
             "js/overseer/receipt_list.coffee",
 
-            "js/stats.coffee",
             "js/capslock_detect.coffee",
         ],
         "output_filename": "checkout.js",
@@ -143,10 +142,17 @@ module.exports.js = {
     'dygraph': {
         "source_filenames": [
             "../node_modules/dygraphs/dygraph-combined-dev.js",
+            "../node_modules/dygraphs/extras/smooth-plotter.js",
             "js/graph_loader.coffee",
         ],
         "output_filename": "dygraph-combined.js",
         "compress": true
+    },
+    'stats': {
+        "source_filenames": [
+            "js/stats.coffee",
+        ],
+        "output_filename": "stats.js"
     }
 };
 

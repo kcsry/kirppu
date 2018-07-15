@@ -10,8 +10,7 @@ from django.core.exceptions import (
     ValidationError,
 )
 import django.urls as url
-from django.db import transaction
-from django.db.models import Sum
+from django.db import transaction, models
 from django.http.response import (
     HttpResponse,
     HttpResponseBadRequest,
@@ -45,6 +44,7 @@ from .models import (
     Vendor,
     UserAdapter,
     UIText,
+    Receipt,
 )
 from .stats import ItemCountData, ItemEurosData
 from .util import get_form
@@ -689,6 +689,68 @@ def type_stats_view(request, type_id):
     })
 
 
+def _float_array(array):
+    # noinspection PyPep8Naming
+    INFINITY = float('inf')
+
+    def _float(f):
+        if f != f:
+            return "NaN"
+        elif f == INFINITY:
+            return 'Infinity'
+        elif f == -INFINITY:
+            return '-Infinity'
+        return float.__repr__(f)
+
+    line_length = 20
+
+    o = [
+        ", ".join(_float(e) for e in array[i:i + line_length])
+        for i in range(0, len(array), line_length)
+    ]
+
+    return "[\n" + ",\n".join(o) + "]"
+
+
+@ensure_csrf_cookie
+def statistical_stats_view(request):
+    brought_states = (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.COMPENSATED, Item.RETURNED)
+
+    registered = Item.objects.count()
+    brought = Item.objects.filter(state__in=brought_states).count()
+    sold = Item.objects.filter(state__in=(Item.STAGED, Item.SOLD, Item.COMPENSATED)).count()
+
+    general = {
+        "registered": registered,
+        "deleted": Item.objects.filter(hidden=True).count(),
+        "brought": brought,
+        "broughtOfRegistered": (brought * 100.0 / registered) if registered > 0 else 0,
+        "sold": sold,
+        "soldOfBrought": (sold * 100.0 / brought) if brought > 0 else 0,
+        "vendors": Vendor.objects.filter(item__state__in=brought_states).distinct().count(),
+        "vendorsTotal": Vendor.objects.count(),
+    }
+
+    compensations = Vendor.objects.filter(item__state=Item.COMPENSATED) \
+        .annotate(v_sum=models.Sum("item__price")).order_by("v_sum").values_list("v_sum", flat=True)
+    compensations = [float(e) for e in compensations]
+
+    purchases = list(
+        Receipt.objects.filter(status=Receipt.FINISHED, type=Receipt.TYPE_PURCHASE)
+        .order_by("total")
+        .values_list("total", flat=True)
+    )
+    purchases = [float(e) for e in purchases]
+
+    return render(request, "kirppu/general_stats.html", {
+        "compensations": _float_array(compensations),
+        "purchases": _float_array(purchases),
+        "checkout_active": settings.KIRPPU_CHECKOUT_ACTIVE,
+        "general": general,
+        "CURRENCY": settings.KIRPPU_CURRENCY["raw"],
+    })
+
+
 def vendor_view(request):
     """
     Render main view for vendors.
@@ -719,7 +781,7 @@ def vendor_view(request):
 
         'boxes': boxes,
         'boxes_count': len(boxes),
-        'boxes_total_price': boxed_items.aggregate(sum=Sum("price"))["sum"],
+        'boxes_total_price': boxed_items.aggregate(sum=models.Sum("price"))["sum"],
         'boxes_item_count': boxed_items.count(),
         'boxes_printed': len(list(filter(lambda i: i.is_printed(), boxes))),
 

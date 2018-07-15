@@ -5,8 +5,7 @@
 {% block title %}Kirppu - Stats{% endblock %}
 
 {% block head %}
-    <link href="{% static "kirppu/css/general.css" %}" rel="stylesheet">
-    <script src="{% static "kirppu/js/general.js" %}"></script>
+    {{ block.super }}
     <script src="{% static "kirppu/js/checkout.js" %}"></script>
     <script src="{% static "kirppu/js/dygraph-combined.js" %}"></script>
 
@@ -26,6 +25,7 @@
 {% block navbar_right %}
     {% if checkout_active %}
     <li><a href="{% url 'kirppu:checkout_view' %}" title="{% trans "Return to checkout" %}">{% trans "Checkout" %}</a></li>
+    <li><a href="{% url 'kirppu:statistical_stats_view' %}" title="{% trans "General statistics" %}">{% trans "General statistics" %}</a></li>
     {% endif %}
 {% endblock %}
 
