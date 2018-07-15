@@ -966,29 +966,17 @@ def item_mark_lost(request, code):
     return item.as_dict()
 
 
-@ajax_func('^stats/get_sales_data$', method='GET', staff_override=True)
-def stats_sales_data(request):
-    formatter = stats.SalesData(as_prices=False)
+@ajax_func('^stats/sales_data$', method='GET', staff_override=True)
+def stats_sales_data(request, prices="false"):
+    formatter = stats.SalesData(as_prices=prices == "true")
     log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
-@ajax_func('^stats/get_registration_data$', method='GET', staff_override=True)
-def stats_registration_data(request):
-    formatter = stats.RegistrationData(as_prices=False)
+@ajax_func('^stats/registration_data$', method='GET', staff_override=True)
+def stats_registration_data(request, prices="false"):
+    formatter = stats.RegistrationData(as_prices=prices == "true")
     log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
-@ajax_func('^stats/get_sales_data_prices$', method='GET', staff_override=True)
-def stats_sales_data_prices(request):
-    formatter = stats.SalesData(as_prices=True)
-    log_generator = stats.iterate_logs(formatter)
-    return StreamingHttpResponse(log_generator, content_type='text/csv')
-
-
-@ajax_func('^stats/get_registration_data_prices$', method='GET', staff_override=True)
-def stats_registration_data_prices(request):
-    formatter = stats.RegistrationData(as_prices=True)
-    log_generator = stats.iterate_logs(formatter)
-    return StreamingHttpResponse(log_generator, content_type='text/csv')

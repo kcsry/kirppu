@@ -22,35 +22,35 @@
 
 {% block navbar_right %}
     {% if checkout_active %}
-    <li><a href="{% url 'kirppu:checkout_view' %}" title="Return to checkout">Checkout</a></li>
+    <li><a href="{% url 'kirppu:checkout_view' %}" title="{% trans "Return to checkout" %}">{% trans "Checkout" %}</a></li>
     {% endif %}
 {% endblock %}
 
 {% block body %}
+{% trans "Number of items" as tlItemCount %}
+{% trans "Sum of prices" as tlPricesSum %}
     <h1>
         <span id="mode_glyph" class="glyphicon glyphicon glyphicon-signal"></span>
-        <span id="title_text">Stats</span>
+        <span id="title_text">{% trans "Stats" %}</span>
     </h1>
 
     <div id="graph1_legend"></div>
     <div id="graph1" style="width:100%; height:300px;"></div>
 
-    <p class="hidden-print">
-    <button id="graph1_items_link" class="btn btn-default btn-xs">items</button>
-        &ndash;
-    <button id="graph1_prices_link" class="btn btn-default btn-xs">prices</button>
-    </p>
+    <div class="btn-group btn-group-xs hidden-print">
+        <button type="button" id="graph1_items_link" class="btn btn-default">{{ tlItemCount }}</button>
+        <button type="button" id="graph1_prices_link" class="btn btn-default">{{ tlPricesSum }}</button>
+    </div>
 
     <p style="margin-bottom: 1.5em;"></p>
 
     <div id="graph2_legend"></div>
     <div id="graph2" style="width:100%; height:300px;"></div>
 
-    <p class="hidden-print">
-    <button id="graph2_items_link" class="btn btn-default btn-xs">items</button>
-        &ndash;
-    <button id="graph2_prices_link" class="btn btn-default btn-xs">prices</button>
-    </p>
+    <div class="btn-group btn-group-xs hidden-print">
+        <button type="button" id="graph2_items_link" class="btn btn-default">{{ tlItemCount }}</button>
+        <button type="button" id="graph2_prices_link" class="btn btn-default">{{ tlPricesSum }}</button>
+    </div>
 
     <script>
     $(document).ready(function() {
@@ -60,10 +60,10 @@
                 document.getElementById("graph1"),
                 '{% url "kirppu:api_stats_registration_data" %}',
                 {
-                    labels: ['Time', 'Registered'],
+                    labels: ["{% trans "Time" %}", "{% trans "Registered" %}"],
                     labelsDiv: 'graph1_legend',
                     legend: 'always',
-                    ylabel: 'Items',
+                    ylabel: "{{ tlItemCount }}",
                     strokeWidth: 2,
                     highlightSeriesOpts: {
                         strokeWidth: 3,
@@ -84,10 +84,11 @@
                 document.getElementById("graph2"),
                 '{% url "kirppu:api_stats_sales_data" %}',
                 {
-                    labels: ['Time', 'Brought to event', 'Unsold inventory', 'Sold inventory', 'Redeemed by vendor'],
+                    labels: ["{% trans "Time" %}", "{% trans "Brought to event" %}", "{% trans "Unsold inventory" %}",
+                        "{% trans "Sold inventory" %}", "{% trans "Redeemed by vendor" %}"],
                     labelsDiv: 'graph2_legend',
                     legend: 'always',
-                    ylabel: 'Items',
+                    ylabel: "{{ tlItemCount }}",
                     strokeWidth: 2,
                     highlightSeriesOpts: {
                         strokeWidth: 3,
@@ -105,16 +106,28 @@
         );
 
         document.getElementById('graph1_items_link').onclick = function() {
-            g1.updateOptions({file: '{% url "kirppu:api_stats_registration_data" %}', ylabel: 'Items'});
+            g1.updateOptions({
+                file: '{% url "kirppu:api_stats_registration_data" %}',
+                ylabel: "{{ tlItemCount }}"
+            });
         };
         document.getElementById('graph1_prices_link').onclick = function() {
-            g1.updateOptions({file: '{% url "kirppu:api_stats_registration_data_prices" %}', ylabel: 'Prices sum'});
+            g1.updateOptions({
+                file: '{% url "kirppu:api_stats_registration_data" %}?prices=true',
+                ylabel: "{{ tlPricesSum }}"
+            });
         };
         document.getElementById('graph2_items_link').onclick = function() {
-            g2.updateOptions({file: '{% url "kirppu:api_stats_sales_data" %}', ylabel: 'Items'});
+            g2.updateOptions({
+                file: '{% url "kirppu:api_stats_sales_data" %}',
+                ylabel: "{{ tlItemCount }}"
+            });
         };
         document.getElementById('graph2_prices_link').onclick = function() {
-            g2.updateOptions({file: '{% url "kirppu:api_stats_sales_data_prices" %}', ylabel: 'Prices sum'});
+            g2.updateOptions({
+                file: '{% url "kirppu:api_stats_sales_data" %}?prices=true',
+                ylabel: "{{ tlPricesSum }}"
+            });
         };
 
         //populateChart(g1, Api.stats_registration_data);
