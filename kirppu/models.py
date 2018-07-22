@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import RegexValidator, MinLengthValidator
 from django.db import models
-from django.db.models import Sum, F
+from django.db.models import Sum
 from django.db import transaction
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
@@ -73,6 +73,26 @@ class UserAdapterBase(object):
 
 # The actual class is found by string in settings.
 UserAdapter = import_string(settings.KIRPPU_USER_ADAPTER)
+
+
+@python_2_unicode_compatible
+class Person(models.Model):
+    """
+    Abstract person that is not User.
+    """
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    email = models.EmailField(_('email address'), blank=True)
+    phone = models.CharField(max_length=64, blank=True, null=False)
+
+    def full_name(self):
+        return u"{first_name} {last_name}".format(first_name=self.first_name, last_name=self.last_name).strip()
+
+    def __str__(self):
+        e = list(filter(lambda i: i != "", (self.full_name(), self.email, self.phone)))
+        if e:
+            return text_type(e[0])
+        return "(id=%d)" % self.id
 
 
 @python_2_unicode_compatible
@@ -240,47 +260,96 @@ class Clerk(models.Model):
 
 @python_2_unicode_compatible
 class Vendor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, null=True, on_delete=models.CASCADE)
     terms_accepted = models.DateTimeField(null=True)
 
+    class Meta:
+        unique_together = (
+            ("user", "person"),
+        )
+        permissions = (
+            ("can_switch_sub_vendor", "Can switch to created sub-Vendors"),
+            ("can_create_sub_vendor", "Can create new sub-Vendors"),
+        )
+
     def __repr__(self):
-        return u'<Vendor: {0}>'.format(text_type(self.user))
+        return u'<Vendor: {0}>'.format(text_type(self.user) +
+                                       ((" / " + text_type(self.person)) if self.person is not None else ""))
 
     def __str__(self):
-        return text_type(self.user)
+        return text_type(self.user) if self.person is None else text_type(self.person)
 
     @classmethod
-    def get_vendor(cls, user, create=True):
+    def get_vendor(cls, request):
         """
         Get the Vendor for the given user.
 
-        If `create` is truthy and a vendor does not exist, one is implicitly created.
-
+        :param request: Request object, or object with `session` (dict with user_id-key and value)
+         and `user` (User instance) attributes.
         :return: A Vendor, or None.
         :rtype: Vendor|None
         """
+        if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER and "vendor_id" in request.session:
+            match = {"id": request.session["vendor_id"]}
+        else:
+            match = {"user": request.user, "person__isnull": True}
         try:
-            return user.vendor
-        except Vendor.DoesNotExist:
-            if not create:
-                return None
-            return cls.objects.create(user=user)
+            return cls.objects.get(**match)
+        except cls.DoesNotExist:
+            return None
 
     @classmethod
-    def has_accepted(cls, user):
-        vendor = cls.get_vendor(user, create=False)
+    def get_or_create_vendor(cls, request):
+        """
+        If `create` is truthy and a vendor does not exist, one is implicitly created.
+
+        :return:
+        """
+        if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER and "vendor_id" in request.session:
+            match = {"id": request.session["vendor_id"]}
+            multi = True
+        else:
+            match = {"user": request.user, "person__isnull": True}
+            multi = False
+
+        try:
+            return cls.objects.get(**match)
+        except cls.DoesNotExist:
+            if multi:
+                raise ValueError("Cannot automatically create user in multi-vendor environment")
+            return cls.objects.create(user=request.user)
+
+    @classmethod
+    def has_accepted(cls, request):
+        vendor = cls.get_vendor(request)
         if not vendor:
             return False
         return vendor.terms_accepted is not None
 
-    as_dict = model_dict_fn(
+    _base_dict = model_dict_fn(
         'id',
         terms_accepted=lambda self: format_datetime(self.terms_accepted) if self.terms_accepted is not None else None,
+    )
+    _dict_by_user = model_dict_fn(
         username=lambda self: self.user.username,
         name=lambda self: "%s %s" % (self.user.first_name, self.user.last_name),
         email=lambda self: self.user.email,
         phone=lambda self: UserAdapter.phone(self.user),
+        __extend=_base_dict
     )
+    _dict_by_person = model_dict_fn(
+        owner=lambda self: self.user.username,
+        name=lambda self: self.person.full_name(),
+        email=lambda self: self.person.email,
+        phone=lambda self: self.person.phone,
+        __extend=_base_dict
+    )
+
+    def as_dict(self):
+        if self.person is not None:
+            return self._dict_by_person()
+        return self._dict_by_user()
 
 
 def validate_positive(value):

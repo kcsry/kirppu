@@ -1,0 +1,46 @@
+{% load i18n %}
+{% if can_create_vendor %}
+    <div class="modal fade" id="new_vendor_dialog" tabindex="-1" role="dialog" aria-labelledby="new_vendor_dialog_title"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>
+                    <h4 class="modal-title" id="new_vendor_dialog_title">{% trans "New vendor" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="new_vendor_dialog_form">
+                        <div class="form-group">
+                            <label for="first_name" class="control-label">{% trans "First name" %}</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name"/>
+                            <span class="help-block"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="last_name" class="control-label">{% trans "Last name" %}</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name"/>
+                            <span class="help-block"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="control-label">{% trans "Email" %}</label>
+                            <input type="text" class="form-control" id="email" name="email"/>
+                            <span class="help-block"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone" class="control-label">{% trans "Phone" %}</label>
+                            <input type="text" class="form-control" id="phone" name="phone"/>
+                            <span class="help-block"></span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                    <button id="new_vendor_dialog_submit" type="submit" class="btn btn-primary">{% trans "Create" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript"><!--
+    setNewVendorUrl("{% url "kirppu:create_vendor" %}")
+    //--></script>
+{% endif %}

@@ -61,6 +61,13 @@ module.exports.js = {
         "output_filename": "boxes.js",
         "compress": true,
     },
+    'vendor_front': {
+        "source_filenames": [
+            "js/vendor_select.js",
+        ],
+        "output_filename": "vendor.js",
+        "compress": true,
+    },
     'checkout': {
         "source_filenames": [
             "js/checkout/util.coffee",

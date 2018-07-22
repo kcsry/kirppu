@@ -14,8 +14,15 @@ class @VendorList extends ResultTable
     row = $("<tr>")
     row.addClass('receipt_tr_clickable')
     row.append($("<td>").text(index))
+
+    user = if vendor["username"]?
+      vendor["username"]
+    else if vendor["owner"]?
+      "(via #{vendor["owner"]})"
+
+    row.append($("<td>").text(user))
     row.append(
-      for a in ['username', 'id', 'name', 'email', 'phone']
+      for a in ['id', 'name', 'email', 'phone']
         $("<td>").text(vendor[a])
     )
     row.click(action)

@@ -142,6 +142,7 @@
 {% endblock %}
 
 {% block tail %}
+    {{ block.super }}
     <script>
         itemsConfig.url_args.code = '__placeholder__';
         itemsConfig.urls.item_add = "{% url 'kirppu:item_add' %}";

@@ -56,6 +56,7 @@ from .utils import (
     require_vendor_open,
 )
 from .templatetags.kirppu_tags import get_dataurl
+from .vendors import get_multi_vendor_values
 import pubcode
 
 
@@ -72,9 +73,9 @@ class MobileRedirect(RedirectView):
 @require_http_methods(["POST"])
 @require_vendor_open
 def item_add(request):
-    if not Vendor.has_accepted(request.user):
+    if not Vendor.has_accepted(request):
         return HttpResponseBadRequest()
-    vendor = Vendor.get_vendor(request.user)
+    vendor = Vendor.get_or_create_vendor(request)
     form = VendorItemForm(request.POST)
     if not form.is_valid():
         return HttpResponseBadRequest(form.get_any_error())
@@ -109,7 +110,7 @@ def item_add(request):
 @login_required
 @require_http_methods(["POST"])
 def item_hide(request, code):
-    vendor = Vendor.get_vendor(request.user)
+    vendor = Vendor.get_vendor(request)
     item = get_object_or_404(Item.objects, code=code, vendor=vendor)
 
     item.hidden = True
@@ -121,7 +122,7 @@ def item_hide(request, code):
 @login_required
 @require_http_methods(['POST'])
 def item_to_not_printed(request, code):
-    vendor = Vendor.get_vendor(request.user)
+    vendor = Vendor.get_vendor(request)
     item = get_object_or_404(Item.objects, code=code, vendor=vendor, box__isnull=True)
 
     if settings.KIRPPU_COPY_ITEM_WHEN_UNPRINTED:
@@ -162,7 +163,7 @@ def item_to_not_printed(request, code):
 @login_required
 @require_http_methods(["POST"])
 def item_to_printed(request, code):
-    vendor = Vendor.get_vendor(request.user)
+    vendor = Vendor.get_vendor(request)
     item = get_object_or_404(Item.objects, code=code, vendor=vendor, box__isnull=True)
 
     item.printed = True
@@ -180,7 +181,7 @@ def item_update_price(request, code):
     except ValidationError as error:
         return HttpResponseBadRequest(u' '.join(error.messages))
 
-    vendor = Vendor.get_vendor(request.user)
+    vendor = Vendor.get_vendor(request)
     item = get_object_or_404(Item.objects, code=code, vendor=vendor, box__isnull=True)
 
     if item.is_locked():
@@ -197,10 +198,10 @@ def item_update_price(request, code):
 @require_vendor_open
 def item_update_name(request, code):
     name = request.POST.get("value", "no name")
-    
+
     name = name[:80]
 
-    vendor = Vendor.get_vendor(request.user)
+    vendor = Vendor.get_vendor(request)
     item = get_object_or_404(Item.objects, code=code, vendor=vendor)
 
     if item.is_locked():
@@ -217,7 +218,7 @@ def item_update_name(request, code):
 def item_update_type(request, code):
     tag_type = request.POST.get("tag_type", None)
 
-    vendor = Vendor.get_vendor(request.user)
+    vendor = Vendor.get_vendor(request)
     item = get_object_or_404(Item.objects, code=code, vendor=vendor)
     item.type = tag_type
     item.save()
@@ -227,7 +228,7 @@ def item_update_type(request, code):
 @login_required
 @require_http_methods(["POST"])
 def all_to_print(request):
-    vendor = Vendor.get_vendor(request.user)
+    vendor = Vendor.get_vendor(request)
     items = Item.objects.filter(vendor=vendor).filter(printed=False).filter(box__isnull=True)
 
     items.update(printed=True)
@@ -239,9 +240,9 @@ def all_to_print(request):
 @require_http_methods(["POST"])
 @require_vendor_open
 def box_add(request):
-    if not Vendor.has_accepted(request.user):
+    if not Vendor.has_accepted(request):
         return HttpResponseBadRequest()
-    vendor = Vendor.get_vendor(request.user)
+    vendor = Vendor.get_vendor(request)
     form = VendorBoxForm(request.POST)
     if not form.is_valid():
         return HttpResponseBadRequest(form.get_any_error())
@@ -279,7 +280,7 @@ def box_hide(request, box_id):
 
     with transaction.atomic():
 
-        vendor = Vendor.get_vendor(request.user)
+        vendor = Vendor.get_vendor(request)
         box = get_object_or_404(Box.objects, id=box_id)
         box_vendor = box.get_vendor()
         if box_vendor.id != vendor.id:
@@ -296,7 +297,7 @@ def box_print(request, box_id):
 
     with transaction.atomic():
 
-        vendor = Vendor.get_vendor(request.user)
+        vendor = Vendor.get_vendor(request)
         box = get_object_or_404(Box.objects, id=box_id)
         box_vendor = box.get_vendor()
         if box_vendor.id != vendor.id:
@@ -322,7 +323,7 @@ def box_content(request, box_id, bar_type):
     :return: HttpResponse or HttpResponseBadRequest
     """
 
-    vendor = Vendor.get_vendor(request.user)
+    vendor = Vendor.get_vendor(request)
     boxes = Box.objects.filter(id=box_id, item__vendor=vendor, item__hidden=False).distinct()
     if boxes.count() == 0:
         raise Http404()
@@ -411,7 +412,12 @@ def get_items(request, bar_type):
     if user.is_staff and "user" in request.GET:
         user = get_object_or_404(get_user_model(), username=request.GET["user"])
 
-    vendor = Vendor.get_vendor(user, create=False)
+    vendor = Vendor.get_vendor(request)
+
+    vendor_data = get_multi_vendor_values(request)
+    if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER and user.is_staff and "user" in request.GET:
+        raise NotImplementedError  # FIXME: Decide how this should work.
+
     vendor_items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)
     items = vendor_items.filter(printed=False)
     printed_items = vendor_items.filter(printed=True)
@@ -439,6 +445,7 @@ def get_items(request, bar_type):
         'CURRENCY': settings.KIRPPU_CURRENCY,
         'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
     }
+    render_params.update(vendor_data)
 
     return render(request, "kirppu/app_items.html", render_params)
 
@@ -458,7 +465,9 @@ def get_boxes(request):
     if user.is_staff and "user" in request.GET:
         user = get_object_or_404(get_user_model(), username=request.GET["user"])
 
-    vendor = Vendor.get_vendor(user, create=False)
+    vendor = Vendor.get_vendor(request)
+    vendor_data = get_multi_vendor_values(request)
+
     boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()
 
     # Order from newest to oldest, because that way new boxes are added
@@ -482,6 +491,7 @@ def get_boxes(request):
         'CURRENCY': settings.KIRPPU_CURRENCY,
         'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
     }
+    render_params.update(vendor_data)
 
     return render(request, "kirppu/app_boxes.html", render_params)
 
@@ -687,12 +697,14 @@ def vendor_view(request):
     """
     user = request.user
 
+    vendor_data = get_multi_vendor_values(request)
     if user.is_authenticated:
-        vendor = Vendor.get_vendor(user, create=False)
+        vendor = Vendor.get_vendor(request)
         items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)
         boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()
         boxed_items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=False)
     else:
+        vendor = None
         items = []
         boxes = []
         boxed_items = Item.objects.none()
@@ -715,13 +727,14 @@ def vendor_view(request):
         'menu': _vendor_menu_contents(request),
         'CURRENCY': settings.KIRPPU_CURRENCY,
     }
+    context.update(vendor_data)
     return render(request, "kirppu/app_frontpage.html", context)
 
 
 @login_required
 @require_http_methods(["POST"])
 def accept_terms(request):
-    vendor = Vendor.get_vendor(request.user)
+    vendor = Vendor.get_or_create_vendor(request)
     if vendor.terms_accepted is None:
         vendor.terms_accepted = timezone.now()
         vendor.save()

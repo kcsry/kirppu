@@ -148,7 +148,7 @@ def _data_view(request, permit):
         vendor = permit.vendor
     else:
         try:
-            vendor = Vendor.objects.get(user_id=request.user.pk)
+            vendor = Vendor.get_vendor(request)
         except Vendor.DoesNotExist:
             if request.GET.get("type") == "txt":
                 return HttpResponse(_("Unregistered vendor."), content_type="text/plain; charset=utf-8")

@@ -299,6 +299,8 @@ KIRPPU_USE_SSO = env.bool('KIRPPU_USE_SSO', default=False)
 # If True, admin can change identity.
 KIRPPU_SU_AS_USER = "kirppuauth" in INSTALLED_APPS
 
+KIRPPU_MULTIPLE_VENDORS_PER_USER = env.bool("KIRPPU_MULTI_VENDOR", default=False)
+
 # Whether checkout functionality is active or not.
 KIRPPU_CHECKOUT_ACTIVE = env.bool('KIRPPU_CHECKOUT_ACTIVE', default=False)
 

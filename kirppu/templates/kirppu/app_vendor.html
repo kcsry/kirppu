@@ -1,6 +1,13 @@
-{% extends "kirppu/common.html" %}{% load i18n %}{% load kirppu_login %}
+{% extends "kirppu/common.html" %}{% load i18n kirppu_login staticfiles %}
 
 {% block title %}Kirppu{% endblock %}
+
+{% block head %}
+    {{ block.super }}
+    {% if can_switch_vendor %}
+        <script src="{% static "kirppu/js/vendor.js" %}"></script>
+    {% endif %}
+{% endblock %}
 
 {% block frontpage_url %}
     {% url 'kirppu:vendor_view' %}
@@ -20,6 +27,9 @@
         </li>
         {% endif %}
     {% endfor %}
+    {% block navbar_left_tail %}
+        {% include "kirppu/multivendor_change_form.html" %}
+    {% endblock %}
 {% endblock %}
 
 {% block navbar_right %}
@@ -39,4 +49,9 @@
     {% else %}
         <li><a href="{% kirppu_login_url %}">{% trans "Log in" %}</a></li>
     {% endif %}
+{% endblock %}
+
+{% block tail %}
+    {{ block.super }}
+    {% include "kirppu/multivendor_new_dialog.html" %}
 {% endblock %}

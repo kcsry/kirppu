@@ -656,26 +656,30 @@ def vendor_get(request, id=None, code=None):
 
 @ajax_func('^vendor/find$', method='GET')
 def vendor_find(request, q):
-    clauses = [Q(vendor__isnull=False)]
-
+    clauses = []
     for part in q.split():
-        clause = (
-              Q(**UserAdapter.phone_query(part))
-            | Q(username__icontains=part)
-            | Q(first_name__icontains=part)
-            | Q(last_name__icontains=part)
-            | Q(email__icontains=part)
-        )
         try:
-            clause = clause | Q(vendor__id=int(part))
+            clause = Q(id=int(part))
         except ValueError:
-            pass
+            clause = Q()
+
+        clause = clause | (
+            Q(user__username__icontains=part) |
+            Q(user__first_name__icontains=part) |
+            Q(user__last_name__icontains=part) |
+            Q(user__email__icontains=part)
+        )
+        clause = clause | (Q(person__isnull=False) & (
+            Q(person__first_name__icontains=part) |
+            Q(person__last_name__icontains=part) |
+            Q(person__email__icontains=part)
+        ))
 
         clauses.append(clause)
 
     return [
-        u.vendor.as_dict()
-        for u in get_user_model().objects.filter(*clauses).all()
+        v.as_dict()
+        for v in Vendor.objects.filter(*clauses).all()
     ]
 
 

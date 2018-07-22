@@ -30,6 +30,7 @@ from .models import (
     ItemType,
     Vendor,
     Counter,
+    Person,
     Receipt,
     ReceiptExtraRow,
     ReceiptItem,
@@ -117,12 +118,15 @@ Admin UI list column that displays user name with link to the user model itself.
 """
 _user_link = RefLinkAccessor("user", ugettext(u"User"))
 
+_person_link = RefLinkAccessor("person", ugettext(u"Person"))
+
 
 @admin.register(Vendor)
 class VendorAdmin(admin.ModelAdmin):
     ordering = ('user__first_name', 'user__last_name')
-    search_fields = ['id', 'user__first_name', 'user__last_name', 'user__username']
-    list_display = ['id', _user_link, "terms_accepted"]
+    search_fields = ['id', 'user__first_name', 'user__last_name', 'user__username',
+                     'person__first_name', 'person__last_name']
+    list_display = ['id', _user_link, _person_link, "terms_accepted"]
 
     @staticmethod
     def _can_set_user(request, obj):
@@ -139,7 +143,12 @@ class VendorAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         fields = ["user"] if obj is not None and not self._can_set_user(request, obj) else []
         fields.append("terms_accepted")
+        if not settings.KIRPPU_MULTIPLE_VENDORS_PER_USER:
+            fields.append("person")
         return fields
+
+
+admin.site.register(Person)
 
 
 class ClerkEditLink(FieldAccessor):

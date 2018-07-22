@@ -114,7 +114,7 @@
 {% endblock %}
 
 {% block tail %}
-
+    {{ block.super }}
     <script>
         boxesConfig.url_args.box_id = '__placeholder__';
         boxesConfig.urls.box_add = "{% url 'kirppu:box_add' %}";

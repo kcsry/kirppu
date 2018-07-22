@@ -32,6 +32,7 @@ from .views import (
 )
 from .checkout_api import AJAX_FUNCTIONS, checkout_js
 from .mobile import index as mobile_index, logout as mobile_logout
+from .vendors import change_vendor, create_vendor
 
 __author__ = 'jyrkila'
 
@@ -70,6 +71,10 @@ _urls = [
 
 if settings.KIRPPU_CHECKOUT_ACTIVE:  # Only activate API when checkout is active.
     _urls.append(url('^api/checkout.js$', checkout_js, name='checkout_js'))
+
+if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER:
+    _urls.append(url('^vendor/change$', change_vendor, name="change_vendor"))
+    _urls.append(url('^vendor/create$', create_vendor, name="create_vendor"))
 
 _urls.extend([
     url(func.url, func.func, name=func.view_name)

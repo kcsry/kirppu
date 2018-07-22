@@ -17,6 +17,7 @@ from .models import (
     ItemType,
     UIText,
     Vendor,
+    Person,
     ItemStateLog,
 )
 from .util import shorten_text
@@ -437,3 +438,9 @@ class VendorBoxForm(VendorItemForm):
         __extend=VendorItemForm.db_values,
         __access_fn=lambda self, value: self.cleaned_data[value],
     )
+
+
+class PersonCreationForm(forms.ModelForm):
+    class Meta:
+        model = Person
+        fields = forms.ALL_FIELDS
