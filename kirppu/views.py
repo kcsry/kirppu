@@ -410,9 +410,6 @@ def get_items(request, bar_type):
     user = request.user
     if user.is_staff and "user" in request.GET:
         user = get_object_or_404(get_user_model(), username=request.GET["user"])
-    tag_type = request.GET.get("tag", "short").lower()
-    if tag_type not in ('short', 'long'):
-        return HttpResponseBadRequest(u"Tag type not supported")
 
     vendor = Vendor.get_vendor(user, create=False)
     vendor_items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)
@@ -430,7 +427,6 @@ def get_items(request, bar_type):
         'items': items,
         'printed_items': printed_items,
         'bar_type': bar_type,
-        'tag_type': tag_type,
         'item_name_placeholder': item_name_placeholder,
 
         'profile_url': settings.PROFILE_URL,
@@ -461,9 +457,6 @@ def get_boxes(request):
     user = request.user
     if user.is_staff and "user" in request.GET:
         user = get_object_or_404(get_user_model(), username=request.GET["user"])
-    tag_type = request.GET.get("tag", "short").lower()
-    if tag_type not in ('short', 'long'):
-        return HttpResponseBadRequest(u"Tag type not supported")
 
     vendor = Vendor.get_vendor(user, create=False)
     boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()
