@@ -4,8 +4,9 @@
 kirppu/local_settings.py
 kirppu/template-strings.js
 kirppu_project/local_settings.py
-node_modules
-/KirppuVenv*/
+node_modules*
+/KirppuVenv*
+/venv*
 kirppu/static/kirppu/*
 kirppu/static_src/js/api_stub.js
 *.sqlite3
@@ -13,3 +14,5 @@ kirppu/static_src/js/api_stub.js
 .cache
 htmlcov
 .coverage
+/.idea/
+/.pytest_cache/
