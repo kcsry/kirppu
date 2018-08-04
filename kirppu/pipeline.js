@@ -142,7 +142,8 @@ module.exports.js = {
     },
     'dygraph': {
         "source_filenames": [
-            "js/dygraph-combined-dev.js"
+            "../node_modules/dygraphs/dygraph-combined-dev.js",
+            "js/graph_loader.coffee",
         ],
         "output_filename": "dygraph-combined.js",
         "compress": true

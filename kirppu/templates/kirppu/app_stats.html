@@ -79,12 +79,11 @@
 
         const g1 = new Dygraph(
                 document.getElementById("graph1"),
-                '{% url "kirppu:api_stats_registration_data" %}',
+                [[0, null]],
                 {
                     labels: ["{% trans "Time" %}", "{% trans "Registered" %}"],
                     labelsDiv: 'graph1_legend',
                     legend: 'always',
-                    ylabel: "{{ tlItemCount }}",
                     strokeWidth: 2,
                     highlightSeriesOpts: {
                         strokeWidth: 3,
@@ -100,18 +99,25 @@
                     }
                 }
         );
+        const g1Count = function() {
+            graphLoader('{% url "kirppu:api_stats_registration_data" %}', g1);
+            g1.updateOptions({ ylabel: "{{ tlItemCount }}" });
+        };
+        const g1Sum = function() {
+            graphLoader('{% url "kirppu:api_stats_registration_data" %}?prices=true', g1);
+            g1.updateOptions({ ylabel: "{{ tlPricesSum }}" });
+        };
 
         const graphColors = ["rgb(102,128,0)", "rgb(0,51,128)", "rgb(0,128,51)", "rgb(102,0,128)"];
         const g2 = new Dygraph(
                 document.getElementById("graph2"),
-                '{% url "kirppu:api_stats_sales_data" %}',
+                [[0, null, null, null, null]],
                 {
                     labels: ["{% trans "Time" %}",
                         "{{ tlBrought }}", "{{ tlUnsold }}",
                         "{{ tlSold }}", "{{ tlRedeemed }}"],
                     labelsDiv: 'graph2_legend',
                     legend: 'always',
-                    ylabel: "{{ tlItemCount }}",
                     strokeWidth: 2,
                     colors: graphColors,
                     highlightSeriesOpts: {
@@ -128,6 +134,17 @@
                     }
                 }
         );
+        const g2Count = function() {
+            graphLoader('{% url "kirppu:api_stats_sales_data" %}', g2);
+            g2.updateOptions({ ylabel: "{{ tlItemCount }}" });
+        };
+        const g2Sum = function() {
+            graphLoader('{% url "kirppu:api_stats_sales_data" %}?prices=true', g2);
+            g2.updateOptions({ ylabel: "{{ tlPricesSum }}" });
+        };
+
+        g1Count();
+        g2Count();
 
         const g1_items = $("#graph1_items_link");
         const g1_prices = $("#graph1_prices_link");
@@ -141,31 +158,19 @@
 
         g1_items.on("click", function() {
             activate(g1_items, g1_prices);
-            g1.updateOptions({
-                file: '{% url "kirppu:api_stats_registration_data" %}',
-                ylabel: "{{ tlItemCount }}"
-            });
+            g1Count();
         });
         g1_prices.on("click", function() {
             activate(g1_prices, g1_items);
-            g1.updateOptions({
-                file: '{% url "kirppu:api_stats_registration_data" %}?prices=true',
-                ylabel: "{{ tlPricesSum }}"
-            });
+            g1Sum();
         });
         g2_items.on("click", function() {
             activate(g2_items, g2_prices);
-            g2.updateOptions({
-                file: '{% url "kirppu:api_stats_sales_data" %}',
-                ylabel: "{{ tlItemCount }}"
-            });
+            g2Count();
         });
         g2_prices.on("click", function() {
             activate(g2_prices, g2_items);
-            g2.updateOptions({
-                file: '{% url "kirppu:api_stats_sales_data" %}?prices=true',
-                ylabel: "{{ tlPricesSum }}"
-            });
+            g2Sum();
         });
 
         const legend = $("#legend_content");
@@ -179,9 +184,6 @@
             html: true,
             content: legend.html()
         });
-
-        //populateChart(g1, Api.stats_registration_data);
-        //populateChart(g2, Api.stats_sales_data);
     });
     function typePopup(url) {
         window.open(url, "kirppuTypeStats",
