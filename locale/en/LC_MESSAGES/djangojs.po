@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-04 14:30+0200\n"
-"PO-Revision-Date: 2018-02-04 14:34+0200\n"
+"POT-Creation-Date: 2018-08-05 22:54+0300\n"
+"PO-Revision-Date: 2018-08-05 22:49+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -21,6 +21,17 @@ msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
 msgstr ""
 "This box has been already printed. Are you sure you want to print it again?"
+
+#, javascript-format
+msgid "= %d item"
+msgid_plural "= %d items"
+msgstr[0] "= %d item"
+msgstr[1] "= %d items"
+
+msgid "pc /"
+msgid_plural "pcs /"
+msgstr[0] "pc /"
+msgstr[1] "pcs /"
 
 msgid "sold"
 msgstr "sold"
@@ -390,6 +401,21 @@ msgstr "Click to edit…"
 
 msgid "<em>Click to edit</em>"
 msgstr "<em>Click to edit</em>"
+
+msgid "Sum"
+msgstr "Sum"
+
+msgid "Frequency"
+msgstr "Frequency"
+
+msgid "Normal distribution"
+msgstr "Normal distribution"
+
+msgid "n"
+msgstr "n"
+
+msgid "euros"
+msgstr "euros"
 
 msgid "#"
 msgstr "#"

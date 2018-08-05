@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-09 16:37+0300\n"
-"PO-Revision-Date: 2018-07-09 16:37+0200\n"
+"POT-Creation-Date: 2018-08-05 22:54+0300\n"
+"PO-Revision-Date: 2018-08-05 22:55+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -19,6 +19,9 @@ msgstr ""
 
 msgid "User"
 msgstr "User "
+
+msgid "Person"
+msgstr "Person"
 
 msgid "ID"
 msgstr "ID"
@@ -222,6 +225,15 @@ msgstr "Unregistered vendor."
 msgid "This location is not in use."
 msgstr "This location is not in use."
 
+msgid "first name"
+msgstr "first name"
+
+msgid "last name"
+msgstr "last name"
+
+msgid "email address"
+msgstr "email address"
+
 msgid "Access key value"
 msgstr "Access key value"
 
@@ -363,6 +375,9 @@ msgstr "Delete"
 msgid "Invalidate"
 msgstr "Invalidate"
 
+msgid "Sum"
+msgstr "Sum"
+
 msgid "Admin note: Registration is closed for users."
 msgstr "Admin note: Registration is closed for users."
 
@@ -372,14 +387,17 @@ msgstr "Add new box"
 msgid "Description for box label:"
 msgstr "Description for box label:"
 
-msgid "Items #:"
-msgstr "Items #:"
+msgid "Pricing:"
+msgstr "Pricing:"
+
+msgid "Bundles:"
+msgstr "Bundles:"
+
+msgid "Items:"
+msgstr "Items:"
 
 msgid "10"
 msgstr "10"
-
-msgid "Price / unit:"
-msgstr "Price / unit:"
 
 msgid "Type:"
 msgstr "Type:"
@@ -399,18 +417,29 @@ msgstr "No"
 msgid "Add box"
 msgstr "Add box"
 
+msgid "Empty"
+msgstr "Empty"
+
 msgid "Registration is closed"
 msgstr "Registration is closed"
 
 msgid "Permanently remove the box."
 msgstr "Permanently remove the box."
 
-msgid "Print"
-msgstr "Print"
+msgid "Bundles #:"
+msgstr "Bundles #:"
+
+msgid "Items #:"
+msgstr "Items #:"
 
 #, python-format
-msgid "<span class=\"price\">%(price)s</span> / unit"
-msgstr "<span class=\"price\">%(price)s</span> / unit"
+msgid "%(bundle_size)s pc / "
+msgid_plural "%(bundle_size)s pcs / "
+msgstr[0] "%(bundle_size)s pc / "
+msgstr[1] "%(bundle_size)s pcs / "
+
+msgid "Print"
+msgstr "Print"
 
 msgid "Buyer!"
 msgstr "Buyer!"
@@ -418,8 +447,11 @@ msgstr "Buyer!"
 msgid "Tell this number to the clerk."
 msgstr "Tell this number to the clerk."
 
-msgid "Vendor:"
-msgstr "Vendor:"
+#, python-format
+msgid "<span class=\"price\">%(price)s</span> / unit"
+msgid_plural "<span class=\"price\">%(price)s</span> / %(bundle_size)s pcs"
+msgstr[0] "<span class=\"price\">%(price)s</span> / unit"
+msgstr[1] "<span class=\"price\">%(price)s</span> / %(bundle_size)s pcs"
 
 msgid ""
 "This paper is attached to the box. The empty rectangle above is filled by "
@@ -427,12 +459,6 @@ msgid ""
 msgstr ""
 "This page is attached to the box. The empty rectangle above is filled by "
 "clerk when this box is brought to the market."
-
-msgid "Give this page to the clerk when bringing items."
-msgstr "Give this page to the clerk when bringing items."
-
-msgid "Price:"
-msgstr "Price:"
 
 msgid "Counter mode"
 msgstr "Counter mode"
@@ -523,6 +549,9 @@ msgstr "Suffixes:"
 msgid "1 3-5  A B  Blue"
 msgstr "1 3-5  A B  Blue"
 
+msgid "Price:"
+msgstr "Price:"
+
 msgid "Size:"
 msgstr "Size:"
 
@@ -550,6 +579,51 @@ msgstr "Switch item between printed and not printed lists."
 msgid "Toggle size."
 msgstr "Toggle size."
 
+msgid "Return to checkout"
+msgstr "Return to checkout"
+
+msgid "Checkout"
+msgstr "Checkout"
+
+msgid "General statistics"
+msgstr "General statistics"
+
+msgid "Number of items"
+msgstr "Number of items"
+
+msgid "Sum of prices"
+msgstr "Sum of prices"
+
+msgid "Unsold inventory"
+msgstr "Unsold inventory"
+
+msgid "Sold inventory"
+msgstr "Sold inventory"
+
+msgid "Redeemed by vendor"
+msgstr "Redeemed by vendor"
+
+msgid "Items cumulatively brought to the event."
+msgstr "Items cumulatively brought to the event."
+
+msgid "Items brought but not sold nor returned."
+msgstr "Items brought but not sold nor returned."
+
+msgid "Items sold but not redeemed."
+msgstr "Items sold but not redeemed."
+
+msgid "Items sold and redeemed."
+msgstr "Items sold and redeemed."
+
+msgid "Time"
+msgstr "Time"
+
+msgid "Registered"
+msgstr "Registered"
+
+msgid "Graph legend"
+msgstr "Graph legend"
+
 msgid "Number of items:"
 msgstr "Number of items:"
 
@@ -570,7 +644,6 @@ msgstr "Value type"
 msgid "Has brought items"
 msgstr "Has brought items"
 
-#| msgid "Compensated Items"
 msgid "Has uncompensated items"
 msgstr "Has uncompensated items"
 
@@ -585,6 +658,66 @@ msgstr "Log in"
 
 msgid "Box codes"
 msgstr "Box codes"
+
+msgid "Return to vendor statistics"
+msgstr "Return to vendor statistics"
+
+msgid "Compensations"
+msgstr "Compensations"
+
+msgid "Purchases"
+msgstr "Purchases"
+
+msgid "Deleted"
+msgstr "Deleted"
+
+msgid "Brought"
+msgstr "Brought"
+
+#, python-format
+msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
+msgstr "%(brought)s (%(broughtOfRegistered)s%% of registered)"
+
+#, python-format
+msgid "%(sold)s (%(soldOfBrought)s%% of brought)"
+msgstr "%(sold)s (%(soldOfBrought)s%% of brought)"
+
+msgid "Vendors"
+msgstr "Vendors"
+
+#, python-format
+msgid "%(vendors)s (%(total)s total)"
+msgstr "%(vendors)s (%(total)s total)"
+
+msgid "Vendor:"
+msgstr "Vendor:"
+
+msgid "Behalf of"
+msgstr "Behalf of"
+
+msgid "Add new…"
+msgstr "Add new…"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "New vendor"
+msgstr "New vendor"
+
+msgid "First name"
+msgstr "First name"
+
+msgid "Last name"
+msgstr "Last name"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Phone"
+msgstr "Phone"
+
+msgid "Create"
+msgstr "Create"
 
 #, python-format
 msgid ""
@@ -671,9 +804,6 @@ msgstr "Mobile"
 msgid "Checkout commands"
 msgstr "Checkout commands"
 
-msgid "Checkout"
-msgstr "Checkout"
-
 msgid "Lost and Found"
 msgstr "Lost and Found"
 
@@ -734,6 +864,12 @@ msgstr "Add %(name)s from SSO provider"
 msgid "Add unbound %(name)s"
 msgstr "Add unbound %(name)s"
 
+#~ msgid "Price / unit:"
+#~ msgstr "Price / unit:"
+
+#~ msgid "Give this page to the clerk when bringing items."
+#~ msgstr "Give this page to the clerk when bringing items."
+
 #~ msgid "Group by:"
 #~ msgstr "Group by:"
 
@@ -766,12 +902,6 @@ msgstr "Add unbound %(name)s"
 
 #~ msgid "Other item"
 #~ msgstr "Other"
-
-#~ msgid "Deleted"
-#~ msgstr "Deleted"
-
-#~ msgid "vendor"
-#~ msgstr "vendor"
 
 #~ msgid "Long"
 #~ msgstr "18 cm (bookmark)"

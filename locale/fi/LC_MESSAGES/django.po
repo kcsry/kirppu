@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-09 16:37+0300\n"
-"PO-Revision-Date: 2018-07-09 16:39+0200\n"
+"POT-Creation-Date: 2018-08-05 22:54+0300\n"
+"PO-Revision-Date: 2018-08-05 23:44+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -19,6 +19,9 @@ msgstr ""
 
 msgid "User"
 msgstr "Käyttäjä"
+
+msgid "Person"
+msgstr "Henkilö"
 
 msgid "ID"
 msgstr "ID"
@@ -223,6 +226,15 @@ msgstr "Rekisteröimätön myyjä."
 msgid "This location is not in use."
 msgstr "Tämä sivu ei ole käytössä."
 
+msgid "first name"
+msgstr "etunimi"
+
+msgid "last name"
+msgstr "sukunimi"
+
+msgid "email address"
+msgstr "sähköposti"
+
 msgid "Access key value"
 msgstr "Käyttötunnisteen arvo"
 
@@ -364,6 +376,9 @@ msgstr "Poisto"
 msgid "Invalidate"
 msgstr "Mitätöinti"
 
+msgid "Sum"
+msgstr "Summa"
+
 msgid "Admin note: Registration is closed for users."
 msgstr "Ylläpitohuomautus: Rekisteröinti on suljettu käyttäjiltä"
 
@@ -373,14 +388,17 @@ msgstr "Lisää uusi laatikko"
 msgid "Description for box label:"
 msgstr "Kuvaus laatikkoon:"
 
-msgid "Items #:"
+msgid "Pricing:"
+msgstr "Hinnoittelu:"
+
+msgid "Bundles:"
+msgstr "Nippuja:"
+
+msgid "Items:"
 msgstr "Tavaroita:"
 
 msgid "10"
 msgstr "10"
-
-msgid "Price / unit:"
-msgstr "Hinta / kpl:"
 
 msgid "Type:"
 msgstr "Tyyppi:"
@@ -400,18 +418,29 @@ msgstr "Ei"
 msgid "Add box"
 msgstr "Lisää laatikko"
 
+msgid "Empty"
+msgstr "Tyhjennä"
+
 msgid "Registration is closed"
 msgstr "Rekisteröinti on suljettu"
 
 msgid "Permanently remove the box."
 msgstr "Poista laatikko pysyvästi."
 
-msgid "Print"
-msgstr "Tulosta"
+msgid "Bundles #:"
+msgstr "Nippuja #:"
+
+msgid "Items #:"
+msgstr "Tavaroita #:"
 
 #, python-format
-msgid "<span class=\"price\">%(price)s</span> / unit"
-msgstr "<span class=\"price\">%(price)s</span> / kpl"
+msgid "%(bundle_size)s pc / "
+msgid_plural "%(bundle_size)s pcs / "
+msgstr[0] "%(bundle_size)s kpl / "
+msgstr[1] "%(bundle_size)s kpl / "
+
+msgid "Print"
+msgstr "Tulosta"
 
 msgid "Buyer!"
 msgstr "Ostaja!"
@@ -419,8 +448,11 @@ msgstr "Ostaja!"
 msgid "Tell this number to the clerk."
 msgstr "Kerro tämä numero kassalla."
 
-msgid "Vendor:"
-msgstr "Myyjä:"
+#, python-format
+msgid "<span class=\"price\">%(price)s</span> / unit"
+msgid_plural "<span class=\"price\">%(price)s</span> / %(bundle_size)s pcs"
+msgstr[0] "<span class=\"price\">%(price)s</span> / kpl"
+msgstr[1] "<span class=\"price\">%(price)s</span> / %(bundle_size)s kpl"
 
 msgid ""
 "This paper is attached to the box. The empty rectangle above is filled by "
@@ -428,12 +460,6 @@ msgid ""
 msgstr ""
 "Tämä sivu kiinnitetään laatikkoon. Kassahenkilökunta täyttää yllä olevan "
 "ruudun kirpputorilla."
-
-msgid "Give this page to the clerk when bringing items."
-msgstr "Anna tämä sivu kassahenkilökunnalle tuodessasi tavaroita."
-
-msgid "Price:"
-msgstr "Hinta:"
 
 msgid "Counter mode"
 msgstr "Kassan tila"
@@ -524,6 +550,9 @@ msgstr "Päätteet:"
 msgid "1 3-5  A B  Blue"
 msgstr "1 3-5  A B  Blue"
 
+msgid "Price:"
+msgstr "Hinta:"
+
 msgid "Size:"
 msgstr "Koko:"
 
@@ -551,6 +580,51 @@ msgstr "Siirrä tavara tulostettujen listaan tai sieltä takaisin."
 msgid "Toggle size."
 msgstr "Vaihda kokoa."
 
+msgid "Return to checkout"
+msgstr "Palaa myyntinäkymään"
+
+msgid "Checkout"
+msgstr "Kassa"
+
+msgid "General statistics"
+msgstr "Yleistilastot"
+
+msgid "Number of items"
+msgstr "Tavaroiden lukumäärä"
+
+msgid "Sum of prices"
+msgstr "Hintojen summat"
+
+msgid "Unsold inventory"
+msgstr "Myymättömät tavarat"
+
+msgid "Sold inventory"
+msgstr "Myydyt tavarat"
+
+msgid "Redeemed by vendor"
+msgstr "Hyvitetty myyjälle"
+
+msgid "Items cumulatively brought to the event."
+msgstr "Kumulatiivisesti tapahtumaan tuodut tavarat."
+
+msgid "Items brought but not sold nor returned."
+msgstr "Tuodut mutta myymättömät ja palauttamattomat tavarat."
+
+msgid "Items sold but not redeemed."
+msgstr "Myydyt mutta hyvittämättömät tavarat."
+
+msgid "Items sold and redeemed."
+msgstr "Myydyt ja hyvitetyt tavarat."
+
+msgid "Time"
+msgstr "Aika"
+
+msgid "Registered"
+msgstr "Rekisteröity"
+
+msgid "Graph legend"
+msgstr "Kuvaajien selitys"
+
 msgid "Number of items:"
 msgstr "Tavaroiden lukumäärä:"
 
@@ -570,7 +644,6 @@ msgstr "Arvon tyyppi"
 msgid "Has brought items"
 msgstr "On tuotuja tavaroita"
 
-#| msgid "Compensated Items"
 msgid "Has uncompensated items"
 msgstr "On hyvittämättömiä tavaroita"
 
@@ -585,6 +658,66 @@ msgstr "Kirjaudu sisään"
 
 msgid "Box codes"
 msgstr "Laatikkokoodit"
+
+msgid "Return to vendor statistics"
+msgstr "Palaa myyjätilastoihin"
+
+msgid "Compensations"
+msgstr "Hyvitykset"
+
+msgid "Purchases"
+msgstr "Ostokset"
+
+msgid "Deleted"
+msgstr "Poistettu"
+
+msgid "Brought"
+msgstr "Tuotu tapahtumaan"
+
+#, python-format
+msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
+msgstr "%(brought)s (%(broughtOfRegistered)s%% rekisteröidyistä)"
+
+#, python-format
+msgid "%(sold)s (%(soldOfBrought)s%% of brought)"
+msgstr "%(sold)s (%(soldOfBrought)s%% tuoduista)"
+
+msgid "Vendors"
+msgstr "Myyjät"
+
+#, python-format
+msgid "%(vendors)s (%(total)s total)"
+msgstr "%(vendors)s (%(total)s yhteensä)"
+
+msgid "Vendor:"
+msgstr "Myyjä:"
+
+msgid "Behalf of"
+msgstr "Puolesta"
+
+msgid "Add new…"
+msgstr "Lisää uusi…"
+
+msgid "Close"
+msgstr "Sulje"
+
+msgid "New vendor"
+msgstr "Uusi myyjä"
+
+msgid "First name"
+msgstr "Etunimi"
+
+msgid "Last name"
+msgstr "Sukunimi"
+
+msgid "Email"
+msgstr "Sähköposti"
+
+msgid "Phone"
+msgstr "Puhelin"
+
+msgid "Create"
+msgstr "Luo"
 
 #, python-format
 msgid ""
@@ -671,9 +804,6 @@ msgstr "Mobiili"
 msgid "Checkout commands"
 msgstr "Kassan komennot"
 
-msgid "Checkout"
-msgstr "Kassa"
-
 msgid "Lost and Found"
 msgstr "Löytötavarat"
 
@@ -734,6 +864,12 @@ msgstr "Lisää %(name)s SSO-tarjoajalta"
 msgid "Add unbound %(name)s"
 msgstr "Lisää irrallinen %(name)s"
 
+#~ msgid "Price / unit:"
+#~ msgstr "Hinta / kpl:"
+
+#~ msgid "Give this page to the clerk when bringing items."
+#~ msgstr "Anna tämä sivu kassahenkilökunnalle tuodessasi tavaroita."
+
 #~ msgid "Group by:"
 #~ msgstr "Ryhmittele:"
 
@@ -766,12 +902,6 @@ msgstr "Lisää irrallinen %(name)s"
 
 #~ msgid "Other item"
 #~ msgstr "Muu"
-
-#~ msgid "Deleted"
-#~ msgstr "Poistettu"
-
-#~ msgid "vendor"
-#~ msgstr "myyjä"
 
 #~ msgid "Long"
 #~ msgstr "18 cm (kirjanmerkki)"

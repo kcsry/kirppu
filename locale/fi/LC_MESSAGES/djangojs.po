@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-04 14:30+0200\n"
-"PO-Revision-Date: 2018-02-04 14:37+0200\n"
+"POT-Creation-Date: 2018-08-05 22:54+0300\n"
+"PO-Revision-Date: 2018-08-05 22:49+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -20,6 +20,17 @@ msgstr ""
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
 msgstr "Tämä laatikko on jo tulostettu. Haluatko tulostaa sen uudelleen?"
+
+#, javascript-format
+msgid "= %d item"
+msgid_plural "= %d items"
+msgstr[0] "= %d tavara"
+msgstr[1] "= %d tavaraa"
+
+msgid "pc /"
+msgid_plural "pcs /"
+msgstr[0] "kpl /"
+msgstr[1] "kpl /"
 
 msgid "sold"
 msgstr "myyty"
@@ -389,6 +400,21 @@ msgstr "Klikkaa muokataksesi…"
 
 msgid "<em>Click to edit</em>"
 msgstr "<em>Klikkaa muokataksesi</em>"
+
+msgid "Sum"
+msgstr "Summa"
+
+msgid "Frequency"
+msgstr "Taajuus"
+
+msgid "Normal distribution"
+msgstr "Normaalijakauma"
+
+msgid "n"
+msgstr "n"
+
+msgid "euros"
+msgstr "eurot"
 
 msgid "#"
 msgstr "#"
