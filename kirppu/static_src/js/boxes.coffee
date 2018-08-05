@@ -33,34 +33,11 @@ class BoxesConfig
 C = new BoxesConfig
 
 
-createBox = (box_id, description, item_count, item_price, vendor_id, item_type, item_adult) ->
-  # Find the hidden template element, clone it and replace the contents.
-  box = $(".box_template").clone();
-  box.removeClass("box_template");
-  box.addClass("box_short")
-
-  $('.box_description', box).text(description)
-  $('.box_count', box).text(item_count)
-  $('.box_price', box).text(item_price)
-  $('.box_type', box).text(item_type)
-
-  if item_adult == "yes"
-    $('.box_adult', box).text("K-18")
-  else
-    $('.box_adult', box).text("-")
-
-  $('.box_vendor_id', box).text(vendor_id)
-
-  $(box).attr('id', box_id)
-
-  return box
-
-
 # Add a box with name and price set to form contents.
 addBox = ->
   onSuccess = (box) ->
     $('#form-errors').empty()
-    box = createBox(box.box_id, box.description, box.item_count, box.item_price, box.vendor_id, box.item_type, box.item_adult)
+    box = $(box)
     $('#box-add-form')[0].reset();
     $('#boxes').prepend(box)
     bindBoxEvents($(box))
@@ -77,6 +54,7 @@ addBox = ->
     price: $("#box-add-price").val()
     item_type: $("#box-add-itemtype").val()
     adult: $("input[name=box-add-adult]:checked").val()
+    bundle_size: $("#box-add-bundleSize").val()
 
   $.ajax(
     url: C.urls.box_add
@@ -127,17 +105,30 @@ isPrinted = (box) ->
 
 onPriceChange = ->
   input = $(this)
-  formGroup = input.parents(".form-group")
 
   # Replace ',' with '.' in order to accept numbers with ',' as the period.
   value = input.val().replace(',', '.')
   if value > C.price_max or value < C.price_min or not Number.isConvertible(value)
-    formGroup.addClass('has-error')
+    input.addClass('has-error')
   else
-    formGroup.removeClass('has-error')
+    input.removeClass('has-error')
 
   return
 
+
+parsePositiveInt = (input) ->
+  s = input.val()
+  v = Number.parseInt(s)
+  ni = input.data("nonInitial") ? false
+
+  if Number.isNaN(v) or v <= 0
+    if ni or s != (input.attr("value") ? "")
+      input.addClass("has-error")
+    null
+  else
+    input.data("nonInitial", true)
+    input.removeClass("has-error")
+    v
 
 bindFormEvents = ->
   $('#box-add-form').bind('submit', ->
@@ -145,7 +136,63 @@ bindFormEvents = ->
     return false;
   )
 
-  $('#box-add-price').change(onPriceChange)
+  price = $("#box-add-price")
+  price.change(onPriceChange)
+
+  # Bundle- and count-related validation logic.
+  bundleSize = $("#box-add-bundleSize")  # input
+  count = $('#box-add-count')  # input
+  total = $('#box-total-item-count')  # p
+  countHeader = $("#box-add-count-label")  # label
+  countLabelItems = countHeader.data("tl-items")
+  countLabelBundles = countHeader.data("tl-bundles")
+
+  bundleSizeLabel = $("#box-add-bundleSize-postfix")
+  initialBundleSize = bundleSize.attr("value") ? 1
+
+  totalItems = () ->
+    bs = parsePositiveInt(bundleSize)
+    c = parsePositiveInt(count)
+    if bs? and c?
+      t = bs * c
+      total.text(ngettext("= %d item", "= %d items", t).replace("%d", t))
+      total.removeClass("isInvalid")
+    else
+      total.addClass("isInvalid")
+
+    if bs?
+      isBundle = bs > 1
+      prevIsBundle = countHeader.data("isBundle")
+      if not prevIsBundle? or isBundle != prevIsBundle
+        if isBundle
+          countHeader.text(countLabelBundles)
+          countHeader.data("isBundle", true)
+        else
+          countHeader.text(countLabelItems)
+          countHeader.data("isBundle", false)
+
+      bundleSizeLabel.text(ngettext("pc /", "pcs /", bs))
+
+    return
+
+  bundleSize.on("input", totalItems)
+  count.on("input", totalItems)
+
+  # Add initial value, as it is not set in the template.
+  bundleSizeLabel.text(ngettext("pc /", "pcs /", initialBundleSize))
+
+  $("#box-add-form").on("reset", () ->
+    bundleSize.data("nonInitial", false)
+    bundleSize.removeClass("has-error")
+    count.data("nonInitial", false)
+    count.removeClass("has-error")
+    countHeader.text(countLabelItems)
+    countHeader.data("isBundle", false)
+    total.text("")
+    price.removeClass("has-error")
+    bundleSizeLabel.text(ngettext("pc /", "pcs /", initialBundleSize))
+    return
+  )
 
   return
 

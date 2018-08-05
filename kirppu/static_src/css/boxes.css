@@ -44,9 +44,6 @@
 #box_content {
     width: 19cm;
 }
-.box_template {
-    display: none;
-}
 .box_container {
     width: 99.9%;
     float: left;

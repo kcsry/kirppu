@@ -363,12 +363,14 @@ class Box(models.Model):
     description = models.CharField(max_length=256)
     representative_item = models.ForeignKey("Item", on_delete=models.CASCADE, related_name="+")
     box_number = models.IntegerField(blank=True, null=True, unique=True)
+    bundle_size = models.IntegerField(default=1, help_text="How many items are sold in a bundle")
 
     def __str__(self):
         return u"{id} ({description})".format(id=self.id, description=self.description)
 
     as_public_dict = model_dict_fn(
         "description",
+        "bundle_size",
         box_id="pk",
         item_price=lambda self: text_type(self.get_price_fmt()),
         item_count=lambda self: self.get_item_count(),
@@ -532,6 +534,7 @@ class Box(models.Model):
             item_title = kwargs.pop("name")
             description = kwargs.pop("description")
             count = kwargs.pop("count")
+            bundle_size = kwargs.pop("bundle_size")
 
             representative_item = Item.new(
                 name=item_title,
@@ -539,7 +542,8 @@ class Box(models.Model):
             )
             obj = cls(*args,
                       description=description,
-                      representative_item=representative_item
+                      representative_item=representative_item,
+                      bundle_size=bundle_size,
                       )
             obj.full_clean()
             obj.save()

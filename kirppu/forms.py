@@ -429,10 +429,12 @@ class VendorBoxForm(VendorItemForm):
     description = StripField(max_length=256)
     name = None
     count = forms.IntegerField(min_value=1)
+    bundle_size = forms.IntegerField(min_value=1)
 
     db_values = model_dict_fn(
         "description",
         "count",
+        "bundle_size",
         type=None,
         name=lambda self: shorten_text(self.cleaned_data["description"], 32),
         __extend=VendorItemForm.db_values,

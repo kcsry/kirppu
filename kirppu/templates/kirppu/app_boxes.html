@@ -9,6 +9,13 @@
     <script src="{% static "kirppu/js/boxes.js" %}"></script>
     <style type="text/css">
         {% include "kirppu/currency_style.css" with class="box_price" %}
+
+        .form-control.has-error {
+            border-color: #a94442;
+        }
+        p.isInvalid {
+            text-decoration: line-through;
+        }
     </style>
 {% endblock %}
 
@@ -42,15 +49,13 @@
                         <input id="box-add-description" type="text" class="form-control" placeholder="{{ box_name_placeholder }}" />
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label for="box-add-count" class="col-sm-2 control-label">{% trans "Items #:" %}</label>
-                    <div class="col-sm-2 ">
-                        <input id="box-add-count" type="text" class="form-control" placeholder="{% trans "10" %}" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="box-add-price" class="col-sm-2 control-label">{% trans "Price / unit:" %}</label>
-                    <div class="col-sm-3"><div class="input-group">
+                    <label for="box-add-bundleSize" class="col-sm-2 control-label">{% trans "Pricing:" %}</label>
+                    <div class="col-sm-5"><div class="input-group">
+                        <input id="box-add-bundleSize" type="number" min="1" value="1" class="form-control" placeholder="1" />
+                        <div class="input-group-addon" id="box-add-bundleSize-postfix"></div>
+
                         {% if CURRENCY.html.0 %}
                         <div class="input-group-addon">{{ CURRENCY.html.0|safe }}</div>
                         {% endif %}
@@ -59,6 +64,19 @@
                         <div class="input-group-addon">{{ CURRENCY.html.1|safe }}</div>
                         {% endif %}
                     </div></div>
+                </div>
+
+                <div class="form-group">
+                    {% trans "Bundles:" as tlBundles %}
+                    {% trans "Items:" as tlItems %}
+                    <label id="box-add-count-label" for="box-add-count" class="col-sm-2 control-label" data-tl-bundles="{{ tlBundles }}" data-tl-items="{{ tlItems }}">{{ tlItems }}</label>
+                    <div class="col-sm-2">
+                        <input id="box-add-count" type="number" min="1" class="form-control" placeholder="{% trans "10" %}" />
+                    </div>
+                    <div class="col-sm-3">
+                        <p class="form-control-static" id="box-total-item-count">
+                        </p>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="box-add-itemtype" class="col-sm-2 control-label">{% trans "Type:" %}</label>
@@ -85,6 +103,7 @@
                     <div class="col-sm-offset-1 col-sm-11">
                         <div id="form-errors" class="text-danger"></div>
                         <button id="add_short_box" type="submit" class="btn btn-primary">{% trans "Add box" %}</button>
+                        <button type="reset" class="btn btn-warning btn-xs col-sm-offset-5jack off">{% trans "Empty" %}</button>
                     </div>
                 </div>
             </div>
@@ -102,13 +121,10 @@
     </div>
     {% endif %}
 
-    {# Output a single box_container as a template for javascript. #}
-    {% include 'kirppu/app_boxes_box.html' with box_type="template" description="" price="0" id="" vendor_id="" adult="" locked=False %}
-
     <div id="boxes" data-require-terms="true">
         {# Output a template container for every non-printed box user has. #}
         {% for b in boxes %}
-            {% include 'kirppu/app_boxes_box.html' with box_type="normal" box_id=b.id description=b.description price=b.get_price_fmt item_count=b.get_item_count item_type=b.get_item_type_for_display item_adult=b.get_item_adult printed=b.is_printed %}
+            {% include 'kirppu/app_boxes_box.html' with box_type="normal" box_id=b.id description=b.description item_price=b.get_price_fmt bundle_size=b.bundle_size item_count=b.get_item_count item_type=b.get_item_type_for_display item_adult=b.get_item_adult printed=b.is_printed %}
         {% endfor %}
     </div>
 {% endblock %}

@@ -269,9 +269,8 @@ def box_add(request):
 
     box_dict = box.as_public_dict()
     box_dict["vendor_id"] = vendor.id
-    response = box_dict
 
-    return HttpResponse(json.dumps(response), 'application/json')
+    return render(request, "kirppu/app_boxes_box.html", box_dict)
 
 
 @login_required

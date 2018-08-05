@@ -31,8 +31,10 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-4 box_price">{% blocktrans trimmed with price=box.get_price_fmt %}
+                <div class="col-xs-4 box_price">{% blocktrans trimmed with price=box.get_price_fmt count bundle_size=box.bundle_size %}
                     <span class="price">{{ price }}</span> / unit
+                {% plural %}
+                    <span class="price">{{ price }}</span> / {{ bundle_size }} pcs
                 {% endblocktrans %}</div>
             </div>
 

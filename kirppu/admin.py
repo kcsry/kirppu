@@ -470,7 +470,7 @@ class BoxAdmin(admin.ModelAdmin):
     inlines = [
         BoxItemAdmin,
     ]
-    readonly_fields = ['representative_item', 'get_item_type_for_display', 'get_item_adult_for_display']
+    readonly_fields = ['representative_item', 'get_item_type_for_display', 'get_item_adult_for_display', 'bundle_size']
     search_fields = ['box_number', 'description', 'representative_item__code']
     ordering = ['box_number']
     list_display = [
@@ -479,6 +479,7 @@ class BoxAdmin(admin.ModelAdmin):
         'code',
         'get_price',
         'get_item_count',
+        'bundle_size',
         RefLinkAccessor("get_vendor", ugettext("Vendor")),
     ]
     list_display_links = ['box_number', 'description']

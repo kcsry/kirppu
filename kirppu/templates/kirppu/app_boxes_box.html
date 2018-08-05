@@ -9,16 +9,15 @@
             </div>
             <div class="panel-body container box_body">
                 <div class="row">
-                    <div class="col-sm-1">{% trans "Items #:" %}</div>
+                    <div class="col-sm-1">{% if bundle_size > 1 %}{% trans "Bundles #:" %}{% else %}{% trans "Items #:" %}{% endif %}</div>
                     <div class="col-sm-1 box_count">{{ item_count }}</div>
                     <div class="col-sm-1"></div>
                     <div class="col-sm-1">{% trans "Type:" %}</div>
                     <div class="col-sm-4 box_type">{{ item_type }}</div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-1">{% trans "Price / unit:" %}</div>
-                    <div class="col-sm-1 box_price">{{ price }}</div>
-                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1">{% trans "Pricing:" %}</div>
+                    <div class="col-sm-2">{% if bundle_size > 1 %}{% blocktrans count bundle_size=bundle_size %}{{ bundle_size }} pc / {% plural %}{{ bundle_size }} pcs / {% endblocktrans %}{% endif %}<span class="box_price">{{ item_price }}</span></div>
                     <div class="col-sm-1">{% trans "Adult:" %}</div>
                     {% if item_adult == "yes" %}
                         <div class="col-sm-1 box_adult">K-18</div>
