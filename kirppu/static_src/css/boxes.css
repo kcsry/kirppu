@@ -196,12 +196,17 @@
 
 #box_content .item_adult_tag,
 #box_content .item_price,
-#box_content .item_name,
-#box_content .item_vendor_id {
+#box_content .item_name {
     display: none;
 }
 #box_content .item_container {
     border: none;
+}
+#box_content .item_vendor_id {
+    position: relative;
+    top: 0;
+    left: initial;
+    text-align: center;
 }
 
 @media screen, projection, handheld {
