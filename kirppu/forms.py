@@ -1,8 +1,7 @@
 from __future__ import unicode_literals, print_function, absolute_import
-import re
 from django import forms
-from django.core import validators
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.six import text_type
@@ -47,11 +46,7 @@ class ClerkSSOForm(forms.ModelForm):
     user = forms.CharField(
         max_length=30,
         validators=[
-            validators.RegexValidator(
-                re.compile('^[\w.@+-]+$'),
-                'Enter a valid username.',
-                'invalid'
-            )
+            AbstractUser.username_validator
         ],
         label=_("Username"),
     )
