@@ -119,7 +119,6 @@ module.exports.js = {
             "../node_modules/moment/moment.js",
             "../node_modules/moment/locale/fi.js",
             "../node_modules/nunjucks/browser/nunjucks-slim.js",
-            "../node_modules/lodash/index.js",
             "js/nunjucks-helpers.coffee",
             "js/nunjucks_trans_runtime.js",
         ],

@@ -54,7 +54,7 @@ class @VendorCompensation extends CheckoutMode
     @compensableExtras = items.extras
 
     rows = @compensableItems.slice()
-    compensableSum = _.reduce(@compensableItems, ((acc, item) -> acc + item.price), 0)
+    compensableSum = @compensableItems.reduce(((acc, item) -> acc + item.price), 0)
     provisionAmount = 0
     if @compensableExtras?
       rows.push(
@@ -158,7 +158,8 @@ class @VendorCompensation extends CheckoutMode
       @buttonForm.append(@retryButton(), @continueButton("warning", @onSkipFailed))
       errorList = $("<ul>")
       for item in @_loopResult
-        text = _.trunc(item.error.text, 100)
+        text = item.error.text
+        text = text.substr(0, 99) + if (text.length >= 100) then "…" else ""
         item = $("<li>").text("Row #{item.row_index} - #{item.code}: HTTP #{item.error.status}: #{text}")
         errorList.append(item)
       safeAlert(errorList)
@@ -196,12 +197,12 @@ class @VendorCompensation extends CheckoutMode
         items.push(item)
 
     if @compensableExtras
-      adjust = _.reduce(@compensableExtras, ((acc, item) -> acc + item.value), 0)
+      adjust = @compensableExtras.reduce(((acc, item) -> acc + item.value), 0)
     else
       adjust = 0
     @compensableItems = []
 
-    sum = _.reduce(items, ((acc, item) -> acc + item.price), 0) + adjust
+    sum = items.reduce(((acc, item) -> acc + item.price), 0) + adjust
 
     Api.item_compensate_end()
       .done((receiptCopy) =>

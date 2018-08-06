@@ -133,7 +133,7 @@ class @VendorReport extends CheckoutMode
          id: table_name
          caption: table.title()
          items: matchingItems
-         sum: _.reduce(matchingItems, ((acc, item) -> acc + item.price), 0)
+         sum: matchingItems.reduce(((acc, item) -> acc + item.price), 0)
          hidePrint: table.hidden
          isExpectedSum: table.untrustedValue
       )

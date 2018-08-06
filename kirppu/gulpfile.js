@@ -19,7 +19,6 @@ const colors = {
 const log = require("fancy-log");
 const noop = require("through2");
 
-const _ = require("lodash");
 const trans = require("./nunjucks_trans");
 
 
@@ -30,8 +29,8 @@ const DEST = "static/kirppu";
 // Compression enabled, if run with arguments: --type production
 const shouldCompress = args.type === "production";
 
-const jsHeader = "// ================ <%= index %>: <%= original %> ================\n\n";
-const cssHeader = "/* ================ <%= index %>: <%= original %> ================ */\n\n";
+const jsHeader = (ctx) => `// ================ ${ctx.index}: ${ctx.original} ================\n\n`;
+const cssHeader = (ctx) => `/* ================ ${ctx.index}: ${ctx.original} ================ */\n\n`;
 
 
 /**
@@ -41,7 +40,7 @@ const cssHeader = "/* ================ <%= index %>: <%= original %> ===========
  * @returns {Array} Prefixed source files.
  */
 const srcPrepend = function(def) {
-    return _.map(def.source_filenames, function (n) {
+    return def.source_filenames.map(function (n) {
         const resultName = path.join(SRC, n);
         try {
             fs.statSync(resultName);
@@ -56,7 +55,7 @@ const srcPrepend = function(def) {
 /**
  * Get concat:process function that adds given header to each part of concatenated file.
  *
- * @param header {string} Header template to use.
+ * @param header {function} Header template to use.
  * @returns {Function} Function for concat:process.
  */
 const fileHeader = function(header) {
@@ -67,7 +66,7 @@ const fileHeader = function(header) {
         }
         let original = /[/\\]?([^/\\]*)$/.exec(this.history[0]);
         if (original != null) original = original[1]; else original = "?";
-        return _.template(header)({file: this, index: index++, original: original}) + src;
+        return header({file: this, index: index++, original: original}) + src;
     };
 };
 
@@ -76,7 +75,7 @@ const handleError = function(err) {
     return this.emit('end');
 };
 
-const jsTasks = _.map(pipeline.js, function(def, name) {
+const jsTasks = Object.entries(pipeline.js).map(function([name, def]) {
     const taskName = "js:" + name;
     gulp.task(taskName, function() {
         return gulp.src(srcPrepend(def))
@@ -89,7 +88,7 @@ const jsTasks = _.map(pipeline.js, function(def, name) {
     return taskName;
 });
 
-const cssTasks = _.map(pipeline.css, function(def, name) {
+const cssTasks = Object.entries(pipeline.css).map(function([name, def]) {
     const taskName = "css:" + name;
     gulp.task(taskName, function() {
         return gulp.src(srcPrepend(def))
@@ -114,7 +113,7 @@ const makeNunjucks = function(opts) {
 
 const nunjucksEnv = makeNunjucks().env;
 
-const jstTasks = _.map(pipeline.jst, function(def, name) {
+const jstTasks = Object.entries(pipeline.jst).map(function([name, def]) {
     const taskName = "jst:" + name;
     const nameFn = function(file) {
         // VinylFS 1.1.0 has stem-helper.
@@ -139,9 +138,9 @@ const jstTasks = _.map(pipeline.jst, function(def, name) {
 const extractNunjucks = makeNunjucks({output: "./template-strings.js"});
 gulp.task("messages", function() {
     const srcs = [];
-    _.forEach(pipeline.jst, function(def) {
+    for (const def of Object.values(pipeline.jst)) {
         Array.prototype.push.apply(srcs, srcPrepend(def));
-    });
+    }
 
     return gulp.src(srcs)
         .pipe(gif(/\.jinja2?$/, nunjucks.precompile({
@@ -153,7 +152,7 @@ gulp.task("messages", function() {
         });
 });
 
-const staticTasks = _.map(pipeline.static, function(def, name) {
+const staticTasks = Object.entries(pipeline.static).map(function([name, def]) {
     const taskName = "static:" + name;
     gulp.task(taskName, function() {
         let _to = DEST;
@@ -187,12 +186,14 @@ gulp.task("default", gulp.series("pipeline"));
  * @returns {string|undefined|*} Pipeline group name or undefined.
  */
 const findTask = function(haystack, file) {
-    return _.findKey(haystack, function(def) {
-        // Match if 'file' ends with any source filename.
-        return _.find(def.source_filenames, function(src) {
-            return _.endsWith(_.trimLeft(file, "."), src);
-        });
-    });
+    const trimStartDots = /^\.+/;
+    const cleanedFile = file.replace(trimStartDots, "");
+    const result = Object.entries(haystack).find(([group, def]) =>
+        def.source_filenames.find((fn) =>
+            cleanedFile.endsWith(fn.replace(trimStartDots, ""))
+        )
+    );
+    return result ? result[0] : null;
 };
 
 /**
@@ -206,10 +207,10 @@ const startFileTask = function(file) {
     const filename = file.replace(/\\/g, "/");
 
     // Find first matching task from pipeline groups.
-    const task = _.find(_.map(_.keys(pipeline), function(group) {
-        const taskName = findTask(_.result(pipeline, group), filename);
-        return taskName != null ? group + ":" + taskName : null;
-    }));
+    const task = Object.entries(pipeline).map(([typeGroup, typeCfgDicts]) => {
+        const taskName = findTask(typeCfgDicts, filename);
+        return taskName != null ? `${typeGroup}:${taskName}` : null;
+    }).find((v) => v != null);
 
     if (task != null) {
         gulp.series(task)();

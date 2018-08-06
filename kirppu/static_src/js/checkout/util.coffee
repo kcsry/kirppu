@@ -158,7 +158,7 @@ class @RefreshButton
 # @param args [Object, optional] Placeholder-to-values map. Keys must be exactly one character long.
 # @return [String] Formatted string.
 @dPrintF = (format, args={}) ->
-  if not _.every(_.keys(args), (key) -> key.length == 1)
+  if not Object.keys(args).every((key) -> key.length == 1)
     throw Error("Key must be exactly one character long.")
 
   replacer = (s) ->
