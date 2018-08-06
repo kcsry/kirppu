@@ -150,6 +150,8 @@ def _data_view(request, permit):
         try:
             vendor = Vendor.get_vendor(request)
         except Vendor.DoesNotExist:
+            vendor = None
+        if vendor is None:
             if request.GET.get("type") == "txt":
                 return HttpResponse(_("Unregistered vendor."), content_type="text/plain; charset=utf-8")
             return render(request, "kirppu/vendor_status.html", {
