@@ -1,0 +1,11 @@
+{# -*- mode: django; -*- #}
+<dl class="dl-horizontal">
+    <dt>{{ text.description }}</dt>
+    <dd>{{ item.description }}</dd>
+
+    <dt><span class="glyphicon glyphicon-warning-sign text-warning"></span> {{ text.pricing }}</dt>
+    <dd>{{ text.bundle_size }} / <span class="price">{{ item.item_price.formatCents() }}</span></dd>
+
+    <dt>{{ text.box_number }}</dt>
+    <dd>{{ item.box_number }}</dd>
+</dl>

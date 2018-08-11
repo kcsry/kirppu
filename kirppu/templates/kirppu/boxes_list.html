@@ -27,6 +27,13 @@
             top: 0;
             left: 0.5cm;
         }
+        .item_price {
+            position: absolute;
+            margin: 0;
+            bottom: 3em;
+            left: 0.5cm;
+            font-size: initial;
+        }
         .item_adult_tag {
             top: initial;
             bottom: 0.7cm;
@@ -49,6 +56,11 @@
             <div class="barcode_container barcode_container_{{ i.code|length }}_2">
                 <img class="barcode_img barcode_img_{{ i.code|length }}_2" src="{{ i.data_url }}" alt="Barcode: {{ i.code }}" />
                 <div class="item_extra_code">{{ i.code }}</div>
+            </div>
+            <div class="item_price">
+            {% if i.bundle_size > 1 %}{% blocktrans with item_price=i.price|format_price count bundle_size=i.bundle_size %}{{ bundle_size }} pc / {{ item_price }}{% plural %}{{ bundle_size }} pcs / {{ item_price }}{% endblocktrans %}{% else %}
+                {{ i.price|format_price }}
+            {% endif %}
             </div>
             {% if i.adult == "yes" %}
                 <div class="item_adult_tag">K-18</div>

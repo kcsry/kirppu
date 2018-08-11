@@ -42,9 +42,10 @@ class @ItemCheckInMode extends ItemCheckoutMode
   _onAddItem: (data, status, in_box=false) =>
     if status == 200
       if data.box?
+        countText = if data.box.bundle_size > 1 then gettext("Box bundle count: %d") else gettext("Box item count: %d")
         row = @createRow(@itemIndex,
           dPrintF(gettext("no. %d"), d: data.box.box_number),
-          dPrintF(gettext("Box item count: %d"), d: data.box.item_count),
+          dPrintF(countText, d: data.box.item_count),
           "")
         @receipt.body.prepend(row)
         row = @createRow(@itemIndex++, data.code, data.box.description,
@@ -67,13 +68,18 @@ class @ItemCheckInMode extends ItemCheckoutMode
     # Accepted, but not done.
     dlg = new Dialog()
     dlg.title.text(gettext("Mark the box number"))
+    bundle_size = data.box.bundle_size
     body = $ Templates.render("box_check_in_dialog",
       item: data
       text:
         description: gettext("description")
         code: gettext("code")
-        count: pgettext("count of items", "items in the box")
+        count: if bundle_size > 1 then gettext("count of bundles") \
+          else pgettext("count of items", "items in the box")
         box_number: gettext("box number")
+        pricing: gettext("pricing")
+        bundle_size: if bundle_size > 1 then ngettext("%i pc", "%i pcs", bundle_size).replace("%i", bundle_size) \
+          else ""
     )
     dlg.body.append(body)
 

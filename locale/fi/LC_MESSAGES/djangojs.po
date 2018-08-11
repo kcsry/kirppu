@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-05 22:54+0300\n"
-"PO-Revision-Date: 2018-08-05 22:49+0200\n"
+"POT-Creation-Date: 2018-08-12 11:08+0300\n"
+"PO-Revision-Date: 2018-08-12 11:12+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -135,12 +135,17 @@ msgid "Error: %s"
 msgstr "Virhe: %s"
 
 #, javascript-format
-msgid "no. %d"
-msgstr "no. %d"
+#| msgid "Box item count: %d"
+msgid "Box bundle count: %d"
+msgstr "Laatikon nippujen määrä: %d"
 
 #, javascript-format
 msgid "Box item count: %d"
 msgstr "Laatikon tavaroiden määrä: %d"
+
+#, javascript-format
+msgid "no. %d"
+msgstr "no. %d"
 
 #, javascript-format
 msgid "á %s"
@@ -152,12 +157,24 @@ msgstr "Merkitse laatikon numero"
 msgid "description"
 msgstr "kuvaus"
 
+msgid "count of bundles"
+msgstr "nippujen lukumäärä"
+
 msgctxt "count of items"
 msgid "items in the box"
 msgstr "tavaraa laatikossa"
 
 msgid "box number"
 msgstr "laatikon numero"
+
+#| msgid "price"
+msgid "pricing"
+msgstr "hinnoittelu"
+
+msgid "%i pc"
+msgid_plural "%i pcs"
+msgstr[0] "%i kpl"
+msgstr[1] "%i kpl"
 
 msgid "Cancel"
 msgstr "Peru"
@@ -269,6 +286,39 @@ msgstr "Kuitin tulostus epäonnistui!"
 
 msgid "Cannot logout while receipt is active!"
 msgstr "Ei voi kirjautua ulos kuitin käsittelyn aikana!"
+
+msgid "No that many available items left."
+msgstr "Jäljellä ei ole niin montaa tavaraa."
+
+msgid "%i bundle"
+msgid_plural "%i bundles"
+msgstr[0] "%i nippu"
+msgstr[1] "%i nippua"
+
+msgid "Incorrect amount of items to sell as bundle"
+msgstr "Virheellinen määrä tavaroita myytäväksi nipussa"
+
+#| msgid "= %d item"
+#| msgid_plural "= %d items"
+msgid "%i item"
+msgid_plural "%i items"
+msgstr[0] "%i tavara"
+msgstr[1] "%i tavaraa"
+
+msgid "Confirm box allocation"
+msgstr "Vahvista laatikon varaus"
+
+msgid "{warningIcon} <u>{bundles}</u> = {items} = {price}"
+msgstr "{warningIcon} <u>{bundles}</u> = {items} = {price}"
+
+msgid "{warningIcon} {bundles} = <u>{items}</u> = {price}"
+msgstr "{warningIcon} {bundles} = <u>{items}</u> = {price}"
+
+#, javascript-format
+msgid "%f bundle"
+msgid_plural "%f bundles"
+msgstr[0] "%f nippu"
+msgstr[1] "%f nippua"
 
 msgid "Total"
 msgstr "Yhteensä"

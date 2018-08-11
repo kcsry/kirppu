@@ -172,3 +172,14 @@ class @RefreshButton
 
   replaceExp = new RegExp("%.", 'g')
   return format.replace(replaceExp, replacer)
+
+
+@mPrintF = (format, args={}) ->
+  replacer = (m, val) ->
+    if val of args
+      return args[val]
+    else
+      return ""
+
+  replaceExp = new RegExp("{(\\w+)}", "g")
+  return format.replace(replaceExp, replacer)

@@ -161,6 +161,7 @@ module.exports.jst = {
             "jst/item_report_table.jinja2",
             "jst/box_check_in_dialog.jinja2",
             "jst/box_report_table.jinja2",
+            "jst/box_sell_allocation_dialog.jinja2",
             "jst/vendor_info.jinja2",
             "jst/item_receipt_table.jinja2",
             "jst/item_receipt_table_row.jinja2",

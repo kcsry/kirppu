@@ -74,13 +74,17 @@ class @CounterMode extends ItemCheckoutMode
 
     box = @_match_box_exp(code)
     if box
-      if not @_receipt.isActive()
-        Api.box_find(box_number: box.number).then(
-          () => @startReceipt(null, box)
-          (jqXHR) => @_onInitialItemFailed(jqXHR, null, box)
-        )
-      else
-        @reserveItem(null, box)
+      op = new BoxReservationOperation((result, args) =>
+        if result == "ok"
+          if not @_receipt.isActive()
+            @startReceipt(null, args.requestBox)
+          else
+            @reserveItem(null, args.requestBox)
+        else if result == "error"
+          @_onInitialItemFailed(args.jqXHR, null, args.requestBox)
+        else console.error("Invalid result code " + result + ": " + args)
+      )
+      op.start(box)
 
     else
 
@@ -419,3 +423,115 @@ class ReceiptData
   end: (data=null) ->
     @active = false
     @data = data
+
+
+class BoxReservationOperation
+  constructor: (@listener) ->
+
+  start: (requestBox) ->
+    Api.box_find(box_number: requestBox.number).then(
+      (box) => @_checkBoxSize(box, requestBox)
+      (jqXHR) => @listener("error",
+        jqXHR: jqXHR
+        requestBox: requestBox
+      )
+    )
+
+  _checkBoxSize: (box, requestBox) =>
+    if box.bundle_size == 1
+      @listener("ok",
+        requestBox: requestBox
+        box: box
+      )
+      return
+
+    hasRequestCount = requestBox.item_count?
+    requestCount = requestBox.item_count ? 1
+
+    itemCount1 = box.bundle_size * requestCount
+    if box.available < itemCount1
+      warning1 = @_warningSignHtml
+      bClass1 = "danger"
+      title1 = gettext("No that many available items left.")
+    else
+      warning1 = ""
+      bClass1 = "warning"
+      title1 = ngettext("%i bundle", "%i bundles", requestCount).replace("%i", requestCount)
+
+    itemCount2 = requestCount
+    bundleCount = requestCount/box.bundle_size
+    isBundleCountRounded = false
+    if bundleCount != Math.round(bundleCount)
+      warning2 = @_warningSignHtml
+      bundleCount = Math.round(bundleCount * 100)/100  # TODO: use roundTo
+      bClass2 = "danger"
+      title2 = gettext("Incorrect amount of items to sell as bundle")
+      isBundleCountRounded = true
+    else if box.available < bundleCount
+      warning2 = @_warningSignHtml
+      bClass2 = "danger"
+      title2 = gettext("No that many available items left.")
+    else
+      warning2 = ""
+      bClass2 = "warning"
+      title2 = ngettext("%i item", "%i items", requestCount).replace("%i", requestCount)
+
+    dialog = new Dialog()
+    dialog.title.text(gettext("Confirm box allocation"))
+    table = Templates.render("box_sell_allocation_dialog",
+      item: box
+      request: requestBox
+      text:
+        description: gettext("description")
+        pricing: gettext("pricing")
+        box_number: gettext("box number")
+        bundle_size: ngettext("%i pc", "%i pcs", box.bundle_size).replace("%i", box.bundle_size)
+    )
+    dialog.body.append(table)
+
+    btn1 = dialog.addDismissButton(bClass1).html(mPrintF(gettext("{warningIcon} <u>{bundles}</u> = {items} = {price}"),
+      warningIcon: warning1
+      bundles: ngettext("%i bundle", "%i bundles", requestCount).replace("%i", requestCount)
+      items: ngettext("%i item", "%i items", itemCount1).replace("%i", itemCount1)
+      price: displayPrice(requestCount * box.item_price)
+    ).trim())
+    btn1.attr("title", title1)
+    if warning1
+      btn1.attr("disabled", "disabled")
+    else
+      btn1.click(() =>
+        @listener("ok",
+          requestBox: requestBox
+          box: box
+        )
+      )
+
+    if hasRequestCount
+      btn2 = dialog.addDismissButton(bClass2).html(mPrintF(gettext("{warningIcon} {bundles} = <u>{items}</u> = {price}"),
+        warningIcon: warning2
+        bundles: ngettext("%f bundle", "%f bundles", bundleCount).replace("%f", bundleCount)
+        items: ngettext("%i item", "%i items", itemCount2).replace("%i", itemCount2)
+        price: if isBundleCountRounded then "?" else displayPrice(bundleCount * box.item_price)
+      ).trim())
+      btn2.attr("title", title2)
+      if warning2
+        btn2.attr("disabled", "disabled")
+      else
+        btn2.click(() =>
+          alteredBox = Object.assign({}, requestBox,
+            item_count: bundleCount
+          )
+          @listener("ok",
+            requestBox: alteredBox
+            box: box
+          )
+        )
+
+    dialog.addNegative().text(gettext("Cancel"))
+
+    dialog.show(
+      keyboard: false
+      backdrop: "static"
+    )
+
+  _warningSignHtml: '<span class="glyphicon glyphicon-warning-sign"> </span>'

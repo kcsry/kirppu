@@ -6,6 +6,14 @@
     <dt>{{ text.count }}</dt>
     <dd>{{ item.box.item_count }}</dd>
 
+    {% if item.box.bundle_size > 1 %}
+        <dt><span class="glyphicon glyphicon-warning-sign text-warning"></span> {{ text.pricing }}</dt>
+        <dd>{{ text.bundle_size }} / <span class="price">{{ item.price.formatCents() }}</span></dd>
+    {% else %}
+        <dt>{{ text.pricing }}</dt>
+        <dd><span class="price">{{ item.price.formatCents() }}</span></dd>
+    {% endif %}
+
     <dt>{{ text.code }}</dt>
     <dd>{{ item.code }}</dd>
 

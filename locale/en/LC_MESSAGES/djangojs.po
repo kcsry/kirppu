@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-05 22:54+0300\n"
-"PO-Revision-Date: 2018-08-05 22:49+0200\n"
+"POT-Creation-Date: 2018-08-12 11:08+0300\n"
+"PO-Revision-Date: 2018-08-12 11:09+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -136,12 +136,17 @@ msgid "Error: %s"
 msgstr "Error: %s"
 
 #, javascript-format
-msgid "no. %d"
-msgstr "no. %d"
+#| msgid "Box item count: %d"
+msgid "Box bundle count: %d"
+msgstr "Box bundle count: %d"
 
 #, javascript-format
 msgid "Box item count: %d"
 msgstr "Box item count: %d"
+
+#, javascript-format
+msgid "no. %d"
+msgstr "no. %d"
 
 #, javascript-format
 msgid "á %s"
@@ -153,12 +158,24 @@ msgstr "Mark the box number"
 msgid "description"
 msgstr "description"
 
+msgid "count of bundles"
+msgstr "count of bundles"
+
 msgctxt "count of items"
 msgid "items in the box"
 msgstr "items in the box"
 
 msgid "box number"
 msgstr "box number"
+
+#| msgid "price"
+msgid "pricing"
+msgstr "pricing"
+
+msgid "%i pc"
+msgid_plural "%i pcs"
+msgstr[0] "%i pc"
+msgstr[1] "%i pcs"
 
 msgid "Cancel"
 msgstr "Cancel"
@@ -270,6 +287,39 @@ msgstr "Error printing receipt!"
 
 msgid "Cannot logout while receipt is active!"
 msgstr "Cannot logout while receipt is active!"
+
+msgid "No that many available items left."
+msgstr "No that many available items left."
+
+msgid "%i bundle"
+msgid_plural "%i bundles"
+msgstr[0] "%i bundle"
+msgstr[1] "%i bundles"
+
+msgid "Incorrect amount of items to sell as bundle"
+msgstr "Incorrect amount of items to sell as bundle"
+
+#| msgid "= %d item"
+#| msgid_plural "= %d items"
+msgid "%i item"
+msgid_plural "%i items"
+msgstr[0] "%i item"
+msgstr[1] "%i items"
+
+msgid "Confirm box allocation"
+msgstr "Confirm box allocation"
+
+msgid "{warningIcon} <u>{bundles}</u> = {items} = {price}"
+msgstr "{warningIcon} <u>{bundles}</u> = {items} = {price}"
+
+msgid "{warningIcon} {bundles} = <u>{items}</u> = {price}"
+msgstr "{warningIcon} {bundles} = <u>{items}</u> = {price}"
+
+#, javascript-format
+msgid "%f bundle"
+msgid_plural "%f bundles"
+msgstr[0] "%f bundle"
+msgstr[1] "%f bundles"
 
 msgid "Total"
 msgstr "Total"
