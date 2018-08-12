@@ -558,6 +558,7 @@ def get_boxes_codes(request, bar_type):
             "vendor_id": r.vendor_id,
             "price": r.price_fmt,
             "bundle_size": box.bundle_size,
+            "box_number": box.box_number,
         })
 
     return render(request, "kirppu/boxes_list.html", {

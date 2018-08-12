@@ -39,6 +39,16 @@
             bottom: 0.7cm;
             left: 0.5cm;
         }
+        .box_number {
+            position: absolute;
+            right: 0.4em;
+            bottom: 0.2em;
+            font-size: 170%;
+        }
+
+        .item_short .barcode_container {
+            margin-right: 3em;
+        }
 
         {# "Notfiy" of missing css rules. #}
         .item_container .barcode_container {
@@ -53,8 +63,8 @@
     <div class="item_container item_short">
         <div class="item_body">
             <div class="item_name">{{ i.name }}</div>
-            <div class="barcode_container barcode_container_{{ i.code|length }}_2">
-                <img class="barcode_img barcode_img_{{ i.code|length }}_2" src="{{ i.data_url }}" alt="Barcode: {{ i.code }}" />
+            <div class="barcode_container barcode_container_{{ i.code|length }}_1">
+                <img class="barcode_img barcode_img_{{ i.code|length }}_1" src="{{ i.data_url }}" alt="Barcode: {{ i.code }}" />
                 <div class="item_extra_code">{{ i.code }}</div>
             </div>
             <div class="item_price">
@@ -68,6 +78,7 @@
                 <div class="item_adult_tag"></div>
             {% endif %}
             <div class="item_vendor_id">{{ i.vendor_id }}</div>
+            <div class="box_number">{{ i.box_number }}</div>
         </div>
     </div>
     {% endfor %}
