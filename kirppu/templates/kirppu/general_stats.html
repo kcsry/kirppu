@@ -74,7 +74,7 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-2 info-key">{% trans "Deleted" %}</div>
-                    <div class="col-xs-10">{{ general.deleted }}</div>
+                    <div class="col-xs-10">{% blocktrans with deleted=general.deleted deletedOfRegistered=general.deletedOfRegistered|floatformat %}{{ deleted }} ({{ deletedOfRegistered }}% of registered){% endblocktrans %}</div>
                 </div>
                 <div class="row">
                     <div class="col-xs-2 info-key">{% trans "Brought" %}</div>

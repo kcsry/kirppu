@@ -719,12 +719,14 @@ def statistical_stats_view(request):
     brought_states = (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.COMPENSATED, Item.RETURNED)
 
     registered = Item.objects.count()
+    deleted = Item.objects.filter(hidden=True).count()
     brought = Item.objects.filter(state__in=brought_states).count()
     sold = Item.objects.filter(state__in=(Item.STAGED, Item.SOLD, Item.COMPENSATED)).count()
 
     general = {
         "registered": registered,
-        "deleted": Item.objects.filter(hidden=True).count(),
+        "deleted": deleted,
+        "deletedOfRegistered": (deleted * 100.0 / registered) if registered > 0 else 0,
         "brought": brought,
         "broughtOfRegistered": (brought * 100.0 / registered) if registered > 0 else 0,
         "sold": sold,
