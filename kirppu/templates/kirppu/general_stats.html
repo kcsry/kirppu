@@ -77,8 +77,20 @@
                     <div class="col-xs-10">{% blocktrans with deleted=general.deleted deletedOfRegistered=general.deletedOfRegistered|floatformat %}{{ deleted }} ({{ deletedOfRegistered }}% of registered){% endblocktrans %}</div>
                 </div>
                 <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Printed and deleted" %}</div>
+                    <div class="col-xs-10">{{ general.printedDeleted }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Printed, not brought" %}</div>
+                    <div class="col-xs-10">{{ general.printedNotBrought }}</div>
+                </div>
+                <div class="row">
                     <div class="col-xs-2 info-key">{% trans "Brought" %}</div>
                     <div class="col-xs-10">{% blocktrans with brought=general.brought broughtOfRegistered=general.broughtOfRegistered|floatformat %}{{ brought }} ({{ broughtOfRegistered }}% of registered){% endblocktrans %}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Brought while deleted" %}</div>
+                    <div class="col-xs-10">{{ general.broughtDeleted }}</div>
                 </div>
                 <div class="row">
                     <div class="col-xs-2 info-key">{% trans "Sold" %}</div>
