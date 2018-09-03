@@ -73,8 +73,28 @@
                     <div class="col-xs-10">{{ general.registered }}</div>
                 </div>
                 <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Items in boxes" %}</div>
+                    <div class="col-xs-10">{{ general.itemsInBox }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Items separately" %}</div>
+                    <div class="col-xs-10">{{ general.itemsNotInBox }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Boxes" %}</div>
+                    <div class="col-xs-10">{{ general.registeredBoxes }}</div>
+                </div>
+                <div class="row">
                     <div class="col-xs-2 info-key">{% trans "Deleted" %}</div>
                     <div class="col-xs-10">{% blocktrans with deleted=general.deleted deletedOfRegistered=general.deletedOfRegistered|floatformat %}{{ deleted }} ({{ deletedOfRegistered }}% of registered){% endblocktrans %}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Deleted boxes" %}</div>
+                    <div class="col-xs-10">{% blocktrans with deleted=general.deletedBoxes deletedOfRegistered=general.deletedOfRegisteredBoxes|floatformat %}{{ deleted }} ({{ deletedOfRegistered }}% of registered){% endblocktrans %}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2 info-key">{% trans "Items in deleted boxes" %}</div>
+                    <div class="col-xs-10">{% blocktrans with deleted=general.itemsInDeletedBoxes deletedOfRegistered=general.itemsInDeletedBoxesOfRegistered|floatformat %}{{ deleted }} ({{ deletedOfRegistered }}% of registered){% endblocktrans %}</div>
                 </div>
                 <div class="row">
                     <div class="col-xs-2 info-key">{% trans "Printed and deleted" %}</div>

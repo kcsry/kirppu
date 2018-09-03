@@ -726,6 +726,12 @@ def statistical_stats_view(request):
     deleted_brought = Item.objects.filter(hidden=True, state__in=brought_states).count()
     printed_not_brought = Item.objects.filter(printed=True, state=Item.ADVERTISED).count()
 
+    items_in_box = Item.objects.filter(box__isnull=True).count()
+    items_not_in_box = Item.objects.filter(box__isnull=False).count()
+    registered_boxes = Box.objects.count()
+    deleted_boxes = Box.objects.filter(representative_item__hidden=True).count()
+    items_in_deleted_boxes = Item.objects.filter(box__representative_item__hidden=True).count()
+
     general = {
         "registered": registered,
         "deleted": deleted,
@@ -739,6 +745,14 @@ def statistical_stats_view(request):
         "soldOfBrought": (sold * 100.0 / brought) if brought > 0 else 0,
         "vendors": Vendor.objects.filter(item__state__in=brought_states).distinct().count(),
         "vendorsTotal": Vendor.objects.count(),
+
+        "itemsInBox": items_in_box,
+        "itemsNotInBox": items_not_in_box,
+        "registeredBoxes": registered_boxes,
+        "deletedBoxes": deleted_boxes,
+        "deletedOfRegisteredBoxes": (deleted_boxes * 100.0 / registered_boxes) if registered_boxes > 0 else 0,
+        "itemsInDeletedBoxes": items_in_deleted_boxes,
+        "itemsInDeletedBoxesOfRegistered": (items_in_deleted_boxes * 100.0 / registered) if registered > 0 else 0,
     }
 
     compensations = Vendor.objects.filter(item__state=Item.COMPENSATED) \
