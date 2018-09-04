@@ -726,8 +726,8 @@ def statistical_stats_view(request):
     deleted_brought = Item.objects.filter(hidden=True, state__in=brought_states).count()
     printed_not_brought = Item.objects.filter(printed=True, state=Item.ADVERTISED).count()
 
-    items_in_box = Item.objects.filter(box__isnull=True).count()
-    items_not_in_box = Item.objects.filter(box__isnull=False).count()
+    items_in_box = Item.objects.filter(box__isnull=False).count()
+    items_not_in_box = Item.objects.filter(box__isnull=True).count()
     registered_boxes = Box.objects.count()
     deleted_boxes = Box.objects.filter(representative_item__hidden=True).count()
     items_in_deleted_boxes = Item.objects.filter(box__representative_item__hidden=True).count()
