@@ -69,60 +69,60 @@
         <div id="general_statistics">
             <div class="well">
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Registered" %}</div>
-                    <div class="col-xs-10">{{ general.registered }}</div>
+                    <div class="col-xs-3 info-key">{% trans "Registered" %}</div>
+                    <div class="col-xs-9">{{ general.registered }}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Items in boxes" %}</div>
-                    <div class="col-xs-10">{{ general.itemsInBox }}</div>
+                    <div class="col-xs-3 info-key">{% trans "Items in boxes" %}</div>
+                    <div class="col-xs-9">{{ general.itemsInBox }}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Items separately" %}</div>
-                    <div class="col-xs-10">{{ general.itemsNotInBox }}</div>
+                    <div class="col-xs-3 info-key">{% trans "Items separately" %}</div>
+                    <div class="col-xs-9">{{ general.itemsNotInBox }}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Boxes" %}</div>
-                    <div class="col-xs-10">{{ general.registeredBoxes }}</div>
+                    <div class="col-xs-3 info-key">{% trans "Boxes" %}</div>
+                    <div class="col-xs-9">{{ general.registeredBoxes }}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Deleted" %}</div>
-                    <div class="col-xs-10">{% blocktrans with deleted=general.deleted deletedOfRegistered=general.deletedOfRegistered|floatformat %}{{ deleted }} ({{ deletedOfRegistered }}% of registered){% endblocktrans %}</div>
+                    <div class="col-xs-3 info-key">{% trans "Deleted" %}</div>
+                    <div class="col-xs-9">{% blocktrans with deleted=general.deleted deletedOfRegistered=general.deletedOfRegistered|floatformat %}{{ deleted }} ({{ deletedOfRegistered }}% of registered){% endblocktrans %}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Deleted boxes" %}</div>
-                    <div class="col-xs-10">{% blocktrans with deleted=general.deletedBoxes deletedOfRegistered=general.deletedOfRegisteredBoxes|floatformat %}{{ deleted }} ({{ deletedOfRegistered }}% of registered){% endblocktrans %}</div>
+                    <div class="col-xs-3 info-key">{% trans "Deleted boxes" %}</div>
+                    <div class="col-xs-9">{% blocktrans with deleted=general.deletedBoxes deletedOfRegistered=general.deletedOfRegisteredBoxes|floatformat %}{{ deleted }} ({{ deletedOfRegistered }}% of registered){% endblocktrans %}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Items in deleted boxes" %}</div>
-                    <div class="col-xs-10">{% blocktrans with deleted=general.itemsInDeletedBoxes deletedOfRegistered=general.itemsInDeletedBoxesOfRegistered|floatformat %}{{ deleted }} ({{ deletedOfRegistered }}% of registered){% endblocktrans %}</div>
+                    <div class="col-xs-3 info-key">{% trans "Items in deleted boxes" %}</div>
+                    <div class="col-xs-9">{% blocktrans with deleted=general.itemsInDeletedBoxes deletedOfRegistered=general.itemsInDeletedBoxesOfRegistered|floatformat %}{{ deleted }} ({{ deletedOfRegistered }}% of registered){% endblocktrans %}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Printed and deleted" %}</div>
-                    <div class="col-xs-10">{{ general.printedDeleted }}</div>
+                    <div class="col-xs-3 info-key">{% trans "Printed and deleted" %}</div>
+                    <div class="col-xs-9">{{ general.printedDeleted }}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Printed, not brought" %}</div>
-                    <div class="col-xs-10">{{ general.printedNotBrought }}</div>
+                    <div class="col-xs-3 info-key">{% trans "Printed, not brought" %}</div>
+                    <div class="col-xs-9">{{ general.printedNotBrought }}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Brought" %}</div>
-                    <div class="col-xs-10">{% blocktrans with brought=general.brought broughtOfRegistered=general.broughtOfRegistered|floatformat %}{{ brought }} ({{ broughtOfRegistered }}% of registered){% endblocktrans %}</div>
+                    <div class="col-xs-3 info-key">{% trans "Brought" %}</div>
+                    <div class="col-xs-9">{% blocktrans with brought=general.brought broughtOfRegistered=general.broughtOfRegistered|floatformat %}{{ brought }} ({{ broughtOfRegistered }}% of registered){% endblocktrans %}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Brought while deleted" %}</div>
-                    <div class="col-xs-10">{{ general.broughtDeleted }}</div>
+                    <div class="col-xs-3 info-key">{% trans "Brought while deleted" %}</div>
+                    <div class="col-xs-9">{{ general.broughtDeleted }}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Sold" %}</div>
-                    <div class="col-xs-10">{% blocktrans with sold=general.sold soldOfBrought=general.soldOfBrought|floatformat %}{{ sold }} ({{ soldOfBrought }}% of brought){% endblocktrans %}</div>
+                    <div class="col-xs-3 info-key">{% trans "Sold" %}</div>
+                    <div class="col-xs-9">{% blocktrans with sold=general.sold soldOfBrought=general.soldOfBrought|floatformat %}{{ sold }} ({{ soldOfBrought }}% of brought){% endblocktrans %}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Purchases" %}</div>
-                    <div class="col-xs-10">{{ general.purchases|length }}</div>
+                    <div class="col-xs-3 info-key">{% trans "Purchases" %}</div>
+                    <div class="col-xs-9">{{ general.purchases|length }}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-2 info-key">{% trans "Vendors" %}</div>
-                    <div class="col-xs-10">{% blocktrans with vendors=general.vendors total=general.vendorsTotal %}{{ vendors }} ({{ total }} total){% endblocktrans %}</div>
+                    <div class="col-xs-3 info-key">{% trans "Vendors" %}</div>
+                    <div class="col-xs-9">{% blocktrans with vendors=general.vendors total=general.vendorsTotal %}{{ vendors }} ({{ total }} total){% endblocktrans %}</div>
                 </div>
             </div>
         </div>
