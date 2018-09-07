@@ -1,5 +1,6 @@
 from __future__ import unicode_literals, print_function, absolute_import
 from collections import namedtuple
+from functools import wraps
 import json
 
 from django.conf import settings
@@ -381,7 +382,9 @@ def _vendor_menu_contents(request):
         manage_sub.append(fill(_(u"Clerk codes"), "kirppu:clerks"))
         manage_sub.append(fill(_(u"Lost and Found"), "kirppu:lost_and_found"))
 
-    if request.user.is_staff or UserAdapter.is_clerk(request.user):
+    if request.user.is_staff\
+            or UserAdapter.is_clerk(request.user)\
+            or request.user.has_perm("kirppu.view_statistics"):
         manage_sub.append(fill(_(u"Statistics"), "kirppu:stats_view"))
 
     if request.user.is_staff:
@@ -615,17 +618,26 @@ def overseer_view(request):
         return render(request, 'kirppu/app_overseer.html', context)
 
 
+def _statistics_access(fn):
+    @wraps(fn)
+    def inner(request, *args, **kwargs):
+        try:
+            if not request.user.has_perm("kirppu.view_statistics"):
+                ajax_util.require_user_features(counter=True, clerk=True, staff_override=True)(lambda _: None)(request)
+            # else: User has permissions, no further checks needed.
+        except ajax_util.AjaxError:
+            if settings.KIRPPU_CHECKOUT_ACTIVE:
+                return redirect('kirppu:checkout_view')
+            else:
+                raise PermissionDenied()
+        return fn(request, *args, **kwargs)
+    return inner
+
+
 @ensure_csrf_cookie
+@_statistics_access
 def stats_view(request):
     """Stats view."""
-    try:
-        ajax_util.require_user_features(counter=True, clerk=True, staff_override=True)(lambda _: None)(request)
-    except ajax_util.AjaxError:
-        if settings.KIRPPU_CHECKOUT_ACTIVE:
-            return redirect('kirppu:checkout_view')
-        else:
-            raise PermissionDenied()
-
     ic = ItemCountData(ItemCountData.GROUP_ITEM_TYPE)
     ie = ItemEurosData(ItemEurosData.GROUP_ITEM_TYPE)
     sum_name = _("Sum")
@@ -674,15 +686,8 @@ def stats_view(request):
 
 
 @ensure_csrf_cookie
+@_statistics_access
 def type_stats_view(request, type_id):
-    try:
-        ajax_util.require_user_features(counter=True, clerk=True, staff_override=True)(lambda _: None)(request)
-    except ajax_util.AjaxError:
-        if settings.KIRPPU_CHECKOUT_ACTIVE:
-            return redirect('kirppu:checkout_view')
-        else:
-            raise PermissionDenied()
-
     item_type = get_object_or_404(ItemType, id=int(type_id))
 
     return render(request, "kirppu/type_stats.html", {
@@ -715,6 +720,7 @@ def _float_array(array):
 
 
 @ensure_csrf_cookie
+@_statistics_access
 def statistical_stats_view(request):
     brought_states = (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.COMPENSATED, Item.RETURNED)
 

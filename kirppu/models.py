@@ -1069,6 +1069,11 @@ class ItemStateLog(models.Model):
             self.counter.pk if self.counter is not None else "",
         )
 
+    class Meta:
+        permissions = (
+            ("view_statistics", "Can see statistics"),
+        )
+
 
 def default_temporary_access_permit_expiry():
     return timezone.now() + timezone.timedelta(minutes=settings.KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES)
