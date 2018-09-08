@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-04 07:47+0300\n"
-"PO-Revision-Date: 2018-09-04 08:00+0200\n"
+"POT-Creation-Date: 2018-09-08 22:04+0300\n"
+"PO-Revision-Date: 2018-09-08 22:05+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -674,7 +674,6 @@ msgstr "Hyvitykset"
 msgid "Purchases"
 msgstr "Ostokset"
 
-#| msgid "Item list"
 msgid "Items in boxes"
 msgstr "Tavaroita laatikoissa"
 
@@ -688,18 +687,15 @@ msgid "Deleted"
 msgstr "Poistettu"
 
 #, python-format
-#| msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgid "%(deleted)s (%(deletedOfRegistered)s%% of registered)"
 msgstr "%(deleted)s (%(deletedOfRegistered)s%% rekisteröidyistä)"
 
-#| msgid "Deleted"
 msgid "Deleted boxes"
 msgstr "Poistettuja laatikoita"
 
 msgid "Items in deleted boxes"
 msgstr "Tavaroita poistetuissa laatikoissa"
 
-#| msgid "Items sold and redeemed."
 msgid "Printed and deleted"
 msgstr "Tulostettu ja poistettu"
 
@@ -713,7 +709,6 @@ msgstr "Tuotu tapahtumaan"
 msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgstr "%(brought)s (%(broughtOfRegistered)s%% rekisteröidyistä)"
 
-#| msgid "Brought to event"
 msgid "Brought while deleted"
 msgstr "Tuotu poistettuna"
 
@@ -727,6 +722,9 @@ msgstr "Myyjät"
 #, python-format
 msgid "%(vendors)s (%(total)s total)"
 msgstr "%(vendors)s (%(total)s yhteensä)"
+
+msgid "Vendors visited mobile view"
+msgstr "Myyjiä käynyt mobiilinäkymässä"
 
 msgid "Vendor:"
 msgstr "Myyjä:"
@@ -808,6 +806,9 @@ msgstr "Näytä tekstinä"
 
 msgid "Access key"
 msgstr "Koodiavain"
+
+msgid "Or log in regularly?"
+msgstr "Tai kirjaudu tavallisesti?"
 
 msgid "Image extension not supported"
 msgstr "Kuvatyyppi ei ole tuettu"
