@@ -1,4 +1,4 @@
-{% extends "kirppu/common.html" %}{% load i18n kirppu_login kirppu_tags%}
+{% extends "kirppu/common.html" %}{% load i18n kirppu_login kirppu_tags %}
 
 {% block title %}Kirppu{% endblock %}
 {% block body %}
@@ -26,6 +26,7 @@
                     <button type="submit" class="btn btn-primary">{% trans "Log in" %}</button>
                 </div>
             </form>
+            <a href="{% kirppu_login_url %}">{% trans "Or log in regularly?" %}</a>
         </div>
     </div>
 {% endblock %}
