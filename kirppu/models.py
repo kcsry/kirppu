@@ -263,6 +263,7 @@ class Vendor(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, null=True, on_delete=models.CASCADE)
     terms_accepted = models.DateTimeField(null=True)
+    mobile_view_visited = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (

@@ -124,6 +124,10 @@
                     <div class="col-xs-3 info-key">{% trans "Vendors" %}</div>
                     <div class="col-xs-9">{% blocktrans with vendors=general.vendors total=general.vendorsTotal %}{{ vendors }} ({{ total }} total){% endblocktrans %}</div>
                 </div>
+                <div class="row">
+                    <div class="col-xs-3 info-key">{% trans "Vendors visited mobile view" %}</div>
+                    <div class="col-xs-9">{{ general.vendorsInMobileView }}</div>
+                </div>
             </div>
         </div>
     </div>

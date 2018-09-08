@@ -160,6 +160,10 @@ def _data_view(request, permit):
                 "vendor": request.user,
             })
 
+    if not vendor.mobile_view_visited:
+        vendor.mobile_view_visited = True
+        vendor.save(update_fields=("mobile_view_visited",))
+
     items = Item.objects \
         .filter(vendor=vendor, hidden=False) \
         .select_related("box") \
