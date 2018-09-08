@@ -766,6 +766,7 @@ def statistical_stats_view(request):
         .values_list("total", flat=True)
     )
     purchases = [float(e) for e in purchases]
+    general["purchases"] = len(purchases)
 
     return render(request, "kirppu/general_stats.html", {
         "compensations": _float_array(compensations),
