@@ -1,0 +1,18 @@
+{% load i18n %}
+    <h2>{{ title }}</h2>
+    <div id="{{ id }}_legend"></div>
+    <div id="{{ id }}" style="width:100%; height:300px;"></div>
+    <div id="{{ id }}_numbers" class="well">
+        <div class="row">
+            <div class="col-xs-3 info-key">{% trans "Mean" context "Mean value, average" %}</div>
+            <div class="col-xs-9" id="{{ id }}_avg"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3 info-key">{% trans "Median" %}</div>
+            <div class="col-xs-9" id="{{ id }}_median"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3 info-key">{% trans "Standard deviation" %}</div>
+            <div class="col-xs-9" id="{{ id }}_stdev"></div>
+        </div>
+    </div>

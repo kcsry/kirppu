@@ -72,6 +72,8 @@ groupData = (data, options) ->
   return {
     frequency: frequency
     buckets: buckets
+    min: 0
+    max: lastBucket
   }
 
 
@@ -90,6 +92,19 @@ pstdev = (data, avg) ->
   for e in data
     sum += Math.pow(e - avg, 2) / count
   return Math.sqrt(sum)
+
+
+median = (data) ->
+  data = numSort(data)
+  n = data.length
+  if n == 0
+    throw new Error("Median cannot be calculated for empty array")
+
+  i = Math.floor(n / 2)
+  if n % 2 == 1
+    return data[i]
+  else
+    return (data[i - 1] + data[i]) / 2
 
 
 # Round a value to given number of decimals.
@@ -125,23 +140,59 @@ three_sigma = (sortedData) ->
 
 
 bucketedNormDist = (input, options) ->
+  # The grouped data and statistics
   grouped = groupData(input, options)
   avg = mean(input)
   dev = pstdev(input, avg)
-  dist = normalDist(grouped.buckets, avg, dev)
 
-  len = dist.length
-  mul = maxArr(grouped.frequency) / maxArr(dist) / 2
+  # Grouped data does usually have enough data points to give nice normal distribution graph.
+  # Create virtual graph with smaller buckets so that the distribution is represented more correctly.
+  denseBuckets = options.denseBuckets ? 50
+  denseBucket = (grouped.max - grouped.min) / denseBuckets
+  denseBucketArr = new Array(denseBuckets + 1)
+  denseAcc = 0
+  for i in [0..denseBuckets]
+    denseBucketArr[i] = denseAcc
+    denseAcc += denseBucket
+  denseDist = normalDist(denseBucketArr, avg, dev)
+
+  mul = maxArr(grouped.frequency) / maxArr(denseDist) / 2
+  denseLen = denseDist.length
+  denseResult = []
+  for i in [0...denseLen]
+    denseResult.push(
+      [denseBucketArr[i], denseDist[i] * mul]
+    )
+
+  len = grouped.buckets.length
+  to_dense_mul = (denseDist.length - 1) / (len - 1)
   result = []
   for i in [0...len]
+    # Lookup the value from the dense graph so that actually displayed data points are more or less with correct values
+    # and in correct position.
+    dense_pos = to_dense_mul * i
+    floor = Math.floor(dense_pos)
+    if floor == dense_pos or Math.ceil(dense_pos) >= denseLen
+      dense_value = denseResult[floor][1]
+#      console.log(i, floor, dense_pos, dense_value)
+    else
+      # Use linear regression for the value to ensure the custom-rendered graph and DG data point match.
+      v1 = denseResult[floor][1]
+      v2 = denseResult[Math.ceil(dense_pos)][1]
+      prop = dense_pos - floor
+      dense_value = v1 * (1 - prop) + v2 * prop
+#      console.log(i, floor, dense_pos, v1, v2, dense_value)
+
     result.push(
-      [grouped.buckets[i], grouped.frequency[i], roundTo(dist[i] * mul, 2)]
+      [grouped.buckets[i], grouped.frequency[i], dense_value]
     )
 
   return {
       data: result
       avg: avg
-      pstdev: pstdev
+      pstdev: dev
+      denseNormDist: denseResult
+      median: median(input)
   }
 
 
@@ -149,12 +200,19 @@ class Graph
   constructor: (@id, @legend, @options = {}) ->
     @_graph = null
     @_lines = null
+    @_denseNormDist = null
 
   _init: (dataFn, options) ->
     if not @_graph?
-      options = Object.assign(
+      series = {}
+      series[gettext("Frequency")] =
         plotter: smoothPlotter
-        underlayCallback: (c, g, a) => @_linePlot(c, g, a)
+      series[gettext("Normal distribution")] =
+        plotter: () ->
+
+      options = Object.assign(
+        underlayCallback: (c, g, a) => @_underlay(c, g, a)
+        series: series
         labelsDiv: @legend
         , @options
         , options
@@ -177,7 +235,15 @@ class Graph
       @_graph.updateOptions(options, false)
     return
 
+  setDenseNormDist: (denseNormDist = null) -> @_denseNormDist = denseNormDist
+
   setLines: (lines = null) -> @_lines = lines
+
+  _underlay: (canvas, area, g) ->
+    @_linePlot(canvas, area, g)
+    if @_denseNormDist
+      @_normPlot(canvas, area, g)
+    return
 
   _linePlot: (canvas, area, g) ->
     if not @_lines?
@@ -210,6 +276,32 @@ class Graph
 
     return
 
+  _normPlot: (canvas, area, g) ->
+
+    canvas.strokeStyle = g.colors_[1]  # fixme: constant
+    canvas.lineWidth = 1.0
+
+    prev_x = null
+    prev_y = null
+    for i in @_denseNormDist
+      x = i[0]
+      y = i[1]
+
+      if prev_x?
+        c_x = g.toDomXCoord(x)
+        c_y = g.toDomYCoord(y)
+        canvas.beginPath()
+        canvas.moveTo(prev_x, prev_y)
+        canvas.lineTo(c_x, c_y)
+        canvas.stroke()
+        prev_x = c_x
+        prev_y = c_y
+      else
+        prev_x = g.toDomXCoord(x)
+        prev_y = g.toDomYCoord(y)
+
+    return
+
 
 initBucketGraph = (id, legend, currencyFormatter, bucket) ->
   return new Graph(id, legend,
@@ -232,7 +324,9 @@ genStatsForData = (data, graph, options) ->
   bucketGraph = bucketedNormDist(data, options)
   ts = three_sigma(data)
   graph.setLines(ts)
+  graph.setDenseNormDist(bucketGraph.denseNormDist)
   graph.update(bucketGraph.data)
+  return bucketGraph
 
 
 getJson = (id) ->
@@ -248,9 +342,16 @@ initGeneralStats = (options) ->
     data = getJson(cfg.content)
     graph = initBucketGraph(cfg.graph, cfg.legend, currencyFormatter, cfg.bucket)
 
-    genStatsForData(data, graph,
+    data = genStatsForData(data, graph,
       stepSize: cfg.bucket
     )
+
+    if cfg.avg?
+      $("#" + cfg.avg).text(roundTo(data.avg, 3))
+    if cfg.stdev?
+      $("#" + cfg.stdev).text(roundTo(data.pstdev, 3))
+    if cfg.median?
+      $("#" + cfg.median).text(roundTo(data.median, 3))
 
 
 $(document).ready () ->

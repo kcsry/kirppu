@@ -42,12 +42,6 @@
         <span id="title_text">{% trans "Stats" %}</span>
     </h1>
 
-    <div id="graph1_legend"></div>
-    <div id="graph1" style="width:100%; height:300px;"></div>
-
-    <div id="graph2_legend"></div>
-    <div id="graph2" style="width:100%; height:300px;"></div>
-
     {% comment %}
     <div class="btn-group btn-group-xs hidden-print">
         <button type="button" id="graph1_compensations_link" class="btn btn-default active">{{ tlCompensations }}</button>
@@ -66,18 +60,25 @@
                 "graph": "graph2",
                 "legend": "graph2_legend",
                 "content": "compensations",
-                "bucket": 50
+                "bucket": 50,
+                "avg": "graph2_avg",
+                "median": "graph2_median",
+                "stdev": "graph2_stdev"
             },
             "purchases": {
                 "graph": "graph1",
                 "legend": "graph1_legend",
                 "content": "purchases",
-                "bucket": 2
+                "bucket": 2,
+                "avg": "graph1_avg",
+                "median": "graph1_median",
+                "stdev": "graph1_stdev"
             }
         },
         "CURRENCY": {{ CURRENCY|json }}
     }</script>
 
+    <h2>{% trans "General statistics" %}</h2>
     <div style="margin-bottom: 1em;">
         <div id="general_statistics">
             <div class="well">
@@ -144,4 +145,8 @@
             </div>
         </div>
     </div>
+
+    {% include "kirppu/general_stats_graph.html" with id="graph1" title=tlPurchases %}
+    {% include "kirppu/general_stats_graph.html" with id="graph2" title=tlCompensations %}
+
 {% endblock  %}
