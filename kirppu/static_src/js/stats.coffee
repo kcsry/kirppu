@@ -14,7 +14,7 @@ normalDist = (x, mean, std) ->
 
     for b in x
         d1 = b - mean
-        v = c1 * Math.pow(Math.E, -(d1 * d1)/c2)
+        v = c1 * Math.pow(Math.E, -(d1 * d1) / c2)
         normDist.push(v)
   else if x.length > 0
     # x has values, but std is zero.
@@ -88,14 +88,14 @@ pstdev = (data, avg) ->
   count = data.length
   sum = 0
   for e in data
-    sum += Math.pow(e - avg, 2)/count
+    sum += Math.pow(e - avg, 2) / count
   return Math.sqrt(sum)
 
 
 # Round a value to given number of decimals.
 roundTo = (value, decimals) ->
   d = Math.pow(10, decimals)
-  return Math.round(value * d)/d
+  return Math.round(value * d) / d
 
 
 # Calculate percentile A from a sorted data set.
@@ -131,7 +131,7 @@ bucketedNormDist = (input) ->
   dist = normalDist(grouped.buckets, avg, dev)
 
   len = dist.length
-  mul = maxArr(grouped.frequency)/maxArr(dist)/2
+  mul = maxArr(grouped.frequency) / maxArr(dist) / 2
   result = []
   for i in [0...len]
     result.push(
