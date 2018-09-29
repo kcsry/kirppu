@@ -124,8 +124,8 @@ three_sigma = (sortedData) ->
     percentileObj(sortedData, A)
 
 
-bucketedNormDist = (input) ->
-  grouped = groupData(input)
+bucketedNormDist = (input, options) ->
+  grouped = groupData(input, options)
   avg = mean(input)
   dev = pstdev(input, avg)
   dist = normalDist(grouped.buckets, avg, dev)
@@ -201,7 +201,7 @@ class Graph
         c_x = g.toDomXCoord(x)
         canvas.beginPath()
         canvas.moveTo(c_x, area.y)
-        canvas.lineTo(c_x, area.h)
+        canvas.lineTo(c_x, area.y + area.h)
         canvas.stroke()
         if label?
           # TODO: Maybe replace these constants with something other?
@@ -211,7 +211,7 @@ class Graph
     return
 
 
-initBucketGraph = (id, legend, currencyFormatter) ->
+initBucketGraph = (id, legend, currencyFormatter, bucket) ->
   return new Graph(id, legend,
     labels: [gettext("Sum"), gettext("Frequency"), gettext("Normal distribution")]
     labelsDiv: legend
@@ -220,7 +220,7 @@ initBucketGraph = (id, legend, currencyFormatter) ->
     xlabel: gettext("euros")
     axes:
       x:
-        valueFormatter: (i) -> return currencyFormatter(i) + " – " + currencyFormatter(i + 50)
+        valueFormatter: (i) -> return currencyFormatter(i) + " – " + currencyFormatter(i + bucket)
         axisLabelFormatter: (i) -> return currencyFormatter(i)
   )
 
@@ -228,19 +228,8 @@ createCurrencyFormatter = (fmt) ->
   return (value) -> fmt[0] + value + fmt[1]
 
 
-genStatsForData = (data, graph) ->
-  bucketGraph = bucketedNormDist(data)
-#  d = [
-#    [0, 0, 0]
-#    [5, 4, 2]
-#    [10, 6, null]
-#    [15, 4, 4]
-#    [20, 6, 5]
-#    [25, 8, null]
-#    [30, 10, null]
-#    [35, 11, null]
-#    [40, 20, 15]
-#  ]
+genStatsForData = (data, graph, options) ->
+  bucketGraph = bucketedNormDist(data, options)
   ts = three_sigma(data)
   graph.setLines(ts)
   graph.update(bucketGraph.data)
@@ -254,13 +243,14 @@ getJson = (id) ->
 
 
 initGeneralStats = (options) ->
-  compensations = getJson("compensations")
-  ids = options.ids
   currencyFormatter = createCurrencyFormatter(options.CURRENCY)
+  for _, cfg of options.graphs
+    data = getJson(cfg.content)
+    graph = initBucketGraph(cfg.graph, cfg.legend, currencyFormatter, cfg.bucket)
 
-  bucketGraph = initBucketGraph(ids.bucket, ids.bucketLegend, currencyFormatter)
-
-  genStatsForData(compensations, bucketGraph)
+    genStatsForData(data, graph,
+      stepSize: cfg.bucket
+    )
 
 
 $(document).ready () ->

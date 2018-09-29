@@ -45,6 +45,9 @@
     <div id="graph1_legend"></div>
     <div id="graph1" style="width:100%; height:300px;"></div>
 
+    <div id="graph2_legend"></div>
+    <div id="graph2" style="width:100%; height:300px;"></div>
+
     {% comment %}
     <div class="btn-group btn-group-xs hidden-print">
         <button type="button" id="graph1_compensations_link" class="btn btn-default active">{{ tlCompensations }}</button>
@@ -58,9 +61,19 @@
     <script type="application/json" data-id="purchases">{{ purchases }}</script>
     <script type="application/json" data-id="config">{
         "stats": "general",
-        "ids": {
-            "bucket": "graph1",
-            "bucketLegend": "graph1_legend"
+        "graphs": {
+            "compensations": {
+                "graph": "graph2",
+                "legend": "graph2_legend",
+                "content": "compensations",
+                "bucket": 50
+            },
+            "purchases": {
+                "graph": "graph1",
+                "legend": "graph1_legend",
+                "content": "purchases",
+                "bucket": 2
+            }
         },
         "CURRENCY": {{ CURRENCY|json }}
     }</script>
