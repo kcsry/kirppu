@@ -79,6 +79,8 @@ groupData = (data, options) ->
 
 # Return mean value of given data set.
 mean = (data) ->
+  if data.length == 0
+    throw new Error("Mean cannot be calculated for empty array")
   sum = 0
   for e in data
     sum += e
@@ -88,6 +90,8 @@ mean = (data) ->
 # Return population standard deviation of given data set.
 pstdev = (data, avg) ->
   count = data.length
+  if count == 0
+    throw new Error("Standard deviation of population cannot be calculated for empty array")
   sum = 0
   for e in data
     sum += Math.pow(e - avg, 2) / count
@@ -176,7 +180,7 @@ bucketedNormDist = (input, options) ->
       dense_value = denseResult[floor][1]
 #      console.log(i, floor, dense_pos, dense_value)
     else
-      # Use linear regression for the value to ensure the custom-rendered graph and DG data point match.
+      # Use linear interpolation for the value to ensure the custom-rendered graph and DG data point match.
       v1 = denseResult[floor][1]
       v2 = denseResult[Math.ceil(dense_pos)][1]
       prop = dense_pos - floor
@@ -340,6 +344,10 @@ initGeneralStats = (options) ->
   currencyFormatter = createCurrencyFormatter(options.CURRENCY)
   for _, cfg of options.graphs
     data = getJson(cfg.content)
+    if not data? or data.length == 0
+      $("#" + cfg.graph).text(gettext("No data"))
+      continue
+
     graph = initBucketGraph(cfg.graph, cfg.legend, currencyFormatter, cfg.bucket)
 
     data = genStatsForData(data, graph,
