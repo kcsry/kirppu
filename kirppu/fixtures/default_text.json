@@ -3,7 +3,7 @@
     "pk": 1,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h2>Kirppu</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed, adipiscing id dolor.  Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus In rutrum accumsan ultricies.</p>",
+      "text": "## Kirppu\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed, adipiscing id dolor.  Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus In rutrum accumsan ultricies.",
       "identifier": "frontpage_intro"
     }
   },
@@ -11,7 +11,7 @@
     "pk": 2,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Adding and editing</h3>\n<p>\nAdd item by filling name, price and type of your item to form below, and predd 'Add item' button. The size of the tag can be set with size-selection.\n</p>\n<p>\nMultiple similar items or even whole series can be added by using Suffix-field. For example by setting name to 'Manga' and suffix to '1-3' items named 'Manga 1', 'Manga 2' and 'Manga 3' would be added. Using the same name with suffix 'Blue Red' would add items 'Manga Blue' and 'Manga Red'.\n</p>\n<p>\nWhen you have added item, its price tag will appear in the list below form. You can edit item details by typing into the fields in the tag. By using button <span class=\"glyphicon glyphicon-resize-horizontal\"></span> within the tag you can adjust the size of the tag.\n</p>",
+      "text": "### Adding and editing\n\nAdd item by filling name, price and type of your item to form below, and press 'Add item' button. The size of the tag can be set with size-selection.\n\nMultiple similar items or even whole series can be added by using Suffix-field. For example by setting name to 'Manga' and suffix to '1-3' items named 'Manga 1', 'Manga 2' and 'Manga 3' would be added. Using the same name with suffix 'Blue Red' would add items 'Manga Blue' and 'Manga Red'.\n\nWhen you have added item, its price tag will appear in the list below form. You can edit item details by typing into the fields in the tag. By using button <glyph resize-horizontal /> within the tag you can adjust the size of the tag.",
       "identifier": "item_info1"
     }
   },
@@ -19,7 +19,7 @@
     "pk": 3,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Printing</h3>\n<p>\nYou can print price tags directly from this view by printing this page. You can do so by pressing 'Print' button. When you have printed the tags, they should be marked as printed by pressing 'Mark all as printed' button. This moves the tags to list at bottom of the page and ensures that they are not printed again if you print more later.\n</p>\n<div class=\"alert alert-danger\" role=\"alert\">Please don't copy the same tag for multiple items. Every item needs its own unique barcode!</div>\n\n<p>\nWith <span class=\"glyphicon glyphicon-sort\"></span> button you can mark a single tag to or back from printed list. Use this feature if you print tags in multiple batches, or if you print only some tags again.\n</p>",
+      "text": "### Printing\n\nYou can print price tags directly from this view by printing this page. You can do so by pressing 'Print' button. When you have printed the tags, they should be marked as printed by pressing 'Mark all as printed' button. This moves the tags to list at bottom of the page and ensures that they are not printed again if you print more later.\n\n<alertbox danger>Please don't copy the same tag for multiple items. Every item needs its own unique barcode!</alertbox>\n\nWith <glyph sort /> button you can mark a single tag to or back from printed list. Use this feature if you print tags in multiple batches, or if you print only some tags again.",
       "identifier": "item_info2"
     }
   },
@@ -27,7 +27,7 @@
     "pk": 4,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Removing</h3>\n<p>\nIf you have added excess or wrong tags, you can delete such tags by pressing <span class=\"glyphicon glyphicon-remove\"></span> button.\n</p>",
+      "text": "### Removing\n\nIf you have added excess or wrong tags, you can delete such tags by pressing <glyph remove /> button.",
       "identifier": "item_info3"
     }
   },
@@ -43,7 +43,7 @@
     "pk": 6,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Adding new boxes</h3>\n<p>Add a new box by filling the description, item prefix, the number of items, price and type to the form below. and press 'Add Box' button.</p>\n<p>The new box will appear below the form.",
+      "text": "### Adding new boxes\n\nAdd a new box by filling the description, item prefix, the number of items, price and type to the form below. and press 'Add Box' button.\n\nThe new box will appear below the form.",
       "identifier": "box_info1"
     }
   },
@@ -51,7 +51,7 @@
     "pk": 7,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Printing</h3>\n<p>You can print the contents of the box by pressing the 'Print' button. The color of the Print button is switched to gray after printing.</p>",
+      "text": "### Printing\n\nYou can print the contents of the box by pressing the 'Print' button. The color of the Print button is switched to gray after printing.",
       "identifier": "box_info2"
     }
   },
@@ -59,7 +59,7 @@
     "pk": 8,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Removing</h3>\n<p>You can delete existing boxes by pressing the <span class=\"glyphicon glyphicon-remove\"></span> button.\n</p>",
+      "text": "### Removing\n\nYou can delete existing boxes by pressing the <glyph remove /> button.",
       "identifier": "box_info3"
     }
   }

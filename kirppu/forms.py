@@ -244,6 +244,32 @@ class UITextForm(forms.ModelForm):
             "text": forms.Textarea(attrs={"cols": 100}),
         }
 
+    format_help = StaticText(
+        label=_("Text formatting"),
+        text=_("""<div style="float: left;">The text is formatted with standard Markdown syntax. Quick reference:<br/>
+# Heading<br/>
+## Subheading<br/>
+### Sub-subheading<br/>
+- Un-ordered list item<br/>
+1. Ordered list item<br/>
+*<em>text</em>*<br/>
+**<strong>text</strong>**<br/>
+[<em>Link title</em>](<em>https://...</em>)<br/>
+&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;<br/>
+&lt;glyph <em>glyph-name</em> /&gt;<br/>
+&lt;alertbox <em>alert-type</em>&gt;<em>alert text content</em>&lt;/alertbox&gt; Types: danger, warning, info, success
+</div>""")
+    )
+
+    def clean_text(self):
+        data = self.cleaned_data["text"]
+        try:
+            from .text_engine import mark_down
+            mark_down(data)
+        except ValueError as e:
+            raise ValidationError(e.args[0])
+        return data
+
 
 class ReceiptItemAdminForm(forms.ModelForm):
     price = StaticText(

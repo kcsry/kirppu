@@ -5,3 +5,4 @@ django~=2.0.0
 pillow~=5.2.0
 pubcode>=1.1.0
 pytz~=2018.5
+mistune~=0.8.4

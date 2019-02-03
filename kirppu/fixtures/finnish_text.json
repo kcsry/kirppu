@@ -3,7 +3,7 @@
     "pk": 1,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h2>Kirppu</h2>\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed, adipiscing id dolor.  Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus In rutrum accumsan ultricies.</p>",
+      "text": "## Kirppu\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut gravida lorem. Ut turpis felis, pulvinar a semper sed, adipiscing id dolor.  Pellentesque auctor nisi id magna consequat sagittis. Curabitur dapibus enim sit amet elit pharetra tincidunt feugiat nisl imperdiet. Ut convallis libero in urna ultrices accumsan. Donec sed odio eros. Donec viverra mi quis quam pulvinar at malesuada arcu rhoncus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus In rutrum accumsan ultricies.",
       "identifier": "frontpage_intro"
     }
   },
@@ -11,7 +11,7 @@
     "pk": 2,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Lis\u00e4\u00e4minen ja muokkaaminen</h3>\n<p>\nLis\u00e4\u00e4 tuote t\u00e4ytt\u00e4m\u00e4ll\u00e4 alla olevalle lomakkeelle v\u00e4hint\u00e4\u00e4n tuotteen nimi, hinta ja tyyppi, ja paina 'Lis\u00e4\u00e4 tavara'-painiketta. Lis\u00e4tt\u00e4v\u00e4n lapun koon voi valita koko-valitsimella.\n</p>\n<p>\nUseita samanlaisia tuotteita tai kokonaisen sarjan voi lis\u00e4t\u00e4 kerralla k\u00e4ytt\u00e4m\u00e4ll\u00e4 P\u00e4\u00e4te-kentt\u00e4\u00e4. Esim. nimell\u00e4 'Manga' ja p\u00e4\u00e4tteell\u00e4 '1-3' lis\u00e4tt\u00e4isiin tuotteet 'Manga 1', 'Manga 2' ja 'Manga 3'. Samaa nime\u00e4 k\u00e4ytt\u00e4en p\u00e4\u00e4te 'Blue Red' lis\u00e4isi tuotteet 'Manga Blue' ja 'Manga Red'.\n</p>\n<p>\nKun olet lis\u00e4nnyt tuotteen, sen hintalappu ilmestyy n\u00e4kyviin hintalappulistaan lomakkeen alapuolelle. Voit muokata tuotteen tietoja hintalapulla oleviin kenttiin kirjoittamalla. Hintalapun p\u00e4\u00e4ll\u00e4 olevalla <span class=\"glyphicon glyphicon-resize-horizontal\"></span> painikkeella voi s\u00e4\u00e4t\u00e4\u00e4 kyseisen hintalapun tulostuskokoa.\n</p>",
+      "text": "### Lis\u00e4\u00e4minen ja muokkaaminen\n\nLis\u00e4\u00e4 tuote t\u00e4ytt\u00e4m\u00e4ll\u00e4 alla olevalle lomakkeelle v\u00e4hint\u00e4\u00e4n tuotteen nimi, hinta ja tyyppi, ja paina 'Lis\u00e4\u00e4 tavara'-painiketta. Lis\u00e4tt\u00e4v\u00e4n lapun koon voi valita koko-valitsimella.\n\nUseita samanlaisia tuotteita tai kokonaisen sarjan voi lis\u00e4t\u00e4 kerralla k\u00e4ytt\u00e4m\u00e4ll\u00e4 P\u00e4\u00e4te-kentt\u00e4\u00e4. Esim. nimell\u00e4 'Manga' ja p\u00e4\u00e4tteell\u00e4 '1-3' lis\u00e4tt\u00e4isiin tuotteet 'Manga 1', 'Manga 2' ja 'Manga 3'. Samaa nime\u00e4 k\u00e4ytt\u00e4en p\u00e4\u00e4te 'Blue Red' lis\u00e4isi tuotteet 'Manga Blue' ja 'Manga Red'.\n\nKun olet lis\u00e4nnyt tuotteen, sen hintalappu ilmestyy n\u00e4kyviin hintalappulistaan lomakkeen alapuolelle. Voit muokata tuotteen tietoja hintalapulla oleviin kenttiin kirjoittamalla. Hintalapun p\u00e4\u00e4ll\u00e4 olevalla <glyph resize-horizontal /> painikkeella voi s\u00e4\u00e4t\u00e4\u00e4 kyseisen hintalapun tulostuskokoa.",
       "identifier": "item_info1"
     }
   },
@@ -19,7 +19,7 @@
     "pk": 3,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Tulostaminen</h3>\n<p>\nVoit tulostaa hintalaput suoraan t\u00e4st\u00e4 n\u00e4kym\u00e4st\u00e4 tulostamalla t\u00e4m\u00e4n sivun painamalla 'Tulosta'-painiketta. Kun olet tulostanut hintalaput, ne kannattaa merkit\u00e4 tulostetuiksi painamalla 'Merkitse kaikki tulostetuiksi' nappia. Niin tekeminen siirt\u00e4\u00e4 hintalaput sivun alalaidan listaan jolloin ne eiv\u00e4t tulostu en\u00e4\u00e4 uudelleen, jos tulostat uusia lappuja.\n</p>\n<div class=\"alert alert-danger\" role=\"alert\">Eth\u00e4n kopioi samaa hintalappua useille tuotteille. Jokainen tarvitsee oman uniikin viivakoodinsa!</div>\n\n<p>\n<span class=\"glyphicon glyphicon-sort\"></span> painikkeella voi asettaa yksitt\u00e4isen hintalapun tulostettu-tilaan tai takaisin tulostettavien listaan. K\u00e4yt\u00e4 t\u00e4t\u00e4 ominaisuutta, jos tulostat hintalappuja useammassa er\u00e4ss\u00e4, tai tulostat vain osan hintalapuista uudelleen.\n</p>",
+      "text": "### Tulostaminen\n\nVoit tulostaa hintalaput suoraan t\u00e4st\u00e4 n\u00e4kym\u00e4st\u00e4 tulostamalla t\u00e4m\u00e4n sivun painamalla 'Tulosta'-painiketta. Kun olet tulostanut hintalaput, ne kannattaa merkit\u00e4 tulostetuiksi painamalla 'Merkitse kaikki tulostetuiksi' nappia. Niin tekeminen siirt\u00e4\u00e4 hintalaput sivun alalaidan listaan jolloin ne eiv\u00e4t tulostu en\u00e4\u00e4 uudelleen, jos tulostat uusia lappuja.\n\n<alertbox danger>Eth\u00e4n kopioi samaa hintalappua useille tuotteille. Jokainen tarvitsee oman uniikin viivakoodinsa!</alertbox>\n\n<glyph sort /> painikkeella voi asettaa yksitt\u00e4isen hintalapun tulostettu-tilaan tai takaisin tulostettavien listaan. K\u00e4yt\u00e4 t\u00e4t\u00e4 ominaisuutta, jos tulostat hintalappuja useammassa er\u00e4ss\u00e4, tai tulostat vain osan hintalapuista uudelleen.",
       "identifier": "item_info2"
     }
   },
@@ -27,7 +27,7 @@
     "pk": 4,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Poistaminen</h3>\n<p>\nJos olet luonut ylim\u00e4\u00e4r\u00e4isi\u00e4 tai viallisia lappuja, voit poistaa sellaiset painamalla <span class=\"glyphicon glyphicon-remove\"></span> painiketta.\n</p>",
+      "text": "### Poistaminen\n\nJos olet luonut ylim\u00e4\u00e4r\u00e4isi\u00e4 tai viallisia lappuja, voit poistaa sellaiset painamalla <glyph remove /> painiketta.",
       "identifier": "item_info3"
     }
   },
@@ -43,7 +43,7 @@
     "pk": 6,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Uuden laatikon lis\u00e4\u00e4minen</h3>\n<p>Voit luoda uusia laatikoita Luo laatikko -painikkeella. T\u00e4yt\u00e4 kuvaus, esineen etuliitte, lukum\u00e4\u00e4r\u00e4, hinta ja tyypi alla olevaan lomakkeeseen ja paina sen jälkeen Luo laatikko -painiketta.</p>\n<p>Uusi laatikko lis\u00e4t\u00e4\u00e4n lomakkeen alapuolelle</p>",
+      "text": "### Uuden laatikon lis\u00e4\u00e4minen\n\nVoit luoda uusia laatikoita Luo laatikko -painikkeella. T\u00e4yt\u00e4 kuvaus, esineen etuliitte, lukum\u00e4\u00e4r\u00e4, hinta ja tyypi alla olevaan lomakkeeseen ja paina sen jälkeen Luo laatikko -painiketta.\n\nUusi laatikko lis\u00e4t\u00e4\u00e4n lomakkeen alapuolelle.",
       "identifier": "box_info1"
     }
   },
@@ -51,7 +51,7 @@
     "pk": 7,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Tulostaminen</h3>\n<p>Voit tulostaa laatikon sis\u00e4ll\u00f6n painamalla 'Tulosta' painiketta. Tulostus nappi vaihtaa v\u00e4ri\u00e4\u00e4n harmaaksi tulostamisen j\u00e4lkeen.</p>",
+      "text": "### Tulostaminen\n\nVoit tulostaa laatikon sis\u00e4ll\u00f6n painamalla 'Tulosta' painiketta. Tulostus nappi vaihtaa v\u00e4ri\u00e4\u00e4n harmaaksi tulostamisen j\u00e4lkeen.",
       "identifier": "box_info2"
     }
   },
@@ -59,7 +59,7 @@
     "pk": 8,
     "model": "kirppu.uitext",
     "fields": {
-      "text": "<h3>Poistaminen</h3>\n<p>Voit poistaa olemassaolevan laatikon painamalla <span class=\"glyphicon glyphicon-remove\"></span> nappia.\n</p>",
+      "text": "### Poistaminen\n\nVoit poistaa olemassaolevan laatikon painamalla <glyph remove /> nappia.",
       "identifier": "box_info3"
     }
   }

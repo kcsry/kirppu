@@ -14,6 +14,7 @@ from django.utils.six import text_type
 
 import pubcode
 from ..models import UIText, UserAdapter
+from ..text_engine import mark_down
 
 register = template.Library()
 
@@ -21,7 +22,8 @@ register = template.Library()
 @register.simple_tag
 def load_text(id_):
     try:
-        return mark_safe(UIText.objects.get(identifier=id_).text)
+        md = UIText.objects.get(identifier=id_).text
+        return mark_safe(mark_down(md))
     except UIText.DoesNotExist:
         if settings.DEBUG:
             return format_html(
@@ -62,7 +64,7 @@ def load_texts(id_, wrap=None):
         else:
             joined = wrap
 
-    return mark_safe(begin + joined.join(texts) + end)
+    return mark_safe(begin + joined.join(mark_down(text) for text in texts) + end)
 
 
 # Limit the size of the dict to a reasonable number so that we don't have
