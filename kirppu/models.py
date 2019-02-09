@@ -956,6 +956,11 @@ class Receipt(models.Model):
             clerk=text_type(self.clerk),
         )
 
+    class Meta:
+        permissions = (
+            ("view_accounting", "View accounting data"),
+        )
+
 
 @python_2_unicode_compatible
 class ReceiptExtraRow(models.Model):
@@ -974,8 +979,12 @@ class ReceiptExtraRow(models.Model):
         "type",
         type_display=lambda self: self.get_type_display(),
         action=lambda _: "EXTRA",  # Same key as in ReceiptItem.action.
-        value=lambda self: decimal_to_transport(self.value),
+        value="value_cents",
     )
+
+    @property
+    def value_cents(self):
+        return decimal_to_transport(self.value)
 
     def __str__(self):
         return "{}: {} ({})".format(self.get_type_display(), self.value, self.receipt)

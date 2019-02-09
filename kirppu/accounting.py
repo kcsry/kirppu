@@ -1,0 +1,212 @@
+# -*- coding: utf-8 -*-
+from collections import defaultdict
+import csv
+import functools
+import io
+from urllib.parse import quote
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Sum
+from django.http import StreamingHttpResponse
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy, gettext
+from django.utils import timezone
+
+from .models import Item, Receipt, ReceiptExtraRow, ReceiptItem, decimal_to_transport
+
+
+COLUMNS = (
+    _("Event number"),
+    _("Timestamp"),
+    _("Vendor"),
+    _("Event type"),
+    pgettext_lazy("Substantive, change in value or balance", "Change"),
+    _("Vendor balance"),
+    _("Total balance"),
+)
+
+EVENT_FORFEIT = "__FEE"
+EVENTS = dict((
+    (Receipt.TYPE_PURCHASE, _("SALE")),
+    (Receipt.TYPE_COMPENSATION, _("PAYOUT")),
+    (ReceiptExtraRow.TYPE_PROVISION, _("COMMISSION")),
+    (EVENT_FORFEIT, _("FORFEIT")),
+))
+
+
+def _zero_fn():
+    return 0
+
+
+def _strip_generator(fn):
+    @functools.wraps(fn)
+    def inner(output, generator=False):
+        if generator:
+            # Return the generator object only when using StringIO.
+            return fn(output)
+        for _ in fn(output):
+            pass
+
+    return inner
+
+
+@login_required
+@permission_required("view_accounting")
+def accounting_receipt_view(request):
+    def streamer():
+        output = io.StringIO()
+        for a_string in accounting_receipt(output, generator=True):
+            val = output.getvalue()
+            yield val
+            output.truncate(0)
+            output.seek(0)
+
+    response = StreamingHttpResponse(streamer(), content_type="text/plain; charset=utf-8")
+    if request.GET.get("download") is not None:
+        response["Content-Disposition"] = 'attachment; filename="%s.csv"' % quote(gettext("accounting"), safe="")
+        response["Content-Type"] = "text/csv; charset=utf-8"
+    return response
+
+
+@_strip_generator
+def accounting_receipt(output):
+    writer = csv.writer(output)
+    writer.writerow(str(c) for c in COLUMNS)
+    # Used here and later for buffer streaming and clearing in case of StringIO.
+    yield
+
+    receipts = (Receipt.objects
+                .filter(status=Receipt.FINISHED)
+                .prefetch_related("receiptitem_set", "receiptitem_set__item", "extra_rows")
+                .order_by("end_time")
+                )
+
+    impl = AccountingWriter(writer)
+    for receipt in receipts:
+        impl.write_receipt(receipt)
+        yield
+    impl.finish()
+    yield
+
+    items_paid_out = Item.objects.filter(state=Item.COMPENSATED).aggregate(sum=Sum("price"))
+    items_paid_out = decimal_to_transport(items_paid_out["sum"] or 0)
+    items_forfeited = Item.objects.filter(state=Item.SOLD).aggregate(sum=Sum("price"))
+    items_forfeited = decimal_to_transport(items_forfeited["sum"] or 0)
+
+    # Basic sanity checking. Does not really give a straight explanation of why something is amiss.
+    writer.writerow(())
+    if items_paid_out != impl.total_payout:
+        writer.writerow((gettext("Payout difference:"),))
+        writer.writerow((None, gettext("In Items"), items_paid_out))
+        writer.writerow((None, gettext("In Receipts"), impl.total_payout))
+
+    if items_forfeited != impl.total_forfeit:
+        writer.writerow((gettext("Forfeit difference:"),))
+        writer.writerow((None, gettext("In Items"), items_forfeited))
+        writer.writerow((None, gettext("In Receipts"), impl.total_forfeit))
+
+    yield
+
+
+class AccountingWriter(object):
+    def __init__(self, writer):
+        self.i = 1
+        self.total_balance = 0
+        self.total_vendors = defaultdict(_zero_fn)
+        self.writer = writer
+
+        self.total_income = 0
+        self.total_payout = 0
+        self.total_forfeit = 0
+
+    def write_receipt(self, receipt):
+        if receipt.type == Receipt.TYPE_PURCHASE:
+            self._write_purchase(receipt)
+        elif receipt.type == Receipt.TYPE_COMPENSATION:
+            self._write_compensation(receipt)
+
+    def _write_purchase(self, receipt: Receipt):
+        # Group receipt data by vendor.
+        receipt_vendors = defaultdict(_zero_fn)
+        for row in receipt.receiptitem_set.all():
+            if row.action == ReceiptItem.ADD:
+                item = row.item
+                vid = item.vendor_id
+                price = item.price_cents
+                receipt_vendors[vid] += price
+
+        # Dump grouped data while calculating.
+        event_type = EVENTS[receipt.type]
+        timestamp = timezone.localtime(receipt.end_time).isoformat(timespec="seconds")
+        for vid in sorted(receipt_vendors.keys()):
+            value = receipt_vendors[vid]
+            vendor_balance = self.total_vendors[vid] + value
+            self.total_vendors[vid] = vendor_balance
+            self.total_balance += value
+            self.total_income += value
+
+            self.writer.writerow((
+                self.i, timestamp, vid, event_type, value, vendor_balance, self.total_balance
+            ))
+            self.i += 1
+
+    def _write_compensation(self, receipt: Receipt):
+        rows = receipt.receiptitem_set.all()
+        assert rows.count() > 0
+        common_vendor = list(rows)[0].item.vendor_id
+        if any(common_vendor != r.item.vendor_id for r in rows):
+            raise ValueError("Invalid receipt configuration")
+
+        compensation_sum = sum(r.item.price_cents for r in rows)
+        event_type = EVENTS[receipt.type]
+        timestamp = timezone.localtime(receipt.end_time).isoformat(timespec="seconds")
+
+        vendor_balance = self.total_vendors[common_vendor] - compensation_sum
+        self.total_vendors[common_vendor] = vendor_balance
+        self.total_balance -= compensation_sum
+        self.total_payout += compensation_sum
+
+        if receipt.extra_rows.count() > 0:
+            alter = 0
+            for r in receipt.extra_rows.all():
+                if r.type == ReceiptExtraRow.TYPE_PROVISION:
+                    alter += r.value_cents
+                else:
+                    assert False, "Not Implemented: " + r.type
+
+            self.writer.writerow((
+                self.i, timestamp, common_vendor, event_type, -compensation_sum - alter, vendor_balance - alter,
+                self.total_balance - alter
+            ))
+            self.i += 1
+            self.writer.writerow((
+                self.i, timestamp, common_vendor, EVENTS[ReceiptExtraRow.TYPE_PROVISION], alter, vendor_balance,
+                self.total_balance
+            ))
+            self.i += 1
+
+        else:
+            self.writer.writerow((
+                self.i, timestamp, common_vendor, event_type, -compensation_sum, vendor_balance, self.total_balance
+            ))
+            self.i += 1
+
+    def finish(self):
+        now = timezone.localtime(timezone.now()).isoformat(timespec="seconds")
+        event_type = EVENTS[EVENT_FORFEIT]
+        for vid in sorted(self.total_vendors.keys()):
+            value = self.total_vendors[vid]
+            if value != 0:
+                self.total_forfeit += value
+                value = -value
+                self.total_balance += value
+                self.writer.writerow((
+                    self.i, now, vid, event_type, value, 0, self.total_balance
+                ))
+                self.i += 1
+
+        if self.i == 1:
+            self.writer.writerow((
+                self.i, now, None, event_type, 0, 0, 0
+            ))
+
+        assert self.total_balance == 0

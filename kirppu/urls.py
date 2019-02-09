@@ -34,12 +34,14 @@ from .views import (
 from .checkout_api import AJAX_FUNCTIONS, checkout_js
 from .mobile import index as mobile_index, logout as mobile_logout
 from .vendors import change_vendor, create_vendor
+from .accounting import accounting_receipt_view
 
 __author__ = 'jyrkila'
 
 app_name = "kirppu"
 
 _urls = [
+    path(r'accounting/', accounting_receipt_view, name="accounting"),
     path(r'clerks/', get_clerk_codes, name='clerks'),
     path(r'commands/', get_counter_commands, name='commands'),
     path(r'boxes/', get_boxes_codes, name="box_codes"),

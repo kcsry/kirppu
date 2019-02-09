@@ -354,8 +354,14 @@ def _vendor_menu_contents(request):
     active = request.resolver_match.view_name
     menu_item = namedtuple("MenuItem", "name url active sub_items")
 
-    def fill(name, func, sub=None):
-        return menu_item(name, url.reverse(func) if func else None, func == active, sub)
+    def fill(name, func, sub=None, query=None):
+        link = url.reverse(func) if func else None
+        from urllib.parse import quote
+        if query:
+            link += "?" + "&".join(
+                quote(k, safe="") + (("=" + quote(v, safe="")) if v else "")
+                for k, v in query.items())
+        return menu_item(name, link, func == active, sub)
 
     items = [
         fill(_(u"Home"), "kirppu:vendor_view"),
@@ -395,6 +401,14 @@ def _vendor_menu_contents(request):
 
     if manage_sub:
         items.append(fill(_(u"Management"), "", manage_sub))
+
+    if request.user.has_perm("view_accounting"):
+        accounting_sub = [
+            fill(_("View"), "kirppu:accounting"),
+            fill(_("Download"), "kirppu:accounting", query={"download": ""}),
+        ]
+        items.append(fill(_("Accounting"), "", accounting_sub))
+
     return items
 
 
