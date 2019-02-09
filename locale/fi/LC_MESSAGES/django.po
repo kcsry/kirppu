@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018.
+# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-08 22:04+0300\n"
-"PO-Revision-Date: 2018-09-08 22:05+0200\n"
+"POT-Creation-Date: 2019-02-10 19:38+0200\n"
+"PO-Revision-Date: 2019-02-10 19:39+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -16,6 +16,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 2.0\n"
+
+msgid "Event number"
+msgstr "Tapahtumanumero"
+
+msgid "Timestamp"
+msgstr "Aikaleima"
+
+msgid "Vendor"
+msgstr "Myyjä"
+
+msgid "Event type"
+msgstr "Tapahtuman tyyppi"
+
+msgctxt "Substantive, change in value or balance"
+msgid "Change"
+msgstr "Muutos"
+
+msgid "Vendor balance"
+msgstr "Myyjän saldo"
+
+msgid "Total balance"
+msgstr "Yhteissaldo"
+
+msgid "SALE"
+msgstr "MYYNTI"
+
+msgid "PAYOUT"
+msgstr "HYVITYS"
+
+msgid "COMMISSION"
+msgstr "PALVELUMAKSU"
+
+msgid "FORFEIT"
+msgstr "MENETYS"
+
+msgid "accounting"
+msgstr "kirjanpito"
+
+msgid "Payout difference:"
+msgstr "Eroavaisuus hyvityksissä:"
+
+msgid "In Items"
+msgstr "Tavaroissa"
+
+msgid "In Receipts"
+msgstr "Kuiteissa"
+
+msgid "Forfeit difference:"
+msgstr "Eroavaisuus menetyksissä:"
 
 msgid "User"
 msgstr "Käyttäjä"
@@ -65,9 +114,6 @@ msgstr "Poista luodut viivakoodit"
 
 msgid "Re-generate bar codes for items"
 msgstr "Luo tavaroiden viivakoodit uudelleen"
-
-msgid "Vendor"
-msgstr "Myyjä"
 
 msgid "Item"
 msgstr "Tavara"
@@ -186,6 +232,43 @@ msgstr "Joko \"%(0)s\" tai \"%(1)s\" on poistettava."
 
 msgid "Only one option may be selected at a time."
 msgstr "Vain yksi valinta voidaan valita kerrallaan."
+
+msgid "Text formatting"
+msgstr "Tekstin muotoilu"
+
+msgid ""
+"<div style=\"float: left;\">The text is formatted with standard Markdown "
+"syntax. Quick reference:<br/>\n"
+"# Heading<br/>\n"
+"## Subheading<br/>\n"
+"### Sub-subheading<br/>\n"
+"- Un-ordered list item<br/>\n"
+"1. Ordered list item<br/>\n"
+"*<em>text</em>*<br/>\n"
+"**<strong>text</strong>**<br/>\n"
+"[<em>Link title</em>](<em>https://...</em>)<br/>\n"
+"&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;<br/>\n"
+"&lt;glyph <em>glyph-name</em> /&gt;<br/>\n"
+"&lt;alertbox <em>alert-type</em>&gt;<em>alert text content</em>&lt;/"
+"alertbox&gt; Types: danger, warning, info, success\n"
+"</div>"
+msgstr ""
+"<div style=\"float: left;\">Teksti muotoillaan Markdown-syntaksilla. "
+"Lyhyt opas:<br/>\n"
+"# Otsikko<br/>\n"
+"## Alaotsikko<br/>\n"
+"### Ala-alaotsikko<br/>\n"
+"- Järjestämättömän listan elementti<br/>\n"
+"1. Järjestetyn listan elementti<br/>\n"
+"*<em>teksti</em>*<br/>\n"
+"**<strong>teksti</strong>**<br/>\n"
+"[<em>Linkin otsikko</em>](<em>https://...</em>)<br/>\n"
+"&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;<br/>\n"
+"&lt;glyph <em>glyyfin-nimi</em> /&gt;<br/>\n"
+"&lt;alertbox <em>huomautustyyppi</em>&gt;<em>huomautuksen tekstisisältö</em"
+">&lt;/"
+"alertbox&gt; Tyypit: danger, warning, info, success\n"
+"</div>"
 
 msgid "Name is required."
 msgstr "Nimi on vaadittu."
@@ -601,8 +684,8 @@ msgstr "Myymättömät tavarat"
 msgid "Sold inventory"
 msgstr "Myydyt tavarat"
 
-msgid "Redeemed by vendor"
-msgstr "Hyvitetty myyjälle"
+msgid "Returned/Redeemed"
+msgstr "Palautettu/hyvitetty"
 
 msgid "Items cumulatively brought to the event."
 msgstr "Kumulatiivisesti tapahtumaan tuodut tavarat."
@@ -613,8 +696,8 @@ msgstr "Tuodut mutta myymättömät ja palauttamattomat tavarat."
 msgid "Items sold but not redeemed."
 msgstr "Myydyt mutta hyvittämättömät tavarat."
 
-msgid "Items sold and redeemed."
-msgstr "Myydyt ja hyvitetyt tavarat."
+msgid "Items returned or redeemed."
+msgstr "Palautetut ja hyvitetyt tavarat."
 
 msgid "Time"
 msgstr "Aika"
@@ -725,6 +808,16 @@ msgstr "%(vendors)s (%(total)s yhteensä)"
 
 msgid "Vendors visited mobile view"
 msgstr "Myyjiä käynyt mobiilinäkymässä"
+
+msgctxt "Mean value, average"
+msgid "Mean"
+msgstr "Keskiarvo"
+
+msgid "Median"
+msgstr "Mediaani"
+
+msgid "Standard deviation"
+msgstr "Keskihajonta"
 
 msgid "Vendor:"
 msgstr "Myyjä:"
@@ -855,6 +948,15 @@ msgstr "Sivuston hallinta"
 
 msgid "Management"
 msgstr "Hallinta"
+
+msgid "View"
+msgstr "Näytä"
+
+msgid "Download"
+msgstr "Lataa"
+
+msgid "Accounting"
+msgstr "Kirjanpito"
 
 msgid "Ranma ½ Vol."
 msgstr "Ranma ½ Vol."

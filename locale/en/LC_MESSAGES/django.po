@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018.
+# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-08 22:04+0300\n"
-"PO-Revision-Date: 2018-09-08 22:04+0200\n"
+"POT-Creation-Date: 2019-02-10 19:38+0200\n"
+"PO-Revision-Date: 2019-02-10 19:39+0200\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -16,6 +16,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 2.0\n"
+
+msgid "Event number"
+msgstr "Event number"
+
+msgid "Timestamp"
+msgstr "Timestamp"
+
+msgid "Vendor"
+msgstr "Vendor"
+
+msgid "Event type"
+msgstr "Event type"
+
+msgctxt "Substantive, change in value or balance"
+msgid "Change"
+msgstr "Change"
+
+msgid "Vendor balance"
+msgstr "Vendor balance"
+
+msgid "Total balance"
+msgstr "Total balance"
+
+msgid "SALE"
+msgstr "SALE"
+
+msgid "PAYOUT"
+msgstr "PAYOUT"
+
+msgid "COMMISSION"
+msgstr "COMMISSION"
+
+msgid "FORFEIT"
+msgstr "FORFEIT"
+
+msgid "accounting"
+msgstr "accounting"
+
+msgid "Payout difference:"
+msgstr "Payout difference:"
+
+msgid "In Items"
+msgstr "In Items"
+
+msgid "In Receipts"
+msgstr "In Receipts"
+
+msgid "Forfeit difference:"
+msgstr "Forfeit difference:"
 
 msgid "User"
 msgstr "User "
@@ -64,9 +113,6 @@ msgstr "Delete generated bar codes"
 
 msgid "Re-generate bar codes for items"
 msgstr "Re-generate bar codes for items"
-
-msgid "Vendor"
-msgstr "Vendor"
 
 msgid "Item"
 msgstr "Item"
@@ -185,6 +231,42 @@ msgstr "Either \"%(0)s\" or \"%(1)s\" must be cleared."
 
 msgid "Only one option may be selected at a time."
 msgstr "Only one option may be selected at a time."
+
+msgid "Text formatting"
+msgstr "Text formatting"
+
+msgid ""
+"<div style=\"float: left;\">The text is formatted with standard Markdown "
+"syntax. Quick reference:<br/>\n"
+"# Heading<br/>\n"
+"## Subheading<br/>\n"
+"### Sub-subheading<br/>\n"
+"- Un-ordered list item<br/>\n"
+"1. Ordered list item<br/>\n"
+"*<em>text</em>*<br/>\n"
+"**<strong>text</strong>**<br/>\n"
+"[<em>Link title</em>](<em>https://...</em>)<br/>\n"
+"&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;<br/>\n"
+"&lt;glyph <em>glyph-name</em> /&gt;<br/>\n"
+"&lt;alertbox <em>alert-type</em>&gt;<em>alert text content</em>&lt;/"
+"alertbox&gt; Types: danger, warning, info, success\n"
+"</div>"
+msgstr ""
+"<div style=\"float: left;\">The text is formatted with standard Markdown "
+"syntax. Quick reference:<br/>\n"
+"# Heading<br/>\n"
+"## Subheading<br/>\n"
+"### Sub-subheading<br/>\n"
+"- Un-ordered list item<br/>\n"
+"1. Ordered list item<br/>\n"
+"*<em>text</em>*<br/>\n"
+"**<strong>text</strong>**<br/>\n"
+"[<em>Link title</em>](<em>https://...</em>)<br/>\n"
+"&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;<br/>\n"
+"&lt;glyph <em>glyph-name</em> /&gt;<br/>\n"
+"&lt;alertbox <em>alert-type</em>&gt;<em>alert text content</em>&lt;/"
+"alertbox&gt; Types: danger, warning, info, success\n"
+"</div>"
 
 msgid "Name is required."
 msgstr "Name is required."
@@ -600,8 +682,8 @@ msgstr "Unsold inventory"
 msgid "Sold inventory"
 msgstr "Sold inventory"
 
-msgid "Redeemed by vendor"
-msgstr "Redeemed by vendor"
+msgid "Returned/Redeemed"
+msgstr "Returned/Redeemed"
 
 msgid "Items cumulatively brought to the event."
 msgstr "Items cumulatively brought to the event."
@@ -612,8 +694,9 @@ msgstr "Items brought but not sold nor returned."
 msgid "Items sold but not redeemed."
 msgstr "Items sold but not redeemed."
 
-msgid "Items sold and redeemed."
-msgstr "Items sold and redeemed."
+#| msgid "Items returned and redeemed."
+msgid "Items returned or redeemed."
+msgstr "Items returned or redeemed."
 
 msgid "Time"
 msgstr "Time"
@@ -725,6 +808,16 @@ msgstr "%(vendors)s (%(total)s total)"
 
 msgid "Vendors visited mobile view"
 msgstr "Vendors visited mobile view"
+
+msgctxt "Mean value, average"
+msgid "Mean"
+msgstr "Mean"
+
+msgid "Median"
+msgstr "Median"
+
+msgid "Standard deviation"
+msgstr "Standard deviation"
 
 msgid "Vendor:"
 msgstr "Vendor:"
@@ -855,6 +948,15 @@ msgstr "Site administration"
 
 msgid "Management"
 msgstr "Management"
+
+msgid "View"
+msgstr "View"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Accounting"
+msgstr "Accounting"
 
 msgid "Ranma ½ Vol."
 msgstr "Ranma ½ Vol."
