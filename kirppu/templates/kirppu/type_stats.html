@@ -32,7 +32,7 @@
 {% trans "Brought to event" as tlBrought %}
 {% trans "Unsold inventory" as tlUnsold %}
 {% trans "Sold inventory" as tlSold %}
-{% trans "Redeemed by vendor" as tlRedeemed %}
+{% trans "Returned/Redeemed" as tlRedeemed %}
     <h2>{{ type_title }}</h2>
 
     <div id="graph2_legend"></div>
@@ -52,7 +52,7 @@
         <dt>{{ tlSold }}</dt>
         <dd>{% trans "Items sold but not redeemed." %}</dd>
         <dt>{{ tlRedeemed }}</dt>
-        <dd>{% trans "Items sold and redeemed." %}</dd>
+        <dd>{% trans "Items returned or redeemed." %}</dd>
     </dl>
     </div>
 

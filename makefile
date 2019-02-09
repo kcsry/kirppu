@@ -9,8 +9,8 @@ none:
 
 messages: ## Extract strings from sources for localization.
 	cd kirppu && npm run gulp messages
-	${PYTHON} manage.py makemessages -d djangojs ${MM_ARGS}
-	${PYTHON} manage.py makemessages -d django ${MM_ARGS}
+	DEBUG=1 ${PYTHON} manage.py makemessages -d djangojs ${MM_ARGS}
+	DEBUG=1 ${PYTHON} manage.py makemessages -d django ${MM_ARGS}
 
 static:   ## Install npm dependencies and build static files.
 	cd kirppu && npm i && npm run build
