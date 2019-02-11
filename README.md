@@ -16,7 +16,7 @@ It consists of a high level guide outlining the steps, example guide that has mo
 
 ### High level guide
 
-1. Install Python 3.4+.
+1. Install Python 3.5+.
     1. Install pip.
        Pip is used for downloading and installing dependencies. It is included
        by default in Python since 2.7.9 and 3.4.
@@ -185,7 +185,8 @@ To compile frontend sources for use in browser, there is two choices, which can 
     Copyright (c) 2014–2017 Santtu Pajukanta
     Copyright (c) 2016 Aarni Koskela, Jyrki Launonen
     Copyright (c) 2017 Jyrki Launonen
-    Copyright (c) 2018 Jyrki Launonen
+    Copyright (c) 2018 Aarni Koskela, Jyrki Launonen
+    Copyright (c) 2019 Jyrki Launonen
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
