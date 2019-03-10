@@ -46,7 +46,7 @@ from .models import (
     TemporaryAccessPermitLog,
 )
 from .fields import ItemPriceField
-from .forms import ItemRemoveForm
+from .forms import remove_item_from_receipt
 
 from . import ajax_util, stats
 from .ajax_util import (
@@ -163,7 +163,10 @@ def checkout_js(request):
 
 @transaction.atomic
 def item_mode_change(request, code, from_, to, message_if_not_first=None):
-    item = _get_item_or_404(code)
+    if isinstance(code, Item):
+        item = code
+    else:
+        item = _get_item_or_404(code, for_update=True)
     if not isinstance(from_, tuple):
         from_ = (from_,)
     if item.state in from_:
@@ -175,7 +178,7 @@ def item_mode_change(request, code, from_, to, message_if_not_first=None):
         ItemStateLog.objects.log_state(item=item, new_state=to, request=request)
         old_state = item.state
         item.state = to
-        item.save()
+        item.save(update_fields=("state", "hidden"))
         ret = item.as_dict()
         if message_if_not_first is not None and len(from_) > 1 and old_state != from_[0]:
             ret.update(_message=message_if_not_first)
@@ -339,9 +342,11 @@ def item_edit(request, code, price, state):
     if state not in {st for (st, _) in Item.STATE}:
         raise AjaxError(RET_BAD_REQUEST, 'Unknown state: {0}'.format(state))
 
-    item = _get_item_or_404(code)
+    item = _get_item_or_404(code, for_update=True)
+    updates = set()
 
     if price != item.price:
+        updates.add("price")
         price_editable_states = {
             Item.ADVERTISED,
             Item.BROUGHT,
@@ -354,6 +359,7 @@ def item_edit(request, code, price, state):
             )
 
     if item.state != state:
+        updates.add("state")
         unsold_states = {
             Item.ADVERTISED,
             Item.BROUGHT,
@@ -369,12 +375,7 @@ def item_edit(request, code, price, state):
             ).values_list('receipt_id', flat=True)
 
             for receipt_id in receipt_ids:
-                remove_form = ItemRemoveForm({
-                    'receipt': receipt_id,
-                    'item': item.code,
-                })
-                assert remove_form.is_valid()
-                remove_form.save(request)
+                remove_item_from_receipt(request, item, receipt_id)
         else:
             raise AjaxError(
                 RET_BAD_REQUEST,
@@ -385,7 +386,7 @@ def item_edit(request, code, price, state):
 
     item.state = state
     item.price = price
-    item.save()
+    item.save(update_fields=updates)
 
     item_dict = item.as_dict()
     item_dict['vendor'] = item.vendor.as_dict()
@@ -490,7 +491,7 @@ def box_list(request, vendor):
 
 @ajax_func('^item/checkin$', atomic=True)
 def item_checkin(request, code):
-    item = _get_item_or_404(code)
+    item = _get_item_or_404(code, for_update=True)
     if not item.vendor.terms_accepted:
         raise AjaxError(500, _(u"Vendor has not accepted terms!"))
 
@@ -510,12 +511,12 @@ def item_checkin(request, code):
         # TODO: Consider returning bad request to clearly separate actual success.
         return JsonResponse(response, status=RET_ACCEPTED, reason="OTHER API")
 
-    return item_mode_change(request, code, Item.ADVERTISED, Item.BROUGHT)
+    return item_mode_change(request, item, Item.ADVERTISED, Item.BROUGHT)
 
 
 @ajax_func('^item/checkout$', atomic=True)
 def item_checkout(request, code, vendor=None):
-    item = _get_item_or_404(code)
+    item = _get_item_or_404(code, for_update=True)
     if vendor == "":
         vendor = None
     if vendor is not None:
@@ -556,7 +557,7 @@ def item_checkout(request, code, vendor=None):
         }
         return ret
     else:
-        return item_mode_change(request, code, (Item.BROUGHT, Item.ADVERTISED), Item.RETURNED,
+        return item_mode_change(request, item, (Item.BROUGHT, Item.ADVERTISED), Item.RETURNED,
                                 _(u"Item was not brought to event."))
 
 
@@ -588,14 +589,14 @@ def item_compensate(request, code):
     if "compensation" not in request.session:
         raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
     receipt_pk, vendor_id = request.session["compensation"]
-    receipt = Receipt.objects.get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
+    receipt = Receipt.objects.select_for_update().get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
 
-    item = _get_item_or_404(code, vendor=vendor_id)
-    item_dict = item_mode_change(request, code, Item.SOLD, Item.COMPENSATED)
+    item = _get_item_or_404(code, vendor=vendor_id, for_update=True)
+    item_dict = item_mode_change(request, item, Item.SOLD, Item.COMPENSATED)
 
     ReceiptItem.objects.create(item=item, receipt=receipt)
     receipt.calculate_total()
-    receipt.save()
+    receipt.save(update_fields=("total",))
 
     return item_dict
 
@@ -606,7 +607,7 @@ def item_compensate_end(request):
         raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
 
     receipt_pk, vendor_id = request.session["compensation"]
-    receipt = Receipt.objects.get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
+    receipt = Receipt.objects.select_for_update().get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
 
     provision = Provision(vendor_id=vendor_id, receipt=receipt)
     if provision.has_provision:
@@ -626,7 +627,7 @@ def item_compensate_end(request):
     receipt.status = Receipt.FINISHED
     receipt.end_time = now()
     receipt.calculate_total()
-    receipt.save()
+    receipt.save(update_fields=("status", "end_time", "total"))
 
     del request.session["compensation"]
 
@@ -747,20 +748,20 @@ def receipt_start(request):
 
 @ajax_func('^item/reserve$', atomic=True)
 def item_reserve(request, code):
-    item = _get_item_or_404(code)
+    item = _get_item_or_404(code, for_update=True)
     receipt_id = request.session["receipt"]
-    receipt = receipt = get_receipt(receipt_id)
+    receipt = get_receipt(receipt_id, for_update=True)
 
     message = raise_if_item_not_available(item)
     if item.state in (Item.ADVERTISED, Item.BROUGHT, Item.MISSING):
         ItemStateLog.objects.log_state(item, Item.STAGED, request=request)
         item.state = Item.STAGED
-        item.save()
+        item.save(update_fields=("state",))
 
         ReceiptItem.objects.create(item=item, receipt=receipt)
         # receipt.items.create(item=item)
         receipt.calculate_total()
-        receipt.save()
+        receipt.save(update_fields=("total",))
 
         ret = item.as_dict()
         ret.update(total=receipt.total_cents)
@@ -774,17 +775,14 @@ def item_reserve(request, code):
 
 @ajax_func('^item/release$', atomic=True)
 def item_release(request, code):
-    item = _get_item_or_404(code)
+    item = _get_item_or_404(code, for_update=True)
     receipt_id = request.session["receipt"]
-    remove_form = ItemRemoveForm({
-        'receipt': receipt_id,
-        'item': code,
-    })
-    if not remove_form.is_valid():
-        raise AjaxError(RET_CONFLICT, ", ".join(remove_form.errors))
+    try:
+        removal_entry = remove_item_from_receipt(request, item, receipt_id)
+    except ValueError as e:
+        raise AjaxError(RET_CONFLICT, e.args[0])
 
-    remove_form.save(request)
-    return remove_form.removal_entry.as_dict()
+    return removal_entry.as_dict()
 
 
 def _get_active_receipt(request, id, allowed_states=(Receipt.PENDING,)):
@@ -800,7 +798,7 @@ def _get_active_receipt(request, id, allowed_states=(Receipt.PENDING,)):
         receipt_id = arg_id
         logger.warning("Active receipt is being read without it being in session: %i", receipt_id)
 
-    receipt = receipt = get_receipt(receipt_id)
+    receipt = get_receipt(receipt_id, for_update=True)
     if receipt.status not in allowed_states:
         if not in_session and receipt.status == Receipt.FINISHED:
             raise AjaxError(RET_CONFLICT, "Receipt {} was already ended at {}".format(receipt_id, receipt.end_time))
@@ -815,11 +813,10 @@ def receipt_finish(request, id):
 
     receipt.end_time = now()
     receipt.status = Receipt.FINISHED
-    receipt.save()
+    receipt.save(update_fields=("end_time", "status"))
 
-    receipt_items = Item.objects.filter(receipt=receipt, receiptitem__action=ReceiptItem.ADD)
-    for item in receipt_items:
-        ItemStateLog.objects.log_state(item=item, new_state=Item.SOLD, request=request)
+    receipt_items = Item.objects.select_for_update().filter(receipt=receipt, receiptitem__action=ReceiptItem.ADD)
+    ItemStateLog.objects.log_states(item_set=receipt_items, new_state=Item.SOLD, request=request)
     receipt_items.update(state=Item.SOLD)
 
     del request.session["receipt"]
@@ -831,7 +828,7 @@ def receipt_abort(request, id):
     receipt, receipt_id = _get_active_receipt(request, id, (Receipt.PENDING, Receipt.SUSPENDED))
 
     # For all ADDed items, add REMOVE-entries and return the real Item's back to available.
-    added_items = ReceiptItem.objects.filter(receipt_id=receipt_id, action=ReceiptItem.ADD)
+    added_items = ReceiptItem.objects.select_for_update().filter(receipt_id=receipt_id, action=ReceiptItem.ADD)
     for receipt_item in added_items.only("item"):
         item = receipt_item.item
 
@@ -852,7 +849,7 @@ def receipt_abort(request, id):
     receipt.end_time = now()
     receipt.status = Receipt.ABORTED
     receipt.calculate_total()
-    receipt.save()
+    receipt.save(update_fields=("end_time", "status", "total"))
 
     del request.session["receipt"]
     return receipt.as_dict()
@@ -958,7 +955,7 @@ def items_abandon(request, vendor):
 
 @ajax_func('^item/mark_lost$', overseer=True, atomic=True)
 def item_mark_lost(request, code):
-    item = get_object_or_404(Item, code=code)
+    item = _get_item_or_404(code=code, for_update=True)
     if item.state == Item.SOLD:
         raise AjaxError(RET_CONFLICT, u"Item is sold!")
     if item.state == Item.STAGED:
@@ -967,7 +964,7 @@ def item_mark_lost(request, code):
         raise AjaxError(RET_CONFLICT, u"Item is abandoned.")
 
     item.lost_property = True
-    item.save()
+    item.save(update_fields=("lost_property",))
     return item.as_dict()
 
 

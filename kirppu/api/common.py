@@ -8,16 +8,20 @@ from ..models import Box, Item, Receipt
 __author__ = 'codez'
 
 
-def get_item_or_404(code, **kwargs):
+def get_item_or_404(code, for_update=False, **kwargs):
     """
     :param code: Item barcode to find.
     :type code: str
+    :param for_update: If True, Item is retrieved for update.
     :param kwargs: Extra query filters.
     :rtype: Item
     :raises Http404: If an Item matching the query does not exist.
     """
     try:
-        item = Item.get_item_by_barcode(code, **kwargs)
+        if for_update:
+            item = Item.get_item_by_barcode_for_update(code, **kwargs)
+        else:
+            item = Item.get_item_by_barcode(code, **kwargs)
     except Item.DoesNotExist:
         item = None
 
@@ -26,10 +30,11 @@ def get_item_or_404(code, **kwargs):
     return item
 
 
-def get_box_or_404(box_number, **kwargs):
+def get_box_or_404(box_number, for_update=False, **kwargs):
     """
     :param box_number: Number of the box to find.
     :type box_number: int|str
+    :param for_update: If True, Box is retrieved for update.
     :param kwargs: Extra query filters.
     :rtype: Box
     :raises Http404: If a Box matching the query does not exist.
@@ -38,7 +43,10 @@ def get_box_or_404(box_number, **kwargs):
     number = None
     try:
         number = int(box_number)
-        box = Box.objects.get(box_number=box_number, **kwargs)
+        query = Box.objects
+        if for_update:
+            query = query.select_for_update()
+        box = query.get(box_number=box_number, **kwargs)
         return box
     except ValueError as e:
         raise AjaxError(RET_BAD_REQUEST, "box_number must be a number")
@@ -56,8 +64,11 @@ def item_state_conflict(item):
     )
 
 
-def get_receipt(receipt_id):
+def get_receipt(receipt_id, for_update=False):
     try:
-        return Receipt.objects.get(pk=receipt_id, type=Receipt.TYPE_PURCHASE)
+        query = Receipt.objects
+        if for_update:
+            query = query.select_for_update()
+        return query.get(pk=receipt_id, type=Receipt.TYPE_PURCHASE)
     except Receipt.DoesNotExist:
         raise AjaxError(500, "Receipt {} does not exist.".format(receipt_id))

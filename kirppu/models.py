@@ -792,6 +792,10 @@ class Item(models.Model):
         """
         return Item.objects.get(code=data, **kwargs)
 
+    @staticmethod
+    def get_item_by_barcode_for_update(data, **kwargs):
+        return Item.objects.select_for_update().get(code=data, **kwargs)
+
     @classmethod
     def is_item_barcode(cls, text):
         """

@@ -305,14 +305,7 @@ class ReceiptAdminForm(forms.ModelForm):
 
 class ItemRemoveForm(forms.Form):
     receipt = forms.IntegerField(min_value=0, label=u"Receipt ID")
-    item = forms.CharField(label=u"Item code")
-
-    def __init__(self, *args, **kwargs):
-        super(ItemRemoveForm, self).__init__(*args, **kwargs)
-        self.last_added_item = None  # type: ReceiptItem
-        self.item = None  # type: Item
-        self.receipt = None  # type: Receipt
-        self.removal_entry = None  # type: ReceiptItem
+    code = forms.CharField(label=u"Item code")
 
     def clean_receipt(self):
         data = self.cleaned_data["receipt"]
@@ -321,53 +314,51 @@ class ItemRemoveForm(forms.Form):
         return data
 
     def clean_item(self):
-        data = self.cleaned_data["item"]
+        data = self.cleaned_data["code"]
         if not Item.objects.filter(code=data).exists():
             raise forms.ValidationError(u"Item with code {code} not found.".format(code=data))
         return data
 
-    def clean(self):
-        cleaned_data = super(ItemRemoveForm, self).clean()
-        if "receipt" not in cleaned_data or "item" not in cleaned_data:
-            return cleaned_data
-        receipt_id = cleaned_data["receipt"]
-        code = cleaned_data["item"]
 
-        item = Item.objects.get(code=code)
-        receipt = Receipt.objects.get(pk=receipt_id, type=Receipt.TYPE_PURCHASE)
+@transaction.atomic
+def remove_item_from_receipt(request, item_or_code, receipt_id, update_receipt=True):
+    if isinstance(item_or_code, Item):
+        item = item_or_code
+    else:
+        item = Item.objects.select_for_update().get(code=item_or_code)
 
-        last_added_item = ReceiptItem.objects\
-            .filter(receipt=receipt, item=item, action=ReceiptItem.ADD)\
-            .order_by("-add_time")
+    if isinstance(receipt_id, Receipt):
+        receipt = receipt_id
+        assert receipt.type == Receipt.TYPE_PURCHASE, "This function cannot be used for non-purchase receipts."
+    else:
+        receipt = Receipt.objects.select_for_update().get(pk=receipt_id, type=Receipt.TYPE_PURCHASE)
+        assert update_receipt, "Receipt must be updated if accessed by id."
 
-        if len(last_added_item) == 0:
-            raise forms.ValidationError(u"Item is not added to receipt.")
-        assert len(last_added_item) == 1
+    last_added_item = ReceiptItem.objects \
+        .filter(receipt=receipt, item=item, action=ReceiptItem.ADD) \
+        .select_for_update() \
+        .order_by("-add_time")
 
-        self.last_added_item = last_added_item
-        self.item = item
-        self.receipt = receipt
-        return cleaned_data
+    if len(last_added_item) == 0:
+        raise ValueError(u"Item is not added to receipt.")
+    assert len(last_added_item) == 1, "Receipt content conflict."
 
-    @transaction.atomic
-    def save(self, request):
-        assert self.last_added_item is not None
+    last_added_item = last_added_item[0]
+    last_added_item.action = ReceiptItem.REMOVED_LATER
+    last_added_item.save(update_fields=("action",))
 
-        last_added_item = self.last_added_item[0]
-        last_added_item.action = ReceiptItem.REMOVED_LATER
-        last_added_item.save()
+    removal_entry = ReceiptItem(item=item, receipt=receipt, action=ReceiptItem.REMOVE)
+    removal_entry.save()
 
-        removal_entry = ReceiptItem(item=self.item, receipt=self.receipt, action=ReceiptItem.REMOVE)
-        removal_entry.save()
+    if update_receipt:
+        receipt.calculate_total()
+        receipt.save(update_fields=("total",))
 
-        self.receipt.calculate_total()
-        self.receipt.save()
-
-        if self.item.state != Item.BROUGHT:
-            ItemStateLog.objects.log_state(item=self.item, new_state=Item.BROUGHT, request=request)
-            self.item.state = Item.BROUGHT
-            self.item.save()
-        self.removal_entry = removal_entry
+    if item.state != Item.BROUGHT:
+        ItemStateLog.objects.log_state(item=item, new_state=Item.BROUGHT, request=request)
+        item.state = Item.BROUGHT
+        item.save(update_fields=("state",))
+    return removal_entry
 
 
 class VendorSetSelfForm(forms.ModelForm):

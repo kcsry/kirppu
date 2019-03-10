@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from itertools import chain
-
 from django.utils.translation import ugettext as _
 
 from .common import (
@@ -11,7 +9,7 @@ from .common import (
 )
 from ..ajax_util import AjaxError, RET_BAD_REQUEST, RET_CONFLICT
 from ..checkout_api import ajax_func
-from ..forms import ItemRemoveForm
+from ..forms import remove_item_from_receipt
 from ..models import Item, ItemStateLog, ReceiptItem
 
 __author__ = 'codez'
@@ -86,11 +84,12 @@ def box_item_reserve(request, box_number, box_item_count="1"):
     box = _get_box_or_404(box_number)
 
     receipt_id = request.session["receipt"]
-    receipt = get_receipt(receipt_id)
+    receipt = get_receipt(receipt_id, for_update=True)
 
     # Must force id-list to ensure stability.
     # Otherwise the "list" is considered as a subquery which may not be stable.
-    candidates = list(box.item_set.filter(state=Item.BROUGHT)[:box_item_count].values_list("pk", flat=True))
+    candidates = list(box.item_set.select_for_update()
+                      .filter(state=Item.BROUGHT)[:box_item_count].values_list("pk", flat=True))
     if len(candidates) == box_item_count:
         items = Item.objects.filter(pk__in=candidates)
         rows = [
@@ -106,7 +105,7 @@ def box_item_reserve(request, box_number, box_item_count="1"):
 
         ReceiptItem.objects.bulk_create(rows)
         receipt.calculate_total()
-        receipt.save()
+        receipt.save(update_fields=("total",))
 
         ret = box.as_dict()
         ret.update(
@@ -127,30 +126,20 @@ def box_item_release(request, box_number, box_item_count="1"):
     box = _get_box_or_404(box_number)
 
     receipt_id = request.session["receipt"]
-    receipt = get_receipt(receipt_id)
+    receipt = get_receipt(receipt_id, for_update=True)
 
-    box_items = receipt.items.filter(receiptitem__action=ReceiptItem.ADD, box=box)[:box_item_count]
+    box_items = receipt.items.select_for_update().filter(receiptitem__action=ReceiptItem.ADD, box=box)[:box_item_count]
     if box_items.count() != box_item_count:
         raise AjaxError(RET_CONFLICT,
                         _("Only {} items of {} available for removal.").format(box_items.count(), box_item_count))
 
-    forms = [
-        ItemRemoveForm({
-            'receipt': receipt_id,
-            'item': item.code,
-        })
-        for item in box_items
-    ]
-    if not all(form.is_valid() for form in forms):
-        raise AjaxError(RET_CONFLICT, ", ".join(chain(form.errors for form in forms)))
-
     ret = box.as_dict()
     item_codes = list()
-    for form in forms:
-        form.save(request)
-        item_codes.append(form.removal_entry.item.code)
+    for box_item in box_items:
+        removal_entry = remove_item_from_receipt(request, box_item, receipt, update_receipt=False)
+        item_codes.append(removal_entry.item.code)
     receipt.calculate_total()
-    receipt.save()
+    receipt.save(update_fields=("total",))
 
     ret.update(
         total=receipt.total_cents,

@@ -35,7 +35,7 @@ from django.views.generic import RedirectView
 
 from .checkout_api import clerk_logout_fn
 from . import ajax_util
-from .forms import ItemRemoveForm, VendorItemForm, VendorBoxForm
+from .forms import ItemRemoveForm, VendorItemForm, VendorBoxForm, remove_item_from_receipt as _remove_item_from_receipt
 from .fields import ItemPriceField
 from .models import (
     Box,
@@ -112,10 +112,10 @@ def item_add(request):
 @require_http_methods(["POST"])
 def item_hide(request, code):
     vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects, code=code, vendor=vendor)
+    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
 
     item.hidden = True
-    item.save()
+    item.save(update_fields=("hidden",))
 
     return HttpResponse()
 
@@ -124,7 +124,7 @@ def item_hide(request, code):
 @require_http_methods(['POST'])
 def item_to_not_printed(request, code):
     vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects, code=code, vendor=vendor, box__isnull=True)
+    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
 
     if settings.KIRPPU_COPY_ITEM_WHEN_UNPRINTED:
         # Create a duplicate of the item with a new code and hide the old item.
@@ -146,7 +146,7 @@ def item_to_not_printed(request, code):
     else:
         item.printed = False
         new_item = item
-    item.save()
+    item.save(update_fields=("hidden", "printed"))
 
     item_dict = {
         'vendor_id': new_item.vendor_id,
@@ -165,10 +165,10 @@ def item_to_not_printed(request, code):
 @require_http_methods(["POST"])
 def item_to_printed(request, code):
     vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects, code=code, vendor=vendor, box__isnull=True)
+    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
 
     item.printed = True
-    item.save()
+    item.save(update_fields=("printed",))
 
     return HttpResponse()
 
@@ -183,13 +183,13 @@ def item_update_price(request, code):
         return HttpResponseBadRequest(u' '.join(error.messages))
 
     vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects, code=code, vendor=vendor, box__isnull=True)
+    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
 
     if item.is_locked():
         return HttpResponseBadRequest("Item has been brought to event. Price can't be changed.")
 
     item.price = str(price)
-    item.save()
+    item.save(update_fields=("price",))
 
     return HttpResponse(str(price).replace(".", ","))
 
@@ -203,13 +203,13 @@ def item_update_name(request, code):
     name = name[:80]
 
     vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects, code=code, vendor=vendor)
+    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
 
     if item.is_locked():
         return HttpResponseBadRequest("Item has been brought to event. Name can't be changed.")
 
     item.name = name
-    item.save()
+    item.save(update_fields=("name",))
 
     return HttpResponse(name)
 
@@ -220,9 +220,9 @@ def item_update_type(request, code):
     tag_type = request.POST.get("tag_type", None)
 
     vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects, code=code, vendor=vendor)
+    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
     item.type = tag_type
-    item.save()
+    item.save(update_fields=("type",))
     return HttpResponse()
 
 
@@ -845,7 +845,7 @@ def accept_terms(request):
     vendor = Vendor.get_or_create_vendor(request)
     if vendor.terms_accepted is None:
         vendor.terms_accepted = timezone.now()
-        vendor.save()
+        vendor.save(update_fields=("terms_accepted",))
 
     result = timezone.template_localtime(vendor.terms_accepted)
     result = localize(result)
@@ -864,7 +864,7 @@ def remove_item_from_receipt(request):
     form = get_form(ItemRemoveForm, request)
 
     if request.method == "POST" and form.is_valid():
-        form.save(request)
+        _remove_item_from_receipt(request, form.cleaned_data["code"], form.cleaned_data["receipt"])
         return HttpResponseRedirect(url.reverse('kirppu:remove_item_from_receipt'))
 
     return render(request, "kirppu/app_item_receipt_remove.html", {
