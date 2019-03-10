@@ -162,6 +162,12 @@ class Clerk(models.Model):
             return self.get_code()
         return ""
 
+    @property
+    def access_code_str(self):
+        if self.is_valid_code:
+            return self.get_code()
+        return "----------------"
+
     @classmethod
     def by_code(cls, code):
         """

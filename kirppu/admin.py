@@ -170,7 +170,7 @@ class ClerkEditLink(FieldAccessor):
 
 
 _clerk_id_link = ClerkEditLink("id", ugettext("ID"))
-_clerk_access_code_link = ClerkEditLink("access_code", ugettext("Access code"))
+_clerk_access_code_link = ClerkEditLink("access_code_str", ugettext("Access code"))
 
 
 # noinspection PyMethodMayBeStatic
@@ -178,11 +178,16 @@ _clerk_access_code_link = ClerkEditLink("access_code", ugettext("Access code"))
 class ClerkAdmin(admin.ModelAdmin):
     uses_sso = settings.KIRPPU_USE_SSO  # Used by the overridden template.
     actions = ["_gen_clerk_code", "_del_clerk_code", "_move_clerk_code"]
-    list_display = (_clerk_id_link, _user_link, _clerk_access_code_link, 'access_key', 'is_enabled')
     ordering = ('user__first_name', 'user__last_name')
     search_fields = ['user__first_name', 'user__last_name', 'user__username']
     exclude = ['access_key']
     list_display_links = None
+
+    def get_list_display(self, request):
+        if settings.DEBUG:
+            return _clerk_id_link, _user_link, _clerk_access_code_link, 'access_key', 'is_enabled'
+        else:
+            return _clerk_id_link, _user_link, _clerk_access_code_link, 'is_enabled'
 
     @with_description(ugettext(u"Generate missing Clerk access codes"))
     def _gen_clerk_code(self, request, queryset):
@@ -371,30 +376,31 @@ class UITextAdmin(admin.ModelAdmin):
 class ItemTypeAdmin(admin.ModelAdmin):
     ordering = ["order"]
     list_display = ["title", "order", "key"]
+    list_editable = ["order"]
 
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    @with_description(ugettext(u"Generate bar codes for items missing it"))
-    def _gen_ean(self, request, queryset):
-        for item in queryset:
-            if item.code is None or len(item.code) == 0:
-                item.code = Item.gen_barcode()
-                item.save(update_fields=["code"])
-
-    @with_description(ugettext(u"Delete generated bar codes"))
-    def _del_ean(self, request, queryset):
-        queryset.update(code="")
-
     @with_description(ugettext(u"Re-generate bar codes for items"))
-    def _regen_ean(self, request, queryset):
-        self._del_ean(request, queryset)
-        self._gen_ean(request, queryset)
+    def _regen_barcode(self, request, queryset):
+        for item in queryset:
+            item.code = Item.gen_barcode()
+            item.save(update_fields=["code"])
 
-    actions = [_gen_ean, _del_ean, _regen_ean]
+    def get_actions(self, request):
+        s = super().get_actions(request)
+        if settings.DEBUG:
+            for f in [ItemAdmin._regen_barcode]:
+                (func, name, desc) = self.get_action(f)
+                s[name] = (func, name, desc)
+        return s
+
     list_display = ('name', 'code', 'price', 'state', RefLinkAccessor('vendor', ugettext("Vendor")))
     ordering = ('vendor', 'name')
     search_fields = ['name', 'code']
+    list_filter = (
+        "state",
+    )
 
 
 class ReceiptItemAdmin(admin.TabularInline):
@@ -425,6 +431,9 @@ class ReceiptAdmin(admin.ModelAdmin):
     list_display = ["__str__", "status", "total", "counter", "end_time"]
     list_filter = [
         ("type", admin.ChoicesFieldListFilter),
+        "clerk",
+        "counter",
+        "status",
     ]
     form = ReceiptAdminForm
     search_fields = ["items__code", "items__name"]
@@ -450,6 +459,17 @@ class ItemStateLogAdmin(admin.ModelAdmin):
                     'old_state', 'new_state',
                     RefLinkAccessor("clerk", ugettext("Clerk")),
                     'counter']
+    list_select_related = (
+        "clerk", "counter", "item", "clerk__user",
+    )
+    readonly_fields = ["time_str"]
+    list_filter = (
+        "old_state", "new_state", "clerk", "counter",
+    )
+
+    @with_description(ItemStateLog._meta.get_field("time").name)
+    def time_str(self, instance: ItemStateLog):
+        return str(instance.time)
 
 
 class BoxItemAdmin(admin.TabularInline):
