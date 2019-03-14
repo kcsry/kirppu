@@ -749,7 +749,9 @@ def receipt_start(request):
 @ajax_func('^item/reserve$', atomic=True)
 def item_reserve(request, code):
     item = _get_item_or_404(code, for_update=True)
-    receipt_id = request.session["receipt"]
+    receipt_id = request.session.get("receipt")
+    if receipt_id is None:
+        raise AjaxError(RET_BAD_REQUEST, "No active receipt found")
     receipt = get_receipt(receipt_id, for_update=True)
 
     message = raise_if_item_not_available(item)
@@ -776,7 +778,9 @@ def item_reserve(request, code):
 @ajax_func('^item/release$', atomic=True)
 def item_release(request, code):
     item = _get_item_or_404(code, for_update=True)
-    receipt_id = request.session["receipt"]
+    receipt_id = request.session.get("receipt")
+    if receipt_id is None:
+        raise AjaxError(RET_BAD_REQUEST, "No active receipt found")
     try:
         removal_entry = remove_item_from_receipt(request, item, receipt_id)
     except ValueError as e:

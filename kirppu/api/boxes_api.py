@@ -83,7 +83,9 @@ def box_item_reserve(request, box_number, box_item_count="1"):
     box_item_count = _parse_item_count(box_item_count)
     box = _get_box_or_404(box_number)
 
-    receipt_id = request.session["receipt"]
+    receipt_id = request.session.get("receipt")
+    if receipt_id is None:
+        raise AjaxError(RET_BAD_REQUEST, "No active receipt found")
     receipt = get_receipt(receipt_id, for_update=True)
 
     # Must force id-list to ensure stability.
@@ -125,7 +127,9 @@ def box_item_release(request, box_number, box_item_count="1"):
     box_item_count = _parse_item_count(box_item_count)
     box = _get_box_or_404(box_number)
 
-    receipt_id = request.session["receipt"]
+    receipt_id = request.session.get("receipt")
+    if receipt_id is None:
+        raise AjaxError(RET_BAD_REQUEST, "No active receipt found")
     receipt = get_receipt(receipt_id, for_update=True)
 
     box_items = receipt.items.select_for_update().filter(receiptitem__action=ReceiptItem.ADD, box=box)[:box_item_count]
