@@ -1,22 +1,41 @@
 # -*- coding: utf-8 -*-
+import functools
+import sys
+
 from django.urls import reverse
+
+from . import color
 
 __author__ = 'codez'
 
 
 class Api(object):
-    def __init__(self, require_success):
+    def __init__(self, client, debug=False):
+        """
+        :param client: Client to use.
+        :param debug: If True, print when sending a request and received result.
+        """
+        if debug:
+            _print = functools.partial(print, file=sys.stderr)
+        else:
+            def _print(*args):
+                pass
+
         from kirppu.checkout_api import AJAX_FUNCTIONS
 
         def gen(method, view):
             url = reverse(view)
 
-            def callback(client, *args, **kwargs):
-                ret = getattr(client, method)(url, *args, **kwargs)
-                if require_success and ret.status_code != 200:
-                    raise AssertionError("Expected 200 OK, got {} / {}".format(
-                        ret.status_code, ret.content.decode("utf-8")))
+            def callback(**kwargs):
+                data = kwargs
+
+                _print(color(36, "---> " + method), color(36, url), repr(data))
+                ret = getattr(client, method)(url, data=data, **kwargs)
+                self._check_response(ret)
+                _print(color(36, "<--- " + str(ret.status_code)), self._opt_json(ret))
                 return ret
+            callback.url = url
+            callback.method = method
             return callback
 
         self._end_points = {}
@@ -28,9 +47,12 @@ class Api(object):
             return False
         return self._end_points[function]
 
+    @staticmethod
+    def _opt_json(response):
+        try:
+            return repr(response.json())
+        except:
+            return ""
 
-api = Api(False)
-api.__doc__ = "Checkout Api request handler."
-
-apiOK = Api(True)
-apiOK.__doc__ = "Checkout Api request handler that requires all calls to end 200 OK."
+    def _check_response(self, response):
+        pass

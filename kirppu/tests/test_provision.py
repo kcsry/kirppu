@@ -8,9 +8,22 @@ from django.test import override_settings
 from kirppu.provision import Provision
 
 from .factories import *
-from .api_access import apiOK
+from .api_access import Api
+from . import ResultMixin
 
 __author__ = 'codez'
+
+
+class ApiOK(Api, ResultMixin):
+    def _check_response(self, response):
+        self.assertSuccess(response)
+
+    # noinspection PyPep8Naming
+    @staticmethod
+    def assertEqual(expect, actual, msg=""):
+        # used by assertSuccess.
+        if expect != actual:
+            raise AssertionError(msg or ("%s != %s" % (repr(expect), repr(actual))))
 
 
 class SoldItemFactory(ItemFactory):
@@ -122,18 +135,20 @@ class ApiProvisionTest(TestCase):
         self.counter = CounterFactory()
         self.clerk = ClerkFactory()
 
-        apiOK.clerk_login(self.client, {"code": self.clerk.get_code(), "counter": self.counter.identifier})
+        self.apiOK = ApiOK(client=self.client)
+
+        self.apiOK.clerk_login(code=self.clerk.get_code(), counter=self.counter.identifier)
 
     def tearDown(self):
-        apiOK.clerk_logout(self.client)
+        self.apiOK.clerk_logout()
 
     def _compensate(self, items):
-        receipt = apiOK.item_compensate_start(self.client, {"vendor": self.vendor.id})
+        receipt = self.apiOK.item_compensate_start(vendor=self.vendor.id)
 
         for item in items:
-            apiOK.item_compensate(self.client, {"code": item.code})
+            self.apiOK.item_compensate(code=item.code)
 
-        response = apiOK.item_compensate_end(self.client)
+        response = self.apiOK.item_compensate_end()
         receipt = response.json()
         return receipt, response
 
@@ -145,7 +160,9 @@ class ApiProvisionTest(TestCase):
         return e[0]
 
     def _get_receipt(self, receipt_id):
-        receipt = apiOK.receipt_get(self.client, {"id": receipt_id, "type": "compensation"})
+        # The arguments are actually consumed by the view.
+        # noinspection PyArgumentList
+        receipt = self.apiOK.receipt_get(id=receipt_id, type="compensation")
         extras = [item for item in receipt.json()["items"] if item["action"] == "EXTRA"]
         return extras
 
@@ -181,7 +198,7 @@ class ApiProvisionTest(TestCase):
 
     @override_settings(KIRPPU_POST_PROVISION=lambda query: Decimal("0.10") * len(query))
     def test_linear_provision_single_go(self):
-        guess = apiOK.compensable_items(self.client, {"vendor": self.vendor.id})
+        guess = self.apiOK.compensable_items(vendor=self.vendor.id)
         provision = self._get_extra(guess.json()["extras"], "PRO")
         self.assertEqual(provision["value"], -100)
 
@@ -204,7 +221,7 @@ class ApiProvisionTest(TestCase):
     # region Step Provision
     @override_settings(KIRPPU_POST_PROVISION=lambda query: Decimal("0.50") * (len(query) // 4))
     def test_step_provision_single_go(self):
-        guess = apiOK.compensable_items(self.client, {"vendor": self.vendor.id})
+        guess = self.apiOK.compensable_items(vendor=self.vendor.id)
         provision = self._get_extra(guess.json()["extras"], "PRO")
         self.assertEqual(provision["value"], -100)
 
@@ -244,7 +261,7 @@ class ApiProvisionTest(TestCase):
     # region Rounding Provision
     @override_settings(KIRPPU_POST_PROVISION=lambda query: ApiProvisionTest.round(Decimal("0.20") * len(query)))
     def test_rounding_provision_single_go(self):
-        guess = apiOK.compensable_items(self.client, {"vendor": self.vendor.id}).json()["extras"]
+        guess = self.apiOK.compensable_items(vendor=self.vendor.id).json()["extras"]
         provision = self._get_extra(guess, "PRO")
         self.assertEqual(provision["value"], -200)
         self.assertIsNone(self._get_extra(guess, "PRO_FIX"))
@@ -313,7 +330,7 @@ class ApiProvisionTest(TestCase):
 
     @override_settings(KIRPPU_POST_PROVISION=lambda query: ApiProvisionTest.round(Decimal("0.20") * len(query)))
     def test_rounding_provision_with_add(self):
-        guess = apiOK.compensable_items(self.client, {"vendor": self.vendor.id}).json()["extras"]
+        guess = self.apiOK.compensable_items(vendor=self.vendor.id).json()["extras"]
         provision = self._get_extra(guess, "PRO")
         self.assertEqual(provision["value"], -200)
         self.assertIsNone(self._get_extra(guess, "PRO_FIX"))
@@ -322,7 +339,7 @@ class ApiProvisionTest(TestCase):
         self.assertEqual(receipt_1["total"], 1050)
 
         more = SoldItemFactory.create_batch(4, vendor=self.vendor)
-        guess = apiOK.compensable_items(self.client, {"vendor": self.vendor.id}).json()["extras"]
+        guess = self.apiOK.compensable_items(vendor=self.vendor.id).json()["extras"]
         provision = self._get_extra(guess, "PRO")
         self.assertEqual(provision["value"], -100)
         self.assertIsNone(self._get_extra(guess, "PRO_FIX"))
