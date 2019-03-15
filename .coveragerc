@@ -3,6 +3,13 @@
 omit =
     *management/commands*
     *migrations*
+    */helpers/pycharm/*
     */wsgi.py
+    make_api_stub.py
     manage.py
+    kirppu_project/settings.py
+    kirppu_project/local_settings.py
     KirppuVenv/*
+    kompassi_crowd/*
+    kompassi_oauth2/*
+    private/*
