@@ -24,7 +24,7 @@ c:        ## Clean compiled pyc files.
 	find kirppu_project -name \*.pyc -exec rm {} +
 
 apistub:  ## Create/update ajax_api stub file helping navigation from frontend code to backend.
-	find kirppu -! -path "kirppu/node_modules*" -name \*.py -exec python3 make_api_stub.py --js kirppu/static_src/js/api_stub.js -- {} +
+	find kirppu -! -path "kirppu/node_modules*" -name \*.py -exec python3 make_api_stub.py --js kirppu/static_src/js/api_stub.js --py kirppu/tests/api_access.pyi -- {} +
 
 help:     ## This help.
 	@fgrep -h "#""#" $(MAKEFILE_LIST) | sed -e "s/:\\s*#""#/\n\t/"

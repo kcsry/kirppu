@@ -18,9 +18,10 @@ __author__ = 'codez'
 
 
 class Arg(object):
-    def __init__(self, name):
+    def __init__(self, name, node: ast.arguments):
         self.name = name
         self.optional = False
+        self.node = node
 
 
 class Writer(object):
@@ -85,6 +86,86 @@ class JsWriter(Writer):
         self.print("};")
 
 
+class IsUsedDetector(Writer):
+    def __init__(self, output):
+        super().__init__(output)
+        self.used_files = set()
+        self._file = None
+
+    def write_source_file_header(self, file: str):
+        self._file = file
+
+    def write_function(self, module: str, node: ast.FunctionDef, arguments: List[Arg]):
+        self.used_files.add(self._file)
+
+
+class PyWriter(Writer):
+    def __init__(self, output, modules):
+        super().__init__(output)
+        self._modules = modules
+        self._full_module = None
+
+    def write_stub_header(self):
+        self.print("""raise ImportError("Don't use")  # Automatically generated with make_api_stub""")
+        self.print("# noinspection PyUnreachableCode")
+        self.print("from .django_test import DjangoResponse  # .pyi")
+        # TODO: Get rid of circular dependency in checkout_api. Then we don't need to order it to be first.
+        for module in sorted(self._modules, key=lambda a: "" if "kirppu.checkout_api" in a else a):
+            self.print("import", module)
+        self.print()
+        self.print()
+        self.print("# noinspection PyMethodMayBeStatic")
+        self.print("class Api(object):")
+        self.print("""    def __init__(self, client, debug=False): pass
+    @staticmethod
+    def _opt_json(response): pass
+    def _check_response(self, response): pass
+""")
+
+    def write_source_file_header(self, file: str):
+        self.print("    # region", file)
+        self.print()
+        self._full_module = file_to_module(file)
+
+    def write_function(self, module: str, node: ast.FunctionDef, arguments: List[Arg]):
+        decl_args = []
+        args = []
+        arg_count = len(arguments)
+        for index, arg in enumerate(arguments):
+            if index == 0 and arg.name == "request":
+                continue
+            if arg.optional:
+                d = arg.node.defaults
+                default = d[index - (arg_count - len(d))]
+
+                if isinstance(default, ast.Str):
+                    default = repr(default.s)
+                elif isinstance(default, ast.NameConstant):
+                    default = default.value
+                else:
+                    raise TypeError("Unhandled AST type %s" % type(default))
+
+                decl_args.append("{name}={default}".format(name=arg.name, default=default))
+            else:
+                decl_args.append(arg.name)
+            args.append(arg.name)
+
+        if decl_args:
+            decl_args.insert(0, "")  # add leading comma.
+            decl_args.insert(1, "*")  # prevent positional arguments.
+
+        self.print("    def {name}(self{args}) -> DjangoResponse:".format(name=node.name, args=", ".join(decl_args)))
+        self.print("        return {module}.{name}({args})".format(
+            module=self._full_module, name=node.name, args=", ".join(args)))
+        self.print()
+
+    def write_source_file_trailer(self):
+        self.print("    # endregion")
+
+    def write_stub_trailer(self):
+        pass
+
+
 # noinspection PyPep8Naming
 class DecoratorCallVisitor(ast.NodeVisitor):
     def visit_Call(self, node: ast.Call) -> bool:
@@ -134,7 +215,7 @@ class MainVisitor(ast.NodeVisitor):
     def parse_arguments(node: ast.arguments) -> List[Arg]:
         args = []  # type: List[Arg]
         for arg in node.args:
-            args.append(Arg(arg.arg))
+            args.append(Arg(arg.arg, node))
 
         for index, default in enumerate(node.defaults):
             args[-len(node.defaults) + index].optional = True
@@ -162,9 +243,14 @@ def handle_sources(sources: List[str], writer: Writer):
     writer.write_stub_trailer()
 
 
+def file_to_module(name: str) -> str:
+    return os.path.splitext(name)[0].replace(os.path.sep, ".")
+
+
 def main(args=None):
     parser = argparse.ArgumentParser(description="Create API stub file(s).")
     parser.add_argument("--js", type=str, action="append", help="JavaScript stub file to write into.")
+    parser.add_argument("--py", type=str, action="append", help="Python stub file to write into.")
     parser.add_argument("source", type=str, nargs="+", help="Python source file.")
 
     arguments = parser.parse_args(args)
@@ -173,6 +259,16 @@ def main(args=None):
         with open(filename, "wt") as f:
             writer = JsWriter(f)
             handle_sources(arguments.source, writer)
+
+    if arguments.py:
+        detector = IsUsedDetector(None)
+        handle_sources(arguments.source, detector)
+        py_modules = [file_to_module(py) for py in detector.used_files]
+
+        for filename in arguments.py:
+            with open(filename, "wt") as f:
+                writer = PyWriter(f, py_modules)
+                handle_sources(arguments.source, writer)
 
 
 if __name__ == "__main__":

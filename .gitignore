@@ -3,6 +3,7 @@
 /static/
 kirppu/local_settings.py
 kirppu/template-strings.js
+kirppu/tests/api_access.pyi
 kirppu_project/local_settings.py
 node_modules*
 /KirppuVenv*
