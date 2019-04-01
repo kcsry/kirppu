@@ -111,11 +111,12 @@ def item_add(request):
 @login_required
 @require_http_methods(["POST"])
 def item_hide(request, code):
-    vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
+    with transaction.atomic():
+        vendor = Vendor.get_vendor(request)
+        item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
 
-    item.hidden = True
-    item.save(update_fields=("hidden",))
+        item.hidden = True
+        item.save(update_fields=("hidden",))
 
     return HttpResponse()
 
@@ -123,30 +124,31 @@ def item_hide(request, code):
 @login_required
 @require_http_methods(['POST'])
 def item_to_not_printed(request, code):
-    vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
+    with transaction.atomic():
+        vendor = Vendor.get_vendor(request)
+        item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
 
-    if settings.KIRPPU_COPY_ITEM_WHEN_UNPRINTED:
-        # Create a duplicate of the item with a new code and hide the old item.
-        # This way, even if the user forgets to attach the new tags, the old
-        # printed tag is still in the system.
-        if not is_vendor_open(request):
-            return HttpResponseForbidden("Registration is closed")
+        if settings.KIRPPU_COPY_ITEM_WHEN_UNPRINTED:
+            # Create a duplicate of the item with a new code and hide the old item.
+            # This way, even if the user forgets to attach the new tags, the old
+            # printed tag is still in the system.
+            if not is_vendor_open(request):
+                return HttpResponseForbidden("Registration is closed")
 
-        new_item = Item.new(
-            name=item.name,
-            price=item.price,
-            vendor=item.vendor,
-            type=item.type,
-            state=Item.ADVERTISED,
-            itemtype=item.itemtype,
-            adult=item.adult
-        )
-        item.hidden = True
-    else:
-        item.printed = False
-        new_item = item
-    item.save(update_fields=("hidden", "printed"))
+            new_item = Item.new(
+                name=item.name,
+                price=item.price,
+                vendor=item.vendor,
+                type=item.type,
+                state=Item.ADVERTISED,
+                itemtype=item.itemtype,
+                adult=item.adult
+            )
+            item.hidden = True
+        else:
+            item.printed = False
+            new_item = item
+        item.save(update_fields=("hidden", "printed"))
 
     item_dict = {
         'vendor_id': new_item.vendor_id,
@@ -164,11 +166,12 @@ def item_to_not_printed(request, code):
 @login_required
 @require_http_methods(["POST"])
 def item_to_printed(request, code):
-    vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
+    with transaction.atomic():
+        vendor = Vendor.get_vendor(request)
+        item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
 
-    item.printed = True
-    item.save(update_fields=("printed",))
+        item.printed = True
+        item.save(update_fields=("printed",))
 
     return HttpResponse()
 
@@ -182,14 +185,15 @@ def item_update_price(request, code):
     except ValidationError as error:
         return HttpResponseBadRequest(u' '.join(error.messages))
 
-    vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
+    with transaction.atomic():
+        vendor = Vendor.get_vendor(request)
+        item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
 
-    if item.is_locked():
-        return HttpResponseBadRequest("Item has been brought to event. Price can't be changed.")
+        if item.is_locked():
+            return HttpResponseBadRequest("Item has been brought to event. Price can't be changed.")
 
-    item.price = str(price)
-    item.save(update_fields=("price",))
+        item.price = str(price)
+        item.save(update_fields=("price",))
 
     return HttpResponse(str(price).replace(".", ","))
 
@@ -202,14 +206,15 @@ def item_update_name(request, code):
 
     name = name[:80]
 
-    vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
+    with transaction.atomic():
+        vendor = Vendor.get_vendor(request)
+        item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
 
-    if item.is_locked():
-        return HttpResponseBadRequest("Item has been brought to event. Name can't be changed.")
+        if item.is_locked():
+            return HttpResponseBadRequest("Item has been brought to event. Name can't be changed.")
 
-    item.name = name
-    item.save(update_fields=("name",))
+        item.name = name
+        item.save(update_fields=("name",))
 
     return HttpResponse(name)
 
@@ -219,10 +224,11 @@ def item_update_name(request, code):
 def item_update_type(request, code):
     tag_type = request.POST.get("tag_type", None)
 
-    vendor = Vendor.get_vendor(request)
-    item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
-    item.type = tag_type
-    item.save(update_fields=("type",))
+    with transaction.atomic():
+        vendor = Vendor.get_vendor(request)
+        item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
+        item.type = tag_type
+        item.save(update_fields=("type",))
     return HttpResponse()
 
 
