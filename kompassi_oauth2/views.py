@@ -21,7 +21,7 @@ def get_session(request, **kwargs):
 
 def get_redirect_url(request, redirect_to, fallback):
     # Ensure the user-originating redirection url is safe.
-    if not is_safe_url(url=redirect_to, host=request.get_host()):
+    if not is_safe_url(url=redirect_to, allowed_hosts={request.get_host()}):
         redirect_to = resolve_url(fallback)
     return redirect_to
 

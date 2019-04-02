@@ -1,7 +1,7 @@
 django-environ~=0.4.0,!=0.4.2
 django-ipware~=2.1.0
 django-ratelimit~=1.1.0
-django~=2.0.0
+django~=2.2.0
 pillow~=5.2.0
 pubcode>=1.1.0
 pytz~=2018.5

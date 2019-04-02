@@ -271,38 +271,6 @@ class UITextForm(forms.ModelForm):
         return data
 
 
-class ReceiptItemAdminForm(forms.ModelForm):
-    price = StaticText(
-        label=u"Price",
-        text=u"--",
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(ReceiptItemAdminForm, self).__init__(*args, **kwargs)
-        if "instance" in kwargs:
-            mdl = kwargs["instance"]
-            self.fields["price"].widget.set_text(mdl.item.price)
-
-    class Meta:
-        model = ReceiptItem
-        fields = ("item", "receipt", "action")
-
-
-class ReceiptAdminForm(forms.ModelForm):
-    # Django 1.10 does not allow same name to be used when overriding read-only -properties.
-    # TODO: Maybe show this as description for state?
-    start_time_ = StaticText(
-        label=u"Start time",
-        text=u"--"
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(ReceiptAdminForm, self).__init__(*args, **kwargs)
-        if "instance" in kwargs:
-            mdl = kwargs["instance"]
-            self.fields["start_time_"].widget.set_text(mdl.start_time)
-
-
 class ItemRemoveForm(forms.Form):
     receipt = forms.IntegerField(min_value=0, label=u"Receipt ID")
     code = forms.CharField(label=u"Item code")

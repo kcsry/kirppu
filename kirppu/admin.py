@@ -16,8 +16,6 @@ from django.utils.translation import ugettext_lazy as ugettext, ngettext
 
 from .forms import (
     ClerkGenerationForm,
-    ReceiptItemAdminForm,
-    ReceiptAdminForm,
     UITextForm,
     ClerkEditForm,
     ClerkSSOForm,
@@ -406,8 +404,11 @@ class ItemAdmin(admin.ModelAdmin):
 class ReceiptItemAdmin(admin.TabularInline):
     model = ReceiptItem
     ordering = ["add_time"]
-    form = ReceiptItemAdminForm
-    readonly_fields = ["item"]
+    readonly_fields = ["item", "price_str"]
+
+    @with_description(Item._meta.get_field("price").name)
+    def price_str(self, instance: ReceiptItem):
+        return instance.item.price
 
 
 class ReceiptExtraAdmin(admin.TabularInline):
@@ -427,7 +428,7 @@ class ReceiptAdmin(admin.ModelAdmin):
         ReceiptExtraAdmin,
         ReceiptNoteAdmin,
     ]
-    ordering = ["clerk", "start_time"]
+    ordering = ["clerk", "-start_time"]
     list_display = ["__str__", "status", "total", "counter", "end_time"]
     list_filter = [
         ("type", admin.ChoicesFieldListFilter),
@@ -435,9 +436,9 @@ class ReceiptAdmin(admin.ModelAdmin):
         "counter",
         "status",
     ]
-    form = ReceiptAdminForm
     search_fields = ["items__code", "items__name"]
     actions = ["re_calculate_total"]
+    readonly_fields = ["start_time_str"]
 
     @with_description("Re-calculate total sum of receipt")
     def re_calculate_total(self, request, queryset):
@@ -447,6 +448,10 @@ class ReceiptAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    @with_description(Receipt._meta.get_field("start_time").name)
+    def start_time_str(self, instance: Receipt):
+        return str(instance.start_time)
 
 
 @admin.register(ItemStateLog)
@@ -480,7 +485,7 @@ class BoxItemAdmin(admin.TabularInline):
     extra = 0
     show_change_link = True
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
 

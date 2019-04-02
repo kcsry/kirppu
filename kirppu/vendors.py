@@ -69,7 +69,7 @@ def change_vendor(request):
         del request.session["vendor_id"]
 
     ref = request.META["HTTP_REFERER"]
-    if not (ref and is_safe_url(ref)):
+    if not (ref and is_safe_url(ref, allowed_hosts={request.get_host()})):
         ref = reverse("kirppu:page")
 
     return HttpResponseRedirect(ref)

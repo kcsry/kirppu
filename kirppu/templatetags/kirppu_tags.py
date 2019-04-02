@@ -5,7 +5,6 @@ import re
 
 from django import template
 from django.conf import settings
-from django.template import Node, TemplateSyntaxError
 from django.utils.encoding import force_text
 from django.utils.lru_cache import lru_cache
 from django.utils.html import format_html
@@ -140,7 +139,7 @@ def user_adapter(user, getter):
 
 
 # https://djangosnippets.org/snippets/660/
-class SplitListNode(Node):
+class SplitListNode(template.Node):
     def __init__(self, list_string, chunk_size, new_list_name):
         self.list = list_string
         self.chunk_size = chunk_size
@@ -161,7 +160,7 @@ def split_list(parser, token):
     """<% split_list list as new_list 5 %>"""
     bits = token.contents.split()
     if len(bits) != 5:
-        raise TemplateSyntaxError("split_list list as new_list 5")
+        raise template.TemplateSyntaxError("split_list list as new_list 5")
     return SplitListNode(bits[1], bits[4], bits[3])
 
 split_list = register.tag(split_list)

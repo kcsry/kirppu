@@ -4,6 +4,7 @@ omit =
     *management/commands*
     *migrations*
     */helpers/pycharm/*
+    */tests/*
     */wsgi.py
     make_api_stub.py
     manage.py

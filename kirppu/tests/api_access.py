@@ -26,11 +26,9 @@ class Api(object):
         def gen(method, view):
             url = reverse(view)
 
-            def callback(**kwargs):
-                data = kwargs
-
+            def callback(**data):
                 _print(color(36, "---> " + method), color(36, url), repr(data))
-                ret = getattr(client, method)(url, data=data, **kwargs)
+                ret = getattr(client, method)(url, data=data)
                 self._check_response(ret)
                 _print(color(36, "<--- " + str(ret.status_code)), self._opt_json(ret))
                 return ret
