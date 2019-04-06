@@ -15,7 +15,6 @@ class CustomTagLexer(mistune.BlockLexer):
         }
 
     def parse_block_html(self, m):
-        print(m.group(0), m.groups())
         tag = m.group(1)
         if tag:
             action = self._custom_tags.get(tag)
