@@ -1,5 +1,6 @@
 [
     {
+        "model": "auth.group",
         "fields": {
             "name": "kirppu_leader",
             "permissions": [
@@ -44,15 +45,80 @@
                     "item"
                 ],
                 [
+                    "view_itemstatelog",
+                    "kirppu",
+                    "itemstatelog"
+                ],
+                [
+                    "view_statistics",
+                    "kirppu",
+                    "itemstatelog"
+                ],
+                [
+                    "add_itemtype",
+                    "kirppu",
+                    "itemtype"
+                ],
+                [
+                    "change_itemtype",
+                    "kirppu",
+                    "itemtype"
+                ],
+                [
+                    "delete_itemtype",
+                    "kirppu",
+                    "itemtype"
+                ],
+                [
+                    "view_person",
+                    "kirppu",
+                    "person"
+                ],
+                [
+                    "view_accounting",
+                    "kirppu",
+                    "receipt"
+                ],
+                [
+                    "view_receipt",
+                    "kirppu",
+                    "receipt"
+                ],
+                [
+                    "view_receiptextrarow",
+                    "kirppu",
+                    "receiptextrarow"
+                ],
+                [
+                    "view_receiptitem",
+                    "kirppu",
+                    "receiptitem"
+                ],
+                [
+                    "view_receiptnote",
+                    "kirppu",
+                    "receiptnote"
+                ],
+                [
                     "change_uitext",
                     "kirppu",
                     "uitext"
+                ],
+                [
+                    "view_vendor",
+                    "kirppu",
+                    "vendor"
+                ],
+                [
+                    "view_user",
+                    "kirppuauth",
+                    "user"
                 ]
             ]
-        },
-        "model": "auth.group"
+        }
     },
     {
+        "model": "auth.group",
         "fields": {
             "name": "kirppu_overseer",
             "permissions": [
@@ -67,7 +133,6 @@
                     "item"
                 ]
             ]
-        },
-        "model": "auth.group"
+        }
     }
 ]
