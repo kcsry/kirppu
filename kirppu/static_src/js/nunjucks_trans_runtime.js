@@ -1,6 +1,6 @@
 function Trans() {
     this.run = function(context, text) {
-        return gettext(text);
+        return new nunjucks.runtime.SafeString(gettext(text));
     };
 }
 
