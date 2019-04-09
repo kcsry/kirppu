@@ -165,6 +165,7 @@ module.exports.jst = {
             "jst/vendor_info.jinja2",
             "jst/item_receipt_table.jinja2",
             "jst/item_receipt_table_row.jinja2",
+            "jst/item_search_form.jinja2",
             "jst/progress_bar.jinja2",
             "jst/receipt_list_table_simple.jinja2",
             "jst/receipt_list_table_compensations.jinja2",

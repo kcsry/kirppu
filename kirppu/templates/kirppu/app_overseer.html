@@ -5,10 +5,9 @@
 {% block title %}Kirppu - Overseer Dashboard{% endblock %}
 
 {% block head %}
-    <link href="{% static "kirppu/css/general.css" %}" rel="stylesheet">
+    {{ block.super }}
     <link href="{% static "kirppu/css/checkout.css" %}" rel="stylesheet">
     <link href="{% static "kirppu/css/price_tags.css" %}" rel="stylesheet">
-    <script src="{% static "kirppu/js/general.js" %}"></script>
     <script src="{% static "kirppu/js/checkout.js" %}"></script>
     <script src="{% static "kirppu/js/checkout_comp.js" %}"></script>
     <script src="{% static "kirppu/jst/checkout_templates.js" %}"></script>
