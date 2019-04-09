@@ -33,5 +33,6 @@ class @ItemSearchForm
       "item_search_type",
       "item_search_state"
     ])
+    args.push($("#show_hidden_items", @form).prop("checked"))
     @action.apply(@, args)
 

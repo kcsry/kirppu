@@ -16,6 +16,8 @@ class @ItemFindList extends ResultTable
     row = $("<tr>")
       .addClass('receipt_tr_clickable')
       .click(-> action(item))
+    if item.hidden
+      row.addClass("text-muted")
     vendor = dPrintF(@constructor.vendorField,
       n: item.vendor.name
       i: item.vendor.id

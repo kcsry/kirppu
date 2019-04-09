@@ -17,7 +17,7 @@ class @ItemFindMode extends CheckoutMode
   glyph: -> "search"
   title: -> gettext("Item Search")
 
-  doSearch: (query, code, vendor, min_price, max_price, type, state) =>
+  doSearch: (query, code, vendor, min_price, max_price, type, state, show_hidden) =>
     @search =
       query: query
       code: code
@@ -26,6 +26,7 @@ class @ItemFindMode extends CheckoutMode
       max_price: max_price
       item_type: if type? then type.join(' ') else ''
       item_state: if state? then state.join(' ') else ''
+      show_hidden: show_hidden
     Api.item_search(@search).done(@onItemsFound)
 
   onItemsFound: (items) =>
