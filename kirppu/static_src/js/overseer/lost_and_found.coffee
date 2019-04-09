@@ -1,9 +1,9 @@
 class LostAndFound extends CheckoutMode
   ModeSwitcher.registerEntryPoint("lost_and_found", @)
 
-  title: -> "Lost and found properties"
+  title: -> gettext("Lost and found properties")
   glyph: -> "sunglasses"
-  inputPlaceholder: -> "Barcode of Item to mark as Lost Property"
+  inputPlaceholder: -> gettext("Barcode of Item to mark as Lost Property")
 
   constructor: (args...) ->
     super(args...)
@@ -27,7 +27,7 @@ class LostAndFound extends CheckoutMode
 
   onResultError: (jqXHR) =>
     if jqXHR.status == 404
-      safeAlert("No such item")
+      safeAlert(gettext("No such item"))
       return
     safeAlert("Error:" + jqXHR.responseText)
     return

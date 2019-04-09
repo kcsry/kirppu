@@ -15,7 +15,7 @@ class @ItemFindMode extends CheckoutMode
     @searchForm.searchInput.focus()
 
   glyph: -> "search"
-  title: -> "Item Search"
+  title: -> gettext("Item Search")
 
   doSearch: (query, code, vendor, min_price, max_price, type, state) =>
     @search =

@@ -14,7 +14,7 @@ class @ReceiptFindMode extends CheckoutMode
     refresh.refresh()
 
   glyph: -> "list-alt"
-  title: -> "Receipt List"
+  title: -> gettext("Receipt List")
   subtitle: -> null
 
   onResult: (receipts) =>
@@ -29,7 +29,7 @@ class @ReceiptFindMode extends CheckoutMode
     () =>
       dialog = new Dialog()
       dialog.addPositive().text("Ok")
-      dialog.title.text("Receipt details")
+      dialog.title.text(gettext("Receipt details"))
 
       Api.receipt_get(id: receiptId).then(
         (data) =>

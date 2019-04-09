@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}Kirppu - Overseer Dashboard{% endblock %}
+{% block title %}{% trans "Kirppu – Overseer Dashboard" %}{% endblock %}
 
 {% block head %}
     {{ block.super }}
@@ -14,24 +14,24 @@
 {% endblock %}
 
 {% block navbar_left %}
-    <li class="dropdown" id="modeMenu"><a href="javascript:void(1)" class="dropdown-toggle" data-toggle="dropdown">Actions<b class="caret"></b></a>
+    <li class="dropdown" id="modeMenu"><a href="javascript:void(1)" class="dropdown-toggle" data-toggle="dropdown">{% trans "Actions" %}<b class="caret"></b></a>
         <ul class="dropdown-menu">
         <li>
             <a href="javascript:void(1)" data-entrypoint="item_find">
                 <span class="glyphicon glyphicon-search"></span>
-                Item Search
+                {% trans "Item Search" %}
             </a>
         </li>
         <li>
             <a href="javascript:void(1)" data-entrypoint="lost_and_found">
                 <span class="glyphicon glyphicon-sunglasses"></span>
-                Lost and Found
+                {% trans "Lost and Found" %}
             </a>
         </li>
         <li>
             <a href="javascript:void(1)" data-entrypoint="receipt_list">
                 <span class="glyphicon glyphicon-list-alt"></span>
-                Receipt List
+                {% trans "Receipt List" %}
             </a>
         </li>
         </ul>
@@ -39,13 +39,13 @@
 {% endblock %}
 
 {% block navbar_right %}
-    <li><a href="{% url 'kirppu:checkout_view' %}" title="Return to checkout">Checkout</a></li>
+    <li><a href="{% url 'kirppu:checkout_view' %}" title="{% trans "Return to checkout" %}">{% trans "Checkout" %}</a></li>
 {% endblock %}
 
 {% block body %}
     <h1>
         <span id="mode_glyph" class="glyphicon glyphicon-dashboard"></span>
-        <span id="title_text">Overseer Dashboard</span>
+        <span id="title_text">{% trans "Overseer Dashboard" %}</span>
     </h1>
 
     <div class="alert alert-danger alert-off" role="alert" id="error_container"></div>
