@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2017, 2018.
+# Jyrki Launonen, 2014, 2015, 2017, 2018, 2019.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-12 11:08+0300\n"
-"PO-Revision-Date: 2018-08-12 11:12+0200\n"
+"POT-Creation-Date: 2019-05-08 18:04+0300\n"
+"PO-Revision-Date: 2019-05-08 18:08+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 2.0\n"
+"X-Generator: Lokalize 18.12.3\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -135,7 +135,6 @@ msgid "Error: %s"
 msgstr "Virhe: %s"
 
 #, javascript-format
-#| msgid "Box item count: %d"
 msgid "Box bundle count: %d"
 msgstr "Laatikon nippujen määrä: %d"
 
@@ -167,7 +166,6 @@ msgstr "tavaraa laatikossa"
 msgid "box number"
 msgstr "laatikon numero"
 
-#| msgid "price"
 msgid "pricing"
 msgstr "hinnoittelu"
 
@@ -181,6 +179,9 @@ msgstr "Peru"
 
 msgid "Accept"
 msgstr "Hyväksy"
+
+msgid "Item Search"
+msgstr "Tuotehaku"
 
 msgid "Returned items"
 msgstr "Palautetut tavarat"
@@ -298,8 +299,6 @@ msgstr[1] "%i nippua"
 msgid "Incorrect amount of items to sell as bundle"
 msgstr "Virheellinen määrä tavaroita myytäväksi nipussa"
 
-#| msgid "= %d item"
-#| msgid_plural "= %d items"
 msgid "%i item"
 msgid_plural "%i items"
 msgstr[0] "%i tavara"
@@ -423,8 +422,20 @@ msgstr "Uuden koodin luominen mitätöi kaikki vanhat koodit."
 msgid "Vendor Search"
 msgstr "Myyjähaku"
 
+msgid "Lost and found properties"
+msgstr "Kadonneet ja löytyneet tavarat"
+
+msgid "Barcode of Item to mark as Lost Property"
+msgstr "Kadonneeksi merkittävän tuotteen viivakoodi"
+
 msgid "state"
 msgstr "tila"
+
+msgid "Receipt List"
+msgstr "Kuittilista"
+
+msgid "Receipt details"
+msgstr "Kuitin tiedot"
 
 msgid "counter"
 msgstr "kassa"
@@ -451,20 +462,23 @@ msgstr "Klikkaa muokataksesi…"
 msgid "<em>Click to edit</em>"
 msgstr "<em>Klikkaa muokataksesi</em>"
 
-msgid "Sum"
-msgstr "Summa"
-
 msgid "Frequency"
 msgstr "Taajuus"
 
 msgid "Normal distribution"
 msgstr "Normaalijakauma"
 
+msgid "Sum"
+msgstr "Summa"
+
 msgid "n"
 msgstr "n"
 
 msgid "euros"
 msgstr "eurot"
+
+msgid "No data"
+msgstr "Ei tietoja"
 
 msgid "#"
 msgstr "#"
@@ -495,6 +509,43 @@ msgstr "Ei laatkoita."
 
 msgid "Vendor"
 msgstr "Myyjä"
+
+msgid "Name / Bar code"
+msgstr "Nimi / Viivakoodi"
+
+msgid "Bar code part"
+msgstr "Viivakoodin osa"
+
+msgid "Vendor ID"
+msgstr "Myyjän ID"
+
+msgid "Minimum price"
+msgstr "Vähimmäishinta"
+
+msgid "Maximum price"
+msgstr "Enimmäishinta"
+
+msgid "Type"
+msgstr "Tyyppi"
+
+msgid ""
+"To select/deselect multiple values, press <kbd>Ctrl</kbd>, <kbd>Command</"
+"kbd> or <kbd>Shift</kbd> keys while clicking items."
+msgstr ""
+"Paina <kbd>Ctrl</kbd>, <kbd>Command</kbd> tai <kbd>Shift</kbd>-painiketta"
+" klikatessa valitaksesi useamman arvon."
+
+msgid "State"
+msgstr "Tila"
+
+msgid "Show hidden items"
+msgstr "Näytä piilotetut tavarat"
+
+msgid "Search"
+msgstr "Etsi"
+
+msgid "Reset"
+msgstr "Tyhjennä"
 
 msgid "began"
 msgstr "alkoi"

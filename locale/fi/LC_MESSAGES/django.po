@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-10 19:38+0200\n"
-"PO-Revision-Date: 2019-02-10 19:39+0200\n"
+"POT-Creation-Date: 2019-05-08 18:04+0300\n"
+"PO-Revision-Date: 2019-05-08 18:05+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 2.0\n"
+"X-Generator: Lokalize 18.12.3\n"
 
 msgid "Event number"
 msgstr "Tapahtumanumero"
@@ -105,12 +105,6 @@ msgstr[1] "Lisätty {count} irrallista kassatätiä."
 
 msgid "Add unbound clerk"
 msgstr "Lisää irrallinen kassahenkilö"
-
-msgid "Generate bar codes for items missing it"
-msgstr "Luo viivakoodit tuotteille joilta se puuttuu"
-
-msgid "Delete generated bar codes"
-msgstr "Poista luodut viivakoodit"
 
 msgid "Re-generate bar codes for items"
 msgstr "Luo tavaroiden viivakoodit uudelleen"
@@ -663,6 +657,21 @@ msgstr "Siirrä tavara tulostettujen listaan tai sieltä takaisin."
 msgid "Toggle size."
 msgstr "Vaihda kokoa."
 
+msgid "Kirppu – Overseer Dashboard"
+msgstr "Kirppu – Valvojan näkymä"
+
+msgid "Actions"
+msgstr "Toiminnot"
+
+msgid "Item Search"
+msgstr "Tuotehaku"
+
+msgid "Lost and Found"
+msgstr "Löytötavarat"
+
+msgid "Receipt List"
+msgstr "Kuittilista"
+
 msgid "Return to checkout"
 msgstr "Palaa myyntinäkymään"
 
@@ -937,9 +946,6 @@ msgstr "Mobiili"
 msgid "Checkout commands"
 msgstr "Kassan komennot"
 
-msgid "Lost and Found"
-msgstr "Löytötavarat"
-
 msgid "Statistics"
 msgstr "Tilastot"
 
@@ -1005,6 +1011,12 @@ msgstr "Lisää %(name)s SSO-tarjoajalta"
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Lisää irrallinen %(name)s"
+
+#~ msgid "Generate bar codes for items missing it"
+#~ msgstr "Luo viivakoodit tuotteille joilta se puuttuu"
+
+#~ msgid "Delete generated bar codes"
+#~ msgstr "Poista luodut viivakoodit"
 
 #~ msgid "Price / unit:"
 #~ msgstr "Hinta / kpl:"

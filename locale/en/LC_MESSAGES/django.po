@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-10 19:38+0200\n"
-"PO-Revision-Date: 2019-02-10 19:39+0200\n"
+"POT-Creation-Date: 2019-05-08 18:04+0300\n"
+"PO-Revision-Date: 2019-05-08 18:09+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 2.0\n"
+"X-Generator: Lokalize 18.12.3\n"
 
 msgid "Event number"
 msgstr "Event number"
@@ -104,12 +104,6 @@ msgstr[1] "{count} unbound clerks added."
 
 msgid "Add unbound clerk"
 msgstr "Add unbound clerk"
-
-msgid "Generate bar codes for items missing it"
-msgstr "Generate bar codes for items missing it"
-
-msgid "Delete generated bar codes"
-msgstr "Delete generated bar codes"
 
 msgid "Re-generate bar codes for items"
 msgstr "Re-generate bar codes for items"
@@ -661,6 +655,21 @@ msgstr "Switch item between printed and not printed lists."
 msgid "Toggle size."
 msgstr "Toggle size."
 
+msgid "Kirppu – Overseer Dashboard"
+msgstr "Kirppu – Overseer Dashboard"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Item Search"
+msgstr "Item Search"
+
+msgid "Lost and Found"
+msgstr "Lost and Found"
+
+msgid "Receipt List"
+msgstr "Receipt List"
+
 msgid "Return to checkout"
 msgstr "Return to checkout"
 
@@ -694,7 +703,6 @@ msgstr "Items brought but not sold nor returned."
 msgid "Items sold but not redeemed."
 msgstr "Items sold but not redeemed."
 
-#| msgid "Items returned and redeemed."
 msgid "Items returned or redeemed."
 msgstr "Items returned or redeemed."
 
@@ -937,9 +945,6 @@ msgstr "Mobile"
 msgid "Checkout commands"
 msgstr "Checkout commands"
 
-msgid "Lost and Found"
-msgstr "Lost and Found"
-
 msgid "Statistics"
 msgstr "Statistics"
 
@@ -1005,6 +1010,12 @@ msgstr "Add %(name)s from SSO provider"
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Add unbound %(name)s"
+
+#~ msgid "Generate bar codes for items missing it"
+#~ msgstr "Generate bar codes for items missing it"
+
+#~ msgid "Delete generated bar codes"
+#~ msgstr "Delete generated bar codes"
 
 #~ msgid "Price / unit:"
 #~ msgstr "Price / unit:"

@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2017, 2018.
+# Jyrki Launonen, 2014, 2015, 2017, 2018, 2019.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-12 11:08+0300\n"
-"PO-Revision-Date: 2018-08-12 11:09+0200\n"
+"POT-Creation-Date: 2019-05-08 18:04+0300\n"
+"PO-Revision-Date: 2019-05-08 18:09+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 2.0\n"
+"X-Generator: Lokalize 18.12.3\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -136,7 +136,6 @@ msgid "Error: %s"
 msgstr "Error: %s"
 
 #, javascript-format
-#| msgid "Box item count: %d"
 msgid "Box bundle count: %d"
 msgstr "Box bundle count: %d"
 
@@ -168,7 +167,6 @@ msgstr "items in the box"
 msgid "box number"
 msgstr "box number"
 
-#| msgid "price"
 msgid "pricing"
 msgstr "pricing"
 
@@ -182,6 +180,9 @@ msgstr "Cancel"
 
 msgid "Accept"
 msgstr "Accept"
+
+msgid "Item Search"
+msgstr "Item Search"
 
 msgid "Returned items"
 msgstr "Returned items"
@@ -299,8 +300,6 @@ msgstr[1] "%i bundles"
 msgid "Incorrect amount of items to sell as bundle"
 msgstr "Incorrect amount of items to sell as bundle"
 
-#| msgid "= %d item"
-#| msgid_plural "= %d items"
 msgid "%i item"
 msgid_plural "%i items"
 msgstr[0] "%i item"
@@ -424,8 +423,20 @@ msgstr "Creating a code will invalidate all old codes."
 msgid "Vendor Search"
 msgstr "Vendor Search"
 
+msgid "Lost and found properties"
+msgstr "Lost and found properties"
+
+msgid "Barcode of Item to mark as Lost Property"
+msgstr "Barcode of Item to mark as Lost Property"
+
 msgid "state"
 msgstr "state"
+
+msgid "Receipt List"
+msgstr "Receipt List"
+
+msgid "Receipt details"
+msgstr "Receipt details"
 
 msgid "counter"
 msgstr "counter"
@@ -452,20 +463,23 @@ msgstr "Click to edit…"
 msgid "<em>Click to edit</em>"
 msgstr "<em>Click to edit</em>"
 
-msgid "Sum"
-msgstr "Sum"
-
 msgid "Frequency"
 msgstr "Frequency"
 
 msgid "Normal distribution"
 msgstr "Normal distribution"
 
+msgid "Sum"
+msgstr "Sum"
+
 msgid "n"
 msgstr "n"
 
 msgid "euros"
 msgstr "euros"
+
+msgid "No data"
+msgstr "No data"
 
 msgid "#"
 msgstr "#"
@@ -496,6 +510,43 @@ msgstr "No boxes."
 
 msgid "Vendor"
 msgstr "Vendor"
+
+msgid "Name / Bar code"
+msgstr "Name / Bar code"
+
+msgid "Bar code part"
+msgstr "Bar code part"
+
+msgid "Vendor ID"
+msgstr "Vendor ID"
+
+msgid "Minimum price"
+msgstr "Minimum price"
+
+msgid "Maximum price"
+msgstr "Maximum price"
+
+msgid "Type"
+msgstr "Type"
+
+msgid ""
+"To select/deselect multiple values, press <kbd>Ctrl</kbd>, <kbd>Command</"
+"kbd> or <kbd>Shift</kbd> keys while clicking items."
+msgstr ""
+"To select/deselect multiple values, press <kbd>Ctrl</kbd>, <kbd>Command</"
+"kbd> or <kbd>Shift</kbd> keys while clicking items."
+
+msgid "State"
+msgstr "State"
+
+msgid "Show hidden items"
+msgstr "Show hidden items"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Reset"
+msgstr "Reset"
 
 msgid "began"
 msgstr "began"
