@@ -1,0 +1,13 @@
+--- jquery.js	2016-05-20 20:18:54.000000000 +0300
++++ jquery.js	2019-05-26 21:47:48.074350256 +0300
+@@ -209,8 +209,9 @@
+ 				src = target[ name ];
+ 				copy = options[ name ];
+ 
++				// Prevent Object.prototype pollution
+ 				// Prevent never-ending loop
+-				if ( target === copy ) {
++				if ( name === "__proto__" || target === copy ) {
+ 					continue;
+ 				}
+ 
