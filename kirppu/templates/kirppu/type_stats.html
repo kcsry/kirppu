@@ -116,11 +116,17 @@
             this.style = "color: " + graphColors[index];
         });
 
+        const popoverWhitelist = Object.assign({}, $.fn.tooltip.Constructor.DEFAULTS.whiteList);
+        popoverWhitelist.dd = [];
+        popoverWhitelist.dt = ["style"];
+        popoverWhitelist.dl = [];
+
         $("#graph2_legend_tip").popover({
             placement: "top",
             title: "{% trans "Graph legend" %}",
             html: true,
-            content: legend.html()
+            content: legend.html(),
+            whiteList: popoverWhitelist
         });
     });
     </script>
