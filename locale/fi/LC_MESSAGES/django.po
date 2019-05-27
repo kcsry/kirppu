@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-08 18:04+0300\n"
-"PO-Revision-Date: 2019-05-08 18:05+0300\n"
+"PO-Revision-Date: 2019-05-27 19:26+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -82,7 +82,7 @@ msgid "Generate missing Clerk access codes"
 msgstr "Luo puuttuvat kassahenkilöiden käyttötunnisteet"
 
 msgid "Delete Clerk access codes"
-msgstr "Poista kassatädin käyttötunniste"
+msgstr "Poista kassahenkilön käyttötunniste"
 
 msgid ""
 "Must select exactly one 'unbound' and one 'bound' Clerk for this operation"
@@ -91,7 +91,7 @@ msgstr ""
 "tähän toimintoon."
 
 msgid "Move unused access code to existing Clerk."
-msgstr "Siirrä käyttämätön tunniste olemassaolevalle kassatädille"
+msgstr "Siirrä käyttämätön tunniste olemassaolevalle kassahenkilölle"
 
 #, python-brace-format
 msgid "Access code set for '{0}'"
