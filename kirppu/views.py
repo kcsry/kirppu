@@ -40,6 +40,7 @@ from .fields import ItemPriceField
 from .models import (
     Box,
     Clerk,
+    Event,
     Item,
     ItemType,
     Vendor,
@@ -52,6 +53,7 @@ from .util import get_form
 from .utils import (
     barcode_view,
     is_vendor_open,
+    is_registration_closed_for_users,
     require_setting,
     require_test,
     require_vendor_open,
@@ -62,7 +64,7 @@ import pubcode
 
 
 def index(request):
-    return redirect("kirppu:vendor_view")
+    return redirect("kirppu:front_page")
 
 
 class MobileRedirect(RedirectView):
@@ -73,11 +75,11 @@ class MobileRedirect(RedirectView):
 @login_required
 @require_http_methods(["POST"])
 @require_vendor_open
-def item_add(request):
-    if not Vendor.has_accepted(request):
+def item_add(request, event):
+    if not Vendor.has_accepted(request, event):
         return HttpResponseBadRequest()
-    vendor = Vendor.get_or_create_vendor(request)
-    form = VendorItemForm(request.POST)
+    vendor = Vendor.get_or_create_vendor(request, event)
+    form = VendorItemForm(request.POST, event)
     if not form.is_valid():
         return HttpResponseBadRequest(form.get_any_error())
 
@@ -110,9 +112,10 @@ def item_add(request):
 
 @login_required
 @require_http_methods(["POST"])
-def item_hide(request, code):
+def item_hide(request, event_slug, code):
+    event = get_object_or_404(Event, slug=event_slug)
     with transaction.atomic():
-        vendor = Vendor.get_vendor(request)
+        vendor = Vendor.get_vendor(request, event)
         item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
 
         item.hidden = True
@@ -123,16 +126,17 @@ def item_hide(request, code):
 
 @login_required
 @require_http_methods(['POST'])
-def item_to_not_printed(request, code):
+def item_to_not_printed(request, event_slug, code):
+    event = get_object_or_404(Event, slug=event_slug)
     with transaction.atomic():
-        vendor = Vendor.get_vendor(request)
+        vendor = Vendor.get_vendor(request, event)
         item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
 
         if settings.KIRPPU_COPY_ITEM_WHEN_UNPRINTED:
             # Create a duplicate of the item with a new code and hide the old item.
             # This way, even if the user forgets to attach the new tags, the old
             # printed tag is still in the system.
-            if not is_vendor_open(request):
+            if not is_vendor_open(request, event):
                 return HttpResponseForbidden("Registration is closed")
 
             new_item = Item.new(
@@ -165,9 +169,10 @@ def item_to_not_printed(request, code):
 
 @login_required
 @require_http_methods(["POST"])
-def item_to_printed(request, code):
+def item_to_printed(request, event_slug, code):
+    event = get_object_or_404(Event, slug=event_slug)
     with transaction.atomic():
-        vendor = Vendor.get_vendor(request)
+        vendor = Vendor.get_vendor(request, event)
         item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
 
         item.printed = True
@@ -179,14 +184,14 @@ def item_to_printed(request, code):
 @login_required
 @require_http_methods(["POST"])
 @require_vendor_open
-def item_update_price(request, code):
+def item_update_price(request, event, code):
     try:
         price = ItemPriceField().clean(request.POST.get('value'))
     except ValidationError as error:
         return HttpResponseBadRequest(u' '.join(error.messages))
 
     with transaction.atomic():
-        vendor = Vendor.get_vendor(request)
+        vendor = Vendor.get_vendor(request, event)
         item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor, box__isnull=True)
 
         if item.is_locked():
@@ -201,13 +206,13 @@ def item_update_price(request, code):
 @login_required
 @require_http_methods(["POST"])
 @require_vendor_open
-def item_update_name(request, code):
+def item_update_name(request, event, code):
     name = request.POST.get("value", "no name")
 
     name = name[:80]
 
     with transaction.atomic():
-        vendor = Vendor.get_vendor(request)
+        vendor = Vendor.get_vendor(request, event)
         item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
 
         if item.is_locked():
@@ -221,11 +226,12 @@ def item_update_name(request, code):
 
 @login_required
 @require_http_methods(["POST"])
-def item_update_type(request, code):
+def item_update_type(request, event_slug, code):
+    event = get_object_or_404(Event, slug=event_slug)
     tag_type = request.POST.get("tag_type", None)
 
     with transaction.atomic():
-        vendor = Vendor.get_vendor(request)
+        vendor = Vendor.get_vendor(request, event)
         item = get_object_or_404(Item.objects.select_for_update(), code=code, vendor=vendor)
         item.type = tag_type
         item.save(update_fields=("type",))
@@ -234,8 +240,9 @@ def item_update_type(request, code):
 
 @login_required
 @require_http_methods(["POST"])
-def all_to_print(request):
-    vendor = Vendor.get_vendor(request)
+def all_to_print(request, event_slug):
+    event = get_object_or_404(Event, slug=event_slug)
+    vendor = Vendor.get_vendor(request, event)
     items = Item.objects.filter(vendor=vendor).filter(printed=False).filter(box__isnull=True)
 
     items.update(printed=True)
@@ -246,11 +253,11 @@ def all_to_print(request):
 @login_required
 @require_http_methods(["POST"])
 @require_vendor_open
-def box_add(request):
-    if not Vendor.has_accepted(request):
+def box_add(request, event):
+    if not Vendor.has_accepted(request, event):
         return HttpResponseBadRequest()
-    vendor = Vendor.get_vendor(request)
-    form = VendorBoxForm(request.POST)
+    vendor = Vendor.get_vendor(request, event)
+    form = VendorBoxForm(request.POST, event)
     if not form.is_valid():
         return HttpResponseBadRequest(form.get_any_error())
 
@@ -282,11 +289,11 @@ def box_add(request):
 
 @login_required
 @require_http_methods(["POST"])
-def box_hide(request, box_id):
-
+def box_hide(request, event_slug, box_id):
+    event = get_object_or_404(Event, slug=event_slug)
     with transaction.atomic():
 
-        vendor = Vendor.get_vendor(request)
+        vendor = Vendor.get_vendor(request, event)
         box = get_object_or_404(Box.objects, id=box_id)
         box_vendor = box.get_vendor()
         if box_vendor.id != vendor.id:
@@ -299,11 +306,12 @@ def box_hide(request, box_id):
 
 @login_required
 @require_http_methods(["POST"])
-def box_print(request, box_id):
+def box_print(request, event_slug, box_id):
+    event = get_object_or_404(Event, slug=event_slug)
 
     with transaction.atomic():
 
-        vendor = Vendor.get_vendor(request)
+        vendor = Vendor.get_vendor(request, event)
         box = get_object_or_404(Box.objects, id=box_id)
         box_vendor = box.get_vendor()
         if box_vendor.id != vendor.id:
@@ -317,7 +325,7 @@ def box_print(request, box_id):
 @login_required
 @require_http_methods(["GET"])
 @barcode_view
-def box_content(request, box_id, bar_type):
+def box_content(request, event_slug, box_id, bar_type):
 
     """
     Get a page containing the contents of one box for printing
@@ -329,7 +337,8 @@ def box_content(request, box_id, bar_type):
     :return: HttpResponse or HttpResponseBadRequest
     """
 
-    vendor = Vendor.get_vendor(request)
+    event = get_object_or_404(Event, slug=event_slug)
+    vendor = Vendor.get_vendor(request, event)
     boxes = Box.objects.filter(id=box_id, item__vendor=vendor, item__hidden=False).distinct()
     if boxes.count() == 0:
         raise Http404()
@@ -346,13 +355,14 @@ def box_content(request, box_id, bar_type):
     return render(request, "kirppu/app_boxes_content.html", render_params)
 
 
-def _vendor_menu_contents(request):
+def _vendor_menu_contents(request, event):
     """
     Generate menu for Vendor views.
     Returned tuple contains entries for the menu, each entry containing a
     name, url, and flag indicating whether the entry is currently active
     or not.
 
+    :param event:
     :param request: Current request being processed.
     :return: List of menu items containing name, url and active fields.
     :rtype: tuple[MenuItem,...]
@@ -360,8 +370,12 @@ def _vendor_menu_contents(request):
     active = request.resolver_match.view_name
     menu_item = namedtuple("MenuItem", "name url active sub_items")
 
-    def fill(name, func, sub=None, query=None):
-        link = url.reverse(func) if func else None
+    def fill(name, func, sub=None, query=None, is_global=False):
+        if not is_global:
+            kwargs = {"event_slug": event.slug}
+        else:
+            kwargs = {}
+        link = url.reverse(func, kwargs=kwargs) if func else None
         from urllib.parse import quote
         if query:
             link += "?" + "&".join(
@@ -386,7 +400,7 @@ def _vendor_menu_contents(request):
     manage_sub = []
     if request.user.is_staff or UserAdapter.is_clerk(request.user):
         manage_sub.append(fill(_(u"Checkout commands"), "kirppu:commands"))
-        if settings.KIRPPU_CHECKOUT_ACTIVE:
+        if event.checkout_active:
             manage_sub.append(fill(_(u"Checkout"), "kirppu:checkout_view"))
             manage_sub.append(fill(_("Box codes"), "kirppu:box_codes"))
 
@@ -401,7 +415,7 @@ def _vendor_menu_contents(request):
 
     if request.user.is_staff:
         try:
-            manage_sub.append(fill(_(u"Site administration"), "admin:index"))
+            manage_sub.append(fill(_(u"Site administration"), "admin:index", is_global=True))
         except url.NoReverseMatch as e:
             pass
 
@@ -421,7 +435,7 @@ def _vendor_menu_contents(request):
 @login_required
 @require_http_methods(["GET"])
 @barcode_view
-def get_items(request, bar_type):
+def get_items(request, event_slug, bar_type):
     """
     Get a page containing all items for vendor.
 
@@ -430,13 +444,14 @@ def get_items(request, bar_type):
     :return: HttpResponse or HttpResponseBadRequest
     """
 
+    event = get_object_or_404(Event, slug=event_slug)
     user = request.user
     if user.is_staff and "user" in request.GET:
         user = get_object_or_404(get_user_model(), username=request.GET["user"])
 
-    vendor = Vendor.get_vendor(request)
+    vendor = Vendor.get_vendor(request, event)
 
-    vendor_data = get_multi_vendor_values(request)
+    vendor_data = get_multi_vendor_values(request, event)
     if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER and user.is_staff and "user" in request.GET:
         raise NotImplementedError  # FIXME: Decide how this should work.
 
@@ -449,9 +464,10 @@ def get_items(request, bar_type):
     # down.
     items = items.order_by('-id')
 
-    item_name_placeholder = UIText.get_text("item_placeholder", _("Ranma ½ Vol."))
+    item_name_placeholder = UIText.get_text(event, "item_placeholder", _("Ranma ½ Vol."))
 
     render_params = {
+        'event': event,
         'items': items,
         'printed_items': printed_items,
         'bar_type': bar_type,
@@ -460,10 +476,10 @@ def get_items(request, bar_type):
         'profile_url': settings.PROFILE_URL,
         'terms_accepted': vendor.terms_accepted if vendor is not None else False,
 
-        'is_registration_open': is_vendor_open(request),
-        'is_registration_closed_for_users': not is_vendor_open(),
-        'menu': _vendor_menu_contents(request),
-        'itemTypes': ItemType.as_tuple(),
+        'is_registration_open': is_vendor_open(request, event),
+        'is_registration_closed_for_users': is_registration_closed_for_users(event=event),
+        'menu': _vendor_menu_contents(request, event),
+        'itemTypes': ItemType.as_tuple(event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
         'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
     }
@@ -474,7 +490,7 @@ def get_items(request, bar_type):
 
 @login_required
 @require_http_methods(["GET"])
-def get_boxes(request):
+def get_boxes(request, event_slug):
     """
     Get a page containing all boxes for vendor.
 
@@ -482,13 +498,14 @@ def get_boxes(request):
     :type request: django.http.request.HttpRequest
     :return: HttpResponse or HttpResponseBadRequest
     """
+    event = get_object_or_404(Event, slug=event_slug)
 
     user = request.user
     if user.is_staff and "user" in request.GET:
         user = get_object_or_404(get_user_model(), username=request.GET["user"])
 
-    vendor = Vendor.get_vendor(request)
-    vendor_data = get_multi_vendor_values(request)
+    vendor = Vendor.get_vendor(request, event)
+    vendor_data = get_multi_vendor_values(request, event)
 
     boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()
 
@@ -497,19 +514,20 @@ def get_boxes(request):
     # down.
     boxes = boxes.order_by('-id')
 
-    box_name_placeholder = UIText.get_text("box_placeholder", _("Box full of Ranma"))
+    box_name_placeholder = UIText.get_text(event, "box_placeholder", _("Box full of Ranma"))
 
     render_params = {
+        'event': event,
         'boxes': boxes,
         'box_name_placeholder': box_name_placeholder,
 
         'profile_url': settings.PROFILE_URL,
         'terms_accepted': vendor.terms_accepted if vendor is not None else False,
 
-        'is_registration_open': is_vendor_open(request),
-        'is_registration_closed_for_users': not is_vendor_open(),
-        'menu': _vendor_menu_contents(request),
-        'itemTypes': ItemType.as_tuple(),
+        'is_registration_open': is_vendor_open(request, event),
+        'is_registration_closed_for_users': is_registration_closed_for_users(event),
+        'menu': _vendor_menu_contents(request, event),
+        'itemTypes': ItemType.as_tuple(event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
         'PRICE_MIN_MAX': settings.KIRPPU_MIN_MAX_PRICE,
     }
@@ -521,11 +539,12 @@ def get_boxes(request):
 @login_required
 @require_test(lambda request: request.user.is_staff)
 @barcode_view
-def get_clerk_codes(request, bar_type):
+def get_clerk_codes(request, event_slug, bar_type):
+    event = get_object_or_404(Event, slug=event_slug)
     items = []
     code_item = namedtuple("CodeItem", "name code")
 
-    for c in Clerk.objects.filter(access_key__isnull=False):
+    for c in Clerk.objects.filter(event=event, access_key__isnull=False):
         if not c.is_valid_code:
             continue
         code = c.get_code()
@@ -565,7 +584,8 @@ def get_counter_commands(request, bar_type):
 @login_required
 @require_test(lambda request: request.user.is_staff or UserAdapter.is_clerk(request.user))
 @barcode_view
-def get_boxes_codes(request, bar_type):
+def get_boxes_codes(request, event_slug, bar_type):
+    event = get_object_or_404(Event, slug=event_slug)
     boxes = Box.objects.filter(box_number__isnull=False).order_by("box_number")
     vm = []
     for box in boxes:
@@ -590,11 +610,8 @@ def get_boxes_codes(request, bar_type):
     })
 
 
-# Access control by settings.
-# CSRF is not generated if the Checkout-mode is not activated in settings.
-@require_setting("KIRPPU_CHECKOUT_ACTIVE", True)
 @ensure_csrf_cookie
-def checkout_view(request):
+def checkout_view(request, event_slug):
     """
     Checkout view.
 
@@ -603,16 +620,21 @@ def checkout_view(request):
     :return: Response containing the view.
     :rtype: HttpResponse
     """
+    event = get_object_or_404(Event, slug=event_slug)
+    if not event.checkout_active:
+        raise PermissionDenied()
+
     clerk_logout_fn(request)
     context = {
         'CURRENCY': settings.KIRPPU_CURRENCY,
         'PURCHASE_MAX': settings.KIRPPU_MAX_PURCHASE,
+        'event': event,
     }
     if settings.KIRPPU_AUTO_CLERK and settings.DEBUG:
         if isinstance(settings.KIRPPU_AUTO_CLERK, string_types):
-            real_clerks = Clerk.objects.filter(user__username=settings.KIRPPU_AUTO_CLERK)
+            real_clerks = Clerk.objects.filter(event=event, user__username=settings.KIRPPU_AUTO_CLERK)
         else:
-            real_clerks = Clerk.objects.filter(user__isnull=False)
+            real_clerks = Clerk.objects.filter(event=event, user__isnull=False)
         for clerk in real_clerks:
             if clerk.is_enabled:
                 context["auto_clerk"] = clerk.get_code()
@@ -621,16 +643,20 @@ def checkout_view(request):
     return render(request, "kirppu/app_checkout.html", context)
 
 
-@require_setting("KIRPPU_CHECKOUT_ACTIVE", True)
 @ensure_csrf_cookie
-def overseer_view(request):
+def overseer_view(request, event_slug):
     """Overseer view."""
+    event = get_object_or_404(Event, slug=event_slug)
+    if not event.checkout_active:
+        raise PermissionDenied()
+
     try:
         ajax_util.require_user_features(counter=True, clerk=True, overseer=True)(lambda _: None)(request)
     except ajax_util.AjaxError:
-        return redirect('kirppu:checkout_view')
+        return redirect('kirppu:checkout_view', event_slug=event.slug)
     else:
         context = {
+            'event': event,
             'itemtypes': ItemType.as_tuple(),
             'itemstates': Item.STATE,
             'CURRENCY': settings.KIRPPU_CURRENCY,
@@ -803,17 +829,18 @@ def statistical_stats_view(request):
     })
 
 
-def vendor_view(request):
+def vendor_view(request, event_slug):
     """
     Render main view for vendors.
 
     :rtype: HttpResponse
     """
+    event = get_object_or_404(Event, slug=event_slug)
     user = request.user
 
-    vendor_data = get_multi_vendor_values(request)
+    vendor_data = get_multi_vendor_values(request, event)
     if user.is_authenticated:
-        vendor = Vendor.get_vendor(request)
+        vendor = Vendor.get_vendor(request, event)
         items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)
         boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()
         boxed_items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=False)
@@ -824,6 +851,7 @@ def vendor_view(request):
         boxed_items = Item.objects.none()
 
     context = {
+        'event': event,
         'user': user,
         'items': items,
 
@@ -838,7 +866,7 @@ def vendor_view(request):
         'boxes_printed': len(list(filter(lambda i: i.is_printed(), boxes))),
 
         'profile_url': settings.PROFILE_URL,
-        'menu': _vendor_menu_contents(request),
+        'menu': _vendor_menu_contents(request, event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
     }
     context.update(vendor_data)
@@ -847,8 +875,9 @@ def vendor_view(request):
 
 @login_required
 @require_http_methods(["POST"])
-def accept_terms(request):
-    vendor = Vendor.get_or_create_vendor(request)
+def accept_terms(request, event_slug):
+    event = get_object_or_404(Event, slug=event_slug)
+    vendor = Vendor.get_or_create_vendor(request, event)
     if vendor.terms_accepted is None:
         vendor.terms_accepted = timezone.now()
         vendor.save(update_fields=("terms_accepted",))
@@ -880,8 +909,12 @@ def remove_item_from_receipt(request):
 
 @login_required
 @require_test(lambda request: request.user.is_staff)
-def lost_and_found_list(request):
-    items = Item.objects.select_related("vendor").filter(lost_property=True, abandoned=False).order_by("vendor", "name")
+def lost_and_found_list(request, event_slug):
+    event = Event.objects.get(slug=event_slug)
+    items = Item.objects \
+        .select_related("vendor") \
+        .filter(lost_property=True, abandoned=False) \
+        .order_by("vendor", "name")
 
     vendor_object = namedtuple("VendorItems", "vendor vendor_id items")
 
@@ -894,7 +927,8 @@ def lost_and_found_list(request):
         vendor_list[vendor_id].items.append(item)
 
     return render(request, "kirppu/lost_and_found.html", {
-        'menu': _vendor_menu_contents(request),
+        'menu': _vendor_menu_contents(request, event),
+        'event': event,
         'items': vendor_list,
     })
 

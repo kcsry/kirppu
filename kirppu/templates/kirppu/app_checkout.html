@@ -38,10 +38,10 @@
 {% endblock %}
 {% block navbar_right %}
     <li id="stats_link" class="hidden check_enabled">
-        <a href="{% url 'kirppu:stats_view' %}" title="Stats">{% trans "Stats" %}</a>
+        <a href="{% url 'kirppu:stats_view' event_slug=event.slug %}" title="Stats">{% trans "Stats" %}</a>
     </li>
     <li id="overseer_link" class="hidden check_enabled">
-        <a href="{% url 'kirppu:overseer_view' %}" title="Overseer Dashboard">{% trans "Overseer Dashboard" %}</a>
+        <a href="{% url 'kirppu:overseer_view' event_slug=event.slug %}" title="Overseer Dashboard">{% trans "Overseer Dashboard" %}</a>
     </li>
     <li>
         <button type="button" class="btn navbar-btn btn-link" data-toggle="modal" data-target="#help_dialog"><span class="glyphicon glyphicon-question-sign"></span> {% trans "Help" %}</button>

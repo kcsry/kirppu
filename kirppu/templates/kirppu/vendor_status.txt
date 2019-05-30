@@ -1,4 +1,5 @@
-{# -*- mode: django; -*- #}{% load i18n kirppu_tags %}{% trans "Vendor:" %} {{ vendor }}
+{# -*- mode: django; -*- #}{% load i18n kirppu_tags %}{% trans "Event:" %} {{ event.slug }}
+{% trans "Vendor:" %} {{ vendor }}
 {% for table_key, table in tables.items %}{% if table.items and not table.spec.hidden %}
 {{ table.spec.title }}
 {% if table.items  %}   #  {% trans "code"|ljust:"8" %}  {% trans "price"|ljust:price_width %}  {% trans "name" %}

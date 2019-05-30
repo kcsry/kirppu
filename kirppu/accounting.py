@@ -8,10 +8,11 @@ from urllib.parse import quote
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Sum
 from django.http import StreamingHttpResponse
+from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy, gettext
 from django.utils import timezone
 
-from .models import Item, Receipt, ReceiptExtraRow, ReceiptItem, decimal_to_transport
+from .models import Event, Item, Receipt, ReceiptExtraRow, ReceiptItem, decimal_to_transport
 
 
 COLUMNS = (
@@ -39,11 +40,11 @@ def _zero_fn():
 
 def _strip_generator(fn):
     @functools.wraps(fn)
-    def inner(output, generator=False):
+    def inner(output, event, generator=False):
         if generator:
             # Return the generator object only when using StringIO.
-            return fn(output)
-        for _ in fn(output):
+            return fn(output, event)
+        for _ in fn(output, event):
             pass
 
     return inner
@@ -51,10 +52,12 @@ def _strip_generator(fn):
 
 @login_required
 @permission_required("view_accounting")
-def accounting_receipt_view(request):
+def accounting_receipt_view(request, event_slug):
+    event = get_object_or_404(Event, slug=event_slug)
+
     def streamer():
         output = io.StringIO()
-        for a_string in accounting_receipt(output, generator=True):
+        for a_string in accounting_receipt(output, event, generator=True):
             val = output.getvalue()
             yield val
             output.truncate(0)
@@ -68,14 +71,14 @@ def accounting_receipt_view(request):
 
 
 @_strip_generator
-def accounting_receipt(output):
+def accounting_receipt(output, event):
     writer = csv.writer(output)
     writer.writerow(str(c) for c in COLUMNS)
     # Used here and later for buffer streaming and clearing in case of StringIO.
     yield
 
     receipts = (Receipt.objects
-                .filter(status=Receipt.FINISHED)
+                .filter(clerk__event=event, status=Receipt.FINISHED)
                 .prefetch_related("receiptitem_set", "receiptitem_set__item", "extra_rows")
                 .order_by("end_time")
                 )
@@ -87,9 +90,9 @@ def accounting_receipt(output):
     impl.finish()
     yield
 
-    items_paid_out = Item.objects.filter(state=Item.COMPENSATED).aggregate(sum=Sum("price"))
+    items_paid_out = Item.objects.filter(vendor__event=event, state=Item.COMPENSATED).aggregate(sum=Sum("price"))
     items_paid_out = decimal_to_transport(items_paid_out["sum"] or 0)
-    items_forfeited = Item.objects.filter(state=Item.SOLD).aggregate(sum=Sum("price"))
+    items_forfeited = Item.objects.filter(vendor__event=event, state=Item.SOLD).aggregate(sum=Sum("price"))
     items_forfeited = decimal_to_transport(items_forfeited["sum"] or 0)
 
     # Basic sanity checking. Does not really give a straight explanation of why something is amiss.

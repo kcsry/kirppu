@@ -312,10 +312,6 @@ KIRPPU_AUTO_CLERK = False
 KIRPPU_COPY_ITEM_WHEN_UNPRINTED = False
 KIRPPU_MAX_ITEMS_PER_VENDOR = 2000
 
-# Datetime of the instant of which Item registration is open until, in "YYYY-MM-DD HH:MM:SS" format.
-# The specified date is expected to be in TIME_ZONE timezone.
-KIRPPU_REGISTER_ACTIVE_UNTIL = env.str("KIRPPU_REGISTER_ACTIVE_UNTIL", default="2024-12-31 23:59:59")
-
 # Prefix- and postfix content of currency values.
 KIRPPU_CURRENCY = {
     # Content text for currency spans.

@@ -39,7 +39,7 @@
 {% endblock %}
 
 {% block navbar_right %}
-    <li><a href="{% url 'kirppu:checkout_view' %}" title="{% trans "Return to checkout" %}">{% trans "Checkout" %}</a></li>
+    <li><a href="{% url 'kirppu:checkout_view' event_slug=event.slug %}" title="{% trans "Return to checkout" %}">{% trans "Checkout" %}</a></li>
 {% endblock %}
 
 {% block body %}

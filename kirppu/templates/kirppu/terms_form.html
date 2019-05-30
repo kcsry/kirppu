@@ -44,7 +44,7 @@
                 cb.prop("disabled", "disabled");
                 btn.prop("disabled", "disabled");
 
-                $.post("{% url "kirppu:accept_terms" %}"
+                $.post("{% url "kirppu:accept_terms" event_slug=event.slug %}"
                 ).done(function(data) {
                     if (data.result == "ok") {
                         btn.addClass("hidden");

@@ -3,15 +3,16 @@ import random
 from decimal import Decimal
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import RegexValidator, MinLengthValidator
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Sum
-from django.db import transaction
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.module_loading import import_string
 from django.utils.six import text_type, PY3
 from django.conf import settings
+
 from .utils import model_dict_fn, format_datetime, short_description
 
 from .util import (
@@ -95,8 +96,26 @@ class Person(models.Model):
         return "(id=%d)" % self.id
 
 
+class Event(models.Model):
+    slug = models.SlugField(unique=True)
+    name = models.CharField(max_length=250)
+    home_page = models.URLField(blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    registration_end = models.DateTimeField(null=True, blank=True)
+    checkout_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("kirppu:vendor_view", kwargs={"event_slug": self.slug})
+
+
 @python_2_unicode_compatible
 class Clerk(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     access_key = models.CharField(
         max_length=128,
@@ -119,10 +138,10 @@ class Clerk(models.Model):
                 fields=["access_key"],
                 name="unique_access_key",
             ),
-            # Only one Clerk per User.
+            # Only one Clerk per Event.
             models.constraints.UniqueConstraint(
-                fields=["user"],
-                name="unique_user",
+                fields=["event", "user"],
+                name="unique_event_clerk"
             ),
         )
         permissions = (
@@ -185,7 +204,7 @@ class Clerk(models.Model):
         return "----------------"
 
     @classmethod
-    def by_code(cls, code):
+    def by_code(cls, code, **query):
         """
         Return the Clerk instance with the given hex code.
 
@@ -212,7 +231,7 @@ class Clerk(models.Model):
             raise ValueError("Clerk disabled")
         access_key_hex = number_to_hex(access_key, 56)
         try:
-            clerk = cls.objects.get(access_key=access_key_hex)
+            clerk = cls.objects.get(access_key=access_key_hex, **query)
         except cls.DoesNotExist:
             return None
         if clerk.user is None:
@@ -285,10 +304,11 @@ class Vendor(models.Model):
     person = models.ForeignKey(Person, null=True, on_delete=models.CASCADE)
     terms_accepted = models.DateTimeField(null=True)
     mobile_view_visited = models.BooleanField(default=False)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (
-            ("user", "person"),
+            ("user", "person", "event"),
         )
         permissions = (
             ("can_switch_sub_vendor", "Can switch to created sub-Vendors"),
@@ -303,7 +323,7 @@ class Vendor(models.Model):
         return text_type(self.user) if self.person is None else text_type(self.person)
 
     @classmethod
-    def get_vendor(cls, request):
+    def get_vendor(cls, request, event):
         """
         Get the Vendor for the given user.
 
@@ -317,12 +337,12 @@ class Vendor(models.Model):
         else:
             match = {"user": request.user, "person__isnull": True}
         try:
-            return cls.objects.get(**match)
+            return cls.objects.get(event=event, **match)
         except cls.DoesNotExist:
             return None
 
     @classmethod
-    def get_or_create_vendor(cls, request):
+    def get_or_create_vendor(cls, request, event):
         """
         If `create` is truthy and a vendor does not exist, one is implicitly created.
 
@@ -336,15 +356,15 @@ class Vendor(models.Model):
             multi = False
 
         try:
-            return cls.objects.get(**match)
+            return cls.objects.get(event=event, **match)
         except cls.DoesNotExist:
             if multi:
                 raise ValueError("Cannot automatically create user in multi-vendor environment")
-            return cls.objects.create(user=request.user)
+            return cls.objects.create(event=event, user=request.user)
 
     @classmethod
-    def has_accepted(cls, request):
-        vendor = cls.get_vendor(request)
+    def has_accepted(cls, request, event):
+        vendor = cls.get_vendor(request, event)
         if not vendor:
             return False
         return vendor.terms_accepted is not None
@@ -384,7 +404,7 @@ class Box(models.Model):
 
     description = models.CharField(max_length=256)
     representative_item = models.ForeignKey("Item", on_delete=models.CASCADE, related_name="+")
-    box_number = models.IntegerField(blank=True, null=True, unique=True)
+    box_number = models.IntegerField(blank=True, null=True, db_index=True)
     bundle_size = models.IntegerField(default=1, help_text="How many items are sold in a bundle")
 
     def __str__(self):
@@ -536,14 +556,19 @@ class Box(models.Model):
 
     def assign_box_number(self):
         if self.box_number is None:
-            box_state = Box.objects.aggregate(last_number=models.Max("box_number"))
-            new_number = (box_state["last_number"] or 0) + 1
+            with transaction.atomic():
+                box_state = (
+                    Box.objects
+                       .filter(representative_item__vendor__event=self.representative_item.vendor.event)
+                       .aggregate(last_number=models.Max("box_number"))
+                )
+                new_number = (box_state["last_number"] or 0) + 1
 
-            self.box_number = new_number
-            self.save(update_fields=["box_number"])
+                self.box_number = new_number
+                self.save(update_fields=["box_number"])
 
     @classmethod
-    def new(cls, *args, **kwargs):
+    def new(cls, **kwargs):
         """
         Construct new Box and Item and generate its barcode.
 
@@ -562,11 +587,11 @@ class Box(models.Model):
                 name=item_title,
                 **kwargs
             )
-            obj = cls(*args,
-                      description=description,
-                      representative_item=representative_item,
-                      bundle_size=bundle_size,
-                      )
+            obj = cls(
+                description=description,
+                representative_item=representative_item,
+                bundle_size=bundle_size,
+            )
             obj.full_clean()
             obj.save()
 
@@ -588,9 +613,16 @@ class Box(models.Model):
 
 @python_2_unicode_compatible
 class ItemType(models.Model):
-    key = models.CharField(max_length=24, unique=True)
-    order = models.IntegerField(unique=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    key = models.CharField(max_length=24)
+    order = models.IntegerField()
     title = models.CharField(max_length=255)
+
+    class Meta:
+        unique_together = (
+            ("event", "key"),
+            ("event", "order"),
+        )
 
     def __str__(self):
         return self.title
@@ -603,8 +635,12 @@ class ItemType(models.Model):
         )
 
     @classmethod
-    def as_tuple(cls):
-        return cls.objects.order_by("order").values_list("key", "title")
+    def as_tuple(cls, event=None):
+        if event is not None:
+            query = cls.objects.filter(event=event)
+        else:
+            query = cls.objects
+        return query.order_by("order").values_list("key", "title")
 
 
 @python_2_unicode_compatible
@@ -835,9 +871,9 @@ class UIText(models.Model):
     def __str__(self):
         return self.identifier
 
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     identifier = models.CharField(
         max_length=16,
-        unique=True,
         help_text=_(u"Identifier of the textitem")
     )
     text = models.CharField(
@@ -846,25 +882,28 @@ class UIText(models.Model):
         help_text=_(u"Textitem in UI")
     )
 
+    class Meta:
+        unique_together = (("event", "identifier"),)
+
     @property
     def text_excerpt(self):
         return shorten_text(self.text)
 
     @classmethod
-    def get_text(cls, identifier, default=None):
+    def get_text(cls, event, identifier, default=None):
         try:
-            return UIText.objects.values_list("text", flat=True).get(identifier=identifier)
+            return UIText.objects.values_list("text", flat=True).get(event=event, identifier=identifier)
         except UIText.DoesNotExist:
             return default
 
 
 @python_2_unicode_compatible
 class Counter(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     identifier = models.CharField(
         max_length=32,
         blank=True,
         null=False,
-        unique=True,
         help_text=_(u"Registration identifier of the counter")
     )
     name = models.CharField(
@@ -873,6 +912,11 @@ class Counter(models.Model):
         null=False,
         help_text=_(u"Common name of the counter")
     )
+
+    class Meta:
+        unique_together = (
+            ("event", "identifier"),
+        )
 
     def __str__(self):
         return u"{1} ({0})".format(self.identifier, self.name)

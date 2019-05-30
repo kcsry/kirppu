@@ -1,5 +1,5 @@
 from __future__ import unicode_literals, print_function, absolute_import
-from django.urls import include, path, re_path
+from django.urls import include, path
 from django.utils import timezone
 from django.views.i18n import JavaScriptCatalog
 from django.views.decorators.http import last_modified
@@ -30,6 +30,6 @@ urlpatterns = [
     path(r'jsi18n/', last_modified(lambda req, **kw: last_modified_date)(
         JavaScriptCatalog.as_view(packages=js_packages)),
         name="javascript-catalog"),
-    re_path(r'^m/?$', MobileRedirect.as_view()),
+    path('m/<slug:event_slug>/', MobileRedirect.as_view()),
     path('', include('kompassi_oauth2.urls')),
 ]

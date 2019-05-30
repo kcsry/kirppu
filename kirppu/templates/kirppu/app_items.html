@@ -145,15 +145,15 @@
     {{ block.super }}
     <script>
         itemsConfig.url_args.code = '__placeholder__';
-        itemsConfig.urls.item_add = "{% url 'kirppu:item_add' %}";
-        itemsConfig.urls.price_update = "{% url 'kirppu:item_update_price' '__placeholder__' %}";
-        itemsConfig.urls.name_update = "{% url 'kirppu:item_update_name' '__placeholder__' %}";
-        itemsConfig.urls.item_to_list = "{% url 'kirppu:item_to_printed' '__placeholder__' %}";
-        itemsConfig.urls.size_update = "{% url 'kirppu:item_update_type' '__placeholder__' %}";
-        itemsConfig.urls.all_to_print = "{% url 'kirppu:all_to_print' %}";
+        itemsConfig.urls.item_add = "{% url 'kirppu:item_add' event_slug=event.slug %}";
+        itemsConfig.urls.price_update = "{% url 'kirppu:item_update_price' event_slug=event.slug code='__placeholder__' %}";
+        itemsConfig.urls.name_update = "{% url 'kirppu:item_update_name' event_slug=event.slug code='__placeholder__' %}";
+        itemsConfig.urls.item_to_list = "{% url 'kirppu:item_to_printed' event_slug=event.slug code='__placeholder__' %}";
+        itemsConfig.urls.size_update = "{% url 'kirppu:item_update_type' event_slug=event.slug code='__placeholder__' %}";
+        itemsConfig.urls.all_to_print = "{% url 'kirppu:all_to_print' event_slug=event.slug %}";
         itemsConfig.urls.roller = "{% static "kirppu/img/roller.gif" %}";
-        itemsConfig.urls.item_to_print = "{% url 'kirppu:item_to_not_printed' '__placeholder__' %}";
-        itemsConfig.urls.item_hide = "{% url 'kirppu:item_hide' '__placeholder__' %}";
+        itemsConfig.urls.item_to_print = "{% url 'kirppu:item_to_not_printed' event_slug=event.slug code='__placeholder__' %}";
+        itemsConfig.urls.item_hide = "{% url 'kirppu:item_hide' event_slug=event.slug code='__placeholder__' %}";
         {% if not is_registration_open %}itemsConfig.enabled = false;{% endif %}
         {% if PRICE_MIN_MAX %}
         itemsConfig.price_min = {{ PRICE_MIN_MAX.0 }};

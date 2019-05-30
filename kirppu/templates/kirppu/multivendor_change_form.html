@@ -1,7 +1,7 @@
 {% load i18n %}
 {% if can_switch_vendor %}
     <li>
-        <form class="navbar-form" id="vendor-select-form" method="post" action="{% url "kirppu:change_vendor" %}">
+        <form class="navbar-form" id="vendor-select-form" method="post" action="{% url "kirppu:change_vendor" event_slug=event.slug %}">
             {% csrf_token %}
             <label for="vendor-select" class="form-control-static">{% trans "Vendor:" %}</label>
             <div class="form-group">

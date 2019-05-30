@@ -35,7 +35,7 @@ def local_admin_login(request):
                 user.backend = 'django.contrib.auth.backends.ModelBackend'
                 logout(request)
                 login(request, user)
-                return redirect(reverse('kirppu:vendor_view'))
+                return redirect(reverse('kirppu:front_page'))
         else:
             error = _("Username is required.")
 

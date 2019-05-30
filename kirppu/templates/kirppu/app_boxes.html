@@ -133,10 +133,10 @@
     {{ block.super }}
     <script>
         boxesConfig.url_args.box_id = '__placeholder__';
-        boxesConfig.urls.box_add = "{% url 'kirppu:box_add' %}";
-        boxesConfig.urls.box_content = "{% url 'kirppu:box_content' '__placeholder__' %}";
-        boxesConfig.urls.box_hide = "{% url 'kirppu:box_hide' '__placeholder__' %}";
-        boxesConfig.urls.box_print = "{% url 'kirppu:box_print' '__placeholder__' %}";
+        boxesConfig.urls.box_add = "{% url 'kirppu:box_add' event_slug=event.slug %}";
+        boxesConfig.urls.box_content = "{% url 'kirppu:box_content' event_slug=event.slug box_id='__placeholder__' %}";
+        boxesConfig.urls.box_hide = "{% url 'kirppu:box_hide' event_slug=event.slug box_id='__placeholder__' %}";
+        boxesConfig.urls.box_print = "{% url 'kirppu:box_print' event_slug=event.slug box_id='__placeholder__' %}";
         boxesConfig.urls.roller = "{% static "kirppu/img/roller.gif" %}";
         {% if not is_registration_open %}boxesConfig.enabled = false;{% endif %}
         {% if PRICE_MIN_MAX %}

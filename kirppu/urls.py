@@ -1,6 +1,6 @@
 from __future__ import unicode_literals, print_function, absolute_import
 from django.conf import settings
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from django.utils.six import itervalues
 
 from .views import (
@@ -31,6 +31,7 @@ from .views import (
     statistical_stats_view,
     lost_and_found_list,
 )
+from .frontpage import front_page
 from .checkout_api import AJAX_FUNCTIONS, checkout_js
 from .mobile import index as mobile_index, logout as mobile_logout
 from .vendors import change_vendor, create_vendor
@@ -40,10 +41,9 @@ __author__ = 'jyrkila'
 
 app_name = "kirppu"
 
-_urls = [
+event_urls = [
     path(r'accounting/', accounting_receipt_view, name="accounting"),
     path(r'clerks/', get_clerk_codes, name='clerks'),
-    path(r'commands/', get_counter_commands, name='commands'),
     path(r'boxes/', get_boxes_codes, name="box_codes"),
     path(r'checkout/', checkout_view, name='checkout_view'),
     path(r'overseer/', overseer_view, name='overseer_view'),
@@ -73,17 +73,24 @@ _urls = [
     path(r'vendor/status/logout/', mobile_logout, name='mobile_logout'),
 ]
 
+common_urls = [
+    path(r'commands/', get_counter_commands, name='commands'),
+    path(r'', front_page, name="front_page"),
+]
+
 if settings.KIRPPU_CHECKOUT_ACTIVE:  # Only activate API when checkout is active.
-    _urls.append(path('api/checkout.js', checkout_js, name='checkout_js'))
+    # TODO: Consider whether this is event_url or not.
+    common_urls.append(path('api/checkout.js', checkout_js, name='checkout_js'))
 
 if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER:
-    _urls.append(path('vendor/change', change_vendor, name="change_vendor"))
-    _urls.append(path('vendor/create', create_vendor, name="create_vendor"))
+    # TODO: Move to event
+    event_urls.append(path('vendor/change', change_vendor, name="change_vendor"))
+    event_urls.append(path('vendor/create', create_vendor, name="create_vendor"))
 
-_urls.extend([
+common_urls.extend([
     re_path(func.url, func.func, name=func.view_name)
     for func in itervalues(AJAX_FUNCTIONS)
     if func.is_public or settings.KIRPPU_CHECKOUT_ACTIVE
 ])
 
-urlpatterns = _urls
+urlpatterns = [path(r'<slug:event_slug>/', include(event_urls))] + common_urls

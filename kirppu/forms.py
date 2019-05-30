@@ -369,13 +369,17 @@ class VendorItemForm(forms.Form):
     )
     suffixes = SuffixField()
     item_type = forms.ChoiceField(
-        choices=lambda: ItemType.as_tuple(),
         error_messages={
             "required": _(u"Item must have a type."),
             "invalid_choice": _(u"Invalid item type.")
         }
     )
     adult = forms.BooleanField(required=False)
+
+    def __init__(self, data, event):
+        super().__init__(data)
+        self.fields["item_type"].choices = ItemType.as_tuple(event)
+        self._event = event
 
     def get_any_error(self):
         errors = self.errors.as_data()
@@ -393,7 +397,7 @@ class VendorItemForm(forms.Form):
 
     def clean_item_type(self):
         value = self.cleaned_data["item_type"]
-        return ItemType.objects.get(key=value)
+        return ItemType.objects.get(event=self._event, key=value)
 
     db_values = model_dict_fn(
         "name",

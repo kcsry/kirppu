@@ -10,13 +10,13 @@ from django.utils.http import is_safe_url
 from django.views.decorators.http import require_http_methods
 
 from .forms import PersonCreationForm
-from .models import Vendor
+from .models import Event, Vendor
 from .util import get_form
 
 __author__ = 'codez'
 
 
-def get_multi_vendor_values(request):
+def get_multi_vendor_values(request, event):
     """
     Get values for multi-vendor template operations.
 
@@ -40,7 +40,7 @@ def get_multi_vendor_values(request):
         self_vendor = None
 
     if user.is_authenticated:
-        vendor = Vendor.get_vendor(request)
+        vendor = Vendor.get_vendor(request, event)
     else:
         vendor = None
 
@@ -56,13 +56,14 @@ def get_multi_vendor_values(request):
 
 @login_required
 @require_http_methods(["POST"])
-def change_vendor(request):
+def change_vendor(request, event_slug):
+    event = get_object_or_404(Event, slug=event_slug)
     user = request.user
     if not (user.has_perm("kirppu.can_create_sub_vendor") or user.has_perm("kirppu.can_switch_sub_vendor")):
         raise PermissionDenied
 
     new_vendor_id = int(request.POST["vendor"])
-    new_vendor = get_object_or_404(Vendor, id=new_vendor_id, user=user)
+    new_vendor = get_object_or_404(Vendor, event=event, id=new_vendor_id, user=user)
     if new_vendor.person:
         request.session["vendor_id"] = new_vendor.id
     else:
@@ -78,12 +79,14 @@ def change_vendor(request):
 @login_required
 @require_http_methods(["POST"])
 @permission_required("kirppu.can_create_sub_vendor", raise_exception=True)
-def create_vendor(request):
+def create_vendor(request, event_slug):
+    event = get_object_or_404(Event, slug=event_slug)
     form = get_form(PersonCreationForm, request)
     if form.is_valid():
         with transaction.atomic():
             instance = form.save()
             new_vendor = Vendor(
+                event=event,
                 user=request.user,
                 person=instance,
             )

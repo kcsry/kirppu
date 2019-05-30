@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block frontpage_url %}
-    {% url 'kirppu:vendor_view' %}
+    {% url 'kirppu:vendor_view' event_slug=event.slug %}
 {% endblock %}
 
 {% block navbar_left %}

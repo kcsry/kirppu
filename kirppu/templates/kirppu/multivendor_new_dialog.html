@@ -41,6 +41,6 @@
         </div>
     </div>
     <script type="text/javascript"><!--
-    setNewVendorUrl("{% url "kirppu:create_vendor" %}")
+    setNewVendorUrl("{% url "kirppu:create_vendor" event_slug=event.slug %}")
     //--></script>
 {% endif %}

@@ -9,14 +9,15 @@ from django.db import transaction, models
 from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.http.response import HttpResponseForbidden, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from ipware.ip import get_ip
 from ratelimit.utils import is_ratelimited
 
-from .models import Item, TemporaryAccessPermit, Vendor, TemporaryAccessPermitLog, Box
+from .models import Event, Item, TemporaryAccessPermit, Vendor, TemporaryAccessPermitLog, Box
+from .templatetags.kirppu_login import logout_url
 from .templatetags.kirppu_tags import format_price
 from .util import first, shorten_text
 
@@ -94,7 +95,7 @@ def _ratelimit_key(group, request):
     return get_ip(request)
 
 
-def _login_view(request):
+def _login_view(request, event):
     errors = []
     if request.method == "POST":
         key = request.POST.get("key", "")
@@ -130,25 +131,26 @@ def _login_view(request):
                         permit.state = TemporaryAccessPermit.STATE_IN_USE
                         permit.save(update_fields=("state",))
                         request.session[_PERMIT_SESSION_KEY] = permit.pk
-                        return HttpResponseRedirect(reverse("kirppu:mobile"))
+                        return HttpResponseRedirect(reverse("kirppu:mobile", kwargs={"event_slug": event.slug}))
                     else:
                         errors.append(_("Invalid access key"))
 
     field = TemporaryAccessPermit._meta.get_field("short_code")
     min_length = first(field.validators, lambda v: v.code == "min_length")
     return render(request, "kirppu/vendor_status_login.html", {
+        'event': event,
         'min_length': min_length.limit_value if min_length else 0,
         'max_length': field.max_length,
         'errors': errors,
     })
 
 
-def _data_view(request, permit):
+def _data_view(request, event, permit):
     if permit:
         vendor = permit.vendor
     else:
         try:
-            vendor = Vendor.get_vendor(request)
+            vendor = Vendor.get_vendor(request, event=event)
         except Vendor.DoesNotExist:
             vendor = None
         if vendor is None:
@@ -157,6 +159,7 @@ def _data_view(request, permit):
             return render(request, "kirppu/vendor_status.html", {
                 "tables": {},
                 "CURRENCY": settings.KIRPPU_CURRENCY,
+                "event": event,
                 "vendor": request.user,
             })
 
@@ -229,18 +232,21 @@ def _data_view(request, permit):
 
         if total_items > 0:
             sign_data["vendor"] = vendor.id
+            sign_data["event"] = event.slug
             signature = signing.dumps(sign_data, compress=True)
             signature = "\n".join(textwrap.wrap(signature, 78, break_on_hyphens=False))
         else:
             signature = None
 
         return render(request, "kirppu/vendor_status.txt", {
+            "event": event,
             "tables": tables,
             "price_width": max_price_width,
             "vendor": vendor.id,
             "signature": signature,
         }, content_type="text/plain; charset=utf-8")
     return render(request, "kirppu/vendor_status.html", {
+        "event": event,
         "tables": tables,
         "CURRENCY": settings.KIRPPU_CURRENCY,
         "vendor": vendor.id,
@@ -295,7 +301,8 @@ def _is_permit_valid(request):
         return None
 
 
-def index(request):
+def index(request, event_slug):
+    event = get_object_or_404(Event, slug=event_slug)
     # FIXME: Implement a better way to enable the link. db-options...
     from .models import UIText
     try:
@@ -306,16 +313,17 @@ def index(request):
         return HttpResponseForbidden(_("This location is not in use."))
 
     if request.user.is_authenticated:
-        return _data_view(request, None)
+        return _data_view(request, event, None)
     else:
         permit = _is_permit_valid(request)
         if permit:
-            return _data_view(request, permit)
+            return _data_view(request, event, permit)
         else:
-            return _login_view(request)
+            return _login_view(request, event)
 
 
-def logout(request):
+def logout(request, event_slug):
+    event = get_object_or_404(Event, slug=event_slug)
     # TODO: Check session and temporary_codes, remove both.
     if _PERMIT_SESSION_KEY in request.session:
         permit = TemporaryAccessPermit.objects.get(pk=request.session[_PERMIT_SESSION_KEY])
@@ -328,7 +336,7 @@ def logout(request):
         del request.session[_PERMIT_SESSION_KEY]
 
     if request.user.is_authenticated:
-        return HttpResponseRedirect(settings.LOGOUT_URL)
+        return HttpResponseRedirect(logout_url(event.get_absolute_url()))
     else:
         request.session.flush()
-        return HttpResponseRedirect(reverse("kirppu:mobile"))
+        return HttpResponseRedirect(reverse("kirppu:mobile", kwargs={"event_slug": event.slug}))

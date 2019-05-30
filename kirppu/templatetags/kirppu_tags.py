@@ -18,10 +18,11 @@ from ..text_engine import mark_down
 register = template.Library()
 
 
-@register.simple_tag
-def load_text(id_):
+@register.simple_tag(takes_context=True)
+def load_text(context, id_):
     try:
-        md = UIText.objects.get(identifier=id_).text
+        event = context["event"]
+        md = UIText.objects.get(event=event, identifier=id_).text
         return mark_safe(mark_down(md))
     except UIText.DoesNotExist:
         if settings.DEBUG:
@@ -36,8 +37,8 @@ def load_text(id_):
         return u""
 
 
-@register.simple_tag
-def load_texts(id_, wrap=None):
+@register.simple_tag(takes_context=True)
+def load_texts(context, id_, wrap=None):
     """
     Output multiple UIText values. If id is not found, only empty string is returned.
 
@@ -47,7 +48,8 @@ def load_texts(id_, wrap=None):
     :type wrap: str | unicode | None
     :return: str | unicode
     """
-    texts = UIText.objects.filter(identifier__startswith=id_).order_by("identifier").values_list("text", flat=True)
+    event = context["event"]
+    texts = UIText.objects.filter(event=event, identifier__startswith=id_).order_by("identifier").values_list("text", flat=True)
     if not texts:
         return u""
 

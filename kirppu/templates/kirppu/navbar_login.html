@@ -9,9 +9,9 @@
             {% if profile_url %}
             <li><a href="{{ profile_url }}" target="_blank">{% trans "Profile" %}</a></li>
             {% endif %}
-            <li><a href="{% kirppu_logout_url %}">{% trans "Log out" %}</a></li>
+            <li><a href="{% kirppu_logout_url event.get_absolute_url %}">{% trans "Log out" %}</a></li>
         </ul>
     </li>
 {% else %}
-    <li><a href="{% kirppu_login_url %}">{% trans "Log in" %}</a></li>
+    <li><a href="{% kirppu_login_url event.get_absolute_url %}">{% trans "Log in" %}</a></li>
 {% endif %}

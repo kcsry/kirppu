@@ -26,7 +26,8 @@
                     <button type="submit" class="btn btn-primary">{% trans "Log in" %}</button>
                 </div>
             </form>
-            <a href="{% kirppu_login_url %}">{% trans "Or log in regularly?" %}</a>
+            {% url "kirppu:mobile" event_slug=event.slug as next %}
+            <a href="{% kirppu_login_url next %}">{% trans "Or log in regularly?" %}</a>
         </div>
     </div>
 {% endblock %}

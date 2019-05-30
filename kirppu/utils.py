@@ -1,13 +1,11 @@
 from __future__ import unicode_literals, print_function, absolute_import
 import datetime
 from functools import wraps
-from django.conf import settings
 from django.core.exceptions import PermissionDenied
 import django.forms
 from django.http.response import HttpResponseForbidden, HttpResponseBadRequest
 from django.utils.translation import ugettext as _
 from django.utils import timezone
-import pytz
 
 __author__ = 'jyrkila'
 
@@ -163,39 +161,24 @@ def require_setting(setting, value):
     return decorator
 
 
-def is_now_after(date_str):
-    """
-    Check if the current time is after given datetime string.
-    The string must be in "YYYY-MM-DD HH:MM:SS" format and it is expected to be in settings.TIME_ZONE timezone.
-
-    Parsed date_str values are cached in MEM_TIMES, so this function is not suitable for testing random user inputs.
-
-    :param date_str: Instant to test against.
-    :type date_str: str
-    :return: True if current time is after the given datetime. False if not.
-    """
-    cached_instant = MEM_TIMES.get(date_str)
-    if cached_instant is None:
-        naive = timezone.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
-        if settings.USE_TZ:
-            cached_instant = pytz.timezone(settings.TIME_ZONE).localize(naive)
-        else:
-            cached_instant = naive
-        MEM_TIMES[date_str] = cached_instant
-
-    return timezone.now() > cached_instant
-
-
-def is_vendor_open(request=None):
+def is_vendor_open(request, event):
     """
     Test if Item edit for vendor is currently open.
 
     :param request: Optional Django request for checking whether current user has override permission for registration.
     :return: True if open, False if not and modifications by vendor must not be allowed.
     """
-    return not is_now_after(settings.KIRPPU_REGISTER_ACTIVE_UNTIL) or (
-        request is not None and request.user.has_perm("kirppu.register_override")
+    end = event.registration_end
+    return (end is not None and timezone.now() <= end) or (
+        request.user.has_perm("kirppu.register_override")
     )
+
+
+def is_registration_closed_for_users(event):
+    end = event.registration_end
+    if end is None:
+        return True
+    return timezone.now() > end
 
 
 def require_vendor_open(fn):
@@ -206,10 +189,12 @@ def require_vendor_open(fn):
     :return: Decorated function.
     """
     @wraps(fn)
-    def inner(request, *args, **kwargs):
-        if not is_vendor_open(request):
+    def inner(request, event_slug, *args, **kwargs):
+        from .models import Event
+        event = Event.objects.get(slug=event_slug)
+        if not is_vendor_open(request, event=event):
             return HttpResponseForbidden(_(u"Registration is closed"))
-        return fn(request, *args, **kwargs)
+        return fn(request, event, *args, **kwargs)
     return inner
 
 

@@ -24,6 +24,7 @@ from .forms import (
 
 from .models import (
     Clerk,
+    Event,
     Item,
     ItemType,
     Vendor,
@@ -106,6 +107,12 @@ class RefLinkAccessor(FieldAccessor):
         )
 
 
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug", "start_date", "end_date", "registration_end", "checkout_active")
+    ordering = ("-start_date", "name")
+
+
 """
 Admin UI list column that displays user name with link to the user model itself.
 
@@ -124,7 +131,14 @@ class VendorAdmin(admin.ModelAdmin):
     ordering = ('user__first_name', 'user__last_name')
     search_fields = ['id', 'user__first_name', 'user__last_name', 'user__username',
                      'person__first_name', 'person__last_name']
-    list_display = ['id', _user_link, _person_link, "terms_accepted"]
+    list_display = ['id', _user_link, _person_link, "terms_accepted", "event"]
+    list_filter = (
+        "event",
+    )
+    list_select_related = (
+        "event",
+        "user",
+    )
 
     @staticmethod
     def _can_set_user(request, obj):
@@ -176,9 +190,10 @@ _clerk_access_code_link = ClerkEditLink("access_code_str", ugettext("Access code
 class ClerkAdmin(admin.ModelAdmin):
     uses_sso = settings.KIRPPU_USE_SSO  # Used by the overridden template.
     actions = ["_gen_clerk_code", "_del_clerk_code", "_move_clerk_code"]
-    ordering = ('user__first_name', 'user__last_name')
+    ordering = ("event", 'user__first_name', 'user__last_name')
     search_fields = ['user__first_name', 'user__last_name', 'user__username']
     exclude = ['access_key']
+    list_filter = ("event",)
     list_display_links = None
 
     def get_list_display(self, request):
@@ -206,16 +221,20 @@ class ClerkAdmin(admin.ModelAdmin):
                 else:
                     break
 
-    def _move_error(self, request):
-        self.message_user(request,
-                          ugettext(u"Must select exactly one 'unbound' and one 'bound' Clerk for this operation"),
-                          messages.ERROR)
+    def _move_error(self, request, error):
+        if error == "count":
+            msg = ugettext(u"Must select exactly one 'unbound' and one 'bound' Clerk for this operation")
+        elif error == "event":
+            msg = ugettext("Must select unbound and bound rows from same Event")
+        else:
+            msg = "Unknown error key: " + error
+        self.message_user(request, msg, messages.ERROR)
 
     @with_description(ugettext(u"Move unused access code to existing Clerk."))
     @transaction.atomic
     def _move_clerk_code(self, request, queryset):
         if len(queryset) != 2:
-            self._move_error(request)
+            self._move_error(request, "count")
             return
 
         # Guess the order.
@@ -227,7 +246,12 @@ class ClerkAdmin(admin.ModelAdmin):
 
         if unbound.user is not None or bound.user is None:
             # Selected wrong rows.
-            self._move_error(request)
+            self._move_error(request, "count")
+            return
+
+        if unbound.event != bound.event:
+            # Must move inside same event.
+            self._move_error(request, "event")
             return
 
         # Assign the new code to be used. Remove the unbound item first, so unique-check doesn't break.
@@ -237,7 +261,7 @@ class ClerkAdmin(admin.ModelAdmin):
         unbound.delete()
         bound.save(update_fields=["access_key"])
 
-        self.message_user(request, ugettext(u"Access code set for '{0}'").format(bound.user))
+        self.message_user(request, ugettext(u"Access code set for '{0}' in '{1}'").format(bound.user, bound.event.name))
 
     def get_form(self, request, obj=None, **kwargs):
         # Custom creation form if SSO is enabled.
@@ -359,23 +383,30 @@ class ClerkAdmin(admin.ModelAdmin):
         )
 
 
-admin.site.register(Counter)
+@admin.register(Counter)
+class CounterAdmin(admin.ModelAdmin):
+    list_display = ("name", "identifier", "event")
+
+
 admin.site.register(ReceiptExtraRow)
 
 
 @admin.register(UIText)
 class UITextAdmin(admin.ModelAdmin):
     model = UIText
-    ordering = ["identifier"]
+    ordering = ["event", "identifier"]
     form = UITextForm
-    list_display = ["identifier", "text_excerpt"]
+    list_display = ["identifier", "text_excerpt", "event"]
+    list_filter = ("event",)
 
 
 @admin.register(ItemType)
 class ItemTypeAdmin(admin.ModelAdmin):
-    ordering = ["order"]
-    list_display = ["title", "order", "key"]
+    ordering = ["event", "order"]
+    list_display = ["title", "order", "event", "key"]
     list_editable = ["order"]
+    list_filter = ("event",)
+    list_display_links = ["title"]
 
 
 @admin.register(Item)
@@ -397,7 +428,9 @@ class ItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'price', 'state', RefLinkAccessor('vendor', ugettext("Vendor")))
     ordering = ('vendor', 'name')
     search_fields = ['name', 'code']
+    list_select_related = ("vendor", "vendor__user")
     list_filter = (
+        "vendor__event",
         "state",
     )
 
@@ -509,6 +542,15 @@ class BoxAdmin(admin.ModelAdmin):
         RefLinkAccessor("get_vendor", ugettext("Vendor")),
     ]
     list_display_links = ['box_number', 'description']
+    list_select_related = (
+        "representative_item",
+        "representative_item__vendor",
+        "representative_item__vendor__event",
+        "representative_item__vendor__user"
+    )
+    list_filter = (
+        "representative_item__vendor__event",
+    )
 
 
 @admin.register(TemporaryAccessPermit)
