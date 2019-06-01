@@ -97,10 +97,9 @@ class Person(models.Model):
 
 @python_2_unicode_compatible
 class Clerk(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     access_key = models.CharField(
         max_length=128,
-        unique=True,  # TODO: Replace unique restraint with db_index.
         null=True,
         blank=True,
         verbose_name=_(u"Access key value"),
@@ -109,6 +108,23 @@ class Clerk(models.Model):
     )
 
     class Meta:
+        constraints = (
+            # user may be null if access_key is set in case of "unbound Clerk object".
+            # access_key may be null if the clerk object has been disabled for user.
+            models.constraints.CheckConstraint(
+                check=models.Q(user__isnull=False) | models.Q(access_key__isnull=False),
+                name="required_values",
+            ),
+            models.constraints.UniqueConstraint(
+                fields=["access_key"],
+                name="unique_access_key",
+            ),
+            # Only one Clerk per User.
+            models.constraints.UniqueConstraint(
+                fields=["user"],
+                name="unique_user",
+            ),
+        )
         permissions = (
             ("oversee", "Can perform overseer actions"),
         )
@@ -218,13 +234,12 @@ class Clerk(models.Model):
 
         :return: The newly generated token.
         """
+        if disabled:
+            self.access_key = None
+            return None
         key = None
-        if not disabled:
-            i_min = 100000
-            i_max = 2 ** 56 - 1
-        else:
-            i_min = 1
-            i_max = 100000 - 1
+        i_min = 100000
+        i_max = 2 ** 56 - 1
         while key is None or Clerk.objects.filter(access_key=key).exists():
             key = random.randint(i_min, i_max)
             key = number_to_hex(key, 56)
@@ -233,8 +248,8 @@ class Clerk(models.Model):
 
     def save(self, *args, **kwargs):
         # Ensure a value on access_key.
-        if self.access_key is None:
-            self.generate_access_key(disabled=True)
+        if self.access_key is None and self.user is None:
+            self.generate_access_key()
         super(Clerk, self).save(*args, **kwargs)
 
     @classmethod

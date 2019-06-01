@@ -311,6 +311,7 @@ class ClerkAdmin(admin.ModelAdmin):
             adminform=admin_form,
             is_popup=False,
             show_save_and_continue=False,
+            inline_admin_formsets=[],
         )
 
         return self.render_change_form(request, context)
