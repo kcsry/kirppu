@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import RegexValidator, MinLengthValidator
 from django.db import models, transaction
-from django.db.models import Sum
+from django.db.models import F, Sum
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
@@ -847,11 +847,11 @@ class Item(models.Model):
         :rtype: Item
         :raise Item.DoesNotExist: If no Item matches the code.
         """
-        return Item.objects.get(code=data, **kwargs)
+        return Item.objects.annotate(vendor_event=F("vendor__event__id")).get(code=data, **kwargs)
 
     @staticmethod
     def get_item_by_barcode_for_update(data, **kwargs):
-        return Item.objects.select_for_update().get(code=data, **kwargs)
+        return Item.objects.annotate(vendor_event=F("vendor__event__id")).select_for_update().get(code=data, **kwargs)
 
     @classmethod
     def is_item_barcode(cls, text):

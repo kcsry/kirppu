@@ -54,7 +54,6 @@ from .utils import (
     barcode_view,
     is_vendor_open,
     is_registration_closed_for_users,
-    require_setting,
     require_test,
     require_vendor_open,
 )
@@ -575,8 +574,9 @@ def get_clerk_codes(request, event_slug, bar_type):
 @login_required
 @require_test(lambda request: request.user.is_staff or UserAdapter.is_clerk(request.user))
 @barcode_view
-def get_counter_commands(request, bar_type):
+def get_counter_commands(request, event_slug, bar_type):
     return render(request, "kirppu/app_commands.html", {
+        'event_slug': event_slug,
         'title': _(u"Counter commands"),
     })
 
@@ -666,28 +666,29 @@ def overseer_view(request, event_slug):
 
 def _statistics_access(fn):
     @wraps(fn)
-    def inner(request, *args, **kwargs):
+    def inner(request, event_slug, *args, **kwargs):
+        event = get_object_or_404(Event, slug=event_slug)
         try:
             if not request.user.has_perm("kirppu.view_statistics"):
                 ajax_util.require_user_features(counter=True, clerk=True, staff_override=True)(lambda _: None)(request)
             # else: User has permissions, no further checks needed.
         except ajax_util.AjaxError:
-            if settings.KIRPPU_CHECKOUT_ACTIVE:
-                return redirect('kirppu:checkout_view')
+            if event.checkout_active:
+                return redirect('kirppu:checkout_view', event_slug=event.slug)
             else:
                 raise PermissionDenied()
-        return fn(request, *args, **kwargs)
+        return fn(request, event, *args, **kwargs)
     return inner
 
 
 @ensure_csrf_cookie
 @_statistics_access
-def stats_view(request):
+def stats_view(request, event):
     """Stats view."""
-    ic = ItemCountData(ItemCountData.GROUP_ITEM_TYPE)
-    ie = ItemEurosData(ItemEurosData.GROUP_ITEM_TYPE)
+    ic = ItemCountData(ItemCountData.GROUP_ITEM_TYPE, event=event)
+    ie = ItemEurosData(ItemEurosData.GROUP_ITEM_TYPE, event=event)
     sum_name = _("Sum")
-    item_types = ItemType.objects.order_by("order").values_list("id", "title")
+    item_types = ItemType.objects.filter(event=event).order_by("order").values_list("id", "title")
 
     number_of_items = [
         ic.data_set(item_type, type_name)
@@ -703,8 +704,8 @@ def stats_view(request):
 
     vendor_item_data_counts = []
     vendor_item_data_euros = []
-    vic = ItemCountData(ItemCountData.GROUP_VENDOR)
-    vie = ItemEurosData(ItemEurosData.GROUP_VENDOR)
+    vic = ItemCountData(ItemCountData.GROUP_VENDOR, event=event)
+    vie = ItemEurosData(ItemEurosData.GROUP_VENDOR, event=event)
     vie.use_cents = True
     vendor_item_data_row_size = 0
 
@@ -719,12 +720,12 @@ def stats_view(request):
         vendor_item_data_euros.append(euros)
 
     context = {
+        'event': event,
         'number_of_items': number_of_items,
         'number_of_euros': number_of_euros,
         'vendor_item_data_counts': vendor_item_data_counts,
         'vendor_item_data_euros': vendor_item_data_euros,
         'vendor_item_data_row_size': vendor_item_data_row_size,
-        'checkout_active': settings.KIRPPU_CHECKOUT_ACTIVE,
         'CURRENCY': settings.KIRPPU_CURRENCY["raw"],
     }
 
@@ -733,10 +734,11 @@ def stats_view(request):
 
 @ensure_csrf_cookie
 @_statistics_access
-def type_stats_view(request, type_id):
-    item_type = get_object_or_404(ItemType, id=int(type_id))
+def type_stats_view(request, event, type_id):
+    item_type = get_object_or_404(ItemType, event=event, id=int(type_id))
 
     return render(request, "kirppu/type_stats.html", {
+        "event": event,
         "type_id": item_type.id,
         "type_title": item_type.title,
     })
@@ -767,22 +769,25 @@ def _float_array(array):
 
 @ensure_csrf_cookie
 @_statistics_access
-def statistical_stats_view(request):
+def statistical_stats_view(request, event):
     brought_states = (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.COMPENSATED, Item.RETURNED)
 
-    registered = Item.objects.count()
-    deleted = Item.objects.filter(hidden=True).count()
-    brought = Item.objects.filter(state__in=brought_states).count()
-    sold = Item.objects.filter(state__in=(Item.STAGED, Item.SOLD, Item.COMPENSATED)).count()
-    printed_deleted = Item.objects.filter(hidden=True, printed=True).count()
-    deleted_brought = Item.objects.filter(hidden=True, state__in=brought_states).count()
-    printed_not_brought = Item.objects.filter(printed=True, state=Item.ADVERTISED).count()
+    _items = Item.objects.filter(vendor__event=event)
+    _vendors = Vendor.objects.filter(event=event)
 
-    items_in_box = Item.objects.filter(box__isnull=False).count()
-    items_not_in_box = Item.objects.filter(box__isnull=True).count()
+    registered = _items.count()
+    deleted = _items.filter(hidden=True).count()
+    brought = _items.filter(state__in=brought_states).count()
+    sold = _items.filter(state__in=(Item.STAGED, Item.SOLD, Item.COMPENSATED)).count()
+    printed_deleted = _items.filter(hidden=True, printed=True).count()
+    deleted_brought = _items.filter(hidden=True, state__in=brought_states).count()
+    printed_not_brought = _items.filter(printed=True, state=Item.ADVERTISED).count()
+
+    items_in_box = _items.filter(box__isnull=False).count()
+    items_not_in_box = _items.filter(box__isnull=True).count()
     registered_boxes = Box.objects.count()
     deleted_boxes = Box.objects.filter(representative_item__hidden=True).count()
-    items_in_deleted_boxes = Item.objects.filter(box__representative_item__hidden=True).count()
+    items_in_deleted_boxes = _items.filter(box__representative_item__hidden=True).count()
 
     general = {
         "registered": registered,
@@ -795,9 +800,9 @@ def statistical_stats_view(request):
         "printedNotBrought": printed_not_brought,
         "sold": sold,
         "soldOfBrought": (sold * 100.0 / brought) if brought > 0 else 0,
-        "vendors": Vendor.objects.filter(item__state__in=brought_states).distinct().count(),
-        "vendorsTotal": Vendor.objects.count(),
-        "vendorsInMobileView": Vendor.objects.filter(mobile_view_visited=True).count(),
+        "vendors": _vendors.filter(item__state__in=brought_states).distinct().count(),
+        "vendorsTotal": _vendors.count(),
+        "vendorsInMobileView": _vendors.filter(mobile_view_visited=True).count(),
 
         "itemsInBox": items_in_box,
         "itemsNotInBox": items_not_in_box,
@@ -808,12 +813,12 @@ def statistical_stats_view(request):
         "itemsInDeletedBoxesOfRegistered": (items_in_deleted_boxes * 100.0 / registered) if registered > 0 else 0,
     }
 
-    compensations = Vendor.objects.filter(item__state=Item.COMPENSATED) \
+    compensations = _vendors.filter(item__state=Item.COMPENSATED) \
         .annotate(v_sum=models.Sum("item__price")).order_by("v_sum").values_list("v_sum", flat=True)
     compensations = [float(e) for e in compensations]
 
     purchases = list(
-        Receipt.objects.filter(status=Receipt.FINISHED, type=Receipt.TYPE_PURCHASE)
+        Receipt.objects.filter(counter__event=event, status=Receipt.FINISHED, type=Receipt.TYPE_PURCHASE)
         .order_by("total")
         .values_list("total", flat=True)
     )
@@ -821,9 +826,9 @@ def statistical_stats_view(request):
     general["purchases"] = len(purchases)
 
     return render(request, "kirppu/general_stats.html", {
+        "event": event,
         "compensations": _float_array(compensations),
         "purchases": _float_array(purchases),
-        "checkout_active": settings.KIRPPU_CHECKOUT_ACTIVE,
         "general": general,
         "CURRENCY": settings.KIRPPU_CURRENCY["raw"],
     })

@@ -10,7 +10,7 @@ __author__ = 'codez'
 
 
 class Api(object):
-    def __init__(self, client, debug=False):
+    def __init__(self, client, event, debug=False):
         """
         :param client: Client to use.
         :param debug: If True, print when sending a request and received result.
@@ -24,7 +24,7 @@ class Api(object):
         from kirppu.checkout_api import AJAX_FUNCTIONS
 
         def gen(method, view):
-            url = reverse(view)
+            url = reverse(view, kwargs={"event_slug": event})
 
             def callback(**data):
                 _print(color(36, "---> " + method), color(36, url), repr(data))

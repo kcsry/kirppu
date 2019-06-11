@@ -50,7 +50,8 @@ event_urls = [
     path(r'stats/', stats_view, name='stats_view'),
     path(r'stats/type/<str:type_id>', type_stats_view, name='type_stats_view'),
     path(r'stats/statistical/', statistical_stats_view, name='statistical_stats_view'),
-    path(r'vendor/', vendor_view, name='vendor_view'),
+    path(r'', vendor_view, name='vendor_view'),
+    path(r'vendor/', vendor_view),
     path(r'vendor/accept_terms', accept_terms, name='accept_terms'),
     path(r'vendor/items/', get_items, name='page'),
     path(r'vendor/items/move_to_print', all_to_print, name='all_to_print'),
@@ -71,26 +72,23 @@ event_urls = [
 
     path(r'vendor/status/', mobile_index, name='mobile'),
     path(r'vendor/status/logout/', mobile_logout, name='mobile_logout'),
+
+    path('api/checkout.js', checkout_js, name='checkout_js'),
+    path(r'commands/', get_counter_commands, name='commands'),
 ]
 
 common_urls = [
-    path(r'commands/', get_counter_commands, name='commands'),
     path(r'', front_page, name="front_page"),
 ]
-
-if settings.KIRPPU_CHECKOUT_ACTIVE:  # Only activate API when checkout is active.
-    # TODO: Consider whether this is event_url or not.
-    common_urls.append(path('api/checkout.js', checkout_js, name='checkout_js'))
 
 if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER:
     # TODO: Move to event
     event_urls.append(path('vendor/change', change_vendor, name="change_vendor"))
     event_urls.append(path('vendor/create', create_vendor, name="create_vendor"))
 
-common_urls.extend([
+event_urls.extend([
     re_path(func.url, func.func, name=func.view_name)
     for func in itervalues(AJAX_FUNCTIONS)
-    if func.is_public or settings.KIRPPU_CHECKOUT_ACTIVE
 ])
 
 urlpatterns = [path(r'<slug:event_slug>/', include(event_urls))] + common_urls

@@ -5,7 +5,6 @@ import logging
 import random
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 
 from django.core.exceptions import ValidationError
 from django.db import models, transaction, IntegrityError
@@ -36,10 +35,10 @@ from .models import (
     Receipt,
     Clerk,
     Counter,
+    Event,
     ReceiptItem,
     ReceiptExtraRow,
     Vendor,
-    UserAdapter,
     ItemStateLog,
     Box,
     TemporaryAccessPermit,
@@ -88,7 +87,8 @@ def _register_ajax_func(func):
     AJAX_FUNCTIONS[func.name] = func
 
 
-def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atomic=False, staff_override=False):
+def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atomic=False,
+              staff_override=False, ignore_session=False):
     """
     Decorate a function with some common logic.
     The names of the function being decorated are required to be present in the JSON object
@@ -107,6 +107,9 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
     :type overseer: bool
     :param atomic: Should this function run in atomic transaction? Default: False.
     :type atomic: bool
+    :param staff_override: Whether this function can be called without checkout being active.
+    :type staff_override: bool
+    :param ignore_session: Whether Event stored in session data should be ignored for the call.
     :return: Decorated function.
     """
 
@@ -118,20 +121,23 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
             # noinspection PyDeprecation
             spec = inspect.getargspec(func)
 
-        func = require_user_features(counter, clerk, overseer, staff_override=staff_override)(func)
+        wrapped = require_user_features(counter, clerk, overseer, staff_override=staff_override)(func)
 
         fn = ajax_util.ajax_func(
+            func,
             method,
             spec.args[1:],
-            spec.defaults
-        )(func)
+            spec.defaults,
+            staff_override=staff_override,
+            ignore_session=ignore_session,
+        )(wrapped)
         if atomic:
             fn = transaction.atomic(fn)
 
         # Copy name etc from original function to wrapping function.
         # The wrapper must be the one referred from urlconf.
-        fn = functools.wraps(func)(fn)
-        _register_ajax_func(AjaxFunc(fn, url, method, staff_override))
+        fn = functools.wraps(wrapped)(fn)
+        _register_ajax_func(AjaxFunc(fn, url, method))
 
         return fn
     return decorator
@@ -145,13 +151,15 @@ from .api import (
 )
 
 
-def checkout_js(request):
+def checkout_js(request, event_slug):
     """
     Render the JavaScript file that defines the AJAX API functions.
     """
+    event = get_object_or_404(Event, slug=event_slug)
     context = {
         'funcs': iteritems(AJAX_FUNCTIONS),
         'api_name': 'Api',
+        'event': event,
     }
     return render(
         request,
@@ -190,14 +198,14 @@ def item_mode_change(request, code, from_, to, message_if_not_first=None):
 
 
 @ajax_func('^clerk/login$', clerk=False, counter=False)
-def clerk_login(request, code, counter):
+def clerk_login(request, event, code, counter):
     try:
-        counter_obj = Counter.objects.get(identifier=counter)
+        counter_obj = Counter.objects.get(event=event, identifier=counter)
     except Counter.DoesNotExist:
         raise AjaxError(RET_AUTH_FAILED, _(u"Counter has gone missing."))
 
     try:
-        clerk = Clerk.by_code(code)
+        clerk = Clerk.by_code(code, event=event)
     except ValueError as ve:
         raise AjaxError(RET_AUTH_FAILED, repr(ve))
 
@@ -227,6 +235,7 @@ def clerk_login(request, code, counter):
     request.session["clerk"] = clerk.pk
     request.session["clerk_token"] = clerk.access_key
     request.session["counter"] = counter_obj.pk
+    request.session["event"] = event.pk
     return clerk_data
 
 
@@ -235,6 +244,7 @@ def clerk_logout(request):
     """
     Logout currently logged in clerk.
     """
+    # Does not matter which event is being used, the logout shall always succeed.
     clerk_logout_fn(request)
     return HttpResponse()
 
@@ -245,28 +255,30 @@ def clerk_logout_fn(request):
 
     :param request: Active request, for session access.
     """
-    for key in ["clerk", "clerk_token", "counter", "receipt"]:
+    for key in ["clerk", "clerk_token", "counter", "event", "receipt"]:
         request.session.pop(key, None)
 
 
-@ajax_func('^counter/validate$', clerk=False, counter=False)
-def counter_validate(request, code):
+@ajax_func('^counter/validate$', clerk=False, counter=False, ignore_session=True)
+def counter_validate(request, event, code):
     """
     Validates the counter identifier and returns its exact form, if it is
     valid.
     """
     try:
-        counter = Counter.objects.get(identifier__iexact=code)
+        counter = Counter.objects.get(event=event, identifier__iexact=code)
+        clerk_logout_fn(request)
     except Counter.DoesNotExist:
         raise AjaxError(RET_AUTH_FAILED)
 
     return {"counter": counter.identifier,
+            "event_name": event.name,
             "name": counter.name}
 
 
 @ajax_func('^item/find$', method='GET')
-def item_find(request, code):
-    item = _get_item_or_404(code)
+def item_find(request, event, code):
+    item = _get_item_or_404(code, event=event)
     value = item.as_dict()
     if "available" in request.GET:
         if item.state == Item.STAGED:
@@ -287,7 +299,7 @@ def item_find(request, code):
 
 
 @ajax_func('^item/search$', method='GET', overseer=True)
-def item_search(request, query, code, vendor, min_price, max_price, item_type, item_state, show_hidden):
+def item_search(request, event, query, code, vendor, min_price, max_price, item_type, item_state, show_hidden):
 
     clauses = []
 
@@ -327,7 +339,7 @@ def item_search(request, query, code, vendor, min_price, max_price, item_type, i
 
     results = []
 
-    for item in Item.objects.filter(*clauses).all():
+    for item in Item.objects.filter(*clauses, vendor__event=event).all():
         item_dict = item.as_dict()
         item_dict['vendor'] = item.vendor.as_dict()
         results.append(item_dict)
@@ -336,7 +348,7 @@ def item_search(request, query, code, vendor, min_price, max_price, item_type, i
 
 
 @ajax_func('^item/edit$', method='POST', overseer=True, atomic=True)
-def item_edit(request, code, price, state):
+def item_edit(request, event, code, price, state):
     try:
         price = ItemPriceField().clean(price)
     except ValidationError as v:
@@ -345,7 +357,7 @@ def item_edit(request, code, price, state):
     if state not in {st for (st, _) in Item.STATE}:
         raise AjaxError(RET_BAD_REQUEST, 'Unknown state: {0}'.format(state))
 
-    item = _get_item_or_404(code, for_update=True)
+    item = _get_item_or_404(code, for_update=True, event=event)
     updates = set()
 
     if price != item.price:
@@ -397,8 +409,8 @@ def item_edit(request, code, price, state):
 
 
 @ajax_func('^item/list$', method='GET')
-def item_list(request, vendor):
-    items = Item.objects.filter(vendor__id=vendor, box__isnull=True)
+def item_list(request, event, vendor):
+    items = Item.objects.filter(vendor__id=vendor, vendor__event=event, box__isnull=True)
     return [i.as_dict() for i in items]
 
 
@@ -493,8 +505,8 @@ def box_list(request, vendor):
 
 
 @ajax_func('^item/checkin$', atomic=True)
-def item_checkin(request, code):
-    item = _get_item_or_404(code, for_update=True)
+def item_checkin(request, event, code):
+    item = _get_item_or_404(code, for_update=True, event=event)
     if not item.vendor.terms_accepted:
         raise AjaxError(500, _(u"Vendor has not accepted terms!"))
 
@@ -518,8 +530,8 @@ def item_checkin(request, code):
 
 
 @ajax_func('^item/checkout$', atomic=True)
-def item_checkout(request, code, vendor=None):
-    item = _get_item_or_404(code, for_update=True)
+def item_checkout(request, event, code, vendor=None):
+    item = _get_item_or_404(code, for_update=True, event=event)
     if vendor == "":
         vendor = None
     if vendor is not None:
@@ -565,12 +577,12 @@ def item_checkout(request, code, vendor=None):
 
 
 @ajax_func('^item/compensate/start$')
-def item_compensate_start(request, vendor):
+def item_compensate_start(request, event, vendor):
     if "compensation" in request.session:
         raise AjaxError(RET_CONFLICT, _(u"Already compensating"))
 
     vendor_id = int(vendor)
-    if not Vendor.objects.filter(pk=vendor_id).exists():
+    if not Vendor.objects.filter(pk=vendor_id, event=event).exists():
         raise AjaxError(RET_BAD_REQUEST)
 
     clerk = Clerk.objects.get(pk=request.session["clerk"])
@@ -588,13 +600,13 @@ def item_compensate_start(request, vendor):
 
 
 @ajax_func('^item/compensate$', atomic=True)
-def item_compensate(request, code):
+def item_compensate(request, event, code):
     if "compensation" not in request.session:
         raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
     receipt_pk, vendor_id = request.session["compensation"]
     receipt = Receipt.objects.select_for_update().get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
 
-    item = _get_item_or_404(code, vendor=vendor_id, for_update=True)
+    item = _get_item_or_404(code, vendor=vendor_id, for_update=True, event=event)
     item_dict = item_mode_change(request, item, Item.SOLD, Item.COMPENSATED)
 
     ReceiptItem.objects.create(item=item, receipt=receipt)
@@ -638,7 +650,7 @@ def item_compensate_end(request):
 
 
 @ajax_func('^vendor/get$', method='GET')
-def vendor_get(request, id=None, code=None):
+def vendor_get(request, event, id=None, code=None):
     id = empty_as_none(id)
     code = empty_as_none(code)
 
@@ -648,7 +660,7 @@ def vendor_get(request, id=None, code=None):
         raise AjaxError(RET_BAD_REQUEST, "Only id or code must be given")
 
     if code:
-        id = _get_item_or_404(code).vendor_id
+        id = _get_item_or_404(code, event=event).vendor_id
 
     try:
         vendor = Vendor.objects.get(pk=int(id))
@@ -659,8 +671,8 @@ def vendor_get(request, id=None, code=None):
 
 
 @ajax_func('^vendor/find$', method='GET')
-def vendor_find(request, q):
-    clauses = []
+def vendor_find(request, event, q):
+    clauses = [Q(event=event)]
     for part in q.split():
         try:
             clause = Q(id=int(part))
@@ -750,8 +762,8 @@ def receipt_start(request):
 
 
 @ajax_func('^item/reserve$', atomic=True)
-def item_reserve(request, code):
-    item = _get_item_or_404(code, for_update=True)
+def item_reserve(request, event, code):
+    item = _get_item_or_404(code, for_update=True, event=event)
     receipt_id = request.session.get("receipt")
     if receipt_id is None:
         raise AjaxError(RET_BAD_REQUEST, "No active receipt found")
@@ -961,8 +973,8 @@ def items_abandon(request, vendor):
 
 
 @ajax_func('^item/mark_lost$', overseer=True, atomic=True)
-def item_mark_lost(request, code):
-    item = _get_item_or_404(code=code, for_update=True)
+def item_mark_lost(request, event, code):
+    item = _get_item_or_404(code=code, for_update=True, event=event)
     if item.state == Item.SOLD:
         raise AjaxError(RET_CONFLICT, u"Item is sold!")
     if item.state == Item.STAGED:
@@ -976,22 +988,22 @@ def item_mark_lost(request, code):
 
 
 @ajax_func('^stats/sales_data$', method='GET', staff_override=True)
-def stats_sales_data(request, prices="false"):
-    formatter = stats.SalesData(as_prices=prices == "true")
+def stats_sales_data(request, event, prices="false"):
+    formatter = stats.SalesData(event=event, as_prices=prices == "true")
     log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
 @ajax_func('^stats/registration_data$', method='GET', staff_override=True)
-def stats_registration_data(request, prices="false"):
-    formatter = stats.RegistrationData(as_prices=prices == "true")
+def stats_registration_data(request, event, prices="false"):
+    formatter = stats.RegistrationData(event=event, as_prices=prices == "true")
     log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
 @ajax_func('^stats/group_sales$', method='GET', staff_override=True)
-def stats_group_sales_data(request, type_id, prices="false"):
-    item_type = ItemType.objects.get(id=int(type_id))
-    formatter = stats.SalesData(as_prices=prices == "true", extra_filter=dict(item__itemtype=item_type))
+def stats_group_sales_data(request, event, type_id, prices="false"):
+    item_type = ItemType.objects.get(event=event, id=int(type_id))
+    formatter = stats.SalesData(event=event, as_prices=prices == "true", extra_filter=dict(item__itemtype=item_type))
     log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')

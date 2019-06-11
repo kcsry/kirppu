@@ -301,9 +301,6 @@ KIRPPU_SU_AS_USER = "kirppuauth" in INSTALLED_APPS
 
 KIRPPU_MULTIPLE_VENDORS_PER_USER = env.bool("KIRPPU_MULTI_VENDOR", default=False)
 
-# Whether checkout functionality is active or not.
-KIRPPU_CHECKOUT_ACTIVE = env.bool('KIRPPU_CHECKOUT_ACTIVE', default=False)
-
 # Automatic checkout login. May not be enabled in non-dev environments!
 # If True, first enabled Clerk is automatically used.
 # If string, Clerk with that user is used, if it is enabled.

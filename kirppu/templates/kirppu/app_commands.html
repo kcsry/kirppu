@@ -37,7 +37,7 @@
 <script type="application/javascript"><!--
     Api = {
         get_barcodes: function(params) {
-            return $.post('{% url "kirppu:api_get_barcodes" %}', params);
+            return $.post('{% url "kirppu:api_get_barcodes" event_slug=event_slug %}', params); {# FIXME: slug should not be needed here #}
         }
     };
 //--></script>

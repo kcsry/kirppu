@@ -67,7 +67,7 @@
 <div id="ignored" class="hidden"></div>
 
 <script type="application/javascript"
-        src="{% url 'kirppu:checkout_js' %}"
+        src="{% url 'kirppu:checkout_js' event_slug=event.slug %}"
         charset="UTF-8"></script>
 <script type="application/javascript"><!--
     CheckoutConfig.uiId.container = "body";

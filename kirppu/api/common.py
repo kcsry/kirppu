@@ -8,11 +8,12 @@ from ..models import Box, Item, Receipt
 __author__ = 'codez'
 
 
-def get_item_or_404(code, for_update=False, **kwargs):
+def get_item_or_404(code, for_update=False, event=None, **kwargs):
     """
     :param code: Item barcode to find.
     :type code: str
     :param for_update: If True, Item is retrieved for update.
+    :param event: Optional Event object to match the Item by.
     :param kwargs: Extra query filters.
     :rtype: Item
     :raises Http404: If an Item matching the query does not exist.
@@ -27,13 +28,18 @@ def get_item_or_404(code, for_update=False, **kwargs):
 
     if item is None:
         raise Http404(_(u"No item found matching '{0}'").format(code))
+
+    if event is not None and item.vendor_event != event.id:
+        raise AjaxError(RET_CONFLICT, "Item is not registered in this event!")
+
     return item
 
 
-def get_box_or_404(box_number, for_update=False, **kwargs):
+def get_box_or_404(box_number, event, for_update=False, **kwargs):
     """
     :param box_number: Number of the box to find.
     :type box_number: int|str
+    :param event: Event object to match the Box by.
     :param for_update: If True, Box is retrieved for update.
     :param kwargs: Extra query filters.
     :rtype: Box
@@ -43,7 +49,7 @@ def get_box_or_404(box_number, for_update=False, **kwargs):
     number = None
     try:
         number = int(box_number)
-        query = Box.objects
+        query = Box.objects.filter(representative_item__vendor__event=event)
         if for_update:
             query = query.select_for_update()
         box = query.get(box_number=box_number, **kwargs)

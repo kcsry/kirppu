@@ -129,13 +129,14 @@ class ApiProvisionTest(TestCase):
     def setUp(self):
         self.client = Client()
 
-        self.vendor = VendorFactory()
+        self.event = EventFactory()
+        self.vendor = VendorFactory(event=self.event)
         self.items = SoldItemFactory.create_batch(10, vendor=self.vendor)
 
-        self.counter = CounterFactory()
-        self.clerk = ClerkFactory()
+        self.counter = CounterFactory(event=self.event)
+        self.clerk = ClerkFactory(event=self.event)
 
-        self.apiOK = ApiOK(client=self.client)
+        self.apiOK = ApiOK(client=self.client, event=self.event.slug)
 
         self.apiOK.clerk_login(code=self.clerk.get_code(), counter=self.counter.identifier)
 

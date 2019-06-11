@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
 from decimal import Decimal
+import re
 
 from django.utils.timezone import now
 from kirppuauth.models import User
-from kirppu.models import Box, Clerk, Counter, Item, ItemType, Receipt, ReceiptItem, Vendor
+from kirppu.models import Box, Clerk, Counter, Event, Item, ItemType, Receipt, ReceiptItem, Vendor
 
 import factory.django
 
@@ -35,17 +37,32 @@ class UserFactory(Factory):
 UserFactory.DEFAULT_PASSWORD = "AjU2k3Pzpdpz5yf5sjZn9p56"
 
 
+class EventFactory(Factory):
+    class Meta:
+        model = Event
+
+    slug = factory.LazyFunction(lambda: re.sub(r"\W", "", factory.Faker("sentence", nb_words=5).generate({}).lower())[:50])
+    name = factory.LazyAttribute(lambda a: a.slug)
+    start_date = (now() + timedelta(days=2)).date()
+    end_date = (now() + timedelta(days=3)).date()
+
+    registration_end = now() + timedelta(days=1)
+    checkout_active = True
+
+
 class VendorFactory(Factory):
     class Meta:
         model = Vendor
 
     user = factory.SubFactory(UserFactory)
     terms_accepted = factory.LazyFunction(now)
+    event = factory.SubFactory(EventFactory)
 
 
 class CounterFactory(Factory):
     class Meta:
         model = Counter
+    event = factory.SubFactory(EventFactory)
     identifier = factory.Sequence(lambda n: "counter_{}".format(n))
     name = factory.LazyAttribute(lambda a: a.identifier.capitalize())
 
@@ -54,6 +71,7 @@ class ClerkFactory(Factory):
     class Meta:
         model = Clerk
 
+    event = factory.SubFactory(EventFactory)
     user = factory.SubFactory(UserFactory)
 
     @classmethod
@@ -68,6 +86,7 @@ class ClerkFactory(Factory):
 class ItemTypeFactory(Factory):
     class Meta:
         model = ItemType
+    event = factory.SubFactory(EventFactory)
     key = factory.Sequence(lambda n: "type_{}".format(n))
     order = factory.Sequence(lambda n: n)
     title = factory.Faker("sentence", nb_words=2)

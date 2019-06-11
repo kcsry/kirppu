@@ -3,16 +3,19 @@ from functools import wraps
 import json
 
 from django.http.response import (
+    Http404,
     HttpResponse,
     HttpResponseBadRequest,
     StreamingHttpResponse,
 )
-from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
+from django.views.decorators.http import require_http_methods
 
 from .models import (
     Clerk,
     Counter,
+    Event,
 )
 
 """
@@ -44,7 +47,7 @@ class AjaxError(Exception):
 
 
 class AjaxFunc(object):
-    def __init__(self, func, url, method, is_public=False):
+    def __init__(self, func, url, method):
         self.name = func.__name__               # name of the view function
         self.pkg = func.__module__
         self.func = func
@@ -52,10 +55,9 @@ class AjaxFunc(object):
         self.view_name = 'api_' + self.name     # view name for url config
         self.view = 'kirppu:' + self.view_name  # view name for templates
         self.method = method                    # http method for templates
-        self.is_public = is_public
 
 
-def ajax_func(method='POST', params=None, defaults=None):
+def ajax_func(original, method='POST', params=None, defaults=None, staff_override=False, ignore_session=False):
     """
     Create view function decorator.
 
@@ -67,12 +69,16 @@ def ajax_func(method='POST', params=None, defaults=None):
 
     If the decorated view raises an AjaxError, it will be rendered.
 
+    :param original: Original function being wrapped.
     :param method: Required HTTP method; either 'GET' or 'POST'
     :type method: str
     :param params: List of names of expected arguments.
     :type params: list[str]
     :param defaults: List of default values for arguments. Default values are applied to `params` tail.
     :type defaults: list
+    :param staff_override: Whether this function can be called without checkout being active.
+    :type staff_override: bool
+    :param ignore_session: Whether Event stored in session data should be ignored for the call.
     :return: A decorator for a view function
     :rtype: callable
     """
@@ -81,23 +87,40 @@ def ajax_func(method='POST', params=None, defaults=None):
     # Default values are applied only to len(defaults) last parameters.
     defaults = defaults or []
     defaults_start = len(params) - len(defaults)
-    assert defaults_start >= 0
+    assert defaults_start >= 0, original.__name__
 
     def decorator(func):
         # Decorate func.
         func = require_http_methods([method])(func)
 
         @wraps(func)
-        def wrapper(request, **kwargs):
+        def wrapper(request, event_slug, **kwargs):
             #if not request.is_ajax():
             #    return HttpResponseBadRequest("Invalid requester")
+
+            # Prevent access if checkout is not active.
+            event = get_object_or_404(Event, slug=event_slug)
+            if not staff_override and not event.checkout_active:
+                raise Http404()
+
+            if not ignore_session:
+                # Ensure the request hasn't changed Event.
+                session_event = request.session.get("event")
+                if session_event is not None and session_event != event.pk:
+                    return AjaxError(
+                        RET_CONFLICT, _("Event changed. Please refresh the page and re-login.")).render()
 
             # Pass request params to the view as keyword arguments.
             # The first argument is skipped since it is the request.
             request_data = request.GET if method == 'GET' else request.POST
             for i, param in enumerate(params):
                 try:
-                    kwargs[param] = request_data[param]
+                    if i == 0 and param == "event":
+                        # Supply event from function arguments.
+                        kwargs[param] = event
+                    else:
+                        # Default: Supply argument value from request data.
+                        kwargs[param] = request_data[param]
                 except KeyError:
                     if i < defaults_start:
                         return HttpResponseBadRequest()

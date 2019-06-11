@@ -57,10 +57,16 @@ class JsWriter(Writer):
 
     def write_function(self, module: str, node: ast.FunctionDef, arguments: List[Arg]):
         has_args = False
+        first_real_arg = 0
         for index, arg in enumerate(arguments):
-            if index == 0 and arg.name == "request":
+            if index == first_real_arg and arg.name == "request":
+                first_real_arg += 1
                 continue
-            if index == 1:
+            if index == first_real_arg and arg.name == "event":
+                first_real_arg += 1
+                continue
+
+            if index == first_real_arg:
                 self.print("    /** @param {Object} obj Parameters")
                 has_args = True
             else:
@@ -116,7 +122,8 @@ class PyWriter(Writer):
         self.print()
         self.print("# noinspection PyMethodMayBeStatic")
         self.print("class Api(object):")
-        self.print("""    def __init__(self, client, debug=False): pass
+        self.print("""    def __init__(self, client, event, debug=False):
+        self._event = event
     @staticmethod
     def _opt_json(response): pass
     def _check_response(self, response): pass
@@ -131,9 +138,14 @@ class PyWriter(Writer):
         decl_args = []
         args = []
         arg_count = len(arguments)
+        has_event = False
         for index, arg in enumerate(arguments):
             if index == 0 and arg.name == "request":
                 continue
+            if index == 1 and arg.name == "event":
+                args.append("self._event")
+                continue
+
             if arg.optional:
                 d = arg.node.defaults
                 default = d[index - (arg_count - len(d))]

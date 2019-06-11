@@ -63,7 +63,7 @@
         const graphColors = ["rgb(102,128,0)", "rgb(0,51,128)", "rgb(0,128,51)", "rgb(102,0,128)"];
         const g2 = new Dygraph(
                 document.getElementById("graph2"),
-                '{% url "kirppu:api_stats_group_sales_data" %}?type_id={{ type_id }}',
+                '{% url "kirppu:api_stats_group_sales_data" event_slug=event.slug %}?type_id={{ type_id }}',
                 {
                     labels: ["{% trans "Time" %}",
                         "{{ tlBrought }}", "{{ tlUnsold }}",
@@ -99,14 +99,14 @@
         g2_items.on("click", function() {
             activate(g2_items, g2_prices);
             g2.updateOptions({
-                file: '{% url "kirppu:api_stats_group_sales_data" %}?type_id={{ type_id }}',
+                file: '{% url "kirppu:api_stats_group_sales_data" event_slug=event.slug %}?type_id={{ type_id }}',
                 ylabel: "{{ tlItemCount }}"
             });
         });
         g2_prices.on("click", function() {
             activate(g2_prices, g2_items);
             g2.updateOptions({
-                file: '{% url "kirppu:api_stats_group_sales_data" %}?type_id={{ type_id }}&prices=true',
+                file: '{% url "kirppu:api_stats_group_sales_data" event_slug=event.slug %}?type_id={{ type_id }}&prices=true',
                 ylabel: "{{ tlPricesSum }}"
             });
         });

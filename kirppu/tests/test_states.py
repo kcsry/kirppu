@@ -14,8 +14,9 @@ __author__ = 'codez'
 class PublicTest(TestCase, ResultMixin):
     def setUp(self):
         self.client = Client()
-        self.vendor = VendorFactory()
-        self.type = ItemTypeFactory()
+        self.event = EventFactory()
+        self.vendor = VendorFactory(event=self.event)
+        self.type = ItemTypeFactory(event=self.event)
 
         user = self.vendor.user
 
@@ -31,7 +32,8 @@ class PublicTest(TestCase, ResultMixin):
             item_type=self.type.key,
             adult=False,
         )
-        result = self.assertSuccess(self.client.post("/kirppu/vendor/item/", data=data)).json()
+        result = self.assertSuccess(self.client.post("/kirppu/{}/vendor/item/".format(self.event.slug),
+                                                     data=data)).json()
         self.assertEqual(1, len(result))
         r_item = result[0]
         self.assertEquals(self.vendor.id, r_item["vendor_id"])
@@ -46,7 +48,7 @@ class PublicTest(TestCase, ResultMixin):
             bundle_size=1,
         )
         # Returns actually an html-page.. Test within context.
-        result = self.assertSuccess(self.client.post("/kirppu/vendor/box/", data=data))
+        result = self.assertSuccess(self.client.post("/kirppu/{}/vendor/box/".format(self.event.slug), data=data))
         self.assertEquals(data["description"], result.context["description"])
 
     def test_register_box_with_single_item(self):
@@ -59,7 +61,7 @@ class PublicTest(TestCase, ResultMixin):
             bundle_size=1,
         )
         # Returns actually an html-page.. Test within context.
-        result = self.assertSuccess(self.client.post("/kirppu/vendor/box/", data=data))
+        result = self.assertSuccess(self.client.post("/kirppu/{}/vendor/box/".format(self.event.slug), data=data))
         self.assertEquals(data["description"], result.context["description"])
 
     def test_register_single_bundle_box(self):
@@ -72,7 +74,7 @@ class PublicTest(TestCase, ResultMixin):
             bundle_size=2,
         )
         # Returns actually an html-page.. Test within context.
-        result = self.assertSuccess(self.client.post("/kirppu/vendor/box/", data=data))
+        result = self.assertSuccess(self.client.post("/kirppu/{}/vendor/box/".format(self.event.slug), data=data))
         self.assertEquals(data["description"], result.context["description"])
 
 
@@ -81,13 +83,14 @@ class StatesTest(TestCase, ResultMixin):
 
         self.client = Client()
 
-        self.vendor = VendorFactory()
+        self.event = EventFactory()
+        self.vendor = VendorFactory(event=self.event)
         self.items = ItemFactory.create_batch(10, vendor=self.vendor)
 
-        self.counter = CounterFactory()
-        self.clerk = ClerkFactory()
+        self.counter = CounterFactory(event=self.event)
+        self.clerk = ClerkFactory(event=self.event)
 
-        self.api = Api(client=self.client)
+        self.api = Api(client=self.client, event=self.event)
         self.api.clerk_login(code=self.clerk.get_code(), counter=self.counter.identifier)
 
     def test_fail_reserve_without_receipt(self):
@@ -141,7 +144,7 @@ class StatesTest(TestCase, ResultMixin):
     def test_box_over_reserve(self):
         reserve_count = 3
 
-        box = BoxFactory(vendor=VendorFactory(), item_count=reserve_count - 1)
+        box = BoxFactory(vendor=VendorFactory(event=self.event), item_count=reserve_count - 1)
         box_checkin = self.assertResult(self.api.item_checkin(code=box.representative_item.code),
                                         expect=HTTPStatus.ACCEPTED.value).json()
         self.assertSuccess(self.api.box_checkin(code=box.representative_item.code,

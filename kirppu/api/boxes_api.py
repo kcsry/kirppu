@@ -34,10 +34,10 @@ def _parse_item_count(inp, minimum=1):
 
 
 @ajax_func('^box/find$', method='GET')
-def box_find(request, box_number, box_item_count="1"):
+def box_find(request, event, box_number, box_item_count="1"):
     box_item_count = _parse_item_count(box_item_count)
 
-    box = _get_box_or_404(box_number)
+    box = _get_box_or_404(box_number, event=event)
     available_count = box.item_set.filter(state=Item.BROUGHT).count()
     if available_count < box_item_count:
         raise AjaxError(RET_CONFLICT, _("Not enough available box items, only {} exist").format(available_count))
@@ -48,8 +48,8 @@ def box_find(request, box_number, box_item_count="1"):
 
 
 @ajax_func('^box/checkin$', atomic=True)
-def box_checkin(request, code, box_info):
-    item = _get_item_or_404(code)
+def box_checkin(request, event, code, box_info):
+    item = _get_item_or_404(code, event=event)
     if not item.vendor.terms_accepted:
         raise AjaxError(500, _(u"Vendor has not accepted terms!"))
 
@@ -79,9 +79,9 @@ def box_checkin(request, code, box_info):
 
 
 @ajax_func("^box/item/reserve$", atomic=True)
-def box_item_reserve(request, box_number, box_item_count="1"):
+def box_item_reserve(request, event, box_number, box_item_count="1"):
     box_item_count = _parse_item_count(box_item_count)
-    box = _get_box_or_404(box_number)
+    box = _get_box_or_404(box_number, event=event)
 
     receipt_id = request.session.get("receipt")
     if receipt_id is None:
@@ -123,9 +123,9 @@ def box_item_reserve(request, box_number, box_item_count="1"):
 
 
 @ajax_func('^box/item/release$', atomic=True)
-def box_item_release(request, box_number, box_item_count="1"):
+def box_item_release(request, event, box_number, box_item_count="1"):
     box_item_count = _parse_item_count(box_item_count)
-    box = _get_box_or_404(box_number)
+    box = _get_box_or_404(box_number, event=event)
 
     receipt_id = request.session.get("receipt")
     if receipt_id is None:

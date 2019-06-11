@@ -23,9 +23,9 @@
 {% endblock %}
 
 {% block navbar_right %}
-    {% if checkout_active %}
-    <li><a href="{% url 'kirppu:checkout_view' %}" title="{% trans "Return to checkout" %}">{% trans "Checkout" %}</a></li>
-    <li><a href="{% url 'kirppu:statistical_stats_view' %}" title="{% trans "General statistics" %}">{% trans "General statistics" %}</a></li>
+    {% if event.checkout_active %}
+    <li><a href="{% url 'kirppu:checkout_view' event_slug=event.slug %}" title="{% trans "Return to checkout" %}">{% trans "Checkout" %}</a></li>
+    <li><a href="{% url 'kirppu:statistical_stats_view' event_slug=event.slug %}" title="{% trans "General statistics" %}">{% trans "General statistics" %}</a></li>
     {% endif %}
 {% endblock %}
 
@@ -100,11 +100,11 @@
                 }
         );
         const g1Count = function() {
-            graphLoader('{% url "kirppu:api_stats_registration_data" %}', g1);
+            graphLoader('{% url "kirppu:api_stats_registration_data" event_slug=event.slug %}', g1);
             g1.updateOptions({ ylabel: "{{ tlItemCount }}" });
         };
         const g1Sum = function() {
-            graphLoader('{% url "kirppu:api_stats_registration_data" %}?prices=true', g1);
+            graphLoader('{% url "kirppu:api_stats_registration_data" event_slug=event.slug %}?prices=true', g1);
             g1.updateOptions({ ylabel: "{{ tlPricesSum }}" });
         };
 
@@ -135,11 +135,11 @@
                 }
         );
         const g2Count = function() {
-            graphLoader('{% url "kirppu:api_stats_sales_data" %}', g2);
+            graphLoader('{% url "kirppu:api_stats_sales_data" event_slug=event.slug %}', g2);
             g2.updateOptions({ ylabel: "{{ tlItemCount }}" });
         };
         const g2Sum = function() {
-            graphLoader('{% url "kirppu:api_stats_sales_data" %}?prices=true', g2);
+            graphLoader('{% url "kirppu:api_stats_sales_data" event_slug=event.slug %}?prices=true', g2);
             g2.updateOptions({ ylabel: "{{ tlPricesSum }}" });
         };
 
@@ -212,7 +212,7 @@
         </tr>
         {% for row in number_of_items %}
              <tr>
-                 <th>{% if row.key != "sum" %}<a onclick='return typePopup("{% url "kirppu:type_stats_view" row.key %}")' href="{% url "kirppu:type_stats_view" row.key %}">{{ row.name }}</a>
+                 <th>{% if row.key != "sum" %}<a onclick='return typePopup("{% url "kirppu:type_stats_view" event_slug=event.slug type_id=row.key %}")' href="{% url "kirppu:type_stats_view" event_slug=event.slug type_id=row.key %}">{{ row.name }}</a>
                  {% else %}{{ row.name }}{% endif %}</th>
                  {% for col in row.property_values %}
                     <td>{{ col|safe }}</td>

@@ -64,9 +64,10 @@ class ItemCollectionData(object):
     GROUP_ITEM_TYPE = "itemtype"
     GROUP_VENDOR = "vendor"
 
-    def __init__(self, group_by):
+    def __init__(self, group_by, event):
         self._group_by = group_by
-        self._raw_data = self._populate(Item.objects.values(group_by))
+        self._event = event
+        self._raw_data = self._populate(Item.objects.filter(vendor__event=self._event).values(group_by))
 
         if group_by == self.GROUP_ITEM_TYPE:
             self._init_for_item_type()
@@ -97,7 +98,7 @@ class ItemCollectionData(object):
         # Fill possible gaps and order correctly.
         self._data = OrderedDict(
             (key, data.get(key, self._DEFAULT_VALUES))
-            for key in ItemType.objects.order_by("order").values_list("id", flat=True)
+            for key in ItemType.objects.filter(event=self._event).order_by("order").values_list("id", flat=True)
         )
 
         # Append calculated sum row.
@@ -254,12 +255,13 @@ class ItemEurosRow(ItemCollectionRow):
 class GraphLog(object):
     unix_epoch = datetime(1970, 1, 1, tzinfo=pytz.utc)
 
-    def __init__(self, as_prices=False, extra_filter=None):
+    def __init__(self, event, as_prices=False, extra_filter=None):
+        self._event = event
         self._as_prices = as_prices
         self._filter = extra_filter or dict()
 
     def query(self, only):
-        query = self._create_query()
+        query = self._create_query().filter(item__vendor__event=self._event)
         query = query.filter(**self._filter)
         if self._as_prices:
             return query.only("item__price", *only).annotate(value=F("item__price"))
