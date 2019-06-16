@@ -330,6 +330,9 @@ genStatsForData = (data, graph, options) ->
   graph.setLines(ts)
   graph.setDenseNormDist(bucketGraph.denseNormDist)
   graph.update(bucketGraph.data)
+  bucketGraph.perc68 = ts[0][0]
+  bucketGraph.perc95 = ts[1][0]
+  bucketGraph.perc997 = ts[2][0]
   return bucketGraph
 
 
@@ -360,6 +363,12 @@ initGeneralStats = (options) ->
       $("#" + cfg.stdev).text(roundTo(data.pstdev, 3))
     if cfg.median?
       $("#" + cfg.median).text(roundTo(data.median, 3))
+    if cfg.perc68?
+      $("#" + cfg.perc68).text(data.perc68)
+    if cfg.perc95?
+      $("#" + cfg.perc95).text(data.perc95)
+    if cfg.perc997?
+      $("#" + cfg.perc997).text(data.perc997)
 
 
 $(document).ready () ->
