@@ -64,10 +64,10 @@ groupData = (data, options) ->
 
   if options.sumValues
     for e in data
-      frequency[Math.ceil(e / stepSize)] += e
+      frequency[Math.floor(e / stepSize)] += e
   else
     for e in data
-      frequency[Math.ceil(e / stepSize)] += 1
+      frequency[Math.floor(e / stepSize)] += 1
 
   return {
     frequency: frequency
