@@ -303,13 +303,7 @@ def _is_permit_valid(request):
 
 def index(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
-    # FIXME: Implement a better way to enable the link. db-options...
-    from .models import UIText
-    try:
-        login_text = UIText.objects.get(identifier="mobile_login")
-        if "--enable--" not in login_text.text:
-            raise UIText.DoesNotExist()
-    except UIText.DoesNotExist:
+    if not event.mobile_view_visible:
         return HttpResponseForbidden(_("This location is not in use."))
 
     if request.user.is_authenticated:

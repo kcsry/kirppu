@@ -388,13 +388,8 @@ def _vendor_menu_contents(request, event):
         fill(_(u"Box list"), "kirppu:vendor_boxes"),
     ]
 
-    try:
-        # FIXME: Implement a better way to enable the link. db-options...
-        login_text = UIText.objects.get(identifier="mobile_login")
-        if "--enable--" in login_text.text:
-            items.append(fill(_("Mobile"), "kirppu:mobile"))
-    except UIText.DoesNotExist:
-        pass
+    if event.mobile_view_visible:
+        items.append(fill(_("Mobile"), "kirppu:mobile"))
 
     manage_sub = []
     if request.user.is_staff or UserAdapter.is_clerk(request.user):
