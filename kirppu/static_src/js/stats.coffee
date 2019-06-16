@@ -151,7 +151,7 @@ bucketedNormDist = (input, options) ->
 
   # Grouped data does usually have enough data points to give nice normal distribution graph.
   # Create virtual graph with smaller buckets so that the distribution is represented more correctly.
-  denseBuckets = options.denseBuckets ? 50
+  denseBuckets = options.denseBuckets ? 200
   denseBucket = (grouped.max - grouped.min) / denseBuckets
   denseBucketArr = new Array(denseBuckets + 1)
   denseAcc = 0
