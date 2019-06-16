@@ -780,12 +780,16 @@ class Item(models.Model):
         :return: Decimal object formatted for humans.
         :rtype: Decimal
         """
+        return self.price_fmt_for(self.price)
+
+    @staticmethod
+    def price_fmt_for(value):
         # If value is exact integer, return only the integer part.
-        int_value = self.price.to_integral_value()
-        if int_value == self.price:
+        int_value = value.to_integral_value()
+        if int_value == value:
             return int_value
         # Else, display digits with precision from FRACTION*.
-        return self.price.quantize(Item.Q_EXP)
+        return value.quantize(Item.Q_EXP)
 
     @classmethod
     def new(cls, *args, **kwargs):

@@ -206,18 +206,16 @@ class ItemEurosData(ItemCollectionData):
 
     def _populate(self, query):
         # Count item prices per state. query must be already made group_by with query.values.
-        p_field = Item._meta.get_field("price")
-        decimals, digits = p_field.decimal_places, p_field.max_digits
         states = {
             key: models.Sum(models.Case(models.When(state=p, then=models.F("price")),
-                                        output_field=models.DecimalField(decimal_places=decimals, max_digits=digits)))
+                                        output_field=models.DecimalField()))
             for key, p in self.PROPERTIES.items()
             if p is not None
         }
         abandoned = {
             key: models.Sum(models.Case(models.When(
                 models.Q(state=p) & models.Q(abandoned=True),
-                then=models.F("price")), output_field=models.DecimalField(decimal_places=decimals, max_digits=digits)))
+                then=models.F("price")), output_field=models.DecimalField()))
             for key, p in self.ABANDONED_PROPERTIES.items()
         }
         states.update(abandoned)
@@ -239,9 +237,14 @@ class ItemEurosRow(ItemCollectionRow):
 
     def fmt(self, value):
         if self._use_cents:
+            # NB: This produces 99 from a value "0.999" whereas price_fmt_for produces 1.00...
             return int((value or 0) * 100)
-        value = "{}{}{}".format(self._currency[0], value or 0, self._currency[1])
-        return value
+        if value:
+            processed = Item.price_fmt_for(value)
+        else:
+            processed = 0
+        formatted_value = "{}{}{}".format(self._currency[0], processed, self._currency[1])
+        return formatted_value
 
 
 # endregion
