@@ -19,3 +19,18 @@ def front_page(request):
             "events": events,
         },
     )
+
+
+def front_for_mobile_view(request):
+    events = Event.objects.filter(
+        start_date__isnull=False,
+        end_date__isnull=False,
+        visibility=Event.VISIBILITY_VISIBLE,
+    ).order_by("-start_date")
+    return render(
+        request,
+        "kirppu/frontpage_for_mobile_view.html",
+        {
+            "events": events,
+        },
+    )

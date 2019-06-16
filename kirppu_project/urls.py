@@ -5,6 +5,7 @@ from django.views.i18n import JavaScriptCatalog
 from django.views.decorators.http import last_modified
 
 from kirppu.views import index, MobileRedirect
+from kirppu.frontpage import front_for_mobile_view
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -31,5 +32,6 @@ urlpatterns = [
         JavaScriptCatalog.as_view(packages=js_packages)),
         name="javascript-catalog"),
     path('m/<slug:event_slug>/', MobileRedirect.as_view()),
+    path('m/', front_for_mobile_view),
     path('', include('kompassi_oauth2.urls')),
 ]
