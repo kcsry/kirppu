@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponseBadRequest, Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.http import is_safe_url
@@ -28,7 +28,7 @@ def get_multi_vendor_values(request, event):
     can_create_vendor = False
     can_switch_vendor = False
 
-    if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER and user.is_authenticated:
+    if event.multiple_vendors_per_user and user.is_authenticated:
         if user.is_staff and "user" in request.GET:
             raise NotImplementedError  # FIXME: Decide how this should work.
         multi_vendor = Vendor.objects.filter(user=user, person__isnull=False)
@@ -58,6 +58,9 @@ def get_multi_vendor_values(request, event):
 @require_http_methods(["POST"])
 def change_vendor(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
+    if not event.multiple_vendors_per_user:
+        raise Http404()
+
     user = request.user
     if not (user.has_perm("kirppu.can_create_sub_vendor") or user.has_perm("kirppu.can_switch_sub_vendor")):
         raise PermissionDenied
@@ -81,6 +84,9 @@ def change_vendor(request, event_slug):
 @permission_required("kirppu.can_create_sub_vendor", raise_exception=True)
 def create_vendor(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
+    if not event.multiple_vendors_per_user:
+        raise Http404()
+
     form = get_form(PersonCreationForm, request)
     if form.is_valid():
         with transaction.atomic():

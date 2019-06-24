@@ -73,6 +73,9 @@ event_urls = [
     path(r'vendor/status/', mobile_index, name='mobile'),
     path(r'vendor/status/logout/', mobile_logout, name='mobile_logout'),
 
+    path('vendor/change', change_vendor, name="change_vendor"),
+    path('vendor/create', create_vendor, name="create_vendor"),
+
     path('api/checkout.js', checkout_js, name='checkout_js'),
     path(r'commands/', get_counter_commands, name='commands'),
 ]
@@ -80,11 +83,6 @@ event_urls = [
 common_urls = [
     path(r'', front_page, name="front_page"),
 ]
-
-if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER:
-    # TODO: Move to event
-    event_urls.append(path('vendor/change', change_vendor, name="change_vendor"))
-    event_urls.append(path('vendor/create', create_vendor, name="create_vendor"))
 
 event_urls.extend([
     re_path(func.url, func.func, name=func.view_name)

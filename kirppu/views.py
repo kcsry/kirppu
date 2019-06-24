@@ -446,7 +446,7 @@ def get_items(request, event_slug, bar_type):
     vendor = Vendor.get_vendor(request, event)
 
     vendor_data = get_multi_vendor_values(request, event)
-    if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER and user.is_staff and "user" in request.GET:
+    if event.multiple_vendors_per_user and user.is_staff and "user" in request.GET:
         raise NotImplementedError  # FIXME: Decide how this should work.
 
     vendor_items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)

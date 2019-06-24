@@ -155,8 +155,7 @@ class VendorAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         fields = ["user"] if obj is not None and not self._can_set_user(request, obj) else []
         fields.append("terms_accepted")
-        if not settings.KIRPPU_MULTIPLE_VENDORS_PER_USER:
-            fields.append("person")
+        fields.append("person")
         return fields
 
 

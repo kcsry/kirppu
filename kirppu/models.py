@@ -362,7 +362,7 @@ class Vendor(models.Model):
         :return: A Vendor, or None.
         :rtype: Vendor|None
         """
-        if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER and "vendor_id" in request.session:
+        if event.multiple_vendors_per_user and "vendor_id" in request.session:
             match = {"id": request.session["vendor_id"]}
         else:
             match = {"user": request.user, "person__isnull": True}
@@ -378,7 +378,7 @@ class Vendor(models.Model):
 
         :return:
         """
-        if settings.KIRPPU_MULTIPLE_VENDORS_PER_USER and "vendor_id" in request.session:
+        if event.multiple_vendors_per_user and "vendor_id" in request.session:
             match = {"id": request.session["vendor_id"]}
             multi = True
         else:
