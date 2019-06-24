@@ -46,6 +46,7 @@ class @CompensationReceipt extends CheckoutMode
       items: receipt.items
       sum: receipt.total
       hide_status: true
+      time: receipt.end_time
     )
     @itemDiv.empty().append(table)
 
