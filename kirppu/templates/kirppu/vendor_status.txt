@@ -4,7 +4,8 @@
 {{ table.spec.title }}
 {% if table.items  %}   #  {% trans "code"|ljust:"8" %}  {% trans "price"|ljust:price_width %}  {% trans "name" %}
 {% for item in table.items %}{{ forloop.counter|rjust:"4" }}  {{ item.code }}  {{ item.price|format_price|ljust:price_width }}  {{ item.name|ljust:"10" }}{% if item.box %} [[{{ item.value }} / {{ item.total }}]]{% endif %}
-{% endfor %} {% trans "total:" %} {{ table.sum|format_price }}
+{% endfor %}{% if table.pre_sum_line %} {{ table.pre_sum_line.0 }} {{ table.pre_sum_line.1|format_price }}
+{% endif %} {% trans "total:" %} {{ table.sum|format_price }}
 {% else %}{% trans "No items" %}
 {% endif %}{% endif %}{% endfor %}
 {% if signature %}

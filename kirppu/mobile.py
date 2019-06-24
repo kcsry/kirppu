@@ -16,7 +16,8 @@ from django.utils.translation import gettext_lazy as _
 from ipware.ip import get_ip
 from ratelimit.utils import is_ratelimited
 
-from .models import Event, Item, TemporaryAccessPermit, Vendor, TemporaryAccessPermitLog, Box
+from .models import Box, Event, Item, Receipt, ReceiptExtraRow, TemporaryAccessPermit, TemporaryAccessPermitLog, Vendor
+from .provision import Provision
 from .templatetags.kirppu_login import logout_url
 from .templatetags.kirppu_tags import format_price
 from .util import first, shorten_text
@@ -88,6 +89,7 @@ class TableContents(object):
         self.spec = spec
         self.items = []
         self.boxes = set()
+        self.pre_sum_line = ()
         self.sum = Decimal(0)
 
 
@@ -219,6 +221,26 @@ def _data_view(request, event, permit):
                     table.sum += price_value * price_multiplier
                 break
 
+    if event.provision_function:
+        compensable = tables["compensable"]
+        if compensable.items:
+            provision = Provision(vendor_id=vendor.id, provision_function=event.provision_function)
+            to_be_provision = provision.provision + provision.provision_fix
+            compensable.pre_sum_line = (_("provision:"), to_be_provision)
+            compensable.sum += to_be_provision
+
+        compensated = tables["compensated"]
+        if compensated.items:
+            current_provision = ReceiptExtraRow.objects.filter(
+                type__in=(ReceiptExtraRow.TYPE_PROVISION, ReceiptExtraRow.TYPE_PROVISION_FIX),
+                receipt__type=Receipt.TYPE_COMPENSATION,
+                receipt__items__vendor=vendor,
+            ).distinct().aggregate(sum=models.Sum("value"))["sum"] or Decimal(0)
+
+            current_provision = Item.price_fmt_for(current_provision)
+            compensated.pre_sum_line = (_("provision:"), current_provision)
+            compensated.sum += current_provision
+
     if request.GET.get("type") == "txt":
         sign_data = {}
         total_items = 0
@@ -229,6 +251,8 @@ def _data_view(request, event, permit):
             total_items += len(items)
             sign_data[key] = items
             sign_data[key + "_s"] = str(table.sum)
+            if table.pre_sum_line:
+                sign_data[key + "_p"] = str(table.pre_sum_line[1])
 
         if total_items > 0:
             sign_data["vendor"] = vendor.id

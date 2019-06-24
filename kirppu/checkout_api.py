@@ -477,7 +477,7 @@ def compensable_items(request, event, vendor):
         r["extras"] = [provision_obj.as_dict()]
 
         if not provision.provision_fix.is_zero():
-            print(provision.provision_fix, provision.provision_fix.is_zero())
+            # print(provision.provision_fix, provision.provision_fix.is_zero())
 
             provision_fixup_obj = ReceiptExtraRow(
                 type=ReceiptExtraRow.TYPE_PROVISION_FIX,

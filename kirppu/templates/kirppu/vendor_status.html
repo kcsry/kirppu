@@ -30,6 +30,9 @@
             {% if table.spec.checkable %}
             <p class="p_{{ table_key }}{% if table.spec.hidden %} hidden{% endif %}">
             {% trans "Tap the icon on the line to keep track of which items you have found." %}
+            {% if table_key == "returnable" %}
+                {% blocktrans %}<span class="glyphicon glyphicon-warning-sign"></span> Note: The items must still be brought to checkout!{% endblocktrans %}
+            {% endif %}
             </p>
             {% endif %}
             {% if table.items  %}
@@ -61,6 +64,9 @@
             <td class="price">{{ item.price }}</td>
         </tr>
         {% endfor %}
+        {% if table.pre_sum_line %}
+        <tr><td {% if table.spec.checkable %}colspan="2"{% endif %}></td><td>{{ table.pre_sum_line.0 }}</td><td class="price" colspan="2">{{ table.pre_sum_line.1 }}</td></tr>
+        {% endif %}
         <tr><td {% if table.spec.checkable %}colspan="2"{% endif %}></td><td>{% trans "total:" %}</td><td class="price" colspan="2">{{ table.sum }}</td></tr>
         </tbody>
         </table>
