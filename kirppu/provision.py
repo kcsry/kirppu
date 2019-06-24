@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import builtins
 from decimal import Decimal
+from typing import Optional
 
-from django.conf import settings
+import django.db.models
 from django.db.models import Sum, Q
 
 from .models import ReceiptExtraRow, Receipt, Item, ReceiptItem
@@ -10,7 +12,7 @@ __author__ = 'codez'
 
 
 class Provision(object):
-    def __init__(self, vendor_id, receipt=None, provision_function=None):
+    def __init__(self, vendor_id, provision_function, receipt=None):
         self._vendor_id = vendor_id
 
         self._vendor_items = vendor_items = Item.objects.filter(vendor__id=vendor_id)
@@ -31,12 +33,13 @@ class Provision(object):
         self._provision_result = None
         self._provision_fix_result = None
 
-        self._provision_function = provision_function or settings.KIRPPU_POST_PROVISION
+        self._provision_function = provision_function
 
         if not total_compensation_items:
             self._provision = None
         else:
-            self._provision = self._provision_function(
+            self._provision = self.run_function(
+                self._provision_function,
                 total_compensation_items
             )
 
@@ -54,6 +57,37 @@ class Provision(object):
     @property
     def has_provision(self):
         return self._provision is not None
+
+    MODELS_FNS = (
+        'F', 'Q',
+        'Avg', 'Count', 'Max', 'Min', 'Sum',
+    )
+
+    @classmethod
+    def run_function(cls, provision_function, sold_and_compensated) -> Optional[Decimal]:
+        if provision_function is None or provision_function == "":
+            return None
+
+        builtins_copy = {k: getattr(builtins, k) for k in dir(builtins) if k not in (
+            "eval", "exec", "open", "__import__"
+        )}
+        env = {
+            "__builtins__": builtins_copy,
+            "Decimal": Decimal,
+            "sold_and_compensated": sold_and_compensated,
+        }
+        env.update({k: getattr(django.db.models, k) for k in cls.MODELS_FNS})
+
+        _r = None
+
+        def result(r):
+            nonlocal _r
+            _r = r
+
+        env["result"] = result
+        exec(provision_function, env, env)
+        assert _r is None or isinstance(_r, Decimal), "Value given to result() must be None or a Decimal instance"
+        return _r
 
     def _calculate_provision_information(self):
         """
@@ -74,10 +108,10 @@ class Provision(object):
         if self._receipt:
             # Due no state for staged for compensation, exclude current receipt from fix calculations.
             previous_items = previous_items.exclude(receipt=self._receipt)
-        old_target_provision = self._provision_function(previous_items)
+        old_target_provision = self.run_function(self._provision_function, previous_items)
         provision_fixup_value = -(old_target_provision + previous_provisions)
 
-        assert provision_now <= provision_fixup_value
+        assert provision_now <= provision_fixup_value, str(provision_now) + " " + str(provision_fixup_value)
         self._provision_result = (provision_now - provision_fixup_value).quantize(Decimal(".01"))
         self._provision_fix_result = provision_fixup_value.quantize(Decimal(".01"))
 

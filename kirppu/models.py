@@ -97,7 +97,14 @@ class Person(models.Model):
 
 
 def _validate_provision_function(fn):
-    pass
+    if fn is None:
+        return
+
+    from .provision import Provision
+    try:
+        Provision.run_function(fn, Item.objects.none())
+    except Exception as e:
+        raise ValidationError(e)
 
 
 class Event(models.Model):

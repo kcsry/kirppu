@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-import decimal
+import textwrap
 
 from django.test import Client
 from django.test import TestCase
-from django.test import override_settings
 
 from kirppu.provision import Provision
 
@@ -65,7 +64,7 @@ class BeforeProvisionTest(TestCase):
         self.items = SoldItemFactory.create_batch(10, vendor=self.vendor)
 
     def test_no_provision_before_compensation(self):
-        p = Provision(self.vendor.id, provision_function=lambda _: None)
+        p = Provision(self.vendor.id, provision_function="result(None)")
 
         self.assertEqual(len(p._vendor_items), len(self.items))
         self.assertFalse(p.has_provision)
@@ -73,7 +72,7 @@ class BeforeProvisionTest(TestCase):
         self.assertIsNone(p.provision_fix)
 
     def test_simple_provision_before_compensation(self):
-        p = Provision(self.vendor.id, provision_function=lambda q: Decimal("0.10") * len(q))
+        p = Provision(self.vendor.id, provision_function="""result(Decimal("0.10") * len(sold_and_compensated))""")
 
         self.assertEqual(len(p._vendor_items), len(self.items))
         self.assertTrue(p.has_provision)
@@ -83,7 +82,7 @@ class BeforeProvisionTest(TestCase):
     def test_missing_provision(self):
         some_items = ItemFactory.create_batch(10, vendor=self.vendor, state=Item.COMPENSATED)
 
-        p = Provision(self.vendor.id, provision_function=lambda q: Decimal("0.10") * len(q))
+        p = Provision(self.vendor.id, provision_function="""result(Decimal("0.10") * len(sold_and_compensated))""")
 
         self.assertTrue(p.has_provision)
         self.assertEqual(p.provision_fix, Decimal("-1.00"))
@@ -98,7 +97,8 @@ class FinishingProvisionTest(TestCase):
             10, receipt=self.receipt, item__vendor=self.vendor, item__state=Item.COMPENSATED)
 
     def test_no_provision_finishing_compensation(self):
-        p = Provision(self.vendor.id, receipt=self.receipt, provision_function=lambda _: None)
+        p = Provision(self.vendor.id, receipt=self.receipt,
+                      provision_function="""result(None)""")
 
         self.assertEqual(len(p._vendor_items), len(self.items))
         self.assertFalse(p.has_provision)
@@ -106,7 +106,8 @@ class FinishingProvisionTest(TestCase):
         self.assertIsNone(p.provision_fix)
 
     def test_simple_provision_finishing_compensation(self):
-        p = Provision(self.vendor.id, receipt=self.receipt, provision_function=lambda q: Decimal("0.10") * len(q))
+        p = Provision(self.vendor.id, receipt=self.receipt,
+                      provision_function="""result(Decimal("0.10") * len(sold_and_compensated))""")
 
         self.assertEqual(len(p._vendor_items), len(self.items))
         self.assertTrue(p.has_provision)
@@ -116,7 +117,8 @@ class FinishingProvisionTest(TestCase):
     def test_concurrent_sell_finishing_compensation(self):
         more_items = SoldItemFactory.create_batch(10, vendor=self.vendor)
 
-        p = Provision(self.vendor.id, receipt=self.receipt, provision_function=lambda q: Decimal("0.10") * len(q))
+        p = Provision(self.vendor.id, receipt=self.receipt,
+                      provision_function="""result(Decimal("0.10") * len(sold_and_compensated))""")
 
         still_more_items = SoldItemFactory.create_batch(10, vendor=self.vendor)
 
@@ -125,11 +127,16 @@ class FinishingProvisionTest(TestCase):
         self.assertEqual(p.provision, Decimal("-1.00"))  # -(10 * 0.10) == -1
 
 
-class ApiProvisionTest(TestCase):
+# noinspection PyPep8Naming,PyAttributeOutsideInit
+class _ApiMixin(object):
+    def _setUp_Event(self):
+        self.event = EventFactory()
+
     def setUp(self):
         self.client = Client()
 
-        self.event = EventFactory()
+        self._setUp_Event()
+
         self.vendor = VendorFactory(event=self.event)
         self.items = SoldItemFactory.create_batch(10, vendor=self.vendor)
 
@@ -167,18 +174,18 @@ class ApiProvisionTest(TestCase):
         extras = [item for item in receipt.json()["items"] if item["action"] == "EXTRA"]
         return extras
 
+
+class ApiNoProvisionTest(_ApiMixin, TestCase):
+
     # region No Provision
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: None)
     def test_no_provision_no_items(self):
         receipt, response = self._compensate([])
         self.assertEqual(receipt["total"], 0)
 
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: None)
     def test_no_provision_single_go(self):
         receipt, response = self._compensate(self.items)
         self.assertEqual(receipt["total"], 1250)  # 10*1.25 as cents
 
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: None)
     def test_no_provision_two_phases(self):
         part_1 = self.items[:6]
         part_2 = self.items[6:]
@@ -191,13 +198,18 @@ class ApiProvisionTest(TestCase):
         # 750 + 500 == 1250
     # endregion
 
+
+class ApiLinearProvisionTest(_ApiMixin, TestCase):
+    def _setUp_Event(self):
+        self.event = EventFactory(
+            provision_function="""result(Decimal("0.10") * len(sold_and_compensated))"""
+        )
+
     # region Linear Provision
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: Decimal("0.10") * len(query))
     def test_linear_provision_no_items(self):
         receipt, response = self._compensate([])
         self.assertEqual(receipt["total"], 0)
 
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: Decimal("0.10") * len(query))
     def test_linear_provision_single_go(self):
         guess = self.apiOK.compensable_items(vendor=self.vendor.id)
         provision = self._get_extra(guess.json()["extras"], "PRO")
@@ -206,7 +218,6 @@ class ApiProvisionTest(TestCase):
         receipt, response = self._compensate(self.items)
         self.assertEqual(receipt["total"], 1150)  # 10*(1.25-0.10) as cents
 
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: Decimal("0.10") * len(query))
     def test_linear_provision_two_phases(self):
         part_1 = self.items[:6]
         part_2 = self.items[6:]
@@ -219,8 +230,14 @@ class ApiProvisionTest(TestCase):
         # 690 + 460 == 1150
     # endregion
 
+
+class ApiStepProvisionTest(_ApiMixin, TestCase):
+    def _setUp_Event(self):
+        self.event = EventFactory(
+            provision_function="""result(Decimal("0.50") * (len(sold_and_compensated) // 4))"""
+        )
+
     # region Step Provision
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: Decimal("0.50") * (len(query) // 4))
     def test_step_provision_single_go(self):
         guess = self.apiOK.compensable_items(vendor=self.vendor.id)
         provision = self._get_extra(guess.json()["extras"], "PRO")
@@ -229,7 +246,6 @@ class ApiProvisionTest(TestCase):
         receipt, response = self._compensate(self.items)
         self.assertEqual(receipt["total"], 1150)  # 10*1.25-(10//4)*0.50 as cents
 
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: Decimal("0.50") * (len(query) // 4))
     def test_step_provision_two_phases(self):
         part_1 = self.items[:6]
         part_2 = self.items[6:]
@@ -248,19 +264,23 @@ class ApiProvisionTest(TestCase):
         self.assertNotIn("PRO_FIX", extras)
     # endregion
 
-    @staticmethod
-    def round(value):
-        """
-        Round given decimal value to next 50 cents.
-        """
-        value = value.quantize(Decimal('0.1'), rounding=decimal.ROUND_UP)
-        remainder = value % Decimal('.5')
-        if remainder > Decimal('0'):
-            value += Decimal('.5') - remainder
-        return value
+
+class ApiRoundingProvisionTest(_ApiMixin, TestCase):
+    def _setUp_Event(self):
+        self.event = EventFactory(
+            provision_function=textwrap.dedent("""
+            def round(value):
+                "Round given decimal value to next 50 cents."
+                remainder = value % Decimal('.5')
+                if remainder > Decimal('0'):
+                    value += Decimal('.5') - remainder
+                return value
+
+            result(round(Decimal("0.20") * len(sold_and_compensated)))
+            """)
+        )
 
     # region Rounding Provision
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: ApiProvisionTest.round(Decimal("0.20") * len(query)))
     def test_rounding_provision_single_go(self):
         guess = self.apiOK.compensable_items(vendor=self.vendor.id).json()["extras"]
         provision = self._get_extra(guess, "PRO")
@@ -270,7 +290,6 @@ class ApiProvisionTest(TestCase):
         receipt, response = self._compensate(self.items)
         self.assertEqual(receipt["total"], 1050)  # 10*1.25-10*0.20 as cents
 
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: ApiProvisionTest.round(Decimal("0.20") * len(query)))
     def test_rounding_provision_two_phases(self):
         part_1 = self.items[:6]
         part_2 = self.items[6:]
@@ -290,7 +309,6 @@ class ApiProvisionTest(TestCase):
         self.assertIn("PRO", extras)
         self.assertNotIn("PRO_FIX", extras)
 
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: ApiProvisionTest.round(Decimal("0.20") * len(query)))
     def test_rounding_provision_two_phases_2(self):
         part_1 = self.items[:5]
         part_2 = self.items[5:]
@@ -309,7 +327,6 @@ class ApiProvisionTest(TestCase):
         self.assertIn("PRO", extras)
         self.assertNotIn("PRO_FIX", extras)
 
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: ApiProvisionTest.round(Decimal("0.20") * len(query)))
     def test_rounding_provision_two_phases_3(self):
         part_1 = self.items[:4]
         part_2 = self.items[4:]
@@ -329,7 +346,6 @@ class ApiProvisionTest(TestCase):
         self.assertIn("PRO", extras)
         self.assertNotIn("PRO_FIX", extras)
 
-    @override_settings(KIRPPU_POST_PROVISION=lambda query: ApiProvisionTest.round(Decimal("0.20") * len(query)))
     def test_rounding_provision_with_add(self):
         guess = self.apiOK.compensable_items(vendor=self.vendor.id).json()["extras"]
         provision = self._get_extra(guess, "PRO")

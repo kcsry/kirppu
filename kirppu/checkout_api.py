@@ -457,7 +457,7 @@ def vendor_returnable_items(request, vendor):
 
 
 @ajax_func('^item/compensable', method='GET', atomic=True)
-def compensable_items(request, vendor):
+def compensable_items(request, event, vendor):
     vendor = int(vendor)
     vendor_items = Item.objects.filter(vendor__id=vendor)
 
@@ -467,7 +467,7 @@ def compensable_items(request, vendor):
 
     r = dict(items=[i.as_dict() for i in items_for_compensation])
 
-    provision = Provision(vendor_id=vendor)
+    provision = Provision(vendor_id=vendor, provision_function=event.provision_function)
     if provision.has_provision:
         # DON'T SAVE THESE OBJECTS!
         provision_obj = ReceiptExtraRow(
@@ -617,14 +617,14 @@ def item_compensate(request, event, code):
 
 
 @ajax_func('^item/compensate/end', atomic=True)
-def item_compensate_end(request):
+def item_compensate_end(request, event):
     if "compensation" not in request.session:
         raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
 
     receipt_pk, vendor_id = request.session["compensation"]
     receipt = Receipt.objects.select_for_update().get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
 
-    provision = Provision(vendor_id=vendor_id, receipt=receipt)
+    provision = Provision(vendor_id=vendor_id, provision_function=event.provision_function, receipt=receipt)
     if provision.has_provision:
         ReceiptExtraRow.objects.create(
             type=ReceiptExtraRow.TYPE_PROVISION,

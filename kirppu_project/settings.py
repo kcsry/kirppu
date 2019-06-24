@@ -331,11 +331,6 @@ KIRPPU_MOBILE_LOGIN_RATE_LIMIT = "5/m"
 CSRF_FAILURE_VIEW = "kirppu.views.kirppu_csrf_failure"
 
 
-# Function to calculate provision amount. Must return always None or a Decimal instance.
-def KIRPPU_POST_PROVISION(sold_and_compensated):
-    return None
-
-
 # Load local settings that are not stored in repository. This must be last at end of settings.
 try:
     from .local_settings import *
