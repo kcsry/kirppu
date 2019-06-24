@@ -253,6 +253,9 @@ def all_to_print(request, event_slug):
 @require_http_methods(["POST"])
 @require_vendor_open
 def box_add(request, event):
+    if not event.use_boxes:
+        raise Http404()
+
     if not Vendor.has_accepted(request, event):
         return HttpResponseBadRequest()
     vendor = Vendor.get_vendor(request, event)
@@ -290,6 +293,9 @@ def box_add(request, event):
 @require_http_methods(["POST"])
 def box_hide(request, event_slug, box_id):
     event = get_object_or_404(Event, slug=event_slug)
+    if not event.use_boxes:
+        raise Http404()
+
     with transaction.atomic():
 
         vendor = Vendor.get_vendor(request, event)
@@ -307,6 +313,8 @@ def box_hide(request, event_slug, box_id):
 @require_http_methods(["POST"])
 def box_print(request, event_slug, box_id):
     event = get_object_or_404(Event, slug=event_slug)
+    if not event.use_boxes:
+        raise Http404()
 
     with transaction.atomic():
 
@@ -337,6 +345,9 @@ def box_content(request, event_slug, box_id, bar_type):
     """
 
     event = get_object_or_404(Event, slug=event_slug)
+    if not event.use_boxes:
+        raise Http404()
+
     vendor = Vendor.get_vendor(request, event)
     boxes = Box.objects.filter(id=box_id, item__vendor=vendor, item__hidden=False).distinct()
     if boxes.count() == 0:
@@ -385,8 +396,10 @@ def _vendor_menu_contents(request, event):
     items = [
         fill(_(u"Home"), "kirppu:vendor_view"),
         fill(_(u"Item list"), "kirppu:page"),
-        fill(_(u"Box list"), "kirppu:vendor_boxes"),
     ]
+
+    if event.use_boxes:
+        items.append(fill(_(u"Box list"), "kirppu:vendor_boxes"))
 
     if event.mobile_view_visible:
         items.append(fill(_("Mobile"), "kirppu:mobile"))
@@ -396,7 +409,8 @@ def _vendor_menu_contents(request, event):
         manage_sub.append(fill(_(u"Checkout commands"), "kirppu:commands"))
         if event.checkout_active:
             manage_sub.append(fill(_(u"Checkout"), "kirppu:checkout_view"))
-            manage_sub.append(fill(_("Box codes"), "kirppu:box_codes"))
+            if event.use_boxes:
+                manage_sub.append(fill(_("Box codes"), "kirppu:box_codes"))
 
     if request.user.is_staff:
         manage_sub.append(fill(_(u"Clerk codes"), "kirppu:clerks"))
@@ -493,6 +507,8 @@ def get_boxes(request, event_slug):
     :return: HttpResponse or HttpResponseBadRequest
     """
     event = get_object_or_404(Event, slug=event_slug)
+    if not event.use_boxes:
+        raise Http404()
 
     user = request.user
     if user.is_staff and "user" in request.GET:
@@ -581,6 +597,9 @@ def get_counter_commands(request, event_slug, bar_type):
 @barcode_view
 def get_boxes_codes(request, event_slug, bar_type):
     event = get_object_or_404(Event, slug=event_slug)
+    if not event.use_boxes:
+        raise Http404()
+
     boxes = Box.objects.filter(box_number__isnull=False).order_by("box_number")
     vm = []
     for box in boxes:
