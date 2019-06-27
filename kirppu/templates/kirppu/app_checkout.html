@@ -66,6 +66,10 @@
             <input type="text" id="code_input" class="form-control"
                    placeholder="Barcode" autofocus="autofocus"/>
         </div>
+        <div class="form-group hidden">
+            <label class="sr-only" for="action_message">Message</label>
+            <p class="form-control-static lead" id="action_message"></p>
+        </div>
     </form>
 
     <div id="receipt_body"></div>
@@ -85,6 +89,7 @@
     CheckoutConfig.uiId.subtitleText = "subtitle_text";
     CheckoutConfig.uiId.codeInput = "code_input";
     CheckoutConfig.uiId.codeForm = "code_form";
+    CheckoutConfig.uiId.codeFormMessage = "action_message";
     CheckoutConfig.uiId.modeMenu = "modeMenu";
     CheckoutConfig.uiId.overseerLink= "overseer_link";
     CheckoutConfig.uiId.statsLink= "stats_link";

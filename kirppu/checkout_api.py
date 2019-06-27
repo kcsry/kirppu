@@ -513,6 +513,18 @@ def item_checkin(request, event, code):
     if item.state != Item.ADVERTISED:
         _item_state_conflict(item)
 
+    left_count = None
+    if event.max_brought_items is not None:
+        count = 1
+        if item.box is not None:
+            count = item.box.get_item_count()
+
+        brought_count = Item.objects.filter(vendor=item.vendor, state=Item.BROUGHT).count()
+        if brought_count + count > event.max_brought_items:
+            raise AjaxError(RET_CONFLICT, _("Too many items brought, limit is %i!") % event.max_brought_items)
+        else:
+            left_count = event.max_brought_items - brought_count - count
+
     if item.box is not None:
         # Client did not expect box, but this is a box.
         # Assign box number and return box information to client.
@@ -526,7 +538,10 @@ def item_checkin(request, event, code):
         # TODO: Consider returning bad request to clearly separate actual success.
         return JsonResponse(response, status=RET_ACCEPTED, reason="OTHER API")
 
-    return item_mode_change(request, item, Item.ADVERTISED, Item.BROUGHT)
+    result = item_mode_change(request, item, Item.ADVERTISED, Item.BROUGHT)
+    if left_count is not None:
+        result["_item_limit_left"] = left_count
+    return result
 
 
 @ajax_func('^item/checkout$', atomic=True)

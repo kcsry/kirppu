@@ -19,6 +19,10 @@ class @ItemCheckInMode extends ItemCheckoutMode
     [@commands.logout, @onLogout]
   ]
 
+  exit: ->
+    @cfg.uiRef.codeFormMessage.text("")
+    @cfg.uiRef.codeFormMessage.parent().addClass("hidden")
+
   onResultSuccess: (data, _, jqXHR) =>
     if data.vendor != @currentVendor
       @currentVendor = data.vendor
@@ -41,6 +45,10 @@ class @ItemCheckInMode extends ItemCheckoutMode
 
   _onAddItem: (data, status, in_box=false) =>
     if status == 200
+      if data._item_limit_left?
+        @cfg.uiRef.codeFormMessage.parent().removeClass("hidden")
+        @cfg.uiRef.codeFormMessage.text(gettext("%s left in item quota").replace("%s", data._item_limit_left))
+
       if data.box?
         countText = if data.box.bundle_size > 1 then gettext("Box bundle count: %d") else gettext("Box item count: %d")
         row = @createRow(@itemIndex,

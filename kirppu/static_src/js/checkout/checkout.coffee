@@ -9,6 +9,7 @@ class Config
     subtitleText: null
     codeInput: null
     codeForm: null
+    codeFormMessage: null
     modeMenu: null
     overseerLink: null
     statsLink: null
@@ -24,6 +25,7 @@ class Config
     subtitleText: null
     codeInput: null
     codeForm: null
+    codeFormMessage: ""  # optional ref.
     modeMenu: null
     overseerLink: null
     statsLink: null
