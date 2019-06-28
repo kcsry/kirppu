@@ -10,6 +10,7 @@ def front_page(request):
     events = Event.objects.filter(
         start_date__isnull=False,
         end_date__isnull=False,
+        visibility=Event.VISIBILITY_VISIBLE,
     ).order_by("-start_date")
     return render(
         request,
