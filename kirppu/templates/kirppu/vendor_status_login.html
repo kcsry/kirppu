@@ -1,6 +1,7 @@
 {% extends "kirppu/common.html" %}{% load i18n kirppu_login kirppu_tags %}
 
-{% block title %}Kirppu{% endblock %}
+{% block title %}{% trans "Login" %} – {{ block.super }}{% endblock %}
+
 {% block body %}
     <div class="row">
         <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3">

@@ -1,5 +1,5 @@
 {% extends "kirppu/common.html" %}{% load i18n %}
-{% block title %}Kirppu - Login as a Vendor{% endblock %}
+{% block title %}{% trans "Login"%} – {{ block.super }}{% endblock %}
 {% block frontpage_url %}
     {% url 'kirppu:front_page' %}
 {% endblock %}

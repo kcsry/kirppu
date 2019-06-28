@@ -1,6 +1,7 @@
 {% extends "kirppu/common.html" %}{% load i18n %}{% load kirppu_login %}
 
-{% block title %}Kirppu{% endblock %}
+{% block title %}{% trans "Item status" %} – {{ block.super }}{% endblock %}
+
 {% block head %}
     {{ block.super }}
     <style type="text/css">

@@ -575,6 +575,7 @@ def get_clerk_codes(request, event_slug, bar_type):
         width = None  # Doesn't matter.
 
     return render(request, "kirppu/app_clerks.html", {
+        'event': event,
         'items': items,
         'bar_type': bar_type,
         'repeat': range(1),

@@ -1,8 +1,6 @@
-{% extends "kirppu/common.html" %}{% load i18n %}
+{% extends "kirppu/common.html" %}{% load i18n static %}
 
-{% load static %}
-
-{% block title %}Kirppu - Stats{% endblock %}
+{% block title %}{% trans "Stats" %} – {{ block.super }}{% endblock %}
 
 {% block head %}
     {{ block.super }}

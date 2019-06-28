@@ -1,8 +1,6 @@
-{% extends "kirppu/common.html" %}{% load i18n kirppu_tags %}
+{% extends "kirppu/common.html" %}{% load i18n kirppu_tags static %}
 
-{% load static %}
-
-{% block title %}Kirppu - Checkout{% endblock %}
+{% block title %}{% trans "Checkout" %} – {{ block.super }}{% endblock %}
 
 {% block head %}
     {{ block.super }}

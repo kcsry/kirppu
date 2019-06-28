@@ -1,6 +1,6 @@
-{% extends "kirppu/app_vendor.html" %}{% load kirppu_tags %}{% load i18n %}
+{% extends "kirppu/app_vendor.html" %}{% load kirppu_tags i18n static %}
 
-{% load static %}
+{% block title %}{% trans "Item list" %}– {{ block.super }}{% endblock %}
 
 {% block head %}
     {{ block.super }}
