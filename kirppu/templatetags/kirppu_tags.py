@@ -23,7 +23,7 @@ def load_text(context, id_):
     try:
         event = context["event"]
         md = UIText.objects.get(event=event, identifier=id_).text
-        return mark_safe(mark_down(md))
+        return mark_safe(mark_down(md, context))
     except UIText.DoesNotExist:
         if settings.DEBUG:
             return format_html(
@@ -65,7 +65,7 @@ def load_texts(context, id_, wrap=None):
         else:
             joined = wrap
 
-    return mark_safe(begin + joined.join(mark_down(text) for text in texts) + end)
+    return mark_safe(begin + joined.join(mark_down(text, context) for text in texts) + end)
 
 
 # Limit the size of the dict to a reasonable number so that we don't have

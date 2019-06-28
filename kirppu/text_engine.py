@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import re
+
 import mistune
+from django.template import loader
 
 __author__ = 'codez'
 
@@ -12,6 +14,7 @@ class CustomTagLexer(mistune.BlockLexer):
         self.default_rules = list(self.default_rules)
         self._custom_tags = {
             "alertbox": self._make_alert_box,
+            "itemlist": self._make_item_list,
         }
 
     def parse_block_html(self, m):
@@ -55,6 +58,12 @@ class CustomTagLexer(mistune.BlockLexer):
             'tag': 'div',
             'extra': ' class="alert alert-%s" role="alert"' % attrs,
             'text': text
+        })
+
+    def _make_item_list(self, tag, attrs, text):
+        self.tokens.append({
+            'type': 'template',
+            'template': 'kirppu/vendor_item_list.html',
         })
 
 
@@ -115,9 +124,21 @@ class CustomTagRenderer(mistune.Renderer):
         return html
 
 
-def mark_down(text):
+class CustomCore(mistune.Markdown):
+    def __init__(self, context, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._context = context  # Assumed to be django.template.context.RequestContext or Context.
+
+    def output_template(self):
+        template_name = self.token["template"]
+        context = self._context if isinstance(self._context, dict) else self._context.flatten()
+        return loader.render_to_string(template_name, context)
+
+
+def mark_down(text, context=None):
     renderer = CustomTagRenderer(escape=False)
-    m = mistune.Markdown(
+    m = CustomCore(
+        context=context,
         renderer=renderer,
         inline=CustomInlines(renderer),
         block=CustomTagLexer(),

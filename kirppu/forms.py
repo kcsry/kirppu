@@ -257,7 +257,8 @@ class UITextForm(forms.ModelForm):
 [<em>Link title</em>](<em>https://...</em>)<br/>
 &lt;email&gt;<em>email@address.org</em>&lt;/email&gt;<br/>
 &lt;glyph <em>glyph-name</em> /&gt;<br/>
-&lt;alertbox <em>alert-type</em>&gt;<em>alert text content</em>&lt;/alertbox&gt; Types: danger, warning, info, success
+&lt;alertbox <em>type</em>&gt;<em>alert text content</em>&lt;/alertbox&gt; Types: danger, warning, info, success<br/>
+&lt;itemlist /&gt;
 </div>""")
     )
 
