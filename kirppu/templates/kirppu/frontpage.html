@@ -1,5 +1,15 @@
 {% extends "kirppu/common.html" %}{% load i18n kirppu_login static %}
 
+{% block navbar_left %}
+    {% if user.is_staff %}
+    <li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% trans "Management" %} <span class="caret"></span></a>
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="{% url "admin:index" %}">{% trans "Site administration" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+{% endblock %}
+
 {% block body %}
     {% for event in events %}
         <div class="col-md-4">
