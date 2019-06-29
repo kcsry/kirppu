@@ -172,6 +172,7 @@ def _data_view(request, event, permit):
     items = Item.objects \
         .filter(vendor=vendor, hidden=False) \
         .select_related("box") \
+        .order_by("name") \
         .only("id", "hidden", "price", "state", "code", "name", "box__id")
 
     box_extras = {
