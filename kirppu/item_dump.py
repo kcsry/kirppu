@@ -90,7 +90,7 @@ def item_dump(output, event, as_text):
         max_lengths = items.annotate(**column_name_lengths).aggregate(**max_column_name_lengths)
 
         column_widths = [
-            max_lengths["max_" + c[1]] if isinstance(c[1], str) else 1
+            (max_lengths["max_" + c[1]] if isinstance(c[1], str) else 1) or 0
             for c in COLUMNS
         ]
         writer = TextWriter(output, column_widths)
