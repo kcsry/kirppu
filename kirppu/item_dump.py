@@ -3,8 +3,8 @@ import csv
 import typing
 
 from django.contrib.auth.decorators import login_required, permission_required
-from django.db.models import Max
-from django.db.models.functions import Length
+from django.db.models import Max, TextField
+from django.db.models.functions import Length, Cast
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _, gettext
 
@@ -85,7 +85,7 @@ def item_dump(output, event, as_text):
 
     if as_text:
         straight_column_names = [c[1] for c in COLUMNS if isinstance(c[1], str)]
-        column_name_lengths = {c + "_length": Length(c) for c in straight_column_names}
+        column_name_lengths = {c + "_length": Length(Cast(c, output_field=TextField())) for c in straight_column_names}
         max_column_name_lengths = {"max_" + c: Max(c + "_length") for c in straight_column_names}
         max_lengths = items.annotate(**column_name_lengths).aggregate(**max_column_name_lengths)
 
