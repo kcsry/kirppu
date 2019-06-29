@@ -10,8 +10,12 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--lang', type=str, help="Change language, for example: en")
+        parser.add_argument('event', type=str, help="Event slug to dump data for")
 
     def handle(self, *args, **options):
         if "lang" in options:
             activate(options["lang"])
-        accounting_receipt(self.stdout)
+
+        from kirppu.models import Event
+        event = Event.objects.get(slug=options["event"])
+        accounting_receipt(self.stdout, event)
