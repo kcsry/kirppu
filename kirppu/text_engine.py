@@ -131,7 +131,7 @@ class CustomCore(mistune.Markdown):
 
     def output_template(self):
         template_name = self.token["template"]
-        context = self._context if isinstance(self._context, dict) else self._context.flatten()
+        context = self._context if self._context is None or isinstance(self._context, dict) else self._context.flatten()
         return loader.render_to_string(template_name, context)
 
 
