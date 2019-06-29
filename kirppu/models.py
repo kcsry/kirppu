@@ -1023,7 +1023,10 @@ class Receipt(models.Model):
     type = models.CharField(choices=TYPES, max_length=16, default=TYPE_PURCHASE)
 
     def items_list(self):
-        return [row.as_dict() for row in self.receiptitem_set.order_by("add_time")]
+        return [
+            row.as_dict()
+            for row in self.receiptitem_set.select_related("item", "item__itemtype").order_by("add_time")
+        ]
 
     def row_list(self):
         r = self.items_list()

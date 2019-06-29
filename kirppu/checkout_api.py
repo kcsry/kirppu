@@ -410,7 +410,11 @@ def item_edit(request, event, code, price, state):
 
 @ajax_func('^item/list$', method='GET')
 def item_list(request, event, vendor):
-    items = Item.objects.filter(vendor__id=vendor, vendor__event=event, box__isnull=True)
+    items = (Item.objects
+             .filter(vendor__id=vendor, vendor__event=event, box__isnull=True)
+             .select_related("itemtype")
+             .order_by("name")
+             )
     return [i.as_dict() for i in items]
 
 
@@ -420,7 +424,7 @@ def vendor_returnable_items(request, vendor):
     items = Item.objects \
         .exclude(state=Item.ADVERTISED) \
         .filter(Q(vendor__id=vendor) & (Q(box__isnull=True) | Q(box__representative_item__pk=F("pk")))) \
-        .select_related("box")
+        .select_related("itemtype", "box")
 
     # Shrink boxes to single representative items with box information.
     boxes = Box.objects \
@@ -428,10 +432,8 @@ def vendor_returnable_items(request, vendor):
         .filter(item__vendor__id=vendor) \
         .annotate(
             item_count=Count("item"),
-            returnable_count=Count(models.Case(models.When(item__state=Item.BROUGHT, then=1),
-                                               output_field=models.IntegerField())),
-            returned_count=Count(models.Case(models.When(item__state=Item.RETURNED, then=1),
-                                             output_field=models.IntegerField()))
+            returnable_count=Count(1, filter=Q(item__state=Item.BROUGHT)),
+            returned_count=Count(1, Q(item__state=Item.RETURNED)),
         )
     boxes = {b.representative_item_id: b for b in boxes}
 
@@ -453,13 +455,18 @@ def vendor_returnable_items(request, vendor):
             )
         r.append(element)
 
-    return r
+    return sorted(r, key=lambda e: e["name"])
 
 
 @ajax_func('^item/compensable', method='GET', atomic=True)
 def compensable_items(request, event, vendor):
     vendor = int(vendor)
-    vendor_items = Item.objects.filter(vendor__id=vendor)
+    vendor_items = (
+        Item.objects
+        .filter(vendor__id=vendor)
+        .select_related("itemtype")
+        .order_by("name")
+    )
 
     items_for_compensation = vendor_items.filter(state=Item.SOLD)
     if not items_for_compensation:
@@ -710,7 +717,12 @@ def vendor_find(request, event, q):
 
     return [
         v.as_dict()
-        for v in Vendor.objects.filter(*clauses).all()
+        for v in (
+            Vendor.objects
+            .filter(*clauses)
+            .select_related("user", "person")
+            .all()
+        )
     ]
 
 
