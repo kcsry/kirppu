@@ -36,6 +36,7 @@ from .checkout_api import AJAX_FUNCTIONS, checkout_js
 from .mobile import index as mobile_index, logout as mobile_logout
 from .vendors import change_vendor, create_vendor
 from .accounting import accounting_receipt_view
+from .item_dump import dump_items_view
 
 __author__ = 'jyrkila'
 
@@ -43,6 +44,7 @@ app_name = "kirppu"
 
 event_urls = [
     path(r'accounting/', accounting_receipt_view, name="accounting"),
+    path(r'itemdump/', dump_items_view, name="item_dump"),
     path(r'clerks/', get_clerk_codes, name='clerks'),
     path(r'boxes/', get_boxes_codes, name="box_codes"),
     path(r'checkout/', checkout_view, name='checkout_view'),

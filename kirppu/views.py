@@ -434,6 +434,9 @@ def _vendor_menu_contents(request, event):
         accounting_sub = [
             fill(_("View"), "kirppu:accounting"),
             fill(_("Download"), "kirppu:accounting", query={"download": ""}),
+            menu_item(None, None, None, None),
+            fill(_("View items"), "kirppu:item_dump", query={"txt": ""}),
+            fill(_("View items (CSV)"), "kirppu:item_dump"),
         ]
         items.append(fill(_("Accounting"), "", accounting_sub))
 

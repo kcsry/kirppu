@@ -1,19 +1,15 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 import csv
-import functools
-import io
-from urllib.parse import quote
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Sum
-from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy, gettext
 from django.utils import timezone
 
+from .csv_utils import csv_streamer_view, strip_generator
 from .models import Event, Item, Receipt, ReceiptExtraRow, ReceiptItem, decimal_to_transport
-
 
 COLUMNS = (
     _("Event number"),
@@ -38,39 +34,19 @@ def _zero_fn():
     return 0
 
 
-def _strip_generator(fn):
-    @functools.wraps(fn)
-    def inner(output, event, generator=False):
-        if generator:
-            # Return the generator object only when using StringIO.
-            return fn(output, event)
-        for _ in fn(output, event):
-            pass
-
-    return inner
-
-
 @login_required
 @permission_required("view_accounting")
 def accounting_receipt_view(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
 
-    def streamer():
-        output = io.StringIO()
-        for a_string in accounting_receipt(output, event, generator=True):
-            val = output.getvalue()
-            yield val
-            output.truncate(0)
-            output.seek(0)
-
-    response = StreamingHttpResponse(streamer(), content_type="text/plain; charset=utf-8")
-    if request.GET.get("download") is not None:
-        response["Content-Disposition"] = 'attachment; filename="%s.csv"' % quote(gettext("accounting"), safe="")
-        response["Content-Type"] = "text/csv; charset=utf-8"
-    return response
+    return csv_streamer_view(
+        request,
+        lambda output: accounting_receipt(output, event, generator=True),
+        gettext("accounting")
+    )
 
 
-@_strip_generator
+@strip_generator
 def accounting_receipt(output, event):
     writer = csv.writer(output)
     writer.writerow(str(c) for c in COLUMNS)
