@@ -2,7 +2,7 @@ from __future__ import unicode_literals, print_function, absolute_import
 import random
 from decimal import Decimal
 from django.core.exceptions import ValidationError, ImproperlyConfigured
-from django.core.validators import RegexValidator, MinLengthValidator
+from django.core.validators import MinLengthValidator, MinValueValidator, RegexValidator
 from django.db import models, transaction
 from django.db.models import F, Sum
 from django.urls import reverse
@@ -96,6 +96,10 @@ class Person(models.Model):
         return "(id=%d)" % self.id
 
 
+def _validate_provision_function(fn):
+    pass
+
+
 class Event(models.Model):
     slug = models.SlugField(unique=True)
     name = models.CharField(max_length=250)
@@ -105,6 +109,32 @@ class Event(models.Model):
 
     registration_end = models.DateTimeField(null=True, blank=True)
     checkout_active = models.BooleanField(default=False)
+    mobile_view_visible = models.BooleanField(default=False)
+    multiple_vendors_per_user = models.BooleanField(default=False)
+    use_boxes = models.BooleanField(default=True)
+    provision_function = models.TextField(
+        blank=True,
+        null=True,
+        help_text=_("Python function body that gets sold_and_compensated queryset as"
+                    " argument and must call result() with None or Decimal argument."),
+        validators=[
+            _validate_provision_function,
+        ],
+    )
+    max_brought_items = models.IntegerField(
+        blank=True,
+        null=True,
+        help_text=_("Amount of unsold Items a Vendor can have in the Event. If blank, no limit is imposed."),
+        validators=[MinValueValidator(1)],
+    )
+
+    VISIBILITY_VISIBLE = 0
+    VISIBILITY_NOT_LISTED = 1
+    VISIBILITY = (
+        (VISIBILITY_VISIBLE, _("Visible")),
+        (VISIBILITY_NOT_LISTED, _("Not listed in front page")),
+    )
+    visibility = models.SmallIntegerField(choices=VISIBILITY, default=VISIBILITY_VISIBLE)
 
     def __str__(self):
         return self.name
