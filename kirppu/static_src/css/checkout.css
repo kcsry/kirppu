@@ -110,6 +110,22 @@ tr.receipt_tr_clickable:hover {
 
 }
 
+kbd.shortcut {
+    background-color: #888;
+    color: #f8f8f8;
+    margin-right: 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+.disabled kbd.shortcut {
+    background-color: #ccc;
+    box-shadow: initial;
+}
+
+.dropdown-menu > li > a {
+    padding: 3px 20px 3px 15px;
+}
+
 .spinner {
     animation: spinner-frames 0.5s linear infinite;
 }
