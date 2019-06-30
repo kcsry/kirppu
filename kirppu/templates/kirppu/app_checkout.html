@@ -58,7 +58,7 @@
     <div class="alert alert-warning alert-off" role="alert" id="capslock_container"><span class="glyphicon glyphicon-warning-sign"></span> {% trans "CapsLock is probably ON!" %}</div>
     <div class="alert alert-danger alert-off" role="alert" id="error_container"></div>
     <div class="alert alert-warning alert-off" role="alert" id="warning_container"></div>
-    <form role="form" id="code_form" class="hidden-print">
+    <form role="form" id="code_form" class="hidden-print hidden">
         <div class="form-group">
             <label class="sr-only" for="code_input">Code</label>
             <input type="text" id="code_input" class="form-control"
@@ -71,6 +71,7 @@
     </form>
 
     <div id="receipt_body"></div>
+    <noscript>You need to enable browser JavaScript support for this feature to work.</noscript>
 {% endblock  %}
 
 {% block tail %}
@@ -111,6 +112,8 @@
         CheckoutConfig.check();
         addEnableCheck();
         new ModeSwitcher().startDefault();
+
+        $("#code_form").removeClass("hidden");
     });
 //--></script>
     <div class="modal fade" id="help_dialog" tabindex="-1" role="dialog" aria-labelledby="help_dialog_label"
