@@ -129,6 +129,9 @@
                     $(options.get(digit - 1)).find("a").click();
                     handled = true;
                 }
+            } else if (event.code === "F1") {
+                $("#help_dialog").modal("toggle");
+                handled = true;
             }
             if (handled) event.preventDefault();
         });
