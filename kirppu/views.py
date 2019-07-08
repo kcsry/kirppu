@@ -691,7 +691,7 @@ def _statistics_access(fn):
     def inner(request, event_slug, *args, **kwargs):
         event = get_object_or_404(Event, slug=event_slug)
         try:
-            if not request.user.has_perm("kirppu.view_statistics"):
+            if not (request.user.has_perm("kirppu.view_statistics") and UserAdapter.is_clerk(request.user, event)):
                 ajax_util.require_user_features(counter=True, clerk=True, staff_override=True)(lambda _: None)(request)
             # else: User has permissions, no further checks needed.
         except ajax_util.AjaxError:
