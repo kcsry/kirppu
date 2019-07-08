@@ -405,7 +405,7 @@ def _vendor_menu_contents(request, event):
         items.append(fill(_("Mobile"), "kirppu:mobile"))
 
     manage_sub = []
-    if request.user.is_staff or UserAdapter.is_clerk(request.user):
+    if request.user.is_staff or UserAdapter.is_clerk(request.user, event):
         manage_sub.append(fill(_(u"Checkout commands"), "kirppu:commands"))
         if event.checkout_active:
             manage_sub.append(fill(_(u"Checkout"), "kirppu:checkout_view"))
@@ -417,7 +417,7 @@ def _vendor_menu_contents(request, event):
         manage_sub.append(fill(_(u"Lost and Found"), "kirppu:lost_and_found"))
 
     if request.user.is_staff\
-            or UserAdapter.is_clerk(request.user)\
+            or UserAdapter.is_clerk(request.user, event)\
             or request.user.has_perm("kirppu.view_statistics"):
         manage_sub.append(fill(_(u"Statistics"), "kirppu:stats_view"))
 
@@ -587,9 +587,12 @@ def get_clerk_codes(request, event_slug, bar_type):
 
 
 @login_required
-@require_test(lambda request: request.user.is_staff or UserAdapter.is_clerk(request.user))
 @barcode_view
 def get_counter_commands(request, event_slug, bar_type):
+    event = get_object_or_404(Event, slug=event_slug)
+    if not (request.user.is_staff or UserAdapter.is_clerk(request.user, event)):
+        raise PermissionDenied()
+
     return render(request, "kirppu/app_commands.html", {
         'event_slug': event_slug,
         'title': _(u"Counter commands"),
@@ -597,12 +600,13 @@ def get_counter_commands(request, event_slug, bar_type):
 
 
 @login_required
-@require_test(lambda request: request.user.is_staff or UserAdapter.is_clerk(request.user))
 @barcode_view
 def get_boxes_codes(request, event_slug, bar_type):
     event = get_object_or_404(Event, slug=event_slug)
     if not event.use_boxes:
         raise Http404()
+    if not (request.user.is_staff or UserAdapter.is_clerk(request.user, event)):
+        raise PermissionDenied()
 
     boxes = Box.objects.filter(box_number__isnull=False).order_by("box_number")
     vm = []

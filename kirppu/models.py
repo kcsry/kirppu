@@ -54,8 +54,8 @@ class UserAdapterBase(object):
         return {"phone" + fn: rhs}
 
     @classmethod
-    def is_clerk(cls, user):
-        return hasattr(user, "clerk")
+    def is_clerk(cls, user, event):
+        return hasattr(user, "clerk_set") and user.clerk_set.filter(event=event).exists()
 
     @classmethod
     def print_name(cls, user):
