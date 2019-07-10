@@ -29,8 +29,8 @@
 {% block navbar_right %}
     {% if event.checkout_active %}
     <li><a href="{% url 'kirppu:checkout_view' event_slug=event.slug %}" title="{% trans "Return to checkout" %}">{% trans "Checkout" %}</a></li>
-    <li><a href="{% url 'kirppu:stats_view' event_slug=event.slug %}" title="{% trans "Return to vendor statistics" %}">{% trans "Stats" %}</a></li>
     {% endif %}
+    <li><a href="{% url 'kirppu:stats_view' event_slug=event.slug %}" title="{% trans "Return to vendor statistics" %}">{% trans "Stats" %}</a></li>
 {% endblock %}
 
 {% block body %}
