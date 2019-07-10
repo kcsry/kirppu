@@ -796,6 +796,7 @@ def statistical_stats_view(request, event):
 
     _items = Item.objects.filter(vendor__event=event)
     _vendors = Vendor.objects.filter(event=event)
+    _boxes = Box.objects.filter(representative_item__vendor__event=event)
 
     registered = _items.count()
     deleted = _items.filter(hidden=True).count()
@@ -807,8 +808,8 @@ def statistical_stats_view(request, event):
 
     items_in_box = _items.filter(box__isnull=False).count()
     items_not_in_box = _items.filter(box__isnull=True).count()
-    registered_boxes = Box.objects.count()
-    deleted_boxes = Box.objects.filter(representative_item__hidden=True).count()
+    registered_boxes = _boxes.count()
+    deleted_boxes = _boxes.filter(representative_item__hidden=True).count()
     items_in_deleted_boxes = _items.filter(box__representative_item__hidden=True).count()
 
     general = {
