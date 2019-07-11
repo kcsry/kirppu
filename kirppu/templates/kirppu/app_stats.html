@@ -17,6 +17,10 @@
     dd + dt {
         margin-top: 0.5em;
     }
+    @media print {
+        /* Override bootstrap behaviour. */
+        a[href]:after { content: ""; }
+    }
     </style>
 {% endblock %}
 
