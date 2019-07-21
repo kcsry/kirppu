@@ -824,7 +824,7 @@ def statistical_stats_view(request, event):
         "sold": sold,
         "soldOfBrought": (sold * 100.0 / brought) if brought > 0 else 0,
         "vendors": _vendors.filter(item__state__in=brought_states).distinct().count(),
-        "vendorsTotal": _vendors.count(),
+        "vendorsTotal": _vendors.annotate(items=models.Count("item__id")).filter(items__gt=0).count(),
         "vendorsInMobileView": _vendors.filter(mobile_view_visited=True).count(),
 
         "itemsInBox": items_in_box,
