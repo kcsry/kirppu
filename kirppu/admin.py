@@ -197,9 +197,9 @@ class ClerkAdmin(admin.ModelAdmin):
 
     def get_list_display(self, request):
         if settings.DEBUG:
-            return _clerk_id_link, _user_link, _clerk_access_code_link, 'access_key', 'is_enabled'
+            return _clerk_id_link, _user_link, _clerk_access_code_link, 'access_key', 'is_enabled', 'event'
         else:
-            return _clerk_id_link, _user_link, _clerk_access_code_link, 'is_enabled'
+            return _clerk_id_link, _user_link, _clerk_access_code_link, 'is_enabled', 'event'
 
     @with_description(ugettext(u"Generate missing Clerk access codes"))
     def _gen_clerk_code(self, request, queryset):
@@ -323,7 +323,6 @@ class ClerkAdmin(admin.ModelAdmin):
             form,
             form.get_fieldsets(),
             {},
-            {},
             model_admin=self)
         media = self.media + admin_form.media
 
@@ -337,7 +336,7 @@ class ClerkAdmin(admin.ModelAdmin):
             inline_admin_formsets=[],
         )
 
-        return self.render_change_form(request, context)
+        return self.render_change_form(request, context, add=True)
 
     def log_bulk_addition(self, request, objects):
         # noinspection PyProtectedMember

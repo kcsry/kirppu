@@ -309,7 +309,7 @@ class Clerk(models.Model):
         super(Clerk, self).save(*args, **kwargs)
 
     @classmethod
-    def generate_empty_clerks(cls, count=1, commit=True):
+    def generate_empty_clerks(cls, event, count=1, commit=True):
         """
         Generate unbound Clerks, i.e. Clerks that have access-code but no user.
         These Clerks can be "moved" to existing clerks so that the real Clerk will start
@@ -327,7 +327,7 @@ class Clerk(models.Model):
         """
         ids = []
         for _ in range(count):
-            item = cls()
+            item = cls(event=event)
             item.generate_access_key()
             if commit:
                 item.save()

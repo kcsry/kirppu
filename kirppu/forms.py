@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from .fields import ItemPriceField, SuffixField, StripField
 from .models import (
     Clerk,
+    Event,
     ReceiptItem,
     Receipt,
     Item,
@@ -24,6 +25,7 @@ from .utils import StaticText, ButtonWidget, model_dict_fn
 
 
 class ClerkGenerationForm(forms.Form):
+    event = forms.ModelChoiceField(Event.objects.all())
     count = forms.IntegerField(
         min_value=0,
         initial=1,
@@ -36,7 +38,10 @@ class ClerkGenerationForm(forms.Form):
         return [(None, {'fields': self.base_fields})]
 
     def generate(self, commit=True):
-        return Clerk.generate_empty_clerks(self.get_count(), commit=commit)
+        return Clerk.generate_empty_clerks(self.get_event(), self.get_count(), commit=commit)
+
+    def get_event(self):
+        return self.cleaned_data["event"]
 
     def get_count(self):
         return self.cleaned_data["count"]
