@@ -554,7 +554,8 @@ def get_boxes(request, event_slug):
 @barcode_view
 def get_clerk_codes(request, event_slug, bar_type):
     event = get_object_or_404(Event, slug=event_slug)
-    items = []
+    bound = []
+    unbound = []
     code_item = namedtuple("CodeItem", "name code")
 
     for c in Clerk.objects.filter(event=event, access_key__isnull=False):
@@ -565,12 +566,16 @@ def get_clerk_codes(request, event_slug, bar_type):
             name = c.user.get_short_name()
             if len(name) == 0:
                 name = c.user.get_username()
+            bound.append(code_item(name=name, code=code))
         else:
-            name = ""
+            unbound.append(code_item(name="", code=code))
 
-        items.append(code_item(name=name, code=code))
+    items = None
+    if bound or unbound:
+        bound.sort(key=lambda a: a.name + a.code)
+        unbound.sort(key=lambda a: a.code)
+        items = bound + unbound
 
-    if items:
         # Generate a code to check it's length.
         name, code = items[0]
         width = pubcode.Code128(code, charset='B').width(add_quiet_zone=True)
