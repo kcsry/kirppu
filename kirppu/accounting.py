@@ -35,7 +35,7 @@ def _zero_fn():
 
 
 @login_required
-@permission_required("view_accounting")
+@permission_required("kirppu.view_accounting")
 def accounting_receipt_view(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
 

@@ -430,7 +430,7 @@ def _vendor_menu_contents(request, event):
     if manage_sub:
         items.append(fill(_(u"Management"), "", manage_sub))
 
-    if request.user.has_perm("view_accounting"):
+    if request.user.has_perm("kirppu.view_accounting"):
         accounting_sub = [
             fill(_("View"), "kirppu:accounting"),
             fill(_("Download"), "kirppu:accounting", query={"download": ""}),

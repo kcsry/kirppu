@@ -24,7 +24,7 @@ COLUMNS = (
 
 
 @login_required
-@permission_required("view_accounting")
+@permission_required("kirppu.view_accounting")
 def dump_items_view(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
 
