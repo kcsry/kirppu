@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-08 18:04+0300\n"
-"PO-Revision-Date: 2019-05-27 19:26+0300\n"
+"POT-Creation-Date: 2019-07-26 08:55+0300\n"
+"PO-Revision-Date: 2019-07-26 09:06+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -90,12 +90,19 @@ msgstr ""
 "On valittava tasan yksi 'irrallinen' ja yksi 'kiinnitetty' kassahenkilö "
 "tähän toimintoon."
 
+#| msgid ""
+#| "Must select exactly one 'unbound' and one 'bound' Clerk for this operation"
+msgid "Must select unbound and bound rows from same Event"
+msgstr ""
+"Irrallinen ja kiinnitetty kassahenkilö on valittava samasta tapahtumasta"
+
 msgid "Move unused access code to existing Clerk."
 msgstr "Siirrä käyttämätön tunniste olemassaolevalle kassahenkilölle"
 
 #, python-brace-format
-msgid "Access code set for '{0}'"
-msgstr "Käyttötunniste asetettu '{0}':lle"
+#| msgid "Access code set for '{0}'"
+msgid "Access code set for '{0}' in '{1}'"
+msgstr "Käyttötunniste asetettu '{0}':lle tapahtumassa '{1}'"
 
 #, python-brace-format
 msgid "One unbound clerk added."
@@ -117,6 +124,9 @@ msgstr "Kassahenkilö"
 
 msgid "Permit"
 msgstr "Lupa"
+
+msgid "Event changed. Please refresh the page and re-login."
+msgstr "Tapahtuma muuttui. Päivitä sivu ja kirjaudu uudelleen."
 
 msgid "Not logged in."
 msgstr "Ei kirjautuneena."
@@ -164,6 +174,10 @@ msgstr "Odottamaton tavaran tila: {state_name} ({state})"
 
 msgid "No such clerk."
 msgstr "Ei sellaista kassatätiä."
+
+#, python-format
+msgid "Too many items brought, limit is %i!"
+msgstr "Liian monta tuotua tavaraa, raja on %i!"
 
 msgid "Someone else's item!"
 msgstr "Jonkun toisen tuote!"
@@ -243,12 +257,13 @@ msgid ""
 "[<em>Link title</em>](<em>https://...</em>)<br/>\n"
 "&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;<br/>\n"
 "&lt;glyph <em>glyph-name</em> /&gt;<br/>\n"
-"&lt;alertbox <em>alert-type</em>&gt;<em>alert text content</em>&lt;/"
-"alertbox&gt; Types: danger, warning, info, success\n"
+"&lt;alertbox <em>type</em>&gt;<em>alert text content</em>&lt;/alertbox&gt; "
+"Types: danger, warning, info, success<br/>\n"
+"&lt;itemlist /&gt;\n"
 "</div>"
 msgstr ""
-"<div style=\"float: left;\">Teksti muotoillaan Markdown-syntaksilla. "
-"Lyhyt opas:<br/>\n"
+"<div style=\"float: left;\">Teksti muotoillaan Markdown-syntaksilla. Lyhyt "
+"opas:<br/>\n"
 "# Otsikko<br/>\n"
 "## Alaotsikko<br/>\n"
 "### Ala-alaotsikko<br/>\n"
@@ -259,9 +274,9 @@ msgstr ""
 "[<em>Linkin otsikko</em>](<em>https://...</em>)<br/>\n"
 "&lt;email&gt;<em>email@address.org</em>&lt;/email&gt;<br/>\n"
 "&lt;glyph <em>glyyfin-nimi</em> /&gt;<br/>\n"
-"&lt;alertbox <em>huomautustyyppi</em>&gt;<em>huomautuksen tekstisisältö</em"
-">&lt;/"
-"alertbox&gt; Tyypit: danger, warning, info, success\n"
+"&lt;alertbox <em>tyyppi</em>&gt;<em>huomautuksen tekstisisältö</"
+"em>&lt;/alertbox&gt; Tyypit: danger, warning, info, success\n"
+"&lt;itemlist /&gt;\n"
 "</div>"
 
 msgid "Name is required."
@@ -272,6 +287,34 @@ msgstr "Tavaralla täytyy olla tyyppi."
 
 msgid "Invalid item type."
 msgstr "Virheellinen tavaran tyyppi."
+
+#| msgid "Vendor %i"
+msgid "Vendor id"
+msgstr "Myyjä"
+
+#| msgid "code"
+msgid "Barcode"
+msgstr "Viivakoodi"
+
+msgid "Price"
+msgstr "Hinta"
+
+msgid "Brought"
+msgstr "Tuotu tapahtumaan"
+
+msgid "Sold"
+msgstr "Myyty"
+
+#| msgid "Compensated to vendor"
+msgid "Compensated / Returned"
+msgstr "Hyvitetty / Palautettu"
+
+#| msgid "Name:"
+msgid "Name"
+msgstr "Nimi"
+
+msgid "items"
+msgstr "tavarat"
 
 msgid "Returnable Items"
 msgstr "Palautettavat tavarat"
@@ -300,6 +343,10 @@ msgstr "Virheellinen koodiavain"
 msgid "Unregistered vendor."
 msgstr "Rekisteröimätön myyjä."
 
+#| msgid "Provision"
+msgid "provision:"
+msgstr "provisio:"
+
 msgid "This location is not in use."
 msgstr "Tämä sivu ei ole käytössä."
 
@@ -312,6 +359,28 @@ msgstr "sukunimi"
 msgid "email address"
 msgstr "sähköposti"
 
+msgid ""
+"Python function body that gets sold_and_compensated queryset as argument and "
+"must call result() with None or Decimal argument."
+msgstr ""
+"Python-funktion vartalo joka saa parametrina sold_and_compensated"
+" kyselyjoukon ja jonka "
+"on kutsuttava result()-funktiota None tai Decimal-instanssi parametrinaan."
+
+msgid ""
+"Amount of unsold Items a Vendor can have in the Event. If blank, no limit is "
+"imposed."
+msgstr ""
+"Myymättömien tavaroiden lukumäärä, jonka myyjä voi tuoda tapahtumaan. Jos"
+" tyhjä, "
+"rajaa ei ole."
+
+msgid "Visible"
+msgstr "Näkyvillä"
+
+msgid "Not listed in front page"
+msgstr "Ei listattuna etusivulla"
+
 msgid "Access key value"
 msgstr "Käyttötunnisteen arvo"
 
@@ -323,9 +392,6 @@ msgstr "Käytössä?"
 
 msgid "Value cannot be negative"
 msgstr "Arvo ei voi olla negatiivinen"
-
-msgid "Price"
-msgstr "Hinta"
 
 msgid "Item count"
 msgstr "Tavaramäärä"
@@ -344,9 +410,6 @@ msgstr "Tuotu tapahtumaan"
 
 msgid "Staged for selling"
 msgstr "Varattu myytäväksi"
-
-msgid "Sold"
-msgstr "Myyty"
 
 msgid "Missing"
 msgstr "Puuttuu"
@@ -456,6 +519,9 @@ msgstr "Mitätöinti"
 msgid "Sum"
 msgstr "Summa"
 
+msgid "Box list"
+msgstr "Laatikkolista"
+
 msgid "Admin note: Registration is closed for users."
 msgstr "Ylläpitohuomautus: Rekisteröinti on suljettu käyttäjiltä"
 
@@ -538,6 +604,9 @@ msgstr ""
 "Tämä sivu kiinnitetään laatikkoon. Kassahenkilökunta täyttää yllä olevan "
 "ruudun kirpputorilla."
 
+msgid "Checkout"
+msgstr "Kassa"
+
 msgid "Counter mode"
 msgstr "Kassan tila"
 
@@ -571,49 +640,8 @@ msgstr "CapsLock on luultavasti päällä!"
 msgid "Clerk codes"
 msgstr "Kassahenkilöiden tunnisteet"
 
-msgid "Registered items"
-msgstr "Rekisteröidyt tavarat"
-
-msgid "name"
-msgstr "nimi"
-
-msgid "code"
-msgstr "koodi"
-
-msgid "price"
-msgstr "hinta"
-
-msgid "printed"
-msgstr "tulostettu"
-
-msgid "yes,no"
-msgstr "kyllä,ei"
-
-msgid "Total:"
-msgstr "Yhteensä:"
-
-#, python-format
-msgid "%(num_printed)s of %(num_total)s"
-msgstr "%(num_printed)s&nbsp; / &nbsp;%(num_total)s"
-
-msgid "Registered boxes"
-msgstr "Rekisteröidyt laatikot"
-
-msgid "description"
-msgstr "kuvaus"
-
-msgid "items"
-msgstr "tavarat"
-
-msgid "unit price"
-msgstr "yksikköhinta"
-
-#, python-format
-msgid "%(boxes_printed)s of %(boxes_count)s"
-msgstr "%(boxes_printed)s&nbsp; / &nbsp;%(boxes_count)s"
-
-msgid "No registered items."
-msgstr "Ei rekisteröityjä tavaroita."
+msgid "Item list"
+msgstr "Tavaralista"
 
 msgid "Add new item"
 msgstr "Lisää uusi tavara"
@@ -657,9 +685,6 @@ msgstr "Siirrä tavara tulostettujen listaan tai sieltä takaisin."
 msgid "Toggle size."
 msgstr "Vaihda kokoa."
 
-msgid "Kirppu – Overseer Dashboard"
-msgstr "Kirppu – Valvojan näkymä"
-
 msgid "Actions"
 msgstr "Toiminnot"
 
@@ -674,9 +699,6 @@ msgstr "Kuittilista"
 
 msgid "Return to checkout"
 msgstr "Palaa myyntinäkymään"
-
-msgid "Checkout"
-msgstr "Kassa"
 
 msgid "General statistics"
 msgstr "Yleistilastot"
@@ -739,15 +761,6 @@ msgstr "On tuotuja tavaroita"
 msgid "Has uncompensated items"
 msgstr "On hyvittämättömiä tavaroita"
 
-msgid "Profile"
-msgstr "Profiili"
-
-msgid "Log out"
-msgstr "Kirjaudu ulos"
-
-msgid "Log in"
-msgstr "Kirjaudu sisään"
-
 msgid "Box codes"
 msgstr "Laatikkokoodit"
 
@@ -756,6 +769,12 @@ msgid "%(bundle_size)s pc / %(item_price)s"
 msgid_plural "%(bundle_size)s pcs / %(item_price)s"
 msgstr[0] "%(bundle_size)s kpl / %(item_price)s"
 msgstr[1] "%(bundle_size)s kpl / %(item_price)s"
+
+msgid "Management"
+msgstr "Hallinta"
+
+msgid "Site administration"
+msgstr "Sivuston hallinta"
 
 msgid "Return to vendor statistics"
 msgstr "Palaa myyjätilastoihin"
@@ -794,9 +813,6 @@ msgstr "Tulostettu ja poistettu"
 msgid "Printed, not brought"
 msgstr "Tulostettu, tuomatta"
 
-msgid "Brought"
-msgstr "Tuotu tapahtumaan"
-
 #, python-format
 msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgstr "%(brought)s (%(broughtOfRegistered)s%% rekisteröidyistä)"
@@ -828,6 +844,22 @@ msgstr "Mediaani"
 msgid "Standard deviation"
 msgstr "Keskihajonta"
 
+msgid "68th percentile"
+msgstr "68. persentiili"
+
+msgid "95th percentile"
+msgstr "95. persentiili"
+
+msgid "99.7th percentile"
+msgstr "99.7. persentiili"
+
+#| msgid "Lost and Found"
+msgid "Lost and found"
+msgstr "Löytötavara"
+
+msgid "Code"
+msgstr "Koodi"
+
 msgid "Vendor:"
 msgstr "Myyjä:"
 
@@ -857,6 +889,15 @@ msgstr "Puhelin"
 
 msgid "Create"
 msgstr "Luo"
+
+msgid "Profile"
+msgstr "Profiili"
+
+msgid "Log out"
+msgstr "Kirjaudu ulos"
+
+msgid "Log in"
+msgstr "Kirjaudu sisään"
 
 #, python-format
 msgid ""
@@ -888,6 +929,47 @@ msgstr "Hyväksy"
 msgid "Accepted at %(terms_time)s."
 msgstr "Hyväksytty %(terms_time)s."
 
+msgid "Registered items"
+msgstr "Rekisteröidyt tavarat"
+
+msgid "name"
+msgstr "nimi"
+
+msgid "code"
+msgstr "koodi"
+
+msgid "price"
+msgstr "hinta"
+
+msgid "printed"
+msgstr "tulostettu"
+
+msgid "yes,no"
+msgstr "kyllä,ei"
+
+msgid "Total:"
+msgstr "Yhteensä:"
+
+#, python-format
+msgid "%(num_printed)s of %(num_total)s"
+msgstr "%(num_printed)s&nbsp; / &nbsp;%(num_total)s"
+
+msgid "Registered boxes"
+msgstr "Rekisteröidyt laatikot"
+
+msgid "description"
+msgstr "kuvaus"
+
+msgid "unit price"
+msgstr "yksikköhinta"
+
+#, python-format
+msgid "%(boxes_printed)s of %(boxes_count)s"
+msgstr "%(boxes_printed)s&nbsp; / &nbsp;%(boxes_count)s"
+
+msgid "No registered items."
+msgstr "Ei rekisteröityjä tavaroita."
+
 msgid "Item status"
 msgstr "Tavaroiden tila"
 
@@ -897,6 +979,13 @@ msgstr "Näytä klikkaamalla"
 msgid "Tap the icon on the line to keep track of which items you have found."
 msgstr "Täppää rivillä olevaa ikonia merkitäksesi löytämäsi tavarat."
 
+msgid ""
+"<span class=\"glyphicon glyphicon-warning-sign\"></span> Note: The items "
+"must still be brought to checkout!"
+msgstr ""
+"<span class=\"glyphicon glyphicon-warning-sign\"></span> Huomautus: Tavarat"
+" on yhä tuotava kassalle!"
+
 msgid "total:"
 msgstr "yhteensä:"
 
@@ -905,6 +994,13 @@ msgstr "Ei tavaroita"
 
 msgid "View as text"
 msgstr "Näytä tekstinä"
+
+#| msgid "Event type"
+msgid "Event:"
+msgstr "Tapahtuma:"
+
+msgid "Login"
+msgstr "Kirjaudu sisään"
 
 msgid "Access key"
 msgstr "Koodiavain"
@@ -934,12 +1030,6 @@ msgstr ""
 msgid "Home"
 msgstr "Etusivu"
 
-msgid "Item list"
-msgstr "Tavaralista"
-
-msgid "Box list"
-msgstr "Laatikkolista"
-
 msgid "Mobile"
 msgstr "Mobiili"
 
@@ -949,17 +1039,18 @@ msgstr "Kassan komennot"
 msgid "Statistics"
 msgstr "Tilastot"
 
-msgid "Site administration"
-msgstr "Sivuston hallinta"
-
-msgid "Management"
-msgstr "Hallinta"
-
 msgid "View"
 msgstr "Näytä"
 
 msgid "Download"
 msgstr "Lataa"
+
+#| msgid "No items"
+msgid "View items"
+msgstr "Näytä tavarat"
+
+msgid "View items (CSV)"
+msgstr "Näytä tavarat (CSV)"
 
 msgid "Accounting"
 msgstr "Kirjanpito"
@@ -986,9 +1077,6 @@ msgstr "Suomi"
 msgid "English"
 msgstr "English"
 
-msgid "Login"
-msgstr "Kirjaudu sisään"
-
 msgid "Both username and password must be given."
 msgstr "Sekä käyttäjätunnus että salasana on annettava."
 
@@ -1011,6 +1099,9 @@ msgstr "Lisää %(name)s SSO-tarjoajalta"
 #, python-format
 msgid "Add unbound %(name)s"
 msgstr "Lisää irrallinen %(name)s"
+
+#~ msgid "Kirppu – Overseer Dashboard"
+#~ msgstr "Kirppu – Valvojan näkymä"
 
 #~ msgid "Generate bar codes for items missing it"
 #~ msgstr "Luo viivakoodit tuotteille joilta se puuttuu"

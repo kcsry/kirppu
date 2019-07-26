@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-08 18:04+0300\n"
-"PO-Revision-Date: 2019-05-08 18:09+0300\n"
+"POT-Creation-Date: 2019-07-26 08:55+0300\n"
+"PO-Revision-Date: 2019-07-26 08:57+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -134,6 +134,10 @@ msgstr "No such item"
 #, javascript-format
 msgid "Error: %s"
 msgstr "Error: %s"
+
+#, javascript-format
+msgid "%s left in item quota"
+msgstr "%s left in item quota"
 
 #, javascript-format
 msgid "Box bundle count: %d"

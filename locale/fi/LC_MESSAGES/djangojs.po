@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-08 18:04+0300\n"
-"PO-Revision-Date: 2019-05-08 18:08+0300\n"
+"POT-Creation-Date: 2019-07-26 08:55+0300\n"
+"PO-Revision-Date: 2019-07-26 09:07+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -133,6 +133,10 @@ msgstr "Ei sellaista tavaraa"
 #, javascript-format
 msgid "Error: %s"
 msgstr "Virhe: %s"
+
+#, javascript-format
+msgid "%s left in item quota"
+msgstr "%s jäljellä kiintiössä"
 
 #, javascript-format
 msgid "Box bundle count: %d"
