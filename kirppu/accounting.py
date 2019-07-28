@@ -26,6 +26,7 @@ EVENTS = dict((
     (Receipt.TYPE_PURCHASE, _("SALE")),
     (Receipt.TYPE_COMPENSATION, _("PAYOUT")),
     (ReceiptExtraRow.TYPE_PROVISION, _("COMMISSION")),
+    (ReceiptExtraRow.TYPE_PROVISION_FIX, _("COMMISSION FIX")),
     (EVENT_FORFEIT, _("FORFEIT")),
 ))
 
@@ -145,23 +146,42 @@ class AccountingWriter(object):
         self.total_payout += compensation_sum
 
         if receipt.extra_rows.count() > 0:
-            alter = 0
+            provision = 0
+            provision_fix = 0
             for r in receipt.extra_rows.all():
                 if r.type == ReceiptExtraRow.TYPE_PROVISION:
-                    alter += r.value_cents
+                    provision += r.value_cents
+                elif r.type == ReceiptExtraRow.TYPE_PROVISION_FIX:
+                    provision_fix += r.value_cents
                 else:
                     assert False, "Not Implemented: " + r.type
 
+            alter = provision + provision_fix
             self.writer.writerow((
-                self.i, timestamp, common_vendor, event_type, -compensation_sum - alter, vendor_balance - alter,
+                self.i, timestamp, common_vendor, event_type,
+                -compensation_sum - alter,
+                vendor_balance - alter,
                 self.total_balance - alter
             ))
             self.i += 1
-            self.writer.writerow((
-                self.i, timestamp, common_vendor, EVENTS[ReceiptExtraRow.TYPE_PROVISION], alter, vendor_balance,
-                self.total_balance
-            ))
-            self.i += 1
+
+            if provision:
+                self.writer.writerow((
+                    self.i, timestamp, common_vendor, EVENTS[ReceiptExtraRow.TYPE_PROVISION],
+                    provision,
+                    vendor_balance - provision_fix,
+                    self.total_balance - provision_fix
+                ))
+                self.i += 1
+
+            if provision_fix:
+                self.writer.writerow((
+                    self.i, timestamp, common_vendor, EVENTS[ReceiptExtraRow.TYPE_PROVISION_FIX],
+                    provision_fix,
+                    vendor_balance,
+                    self.total_balance
+                ))
+                self.i += 1
 
         else:
             self.writer.writerow((
