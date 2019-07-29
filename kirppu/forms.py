@@ -60,13 +60,17 @@ class ClerkSSOForm(forms.ModelForm):
         super(ClerkSSOForm, self).__init__(*args, **kwargs)
         self._sso_user = None
 
-    def clean_user(self):
-        username = self.cleaned_data["user"]
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data["user"]
+        event = cleaned_data["event"]
         user = get_user_model().objects.filter(username=username)
         if len(user) > 0:
-            clerk = Clerk.objects.filter(user=user[0])
+            clerk = Clerk.objects.filter(user=user[0], event=event)
             if len(clerk) > 0:
-                raise forms.ValidationError(u"Clerk already exists.")
+                raise forms.ValidationError("Clerk {username} already exists for event {event}.".format(
+                    **locals())
+                )
 
         from kompassi_crowd.kompassi_client import KompassiError, kompassi_get
         try:
@@ -76,9 +80,10 @@ class ClerkSSOForm(forms.ModelForm):
                 username=username, e=e)
             )
 
-        return username
+        return cleaned_data
 
     def save(self, commit=True):
+        event = self.cleaned_data["event"]
         username = self.cleaned_data["user"]
         user = get_user_model().objects.filter(username=username)
         if len(user) > 0 and user[0].password != "":
@@ -93,7 +98,7 @@ class ClerkSSOForm(forms.ModelForm):
             defaults=user_defaults_from_kompassi(self._sso_user)
         )
 
-        clerk = Clerk(user=user)
+        clerk = Clerk(event=event, user=user)
         if commit:
             clerk.save()
         return clerk
