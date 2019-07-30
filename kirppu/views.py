@@ -412,7 +412,8 @@ def _vendor_menu_contents(request, event):
             if event.use_boxes:
                 manage_sub.append(fill(_("Box codes"), "kirppu:box_codes"))
 
-    if request.user.is_staff:
+    if request.user.is_staff\
+            or (UserAdapter.is_clerk(request.user, event) and request.user.has_perm("kirppu.view_accounting")):
         manage_sub.append(fill(_(u"Clerk codes"), "kirppu:clerks"))
         manage_sub.append(fill(_(u"Lost and Found"), "kirppu:lost_and_found"))
 
@@ -550,10 +551,13 @@ def get_boxes(request, event_slug):
 
 
 @login_required
-@require_test(lambda request: request.user.is_staff)
 @barcode_view
 def get_clerk_codes(request, event_slug, bar_type):
     event = get_object_or_404(Event, slug=event_slug)
+    if not (request.user.is_staff or (
+            UserAdapter.is_clerk(request.user, event) and request.user.has_perm("kirppu.view_accounting"))):
+        return HttpResponseForbidden()
+
     bound = []
     unbound = []
     code_item = namedtuple("CodeItem", "name code")
