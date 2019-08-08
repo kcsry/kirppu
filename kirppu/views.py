@@ -617,7 +617,7 @@ def get_boxes_codes(request, event_slug, bar_type):
     if not (request.user.is_staff or UserAdapter.is_clerk(request.user, event)):
         raise PermissionDenied()
 
-    boxes = Box.objects.filter(box_number__isnull=False).order_by("box_number")
+    boxes = Box.objects.filter(representative_item__vendor__event=event, box_number__isnull=False).order_by("box_number")
     vm = []
     for box in boxes:
         code = "box%d" % box.box_number
@@ -950,7 +950,7 @@ def lost_and_found_list(request, event_slug):
     event = Event.objects.get(slug=event_slug)
     items = Item.objects \
         .select_related("vendor") \
-        .filter(lost_property=True, abandoned=False) \
+        .filter(vendor__event=event, lost_property=True, abandoned=False) \
         .order_by("vendor", "name")
 
     vendor_object = namedtuple("VendorItems", "vendor vendor_id items")
