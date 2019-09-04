@@ -302,6 +302,8 @@ def item_find(request, event, code):
 def item_search(request, event, query, code, vendor, min_price, max_price, item_type, item_state, show_hidden):
 
     clauses = []
+    name_clauses = []
+    description_clauses = []
 
     types = item_type.split()
     if types:
@@ -320,9 +322,11 @@ def item_search(request, event, query, code, vendor, min_price, max_price, item_
 
     for part in query.split():
         p = Q(name__icontains=part)
+        d = Q(box__description__icontains=part)
         if Item.is_item_barcode(part):
             p |= Q(code=part)
-        clauses.append(p)
+        name_clauses.append(p)
+        description_clauses.append(d)
 
     try:
         clauses.append(Q(price__gte=float(min_price)))
@@ -337,11 +341,42 @@ def item_search(request, event, query, code, vendor, min_price, max_price, item_
     if show_hidden not in ("true", "1", "on"):
         clauses.append(Q(hidden=False))
 
+    item_clauses = clauses + name_clauses
+    box_clauses = clauses + description_clauses
     results = []
 
-    for item in Item.objects.filter(*clauses, vendor__event=event).all():
+    for item in (
+        Item.objects
+        .filter(*item_clauses, box__isnull=True, vendor__event=event)
+        .select_related("itemtype", "vendor", "vendor__user")
+        .all()
+    ):
         item_dict = item.as_dict()
         item_dict['vendor'] = item.vendor.as_dict()
+        results.append(item_dict)
+
+    box_item_counts = dict(
+        Item.objects
+            .filter(*box_clauses, box__isnull=False)
+            .values("box")
+            .annotate(item_count=Count("id"))
+            .values_list("box", "item_count")
+    )
+
+    for item in (
+        Item.objects
+        .filter(*box_clauses, box__representative_item__id=F("pk"), vendor__event=event)
+        .select_related("box", "itemtype", "vendor", "vendor__user")
+        .all()
+    ):
+        item_dict = item.as_dict()
+        item_dict['name'] = item.box.description
+        item_dict['vendor'] = item.vendor.as_dict()
+        item_dict['box'] = {
+            "box_number": item.box.box_number,
+            "bundle_size": item.box.bundle_size,
+            "item_count": box_item_counts[item.box_id],
+        }
         results.append(item_dict)
 
     return results
