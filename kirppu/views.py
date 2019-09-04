@@ -688,7 +688,7 @@ def overseer_view(request, event_slug):
     else:
         context = {
             'event': event,
-            'itemtypes': ItemType.as_tuple(),
+            'itemtypes': ItemType.as_tuple(event),
             'itemstates': Item.STATE,
             'CURRENCY': settings.KIRPPU_CURRENCY,
         }

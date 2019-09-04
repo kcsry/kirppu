@@ -672,11 +672,8 @@ class ItemType(models.Model):
         )
 
     @classmethod
-    def as_tuple(cls, event=None):
-        if event is not None:
-            query = cls.objects.filter(event=event)
-        else:
-            query = cls.objects
+    def as_tuple(cls, event):
+        query = cls.objects.filter(event=event)
         return query.order_by("order").values_list("key", "title")
 
 
