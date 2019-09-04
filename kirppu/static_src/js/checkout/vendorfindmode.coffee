@@ -11,16 +11,22 @@ class @VendorFindMode extends CheckoutMode
     @cfg.uiRef.body.append(@vendorList.render())
 
     if @query?
-      Api.vendor_find(q: @query).done(@onVendorsFound)
+      @onSearchVendor(@query)
 
   glyph: -> "user"
   title: -> gettext("Vendor Search")
   inputPlaceholder: -> gettext("Search vendor")
 
   actions: -> [
-    ["", (query) => Api.vendor_find(q: query).done(@onVendorsFound)]
+    ["", @onSearchVendor]
     [@commands.logout, @onLogout]
   ]
+
+  onSearchVendor: (query) =>
+    if query.trim() == ""
+      @vendorList.body.empty()
+    else
+      Api.vendor_find(q: query).done(@onVendorsFound)
 
   onVendorsFound: (vendors) =>
     @vendorList.body.empty()
