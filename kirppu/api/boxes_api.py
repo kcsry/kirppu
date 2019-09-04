@@ -111,6 +111,7 @@ def box_item_reserve(request, event, box_number, box_item_count="1"):
 
         ret = box.as_dict()
         ret.update(
+            price=ret["item_price"],
             total=receipt.total_cents,
             changed=box_item_count,
             item_codes=list(items.values_list("code", flat=True)),

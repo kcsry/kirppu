@@ -127,7 +127,8 @@ class @CounterMode extends ItemCheckoutMode
     @receipt.body.empty()
     for item in data.items
       price = if item.action == "DEL" then -item.price else item.price
-      @addRow(item.code, item.name, price)
+      remove = if item.action == "DEL" then true else false
+      @_addRow(item, remove)
     @_setSum(@_receipt.total)
 
   _onInitialItemFailed: (jqXHR, code, box=null) =>   # TODO
@@ -202,7 +203,7 @@ class @CounterMode extends ItemCheckoutMode
           if Math.abs(data.total - @_receipt.total) >= 1
             console.error("Inconsistency: " + @_receipt.total + " != " + data.total)
 
-          @addRow(data.code, data.name, data.price)
+          @_addRow(data)
           @notifySuccess()
 
         (jqXHR) =>
@@ -220,14 +221,21 @@ class @CounterMode extends ItemCheckoutMode
           if Math.abs(data.total - @_receipt.total) >= 1
             console.error("Inconsistency: " + @_receipt.total + " != " + data.total)
 
-          for code in data.item_codes
-            @addRow(code, data.item_name, data.item_price)
+          for _ in data.item_codes
+            @_addRow(data)
           @notifySuccess()
 
         (jqXHR) =>
           @showError(jqXHR.status, jqXHR.responseText, code, box)
           return true
       )
+
+  _addRow: (data, remove=false) =>
+    price_multiplier = if remove then -1 else 1
+    if data.box_number?
+      @addRow("#" + data.box_number, data.description, data.price * price_multiplier)
+    else
+      @addRow(data.code, data.name, data.price * price_multiplier)
 
   onRemoveItem: (code) =>
     unless @_receipt.isActive() then return
@@ -243,7 +251,7 @@ class @CounterMode extends ItemCheckoutMode
           if Math.abs(data.total - @_receipt.total) >= 1
             console.error("Inconsistency: " + @_receipt.total + " != " + data.total)
 
-          @addRow(data.code, data.name, -data.price)
+          @_addRow(data, true)
           @notifySuccess()
 
         (jqXHR) =>
@@ -265,8 +273,8 @@ class @CounterMode extends ItemCheckoutMode
           if Math.abs(data.total - @_receipt.total) >= 1
             console.error("Inconsistency: " + @_receipt.total + " != " + data.total)
 
-          for code in data.item_codes
-            @addRow(code, data.item_name, -data.item_price)
+          for _ in data.item_codes
+            @_addRow(data, true)
           @notifySuccess()
 
         (jqXHR) =>
