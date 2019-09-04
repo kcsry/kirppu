@@ -7,6 +7,10 @@ class @ItemFindMode extends CheckoutMode
     @searchForm = new ItemSearchForm(@doSearch)
     @search = null
 
+    @_focusInSearch = false
+    @searchForm.searchInput.on("focus", () => @_focusInSearch = true)
+    @searchForm.searchInput.on("blur", () => @_focusInSearch = false)
+
   enter: ->
     super
     @cfg.uiRef.body.empty()
@@ -20,7 +24,7 @@ class @ItemFindMode extends CheckoutMode
   doSearch: (query, code, vendor, min_price, max_price, type, state, show_hidden) =>
     @search =
       query: query
-      code: code
+      code: code.toUpperCase()
       vendor: vendor
       min_price: min_price
       max_price: max_price
@@ -41,6 +45,8 @@ class @ItemFindMode extends CheckoutMode
       )(item_, index_)
     if items.length == 0
       @itemList.no_results()
+    if @_focusInSearch
+      @searchForm.searchInput.select()
     return
 
   onItemClick: (item) =>
