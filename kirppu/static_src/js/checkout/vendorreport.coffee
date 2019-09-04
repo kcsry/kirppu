@@ -62,7 +62,7 @@ class @VendorReport extends CheckoutMode
     @vendor = vendor
 
   title: -> gettext("Item Report")
-  inputPlaceholder: -> gettext("Search vendor")
+  inputPlaceholder: -> gettext("Search terms separated by space")
 
   actions: -> [
     ["", (query) => @switcher.switchTo(VendorFindMode, query)]
@@ -74,23 +74,23 @@ class @VendorReport extends CheckoutMode
     @cfg.uiRef.body.append(new VendorInfo(@vendor).render())
     compensateButton = $('<input type="button">')
       .addClass('btn btn-primary')
-      .attr('value', gettext('Compensate'))
+      .attr('value', gettext('Compensate…'))
       .click(@onCompensate)
     checkoutButton = $('<input type="button">')
       .addClass('btn btn-primary')
-      .attr('value', gettext('Return Items'))
+      .attr('value', gettext('Return Items…'))
       .click(@onReturn)
     abandonButton = $('<input type="button">')
       .addClass('btn btn-primary')
-      .attr('value', gettext('Abandon All Items Currently On Display'))
+      .attr('value', gettext('Abandon All Items Currently On Display…'))
       .click(@onAbandon)
     compensationsButton = $('<input type="button">')
       .addClass('btn btn-default')
-      .attr('value', gettext('Compensation receipts'))
+      .attr('value', gettext('Compensation receipts…'))
       .click(@onShowCompensations)
     mobileCode = $('<input type="button">')
       .addClass('btn btn-default')
-      .attr('value', gettext('Mobile code'))
+      .attr('value', gettext('Mobile code…'))
       .click(@onCreateMobileCode)
 
     @cfg.uiRef.body.append(
