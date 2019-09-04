@@ -791,6 +791,8 @@ def receipt_start(request):
 @ajax_func('^item/reserve$', atomic=True)
 def item_reserve(request, event, code):
     item = _get_item_or_404(code, for_update=True, event=event)
+    if item.box_id is not None:
+        raise AjaxError(RET_CONFLICT, "A box cannot be reserved")
     receipt_id = request.session.get("receipt")
     if receipt_id is None:
         raise AjaxError(RET_BAD_REQUEST, "No active receipt found")
