@@ -445,7 +445,14 @@ class Box(models.Model):
     bundle_size = models.IntegerField(default=1, help_text="How many items are sold in a bundle")
 
     def __str__(self):
-        return u"{id} ({description})".format(id=self.id, description=self.description)
+        if self.box_number is None:
+            return "id={id} ({description})".format(id=self.id, description=self.description)
+        else:
+            return "#{box_number} (id={id}) ({description})".format(
+                box_number=self.box_number,
+                id=self.id,
+                description=self.description
+            )
 
     as_public_dict = model_dict_fn(
         "description",
