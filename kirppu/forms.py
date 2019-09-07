@@ -305,6 +305,9 @@ def remove_item_from_receipt(request, item_or_code, receipt_id, update_receipt=T
     else:
         item = Item.objects.select_for_update().get(code=item_or_code)
 
+    if item.state != Item.SOLD:
+        raise ValueError("Item is not sold, but {}".format(item.state))
+
     if isinstance(receipt_id, Receipt):
         receipt = receipt_id
         assert receipt.type == Receipt.TYPE_PURCHASE, "This function cannot be used for non-purchase receipts."
