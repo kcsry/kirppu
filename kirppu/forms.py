@@ -281,6 +281,10 @@ class ItemRemoveForm(forms.Form):
     receipt = forms.IntegerField(min_value=0, label=u"Receipt ID")
     code = forms.CharField(label=u"Item code")
 
+    def __init__(self, *args, event, **kwargs):
+        self._event = event
+        super(ItemRemoveForm, self).__init__(*args, **kwargs)
+
     def clean_receipt(self):
         data = self.cleaned_data["receipt"]
         if not Receipt.objects.filter(pk=data).exists():
@@ -289,7 +293,7 @@ class ItemRemoveForm(forms.Form):
 
     def clean_item(self):
         data = self.cleaned_data["code"]
-        if not Item.objects.filter(code=data).exists():
+        if not Item.objects.filter(code=data, vendor__event=self._event).exists():
             raise forms.ValidationError(u"Item with code {code} not found.".format(code=data))
         return data
 

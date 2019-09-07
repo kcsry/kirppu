@@ -10,6 +10,7 @@ from django.core.exceptions import (
     PermissionDenied,
     ValidationError,
 )
+from django.contrib import messages
 import django.urls as url
 from django.db import transaction, models
 from django.http.response import (
@@ -929,15 +930,24 @@ def accept_terms(request, event_slug):
 
 
 @login_required
-def remove_item_from_receipt(request):
+def remove_item_from_receipt(request, event_slug):
+    event = get_object_or_404(Event, slug=event_slug)
     if not request.user.is_staff:
         raise PermissionDenied()
 
-    form = get_form(ItemRemoveForm, request)
+    form = get_form(ItemRemoveForm, request, event=event)
 
     if request.method == "POST" and form.is_valid():
-        _remove_item_from_receipt(request, form.cleaned_data["code"], form.cleaned_data["receipt"])
-        return HttpResponseRedirect(url.reverse('kirppu:remove_item_from_receipt'))
+        try:
+            removal = _remove_item_from_receipt(request, form.cleaned_data["code"], form.cleaned_data["receipt"])
+        except (ValueError, AssertionError) as e:
+            form.add_error(None, e.args[0])
+        else:
+            messages.add_message(request, messages.INFO, "Item {0} removed from {1}".format(
+                form.cleaned_data["code"], removal.receipt
+            ))
+            return HttpResponseRedirect(url.reverse('kirppu:remove_item_from_receipt',
+                                                    kwargs={"event_slug": event.slug}))
 
     return render(request, "kirppu/app_item_receipt_remove.html", {
         'form': form,
