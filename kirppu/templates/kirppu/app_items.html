@@ -80,7 +80,7 @@
                     {% endfor %}
                 </select>
             </div>
-
+        {% if event.age_restricted_items %}
             <label class="col-sm-1 control-label">{% trans "Adult:" %}</label>
             <div class="col-sm-3">
                 <label class="radio-inline">
@@ -90,6 +90,7 @@
                     <input name="item-add-adult" value="false" type="radio" checked="checked" />{% trans "No" %}
                 </label>
             </div>
+        {% endif %}
         </div>
         <div class="form-group">
             <div class="col-sm-offset-1 col-sm-11">

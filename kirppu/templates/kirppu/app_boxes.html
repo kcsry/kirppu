@@ -88,7 +88,7 @@
                             {% endfor %}
                         </select>
                     </div>
-
+                {% if event.age_restricted_items %}
                     <label class="col-sm-1 control-label">{% trans "Adult:" %}</label>
                     <div class="col-sm-3">
                         <label class="radio-inline">
@@ -98,6 +98,7 @@
                             <input name="box-add-adult" value="false" type="radio" checked="checked" />{% trans "No" %}
                         </label>
                     </div>
+                {% endif %}
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-1 col-sm-11">
@@ -124,7 +125,7 @@
     <div id="boxes" data-require-terms="true">
         {# Output a template container for every non-printed box user has. #}
         {% for b in boxes %}
-            {% include 'kirppu/app_boxes_box.html' with box_type="normal" box_id=b.id description=b.description item_price=b.get_price_fmt bundle_size=b.bundle_size item_count=b.get_item_count item_type=b.get_item_type_for_display item_adult=b.get_item_adult printed=b.is_printed %}
+            {% include 'kirppu/app_boxes_box.html' with event=event box_type="normal" box_id=b.id description=b.description item_price=b.get_price_fmt bundle_size=b.bundle_size item_count=b.get_item_count item_type=b.get_item_type_for_display item_adult=b.get_item_adult printed=b.is_printed %}
         {% endfor %}
     </div>
 {% endblock %}

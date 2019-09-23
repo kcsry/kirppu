@@ -118,6 +118,7 @@ class Event(models.Model):
     checkout_active = models.BooleanField(default=False)
     mobile_view_visible = models.BooleanField(default=False)
     multiple_vendors_per_user = models.BooleanField(default=False)
+    age_restricted_items = models.BooleanField(default=True)
     use_boxes = models.BooleanField(default=True)
     provision_function = models.TextField(
         blank=True,

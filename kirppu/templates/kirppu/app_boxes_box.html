@@ -17,12 +17,14 @@
                 <div class="row">
                     <div class="col-sm-2">{% trans "Pricing:" %}</div>
                     <div class="col-sm-3">{% if bundle_size > 1 %}{% blocktrans count bundle_size=bundle_size %}{{ bundle_size }} pc / {% plural %}{{ bundle_size }} pcs / {% endblocktrans %}{% endif %}<span class="box_price">{{ item_price }}</span></div>
+                {% if event.age_restricted_items %}
                     <div class="col-sm-2">{% trans "Adult:" %}</div>
                     {% if item_adult == "yes" %}
                         <div class="col-sm-2 box_adult">K-18</div>
                     {% else %}
                         <div class="col-sm-2 box_adult">-</div>
                     {% endif %}
+                {% endif %}
                 </div>
                 <div class="row">
                      <div class="col-sm-10"></div>
