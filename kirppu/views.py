@@ -524,6 +524,7 @@ def get_boxes(request, event_slug):
     vendor_data = get_multi_vendor_values(request, event)
 
     boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()
+    boxes = boxes.select_related("representative_item__itemtype")
 
     # Order from newest to oldest, because that way new boxes are added
     # to the top and the user immediately sees them without scrolling
