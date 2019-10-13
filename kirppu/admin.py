@@ -41,6 +41,8 @@ from .models import (
     TemporaryAccessPermitLog,
 )
 
+from .util import get_form
+
 __author__ = 'jyrkila'
 
 
@@ -263,10 +265,6 @@ class ClerkAdmin(admin.ModelAdmin):
         self.message_user(request, ugettext(u"Access code set for '{0}' in '{1}'").format(bound.user, bound.event.name))
 
     def get_form(self, request, obj=None, **kwargs):
-        # Custom creation form if SSO is enabled.
-        if "sso" in request.GET and self.uses_sso:
-            return ClerkSSOForm
-
         # Custom form for editing already created Clerks.
         if obj is not None:
             return ClerkEditForm
@@ -295,14 +293,36 @@ class ClerkAdmin(admin.ModelAdmin):
     def get_urls(self):
         info = self.opts.app_label, self.opts.model_name
         return super(ClerkAdmin, self).get_urls() + [
-            url(r'^bulk_unbound$', self.bulk_add_unbound, name="%s_%s_bulk" % info)
+            url(r'^add/bulk_unbound$', self.bulk_add_unbound, name="%s_%s_bulk" % info),
+            url(r'^add/sso$', self.add_from_sso, name="%s_%s_sso" % info),
         ]
+
+    def add_from_sso(self, request):
+        if not self.has_add_permission(request) or not self.uses_sso:
+            raise PermissionDenied
+
+        form = get_form(ClerkSSOForm, request)  # type: ClerkSSOForm
+
+        if request.method == 'POST' and form.is_valid():
+            clerk = form.save()
+            self.log_addition(request, clerk, {"added": {}})
+
+            msg = format_html(
+                ugettext("Clerk {name} added into {event}."),
+                name=form.cleaned_data["user"],
+                event=form.cleaned_data["event"],
+            )
+            self.message_user(request, msg, messages.SUCCESS)
+
+            from django.http import HttpResponseRedirect
+            return HttpResponseRedirect(reverse("admin:%s_%s_changelist" % (self.opts.app_label, self.opts.model_name)))
+
+        return self._get_custom_form(request, form, ugettext('Add clerk from SSO provider'))
 
     def bulk_add_unbound(self, request):
         if not self.has_add_permission(request):
             raise PermissionDenied
 
-        from .util import get_form
         form = get_form(ClerkGenerationForm, request)
 
         if request.method == 'POST' and form.is_valid():
@@ -318,7 +338,10 @@ class ClerkAdmin(admin.ModelAdmin):
             from django.http import HttpResponseRedirect
             return HttpResponseRedirect(reverse("admin:%s_%s_changelist" % (self.opts.app_label, self.opts.model_name)))
 
-        from django.contrib.admin.helpers import AdminForm
+        return self._get_custom_form(request, form, ugettext('Add unbound clerk'))
+
+    def _get_custom_form(self, request, form, title):
+        from django.contrib.admin.helpers import AdminForm, AdminErrorList
         admin_form = AdminForm(
             form,
             form.get_fieldsets(),
@@ -326,14 +349,16 @@ class ClerkAdmin(admin.ModelAdmin):
             model_admin=self)
         media = self.media + admin_form.media
 
+        inline_formsets = []
         context = dict(
             self.admin_site.each_context(request),
-            title=force_text(ugettext('Add unbound clerk')),
+            title=force_text(title),
             media=media,
             adminform=admin_form,
             is_popup=False,
             show_save_and_continue=False,
-            inline_admin_formsets=[],
+            inline_admin_formsets=inline_formsets,
+            errors=AdminErrorList(form, inline_formsets),
         )
 
         return self.render_change_form(request, context, add=True)

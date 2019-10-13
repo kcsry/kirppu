@@ -60,6 +60,9 @@ class ClerkSSOForm(forms.ModelForm):
         super(ClerkSSOForm, self).__init__(*args, **kwargs)
         self._sso_user = None
 
+    def get_fieldsets(self):
+        return [(None, {'fields': self.base_fields})]
+
     def clean(self):
         cleaned_data = super().clean()
         username = cleaned_data["user"]
