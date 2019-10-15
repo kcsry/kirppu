@@ -11,18 +11,43 @@
 {% endblock %}
 
 {% block body %}
-    {% for event in events %}
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <a href="{{ event.get_absolute_url }}">{{ event.name }}</a>
-                </div>
-                <div class="panel-body">
-                    {{ event.start_date }}–{{ event.end_date }}
+    <h2>{% trans "Coming events" %}</h2>
+    <div class="row">
+        {% for event in events %}
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a href="{{ event.get_absolute_url }}">{{ event.name }}</a>
+                    </div>
+                    <div class="panel-body">
+                        {% if event.fp_currently_ongoing %}
+                            <span class="glyphicon glyphicon-arrow-right text-success"> </span>
+                        {% endif %}
+                        {{ event.start_date }}–{{ event.end_date }}
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+        {% empty %}
+            <div><em>{% trans "No future events" %}</em></div>
+        {% endfor %}
+    </div>
+    {% if old_events %}
+    <h2>{% trans "Old events" %}</h2>
+    <div class="row">
+        {% for event in old_events %}
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a href="{{ event.get_absolute_url }}">{{ event.name }}</a>
+                    </div>
+                    <div class="panel-body">
+                        {{ event.start_date }}–{{ event.end_date }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 {% endblock %}
 
 {% block navbar_right %}
