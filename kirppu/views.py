@@ -42,6 +42,7 @@ from .models import (
     Box,
     Clerk,
     Event,
+    EventPermission,
     Item,
     ItemType,
     Vendor,
@@ -55,7 +56,6 @@ from .utils import (
     barcode_view,
     is_vendor_open,
     is_registration_closed_for_users,
-    require_test,
     require_vendor_open,
 )
 from .templatetags.kirppu_tags import get_dataurl
@@ -407,6 +407,7 @@ def _vendor_menu_contents(request, event):
         items.append(fill(_("Mobile"), "kirppu:mobile"))
 
     manage_sub = []
+    permissions = EventPermission.get(event, request.user)
     if request.user.is_staff or UserAdapter.is_clerk(request.user, event):
         manage_sub.append(fill(_(u"Checkout commands"), "kirppu:commands"))
         if event.checkout_active:
@@ -414,14 +415,15 @@ def _vendor_menu_contents(request, event):
             if event.use_boxes:
                 manage_sub.append(fill(_("Box codes"), "kirppu:box_codes"))
 
-    if request.user.is_staff\
-            or (UserAdapter.is_clerk(request.user, event) and request.user.has_perm("kirppu.view_accounting")):
+    if request.user.is_staff or permissions.can_see_clerk_codes:
         manage_sub.append(fill(_(u"Clerk codes"), "kirppu:clerks"))
+
+    if request.user.is_staff or permissions.can_see_accounting:
         manage_sub.append(fill(_(u"Lost and Found"), "kirppu:lost_and_found"))
 
     if request.user.is_staff\
             or UserAdapter.is_clerk(request.user, event)\
-            or request.user.has_perm("kirppu.view_statistics"):
+            or permissions.can_see_statistics:
         manage_sub.append(fill(_(u"Statistics"), "kirppu:stats_view"))
 
     if request.user.is_staff:
@@ -433,7 +435,7 @@ def _vendor_menu_contents(request, event):
     if manage_sub:
         items.append(fill(_(u"Management"), "", manage_sub))
 
-    if request.user.has_perm("kirppu.view_accounting"):
+    if permissions.can_see_accounting:
         accounting_sub = [
             fill(_("View"), "kirppu:accounting"),
             fill(_("Download"), "kirppu:accounting", query={"download": ""}),
@@ -557,8 +559,7 @@ def get_boxes(request, event_slug):
 @barcode_view
 def get_clerk_codes(request, event_slug, bar_type):
     event = get_object_or_404(Event, slug=event_slug)
-    if not (request.user.is_staff or (
-            UserAdapter.is_clerk(request.user, event) and request.user.has_perm("kirppu.view_accounting"))):
+    if not (request.user.is_staff or EventPermission.get(event, request.user).can_see_clerk_codes):
         return HttpResponseForbidden()
 
     bound = []
@@ -703,7 +704,7 @@ def _statistics_access(fn):
     def inner(request, event_slug, *args, **kwargs):
         event = get_object_or_404(Event, slug=event_slug)
         try:
-            if not (request.user.has_perm("kirppu.view_statistics") and UserAdapter.is_clerk(request.user, event)):
+            if not EventPermission.get(event, request.user).can_see_statistics:
                 ajax_util.require_user_features(counter=True, clerk=True, staff_override=True)(lambda _: None)(request)
             # else: User has permissions, no further checks needed.
         except ajax_util.AjaxError:
@@ -957,9 +958,10 @@ def remove_item_from_receipt(request, event_slug):
 
 
 @login_required
-@require_test(lambda request: request.user.is_staff)
 def lost_and_found_list(request, event_slug):
     event = Event.objects.get(slug=event_slug)
+    if not EventPermission.get(event, request.user).can_see_accounting:
+        raise PermissionDenied
     items = Item.objects \
         .select_related("vendor") \
         .filter(vendor__event=event, lost_property=True, abandoned=False) \

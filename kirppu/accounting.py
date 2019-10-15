@@ -2,14 +2,15 @@
 from collections import defaultdict
 import csv
 
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy, gettext
 from django.utils import timezone
 
 from .csv_utils import csv_streamer_view, strip_generator
-from .models import Event, Item, Receipt, ReceiptExtraRow, ReceiptItem, decimal_to_transport
+from .models import Event, EventPermission, Item, Receipt, ReceiptExtraRow, ReceiptItem, decimal_to_transport
 
 COLUMNS = (
     _("Event number"),
@@ -36,9 +37,10 @@ def _zero_fn():
 
 
 @login_required
-@permission_required("kirppu.view_accounting")
 def accounting_receipt_view(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
+    if not EventPermission.get(event, request.user).can_see_accounting:
+        raise PermissionDenied
 
     return csv_streamer_view(
         request,

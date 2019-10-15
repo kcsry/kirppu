@@ -151,6 +151,61 @@ class Event(models.Model):
         return reverse("kirppu:vendor_view", kwargs={"event_slug": self.slug})
 
 
+class EventPermission(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    can_see_clerk_codes = models.BooleanField(default=False)
+    can_see_statistics = models.BooleanField(default=False)
+    can_see_accounting = models.BooleanField(default=False)
+    can_register_items_outside_registration = models.BooleanField(default=False)
+    can_perform_overseer_actions = models.BooleanField(default=False)
+    can_switch_sub_vendor = models.BooleanField(default=False)
+    can_create_sub_vendor = models.BooleanField(default=False)
+
+    _short_mapping = (
+        (can_see_clerk_codes, "CCodes"),
+        (can_see_statistics, "STAT"),
+        (can_see_accounting, "ACC"),
+        (can_register_items_outside_registration, "REG"),
+        (can_perform_overseer_actions, "OVER"),
+        (can_switch_sub_vendor, "SubSw"),
+        (can_create_sub_vendor, "SubCr"),
+    )
+
+    class Meta:
+        unique_together = (("event", "user"),)
+
+    def __str__(self):
+        return "{} / {}".format(self.event, self.user)
+
+    @short_description(_("Permissions"))
+    def combination(self):
+        enabled_names = list(
+            value
+            for key, value in self._short_mapping
+            if getattr(self, key.name)
+        )
+        if not enabled_names:
+            return "----"
+        return ", ".join(enabled_names)
+
+    @classmethod
+    def get(cls, event, user):
+        try:
+            return cls.objects.get(event=event, user=user)
+        except cls.DoesNotExist:
+            fields = cls._meta.get_fields()
+            args = {
+                'event': event,
+                'user': user,
+            }
+            for field in fields:
+                if not field.is_relation and field.default != models.fields.NOT_PROVIDED:
+                    args[field.name] = field.default
+            return cls(**args)
+
+
 @python_2_unicode_compatible
 class Clerk(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)

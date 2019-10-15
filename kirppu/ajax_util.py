@@ -16,6 +16,7 @@ from .models import (
     Clerk,
     Counter,
     Event,
+    EventPermission,
 )
 
 """
@@ -204,7 +205,7 @@ def require_user_features(counter=True, clerk=True, overseer=False, staff_overri
                 # Thus call raises if clerk is not found.
                 clerk_obj = get_clerk(request)
 
-                if overseer and not clerk_obj.user.has_perm('kirppu.oversee'):
+                if overseer and not EventPermission.get(clerk_obj.event, clerk_obj.user).can_perform_overseer_actions:
                     raise AjaxError(RET_FORBIDDEN, _(u"Access denied."))
 
             return func(request, *args, **kwargs)

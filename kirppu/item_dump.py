@@ -2,14 +2,15 @@
 import csv
 import typing
 
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.db.models import Max, TextField
 from django.db.models.functions import Length, Cast
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _, gettext
 
 from .csv_utils import csv_streamer_view
-from .models import Event, Item
+from .models import Event, EventPermission, Item
 
 
 COLUMNS = (
@@ -24,9 +25,10 @@ COLUMNS = (
 
 
 @login_required
-@permission_required("kirppu.view_accounting")
 def dump_items_view(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
+    if not EventPermission.get(event, request.user).can_see_accounting:
+        raise PermissionDenied
 
     as_text = request.GET.get("txt") is not None
 

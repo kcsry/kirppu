@@ -25,6 +25,7 @@ from .forms import (
 from .models import (
     Clerk,
     Event,
+    EventPermission,
     Item,
     ItemType,
     Vendor,
@@ -126,6 +127,21 @@ Admin UI list column that displays user name with link to the user model itself.
 _user_link = RefLinkAccessor("user", ugettext(u"User"))
 
 _person_link = RefLinkAccessor("person", ugettext(u"Person"))
+
+_event_link = RefLinkAccessor("event", ugettext("Event"))
+
+
+@admin.register(EventPermission)
+class EventPermissionAdmin(admin.ModelAdmin):
+    list_display = ("id", _event_link, _user_link, "combination")
+    list_display_links = ("id", "combination")
+    list_filter = (
+        "event",
+    )
+    list_select_related = (
+        "event",
+        "user",
+    )
 
 
 @admin.register(Vendor)

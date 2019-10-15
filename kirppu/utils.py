@@ -166,11 +166,13 @@ def is_vendor_open(request, event):
     Test if Item edit for vendor is currently open.
 
     :param request: Optional Django request for checking whether current user has override permission for registration.
+    :type event: Event
     :return: True if open, False if not and modifications by vendor must not be allowed.
     """
     end = event.registration_end
+    from .models import EventPermission
     return (end is not None and timezone.now() <= end) or (
-        request.user.has_perm("kirppu.register_override")
+        EventPermission.get(event, request.user).can_add_items_outside_registration
     )
 
 
@@ -196,24 +198,6 @@ def require_vendor_open(fn):
             return HttpResponseForbidden(_(u"Registration is closed"))
         return fn(request, event, *args, **kwargs)
     return inner
-
-
-def require_test(test):
-    """
-    Decorate view function so that it will return Forbidden if given test does not return True when called.
-
-    :param test: Test function. It will be called with `request` argument.
-    :type test: callable
-    :return: Decorated function.
-    """
-    def wrapper(fn):
-        @wraps(fn)
-        def inner(request, *args, **kwargs):
-            if not test(request):
-                raise PermissionDenied()
-            return fn(request, *args, **kwargs)
-        return inner
-    return wrapper
 
 
 def barcode_view(fn):

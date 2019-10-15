@@ -36,6 +36,7 @@ from .models import (
     Clerk,
     Counter,
     Event,
+    EventPermission,
     ReceiptItem,
     ReceiptExtraRow,
     Vendor,
@@ -213,8 +214,10 @@ def clerk_login(request, event, code, counter):
         raise AjaxError(RET_AUTH_FAILED, _(u"No such clerk."))
 
     clerk_data = clerk.as_dict()
-    clerk_data['overseer_enabled'] = clerk.user.has_perm('kirppu.oversee')
-    clerk_data['stats_enabled'] = clerk.user.is_staff or clerk.user.has_perm('kirppu.oversee')
+    permissions = EventPermission.get(event, request.user)
+    oversee = permissions.can_perform_overseer_actions
+    clerk_data['overseer_enabled'] = oversee
+    clerk_data['stats_enabled'] = oversee or permissions.can_see_statistics
 
     active_receipts = Receipt.objects.filter(clerk=clerk, status=Receipt.PENDING, type=Receipt.TYPE_PURCHASE)
     if active_receipts:
