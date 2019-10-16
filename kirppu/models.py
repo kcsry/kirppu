@@ -394,7 +394,7 @@ class Clerk(models.Model):
 @python_2_unicode_compatible
 class Vendor(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    person = models.ForeignKey(Person, null=True, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
     terms_accepted = models.DateTimeField(null=True)
     mobile_view_visited = models.BooleanField(default=False)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)

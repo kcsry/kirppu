@@ -173,7 +173,9 @@ class VendorAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         fields = ["user"] if obj is not None and not self._can_set_user(request, obj) else []
         fields.append("terms_accepted")
-        fields.append("person")
+        if obj is not None:
+            fields.append("event")
+            fields.append("person")
         return fields
 
 
