@@ -192,18 +192,18 @@ class EventPermission(models.Model):
 
     @classmethod
     def get(cls, event, user):
-        try:
-            return cls.objects.get(event=event, user=user)
-        except cls.DoesNotExist:
-            fields = cls._meta.get_fields()
-            args = {
-                'event': event,
-                'user': user,
-            }
-            for field in fields:
-                if not field.is_relation and field.default != models.fields.NOT_PROVIDED:
-                    args[field.name] = field.default
-            return cls(**args)
+        if user.is_authenticated:
+            try:
+                return cls.objects.get(event=event, user=user)
+            except cls.DoesNotExist:
+                args = dict(event=event, user=user)
+        else:
+            args = dict(event=event)
+        fields = cls._meta.get_fields()
+        for field in fields:
+            if not field.is_relation and field.default != models.fields.NOT_PROVIDED:
+                args[field.name] = field.default
+        return cls(**args)
 
 
 @python_2_unicode_compatible
