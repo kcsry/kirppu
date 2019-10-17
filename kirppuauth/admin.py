@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, print_function, absolute_import
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import (
     UserCreationForm,
@@ -35,5 +34,6 @@ class KirppuUserChangeForm(UserChangeForm):
 class KirppuUserAdmin(UserAdmin):
     form = KirppuUserChangeForm
     add_form = KirppuUserCreationForm
+
 
 admin.site.register(User, KirppuUserAdmin)

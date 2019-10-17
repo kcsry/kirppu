@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, print_function, absolute_import
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 

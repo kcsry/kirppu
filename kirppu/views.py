@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, print_function, absolute_import
 from collections import namedtuple
 from functools import wraps
 import json
@@ -27,7 +26,6 @@ from django.shortcuts import (
 )
 from django.utils import timezone
 from django.utils.formats import localize
-from django.utils.six import string_types
 from django.utils.translation import ugettext as _
 from django.views.csrf import csrf_failure as django_csrf_failure
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -666,7 +664,7 @@ def checkout_view(request, event_slug):
         'event': event,
     }
     if settings.KIRPPU_AUTO_CLERK and settings.DEBUG:
-        if isinstance(settings.KIRPPU_AUTO_CLERK, string_types):
+        if isinstance(settings.KIRPPU_AUTO_CLERK, str):
             real_clerks = Clerk.objects.filter(event=event, user__username=settings.KIRPPU_AUTO_CLERK)
         else:
             real_clerks = Clerk.objects.filter(event=event, user__isnull=False)

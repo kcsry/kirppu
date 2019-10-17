@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, print_function, absolute_import
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model, login, logout

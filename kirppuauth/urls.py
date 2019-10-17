@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, print_function, absolute_import
 from django.conf import settings
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path, reverse

@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, print_function, absolute_import
 import functools
 import inspect
 import logging
@@ -18,7 +17,6 @@ from django.shortcuts import (
     get_object_or_404,
     render,
 )
-from django.utils.six import string_types, text_type, iteritems, PY3
 from django.utils.translation import ugettext as _
 from django.utils.timezone import now
 from ipware.ip import get_ip
@@ -116,11 +114,7 @@ def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atom
 
     def decorator(func):
         # Get argspec before any decoration.
-        if PY3:
-            spec = inspect.getfullargspec(func)
-        else:
-            # noinspection PyDeprecation
-            spec = inspect.getargspec(func)
+        spec = inspect.getfullargspec(func)
 
         wrapped = require_user_features(counter, clerk, overseer, staff_override=staff_override)(func)
 
@@ -158,7 +152,7 @@ def checkout_js(request, event_slug):
     """
     event = get_object_or_404(Event, slug=event_slug)
     context = {
-        'funcs': iteritems(AJAX_FUNCTIONS),
+        'funcs': AJAX_FUNCTIONS.items(),
         'api_name': 'Api',
         'event': event,
     }
@@ -433,7 +427,7 @@ def item_edit(request, event, code, price, state):
             raise AjaxError(
                 RET_BAD_REQUEST,
                 u'Cannot change state from "{0}" to "{1}".'.format(
-                    item.get_state_display(), text_type(dict(Item.STATE)[state])
+                    item.get_state_display(), str(dict(Item.STATE)[state])
                 )
             )
 
@@ -1015,7 +1009,7 @@ def get_barcodes(request, codes=None):
     from json import loads
 
     codes = loads(codes)
-    if isinstance(codes, string_types):
+    if isinstance(codes, str):
         codes = [codes]
 
     # XXX: This does ignore the width assertion. Beware with style sheets...

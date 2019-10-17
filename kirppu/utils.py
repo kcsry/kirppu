@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, print_function, absolute_import
 import datetime
 from functools import wraps
 from django.core.exceptions import PermissionDenied

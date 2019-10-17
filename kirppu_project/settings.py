@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 # Django settings for kirppu project.
-from __future__ import unicode_literals, print_function, absolute_import
-
 from decimal import Decimal
 import os.path
 import re

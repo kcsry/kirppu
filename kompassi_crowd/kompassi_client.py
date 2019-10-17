@@ -1,10 +1,7 @@
-from __future__ import unicode_literals
-
 import sys
 import logging
 
 from django.conf import settings
-from django.utils.six import text_type, reraise
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -27,7 +24,7 @@ def kompassi_application_auth():
 def kompassi_url(*args):
     return u'{base_url}/{path}'.format(
         base_url=settings.KOMPASSI_API_V1_URL,
-        path=u'/'.join(text_type(i) for i in args),
+        path=u'/'.join(str(i) for i in args),
     )
 
 
@@ -54,7 +51,8 @@ def kompassi_get(*args, **kwargs):
     except Exception as e:
         log.error(u'Kompassi client GET failed: {e}'.format(e=e))
         unused, unused, traceback = sys.exc_info()
-        reraise(KompassiError, e, traceback)
+        # Change exception type, use same traceback, skip chaining.
+        raise KompassiError(e).with_traceback(traceback) from None
 
 
 def user_defaults_from_kompassi(kompassi_user):

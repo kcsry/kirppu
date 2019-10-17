@@ -1,10 +1,8 @@
-from __future__ import unicode_literals, print_function, absolute_import
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
 
 from .fields import ItemPriceField, SuffixField, StripField
@@ -149,7 +147,7 @@ class ClerkEditForm(forms.ModelForm):
         self._access_key = instance.access_key
         self._disabled = not instance.is_valid_code
         if instance.user is not None:
-            user = u"{0} (id={1})".format(text_type(instance.user.username), instance.user.id)
+            user = u"{0} (id={1})".format(str(instance.user.username), instance.user.id)
         else:
             user = u"<Unbound>"
 

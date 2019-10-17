@@ -1,9 +1,6 @@
-from __future__ import unicode_literals, print_function, absolute_import
-
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.forms.fields import Field, CharField
-from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
 
 import decimal
@@ -85,7 +82,7 @@ class SuffixField(Field):
                     return None
                 if left > right:
                     left, right = right, left
-                result.extend(map(text_type, range(left, right + 1)))
+                result.extend(map(str, range(left, right + 1)))
             else:
                 result.append(word)
 

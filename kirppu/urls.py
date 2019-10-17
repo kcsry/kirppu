@@ -1,7 +1,4 @@
-from __future__ import unicode_literals, print_function, absolute_import
-from django.conf import settings
 from django.urls import path, re_path, include
-from django.utils.six import itervalues
 
 from .views import (
     get_boxes_codes,
@@ -88,7 +85,7 @@ common_urls = [
 
 event_urls.extend([
     re_path(func.url, func.func, name=func.view_name)
-    for func in itervalues(AJAX_FUNCTIONS)
+    for func in AJAX_FUNCTIONS.values()
 ])
 
 urlpatterns = [path(r'<slug:event_slug>/', include(event_urls))] + common_urls

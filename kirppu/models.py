@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, print_function, absolute_import
 import random
 from decimal import Decimal
 from django.core.exceptions import ValidationError, ImproperlyConfigured
@@ -7,10 +6,8 @@ from django.db import models, transaction
 from django.db.models import F, Sum
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.utils.module_loading import import_string
-from django.utils.six import text_type, PY3
 from django.conf import settings
 
 from .utils import model_dict_fn, format_datetime, short_description
@@ -25,8 +22,6 @@ from .util import (
     shorten_text,
 )
 
-if PY3:
-    long = int
 
 # Settings safety check.
 if settings.KIRPPU_AUTO_CLERK and not settings.DEBUG:
@@ -36,7 +31,7 @@ User = settings.AUTH_USER_MODEL
 
 
 def decimal_to_transport(value):
-    return long(value * Item.FRACTION)
+    return int(value * Item.FRACTION)
 
 
 class UserAdapterBase(object):
@@ -76,7 +71,6 @@ class UserAdapterBase(object):
 UserAdapter = import_string(settings.KIRPPU_USER_ADAPTER)
 
 
-@python_2_unicode_compatible
 class Person(models.Model):
     """
     Abstract person that is not User.
@@ -92,7 +86,7 @@ class Person(models.Model):
     def __str__(self):
         e = list(filter(lambda i: i != "", (self.full_name(), self.email, self.phone)))
         if e:
-            return text_type(e[0])
+            return str(e[0])
         return "(id=%d)" % self.id
 
 
@@ -206,7 +200,6 @@ class EventPermission(models.Model):
         return cls(**args)
 
 
-@python_2_unicode_compatible
 class Clerk(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
@@ -243,19 +236,19 @@ class Clerk(models.Model):
 
     def __str__(self):
         if self.user is not None:
-            return text_type(self.user)
+            return str(self.user)
         else:
             return self.access_code
 
     def __repr__(self):
         if self.user is not None:
-            return "<Clerk: %s>" % text_type(self.user)
+            return "<Clerk: %s>" % str(self.user)
         else:
             return "<Clerk id=%s, code=%s...>" % (self.id, self.access_code[:5])
 
     def as_dict(self):
         return {
-            "user": text_type(self.user),
+            "user": str(self.user),
             "print": UserAdapter.print_name(self.user),
         }
 
@@ -391,7 +384,6 @@ class Clerk(models.Model):
         return ids
 
 
-@python_2_unicode_compatible
 class Vendor(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
@@ -409,11 +401,11 @@ class Vendor(models.Model):
         )
 
     def __repr__(self):
-        return u'<Vendor: {0}>'.format(text_type(self.user) +
-                                       ((" / " + text_type(self.person)) if self.person is not None else ""))
+        return '<Vendor: {0}>'.format(str(self.user) + (
+            (" / " + str(self.person)) if self.person is not None else ""))
 
     def __str__(self):
-        return text_type(self.user) if self.person is None else text_type(self.person)
+        return str(self.user) if self.person is None else str(self.person)
 
     @classmethod
     def get_vendor(cls, request, event):
@@ -492,7 +484,6 @@ def validate_positive(value):
         raise ValidationError(_(u"Value cannot be negative"))
 
 
-@python_2_unicode_compatible
 class Box(models.Model):
 
     description = models.CharField(max_length=256)
@@ -514,7 +505,7 @@ class Box(models.Model):
         "description",
         "bundle_size",
         box_id="pk",
-        item_price=lambda self: text_type(self.get_price_fmt()),
+        item_price=lambda self: str(self.get_price_fmt()),
         item_count=lambda self: self.get_item_count(),
         item_type=lambda self: self.get_item_type_for_display(),
         item_adult=lambda self: self.get_item_adult(),
@@ -711,7 +702,6 @@ class Box(models.Model):
         return obj
 
 
-@python_2_unicode_compatible
 class ItemType(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     key = models.CharField(max_length=24)
@@ -740,7 +730,6 @@ class ItemType(models.Model):
         return query.order_by("order").values_list("key", "title")
 
 
-@python_2_unicode_compatible
 class Item(models.Model):
     ADVERTISED = "AD"
     BROUGHT = "BR"
@@ -967,7 +956,6 @@ class Item(models.Model):
         return text.isalnum() and text.isupper() and len(text) == cls.CODE_BITS / 5
 
 
-@python_2_unicode_compatible
 class UIText(models.Model):
     def __str__(self):
         return self.identifier
@@ -998,7 +986,6 @@ class UIText(models.Model):
             return default
 
 
-@python_2_unicode_compatible
 class Counter(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     identifier = models.CharField(
@@ -1023,7 +1010,6 @@ class Counter(models.Model):
         return u"{1} ({0})".format(self.identifier, self.name)
 
 
-@python_2_unicode_compatible
 class ReceiptItem(models.Model):
     ADD = "ADD"
     REMOVED_LATER = "RL"
@@ -1048,10 +1034,9 @@ class ReceiptItem(models.Model):
         return ret
 
     def __str__(self):
-        return text_type(self.item)
+        return str(self.item)
 
 
-@python_2_unicode_compatible
 class Receipt(models.Model):
     PENDING = "PEND"
     FINISHED = "FINI"
@@ -1135,8 +1120,8 @@ class Receipt(models.Model):
     def __str__(self):
         return "{type}: {start} / {clerk}".format(
             type=self.get_type_display(),
-            start=text_type(self.start_time),
-            clerk=text_type(self.clerk),
+            start=str(self.start_time),
+            clerk=str(self.clerk),
         )
 
     class Meta:
@@ -1145,7 +1130,6 @@ class Receipt(models.Model):
         )
 
 
-@python_2_unicode_compatible
 class ReceiptExtraRow(models.Model):
     TYPE_PROVISION = "PRO"
     TYPE_PROVISION_FIX = "PRO_FIX"
@@ -1173,7 +1157,6 @@ class ReceiptExtraRow(models.Model):
         return "{}: {} ({})".format(self.get_type_display(), self.value, self.receipt)
 
 
-@python_2_unicode_compatible
 class ReceiptNote(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE)
@@ -1187,7 +1170,11 @@ class ReceiptNote(models.Model):
     )
 
     def __str__(self):
-        return text_type(self.timestamp) + u" / " + text_type(self.clerk) + u" @ " + text_type(self.receipt_id)
+        return "{0} / {1} @ {2}".format(
+            str(self.timestamp),
+            str(self.clerk),
+            str(self.receipt_id)
+        )
 
 
 class ItemStateLogManager(models.Manager):
@@ -1271,7 +1258,6 @@ def default_temporary_access_permit_expiry():
     return timezone.now() + timezone.timedelta(minutes=settings.KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES)
 
 
-@python_2_unicode_compatible
 class TemporaryAccessPermit(models.Model):
     STATE_UNUSED = "new"
     STATE_IN_USE = "use"
@@ -1299,7 +1285,6 @@ class TemporaryAccessPermit(models.Model):
         )
 
 
-@python_2_unicode_compatible
 class TemporaryAccessPermitLog(models.Model):
     ACTION_ADD = "add"
     ACTION_TRY = "try"

@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, print_function, absolute_import
 from django.urls import include, path
 from django.utils import timezone
 from django.views.i18n import JavaScriptCatalog

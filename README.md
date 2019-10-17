@@ -19,7 +19,7 @@ It consists of a high level guide outlining the steps, example guide that has mo
 1. Install Python 3.5+.
     1. Install pip.
        Pip is used for downloading and installing dependencies. It is included
-       by default in Python since 2.7.9 and 3.4.
+       by default in Python since 3.4.
     2. (recommended) Install virtualenv.
        Virtualenv is used to install Python and dependencies directly to the
        project folder, so that any updates to the rest of the system don't

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals, print_function, absolute_import
-
 import json
 import re
 
@@ -9,7 +7,6 @@ from django.utils.encoding import force_text
 from django.utils.lru_cache import lru_cache
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.utils.six import text_type
 
 import pubcode
 from ..models import UIText, UserAdapter
@@ -133,7 +130,7 @@ def user_adapter(user, getter):
     :param getter: Getter function to apply to the user via adapter.
     :type getter: str
     """
-    if not isinstance(getter, text_type) or getter.startswith("_"):
+    if not isinstance(getter, str) or getter.startswith("_"):
         raise AttributeError("Invalid adapter attribute.")
 
     getter = getattr(UserAdapter, getter)

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function, absolute_import
-from django.utils.six import moves, indexbytes, int2byte
 import base64
 import math
 
@@ -100,11 +98,14 @@ def b32_encode(ref, length=5):
     :type length: int
     :return: Base32 encoded string
     :rtype: str
+
+    >>> b32_encode(567273340440)
+    'DA7CAFEE'
     """
-    part = b""
-    for i in moves.range(length):
+    part = bytearray(length)
+    for i in range(length):
         symbol = (ref >> (8 * i)) & 0xFF
-        part += int2byte(int(symbol))
+        part[i] = int(symbol)
 
     # Encode the byte string in base32
     return base64.b32encode(part).decode().rstrip("=")
@@ -121,6 +122,9 @@ def b32_decode(data, length=5):
     :return: The decoded number
     :rtype: int
     :raise TypeError: If the data is not valid
+
+    >>> b32_decode("DA7CAFEE")
+    567273340440
     """
     data += "=" * int((5 - (1 + (length - 1) % 5)) * 1.5)
     parts = base64.b32decode(data)
@@ -128,8 +132,8 @@ def b32_decode(data, length=5):
     assert len(parts) == length
 
     number = 0
-    for i in moves.range(length):
-        number |= indexbytes(parts, i) << (i * 8)
+    for i in range(length):
+        number |= parts[i] << (i * 8)
     return number
 
 
@@ -256,6 +260,7 @@ def checksum(number, bits=4):
         chk ^= (number & mask)
         number >>= bits
     return chk & mask
+
 
 if __name__ == '__main__':
     import doctest
