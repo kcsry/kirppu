@@ -172,7 +172,7 @@ def is_vendor_open(request, event):
     end = event.registration_end
     from .models import EventPermission
     return (end is not None and timezone.now() <= end) or (
-        EventPermission.get(event, request.user).can_add_items_outside_registration
+        EventPermission.get(event, request.user).can_register_items_outside_registration
     )
 
 
