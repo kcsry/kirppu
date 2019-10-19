@@ -313,8 +313,8 @@ def remove_item_from_receipt(request, item_or_code, receipt_id, update_receipt=T
     else:
         item = Item.objects.select_for_update().get(code=item_or_code)
 
-    if item.state != Item.SOLD:
-        raise ValueError("Item is not sold, but {}".format(item.state))
+    if item.state not in (Item.SOLD, Item.STAGED):
+        raise ValueError("Item is not sold or staged, but {}".format(item.state))
 
     if isinstance(receipt_id, Receipt):
         receipt = receipt_id
