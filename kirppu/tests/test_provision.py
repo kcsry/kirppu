@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import textwrap
 
-from django.test import Client
+from django.test import Client, override_settings
 from django.test import TestCase
 
 from kirppu.provision import Provision
@@ -29,6 +29,7 @@ class SoldItemFactory(ItemFactory):
     state = Item.SOLD
 
 
+@override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
 class ProvisionTest(TestCase):
     def setUp(self):
         self.vendor = VendorFactory()
@@ -58,6 +59,7 @@ class ProvisionTest(TestCase):
         # FIXME: Failing. This should be either None/0 or -1, but which?"""
 
 
+@override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
 class BeforeProvisionTest(TestCase):
     def setUp(self):
         self.vendor = VendorFactory()
@@ -89,6 +91,7 @@ class BeforeProvisionTest(TestCase):
         self.assertEqual(p.provision, Decimal("-1.00"))
 
 
+@override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
 class FinishingProvisionTest(TestCase):
     def setUp(self):
         self.vendor = VendorFactory()
@@ -175,6 +178,7 @@ class _ApiMixin(object):
         return extras
 
 
+@override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
 class ApiNoProvisionTest(_ApiMixin, TestCase):
 
     # region No Provision
@@ -199,6 +203,7 @@ class ApiNoProvisionTest(_ApiMixin, TestCase):
     # endregion
 
 
+@override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
 class ApiLinearProvisionTest(_ApiMixin, TestCase):
     def _setUp_Event(self):
         self.event = EventFactory(
@@ -231,6 +236,7 @@ class ApiLinearProvisionTest(_ApiMixin, TestCase):
     # endregion
 
 
+@override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
 class ApiStepProvisionTest(_ApiMixin, TestCase):
     def _setUp_Event(self):
         self.event = EventFactory(
@@ -265,6 +271,7 @@ class ApiStepProvisionTest(_ApiMixin, TestCase):
     # endregion
 
 
+@override_settings(KIRPPU_ALLOW_PROVISION_FUNCTIONS=True)
 class ApiRoundingProvisionTest(_ApiMixin, TestCase):
     def _setUp_Event(self):
         self.event = EventFactory(
