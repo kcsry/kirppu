@@ -4,6 +4,8 @@ from decimal import Decimal
 from typing import Optional
 
 import django.db.models
+from django.conf import settings
+from django.core.exceptions import SuspiciousOperation
 from django.db.models import Sum, Q
 
 from .models import ReceiptExtraRow, Receipt, Item, ReceiptItem
@@ -67,6 +69,8 @@ class Provision(object):
     def run_function(cls, provision_function, sold_and_compensated) -> Optional[Decimal]:
         if provision_function is None or provision_function == "":
             return None
+        if not getattr(settings, "KIRPPU_ALLOW_PROVISION_FUNCTIONS", False):
+            raise SuspiciousOperation("Provision functions are not allowed.")
 
         builtins_copy = {k: getattr(builtins, k) for k in dir(builtins) if k not in (
             "eval", "exec", "open", "__import__"
