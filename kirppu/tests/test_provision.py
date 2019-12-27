@@ -66,7 +66,7 @@ class BeforeProvisionTest(TestCase):
         self.items = SoldItemFactory.create_batch(10, vendor=self.vendor)
 
     def test_no_provision_before_compensation(self):
-        p = Provision(self.vendor.id, provision_function="result(None)")
+        p = Provision(self.vendor.id, provision_function="null")
 
         self.assertEqual(len(p._vendor_items), len(self.items))
         self.assertFalse(p.has_provision)
@@ -74,7 +74,7 @@ class BeforeProvisionTest(TestCase):
         self.assertIsNone(p.provision_fix)
 
     def test_simple_provision_before_compensation(self):
-        p = Provision(self.vendor.id, provision_function="""result(Decimal("0.10") * len(sold_and_compensated))""")
+        p = Provision(self.vendor.id, provision_function="""(* 0.10 (.count sold_and_compensated))""")
 
         self.assertEqual(len(p._vendor_items), len(self.items))
         self.assertTrue(p.has_provision)
@@ -84,7 +84,7 @@ class BeforeProvisionTest(TestCase):
     def test_missing_provision(self):
         some_items = ItemFactory.create_batch(10, vendor=self.vendor, state=Item.COMPENSATED)
 
-        p = Provision(self.vendor.id, provision_function="""result(Decimal("0.10") * len(sold_and_compensated))""")
+        p = Provision(self.vendor.id, provision_function="""(* 0.10 (.count sold_and_compensated))""")
 
         self.assertTrue(p.has_provision)
         self.assertEqual(p.provision_fix, Decimal("-1.00"))
@@ -101,7 +101,7 @@ class FinishingProvisionTest(TestCase):
 
     def test_no_provision_finishing_compensation(self):
         p = Provision(self.vendor.id, receipt=self.receipt,
-                      provision_function="""result(None)""")
+                      provision_function="""null""")
 
         self.assertEqual(len(p._vendor_items), len(self.items))
         self.assertFalse(p.has_provision)
@@ -110,7 +110,7 @@ class FinishingProvisionTest(TestCase):
 
     def test_simple_provision_finishing_compensation(self):
         p = Provision(self.vendor.id, receipt=self.receipt,
-                      provision_function="""result(Decimal("0.10") * len(sold_and_compensated))""")
+                      provision_function="""(* 0.10 (.count sold_and_compensated))""")
 
         self.assertEqual(len(p._vendor_items), len(self.items))
         self.assertTrue(p.has_provision)
@@ -121,7 +121,7 @@ class FinishingProvisionTest(TestCase):
         more_items = SoldItemFactory.create_batch(10, vendor=self.vendor)
 
         p = Provision(self.vendor.id, receipt=self.receipt,
-                      provision_function="""result(Decimal("0.10") * len(sold_and_compensated))""")
+                      provision_function="""(* 0.10 (.count sold_and_compensated))""")
 
         still_more_items = SoldItemFactory.create_batch(10, vendor=self.vendor)
 
@@ -207,7 +207,7 @@ class ApiNoProvisionTest(_ApiMixin, TestCase):
 class ApiLinearProvisionTest(_ApiMixin, TestCase):
     def _setUp_Event(self):
         self.event = EventFactory(
-            provision_function="""result(Decimal("0.10") * len(sold_and_compensated))"""
+            provision_function="""(* 0.10 (.count sold_and_compensated))"""
         )
 
     # region Linear Provision
@@ -240,7 +240,7 @@ class ApiLinearProvisionTest(_ApiMixin, TestCase):
 class ApiStepProvisionTest(_ApiMixin, TestCase):
     def _setUp_Event(self):
         self.event = EventFactory(
-            provision_function="""result(Decimal("0.50") * (len(sold_and_compensated) // 4))"""
+            provision_function="""(* 0.50 (// (.count sold_and_compensated) 4))"""
         )
 
     # region Step Provision
@@ -276,14 +276,7 @@ class ApiRoundingProvisionTest(_ApiMixin, TestCase):
     def _setUp_Event(self):
         self.event = EventFactory(
             provision_function=textwrap.dedent("""
-            def round(value):
-                "Round given decimal value to next 50 cents."
-                remainder = value % Decimal('.5')
-                if remainder > Decimal('0'):
-                    value += Decimal('.5') - remainder
-                return value
-
-            result(round(Decimal("0.20") * len(sold_and_compensated)))
+            (/ (ceil (* 2 (* 0.20 (.count sold_and_compensated)))) 2)
             """)
         )
 

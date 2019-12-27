@@ -7,7 +7,7 @@ from django.contrib import admin, messages
 from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE
 from django.db import IntegrityError, transaction
-from django.urls import reverse
+from django.urls import reverse, path
 from django.utils.encoding import force_text
 from django.utils.html import escape, format_html
 from django.utils.translation import ugettext_lazy as ugettext, ngettext
@@ -112,6 +112,21 @@ class RefLinkAccessor(FieldAccessor):
 class EventAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "start_date", "end_date", "registration_end", "checkout_active")
     ordering = ("-start_date", "name")
+
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        form = super().get_form(request, obj, change, **kwargs)
+        field = form.base_fields["provision_function"]
+        text = field.help_text
+        text += format_html(' <a href="' + reverse("admin:kirppu_lisp_help") + '" target="_blank">View help</a>')
+        field.help_text = text
+        return form
+
+    def get_urls(self):
+        urls = super().get_urls()
+        from django.views.generic import TemplateView
+        urls.append(path('help/lisp', TemplateView.as_view(template_name="kirppu/help_lisp.html"),
+                         name="kirppu_lisp_help"))
+        return urls
 
 
 """

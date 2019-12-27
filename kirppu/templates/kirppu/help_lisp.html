@@ -1,0 +1,89 @@
+{% extends "kirppu/plain.html" %}
+{% block body %}
+    <h2>Help for the subset of Lisp language</h2>
+    <p>
+        A Lisp expression is a tuple where first item tells what rest of the tuple values do.
+        A tuple is written with braces, e.g. addition of numbers 2 and 3 is written <code>(+ 2 3)</code> and would result in number 5.
+        Multiple operations can be nested, e.g. multiplying 2 with 3 and adding 4 to the result: <code>(+ 4 (* 2 3))</code> or <code>(+ (* 2 3) 4)</code>.
+    </p>
+    <p>
+        A literal is prefixed with apostrophe &apos; and is used to prevent immediate evaluation of the value.
+        Notably, filter-exp for <code>.filter</code> must be written like <code>'(comparison field value)</code>
+        e.g. <code>'(< price 5)</code>.
+    </p>
+    <p>
+        Comparison operators that take two arguments:
+        <code>&lt;</code>
+        <code>&gt;</code>
+        <code>&lt;=</code>
+        <code>&gt;=</code>
+        <code>=</code>
+        <code>!</code>
+    </p>
+    <p>
+        Mathematical operations that take two arguments:
+        <code>+</code>
+        <code>-</code>
+        <code>*</code>
+        <code>/</code> (float division)
+        <code>//</code> (integer division)
+    </p>
+    <p>
+        Functions that take one argument:
+        <code>abs</code>
+        <code>ceil</code>
+        <code>floor</code>
+        <code>not</code>
+        <code>round</code>
+        <code>length</code>.
+        Note that <code>round</code> uses banker's rounding.
+    </p>
+    <p>
+        Functions that take two or more arguments:
+        <code>max</code>
+        <code>min</code>
+    </p>
+
+    <table class="table">
+    <caption>Available various concepts</caption>
+    <thead><tr><th>function(s)</th><th>args</th><th>returns</th><th>description</th></tr></thead>
+    <tbody>
+        <tr><td><code>if</code></td><td>expression consequence else</td><td>consequence or else</td><td>If <kbd>expression</kbd> evaluates to a truthy value, <kbd>consequence</kbd> is evaluated. Otherwise <kbd>else</kbd> is evaluated.</td></tr>
+        <tr><td><code>define</code></td><td>name value</td><td>null</td><td>Define <kbd>name</kbd> to evaluate to <kbd>value</kbd>.</td></tr>
+        <tr><td><code>begin</code></td><td>suites... result-suite</td><td>result-suite</td><td>Evaluate all <kbd>suites</kbd>, but only return evaluation result of <kbd>result-suite</kbd>.</td></tr>
+        <tr><td><code>assoc</code></td><td>object association</td><td>value</td><td>Get value for <kbd>object</kbd> in <kbd>association</kbd> mapping.</td></tr>
+
+        <tr><td><code>.filter</code></td><td>query filter-exp</td><td>query</td><td>Filters <kbd>query</kbd> with filter expression, written in literal list.</td></tr>
+        <tr><td><code>.count</code></td><td>query</td><td>int</td><td>Resolves count of rows for <kbd>query</kbd>.</td></tr>
+        <tr><td><code>.sumBy</code></td><td>field query</td><td>number</td><td>Aggregates literal <kbd>field</kbd> values from <kbd>query</kbd>.</td></tr>
+        <tr><td><code>.aggregate</code></td><td>query definitions</td><td>association</td><td><p>Aggregate over the <kbd>query</kbd> and return a association defined by <kbd>definitions</kbd>.
+            The definitions must be a literal list containing lists of <kbd>(<em>key function args...</em>)</kbd> where args depend on function used.</p>
+            <p>Available aggregate functions: <kbd>count ()</kbd>, <kbd>count <em>filter-exp</em></kbd></p></td></tr>
+    </tbody>
+    </table>
+    <table class="table">
+    <caption>Available query sources</caption>
+    <thead><tr><th>query name</th><th>description</th></tr></thead>
+    <tbody>
+        <tr><td>sold_and_compensated</td><td>Items that are sold or compensated.</td></tr>
+    </tbody>
+    </table>
+
+    <h3>Examples</h3>
+    <h4>0.50 per sold item</h4>
+    <pre><code>(* 0.5 (.count sold_and_compensated))</code></pre>
+    <h4>0.50 per sold item under price of 5, and 1 per sold item of and over price of 5</h4>
+    <pre><code>(begin
+  (define under (.count (.filter sold_and_compensated '(< price 5))))
+  (define over (.count (.filter sold_and_compensated '(>= price 5))))
+  (+ (* 0.5 under) (* 1 over))
+)</code></pre>
+    <h4>As above, but more efficient</h4>
+    <pre><code>(begin
+  (define sums (.aggregate sold_and_compensated '(
+    (under count (< price 5))
+    (over count (>= price 5))
+  )))
+  (+ (* 0.5 (assoc 'under sums)) (* 1 (assoc 'over sums))
+)</code></pre>
+{% endblock %}

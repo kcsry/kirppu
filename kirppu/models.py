@@ -117,8 +117,8 @@ class Event(models.Model):
     provision_function = models.TextField(
         blank=True,
         null=True,
-        help_text=_("Python function body that gets sold_and_compensated queryset as"
-                    " argument and must call result() with None or Decimal argument."),
+        help_text=_("Lisp function body that gets sold_and_compensated queryset as"
+                    " a global and must return a null or decimal number."),
         validators=[
             _validate_provision_function,
         ],

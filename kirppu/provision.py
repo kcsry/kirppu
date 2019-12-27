@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-import builtins
 from decimal import Decimal
 from typing import Optional
 
-import django.db.models
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Sum, Q
 
 from .models import ReceiptExtraRow, Receipt, Item, ReceiptItem
+from .provision_dsl import run
 
 __author__ = 'codez'
 
@@ -60,11 +59,6 @@ class Provision(object):
     def has_provision(self):
         return self._provision is not None
 
-    MODELS_FNS = (
-        'F', 'Q',
-        'Avg', 'Count', 'Max', 'Min', 'Sum',
-    )
-
     @classmethod
     def run_function(cls, provision_function, sold_and_compensated) -> Optional[Decimal]:
         if provision_function is None or provision_function == "":
@@ -72,25 +66,9 @@ class Provision(object):
         if not getattr(settings, "KIRPPU_ALLOW_PROVISION_FUNCTIONS", False):
             raise SuspiciousOperation("Provision functions are not allowed.")
 
-        builtins_copy = {k: getattr(builtins, k) for k in dir(builtins) if k not in (
-            "eval", "exec", "open", "__import__"
-        )}
-        env = {
-            "__builtins__": builtins_copy,
-            "Decimal": Decimal,
-            "sold_and_compensated": sold_and_compensated,
-        }
-        env.update({k: getattr(django.db.models, k) for k in cls.MODELS_FNS})
+        _r = run(provision_function, sold_and_compensated=sold_and_compensated)
 
-        _r = None
-
-        def result(r):
-            nonlocal _r
-            _r = r
-
-        env["result"] = result
-        exec(provision_function, env, env)
-        assert _r is None or isinstance(_r, Decimal), "Value given to result() must be None or a Decimal instance"
+        assert _r is None or isinstance(_r, Decimal), "Value returned from function must be null or a number"
         return _r
 
     def _calculate_provision_information(self):
