@@ -1,7 +1,8 @@
 FROM python:3.6
 WORKDIR /usr/src/app
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
+RUN (echo "Package: *" && echo "Pin: origin deb.nodesource.com" && echo "Pin-Priority: 600") > /etc/apt/preferences.d/nodesource && \
+    curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
     apt-get -y install nodejs gettext && \
     mkdir -p /usr/src/app/kirppu
 
