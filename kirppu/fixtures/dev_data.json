@@ -1,8 +1,19 @@
 [
     {
+        "model": "kirppu.event",
+        "pk": 1,
+        "fields": {
+            "slug": "default",
+            "name": "Default event",
+            "start_date": "2019-01-01",
+            "end_date": "2029-01-01"
+        }
+    },
+    {
         "model": "kirppu.itemtype",
         "pk": 1,
         "fields": {
+            "event": 1,
             "key": "manga-finnish",
             "order": 10,
             "title": "Finnish manga book"
@@ -108,6 +119,7 @@
     },
     {
         "fields": {
+            "event": 1,
             "user": 1
         },
         "model": "kirppu.vendor",
@@ -115,6 +127,7 @@
     },
     {
         "fields": {
+            "event": 1,
             "user": 2
         },
         "model": "kirppu.vendor",
