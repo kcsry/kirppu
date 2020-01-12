@@ -9,12 +9,29 @@ import environ
 
 
 env = environ.Env()
+env.read_env(env.str('ENV_PATH', '.env'))
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 
 
 def _path(path):
     return os.path.normpath(os.path.join(BASE, '..', path))
+
+
+def get_debug_setting(name: str, cast=None, default=environ.Env.NOTSET):
+    """Read a setting only in debug environment.
+       Otherwise return default.
+       Cast (if given) may be string ("bool") or class (bool).
+    """
+    if DEBUG:
+        if cast is not None:
+            if not isinstance(cast, str):
+                cast = cast.__name__
+            return getattr(env, cast)(name, default=default)
+        else:
+            return env(name, default=default)
+    else:
+        return default
 
 
 DEBUG = env.bool('DEBUG', default=False)
@@ -298,9 +315,9 @@ KIRPPU_USE_SSO = env.bool('KIRPPU_USE_SSO', default=False)
 KIRPPU_SU_AS_USER = "kirppuauth" in INSTALLED_APPS
 
 # Automatic checkout login. May not be enabled in non-dev environments!
-# If True, first enabled Clerk is automatically used.
+# If "*", first enabled Clerk is automatically used.
 # If string, Clerk with that user is used, if it is enabled.
-KIRPPU_AUTO_CLERK = False
+KIRPPU_AUTO_CLERK = get_debug_setting("KIRPPU_AUTO_CLERK", str, default=None)
 
 KIRPPU_COPY_ITEM_WHEN_UNPRINTED = False
 KIRPPU_MAX_ITEMS_PER_VENDOR = 2000
@@ -317,13 +334,13 @@ KIRPPU_CURRENCY = {
 }
 
 # Minimum and maximum price for an item.
-KIRPPU_MIN_MAX_PRICE = ('1', '400')
+KIRPPU_MIN_MAX_PRICE = env.tuple("KIRPPU_MIN_MAX_PRICE", default=('1', '400'))
 
 # Maximum purchase amount.
-KIRPPU_MAX_PURCHASE = '450'
+KIRPPU_MAX_PURCHASE = env.str("KIRPPU_MAX_PURCHASE", default='450')
 
-KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES = 10
-KIRPPU_EXHAUST_SHORT_CODE_ON_LOGOUT = False
+KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES = env.int("KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES", default=10)
+KIRPPU_EXHAUST_SHORT_CODE_ON_LOGOUT = env.bool("KIRPPU_EXHAUST_SHORT_CODE_ON_LOGOUT", default=False)
 KIRPPU_SHORT_CODE_LENGTH = 5
 KIRPPU_MOBILE_LOGIN_RATE_LIMIT = "5/m"
 

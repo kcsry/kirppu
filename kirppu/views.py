@@ -664,7 +664,7 @@ def checkout_view(request, event_slug):
         'event': event,
     }
     if settings.KIRPPU_AUTO_CLERK and settings.DEBUG:
-        if isinstance(settings.KIRPPU_AUTO_CLERK, str):
+        if settings.KIRPPU_AUTO_CLERK != "*":
             real_clerks = Clerk.objects.filter(event=event, user__username=settings.KIRPPU_AUTO_CLERK)
         else:
             real_clerks = Clerk.objects.filter(event=event, user__isnull=False)

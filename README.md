@@ -26,7 +26,7 @@ It consists of a high level guide outlining the steps, example guide that has mo
        influence the project.
 4. Clone Kirppu.
 5. Install dependencies with pip and dependencies.txt.
-6. Install js dependencies with npm. (Needed only if doing CoffeeScript/js/css editing.)
+6. Install js dependencies with npm.
 7. Setup database with dev data.
 8. Run gulp to build frontend code.
 9. Run django with manage.py.
@@ -115,24 +115,24 @@ You can then run unit tests with
 py.test -vvv --cov . --doctest-modules
 ```
 
+- Set `DEBUG=1` environment variable, OR copy `.env.dev` file to `.env`,
+  OR set `ENV_PATH` environment variable to point to correct env file.
 - Admin interface
     - `localhost:9874/admin/`
     - Login with the local superuser credentials.
     - You can view and modify the model at your will here.
 - Vendor UI
-    - `localhost:9874/kirppu/vendor`
+    - `localhost:9874/kirppu/default/vendor`
     - Vendors register their items here.
 - Clerk UI
-    - `localhost:9874/kirppu/checkout`
-    - To enable, you need to set `KIRPPU_CHECKOUT_ACTIVE` to _True_ in
-      `kirppu_project/local_settings.py`
+    - `localhost:9874/kirppu/default/checkout`
     - "Locked Need to validate counter."
         - Input `:*dev_counter`
     - "Locked Login..."
         - In admin panel, goto clerks and generate an access code for you self with
           Action: "Generate missing Clerk access codes"
         - Input your access code.
-          Alternatively, add `KIRPPU_AUTO_CLERK = True` to `kirppu_project/local_settings.py`
+          Alternatively, add `KIRPPU_AUTO_CLERK = "*"` to `kirppu_project/local_settings.py` or env file.
 
 
 ## Frontend development notes
@@ -187,6 +187,7 @@ To compile frontend sources for use in browser, there is two choices, which can 
     Copyright (c) 2017 Jyrki Launonen
     Copyright (c) 2018 Aarni Koskela, Jyrki Launonen
     Copyright (c) 2019 Jyrki Launonen
+    Copyright (c) 2020 Aarni Koskela, Jyrki Launonen
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
