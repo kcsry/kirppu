@@ -36,7 +36,7 @@ class PublicTest(TestCase, ResultMixin):
                                                      data=data)).json()
         self.assertEqual(1, len(result))
         r_item = result[0]
-        self.assertEquals(self.vendor.id, r_item["vendor_id"])
+        self.assertEqual(self.vendor.id, r_item["vendor_id"])
 
     def test_register_box(self):
         data = dict(
@@ -49,7 +49,7 @@ class PublicTest(TestCase, ResultMixin):
         )
         # Returns actually an html-page.. Test within context.
         result = self.assertSuccess(self.client.post("/kirppu/{}/vendor/box/".format(self.event.slug), data=data))
-        self.assertEquals(data["description"], result.context["description"])
+        self.assertEqual(data["description"], result.context["description"])
 
     def test_register_box_with_single_item(self):
         data = dict(
@@ -62,7 +62,7 @@ class PublicTest(TestCase, ResultMixin):
         )
         # Returns actually an html-page.. Test within context.
         result = self.assertSuccess(self.client.post("/kirppu/{}/vendor/box/".format(self.event.slug), data=data))
-        self.assertEquals(data["description"], result.context["description"])
+        self.assertEqual(data["description"], result.context["description"])
 
     def test_register_single_bundle_box(self):
         data = dict(
@@ -75,7 +75,7 @@ class PublicTest(TestCase, ResultMixin):
         )
         # Returns actually an html-page.. Test within context.
         result = self.assertSuccess(self.client.post("/kirppu/{}/vendor/box/".format(self.event.slug), data=data))
-        self.assertEquals(data["description"], result.context["description"])
+        self.assertEqual(data["description"], result.context["description"])
 
 
 class StatesTest(TestCase, ResultMixin):
