@@ -16,13 +16,20 @@ from django.utils.translation import gettext_lazy as _
 from ipware.ip import get_ip
 from ratelimit.utils import is_ratelimited
 
-from .models import Box, Event, Item, Receipt, ReceiptExtraRow, TemporaryAccessPermit, TemporaryAccessPermitLog, Vendor
-from .provision import Provision
-from .templatetags.kirppu_login import logout_url
-from .templatetags.kirppu_tags import format_price
-from .util import first, shorten_text
+from ..models import Box, Event, Item, Receipt, ReceiptExtraRow, TemporaryAccessPermit, TemporaryAccessPermitLog, Vendor
+from ..provision import Provision
+from ..templatetags.kirppu_login import logout_url
+from ..templatetags.kirppu_tags import format_price
+from ..util import first, shorten_text
 
 __author__ = 'codez'
+
+__all__ = [
+    "index",
+    "logout",
+]
+
+
 _PERMIT_SESSION_KEY = "temporary_permit_key"
 
 
@@ -81,6 +88,8 @@ def __populate_table_for_state():
     for key, table in TABLES.items():
         for state in table.states:
             TABLE_FOR_STATE.setdefault(state, []).append(key)
+
+
 __populate_table_for_state()
 
 

@@ -4,7 +4,7 @@ from django.views.i18n import JavaScriptCatalog
 from django.views.decorators.http import last_modified
 
 from kirppu.views import index, MobileRedirect
-from kirppu.frontpage import front_for_mobile_view
+from kirppu.views.frontpage import front_for_mobile_view
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin

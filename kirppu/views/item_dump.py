@@ -10,7 +10,11 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _, gettext
 
 from .csv_utils import csv_streamer_view
-from .models import Event, EventPermission, Item
+from ..models import Event, EventPermission, Item
+
+__all__ = [
+    "dump_items_view",
+]
 
 
 COLUMNS = (

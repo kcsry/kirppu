@@ -2,7 +2,7 @@
 from django.core.management.base import BaseCommand
 from django.utils.translation import activate
 
-from kirppu.accounting import accounting_receipt
+from kirppu.views.accounting import accounting_receipt
 
 
 class Command(BaseCommand):

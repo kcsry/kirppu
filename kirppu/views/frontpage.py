@@ -5,7 +5,12 @@ from django.shortcuts import render
 
 __author__ = 'codez'
 
-from .models import Event
+__all__ = [
+    "front_page",
+    "front_for_mobile_view",
+]
+
+from ..models import Event
 
 
 def _events():

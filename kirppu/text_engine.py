@@ -7,6 +7,10 @@ from django.template import loader
 
 __author__ = 'codez'
 
+__all__ = [
+    "mark_down",
+]
+
 
 class CustomTagLexer(mistune.BlockLexer):
     def __init__(self):

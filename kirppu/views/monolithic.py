@@ -32,11 +32,11 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from django.views.generic import RedirectView
 
-from .checkout_api import clerk_logout_fn
-from . import ajax_util
-from .forms import ItemRemoveForm, VendorItemForm, VendorBoxForm, remove_item_from_receipt as _remove_item_from_receipt
-from .fields import ItemPriceField
-from .models import (
+from ..checkout_api import clerk_logout_fn
+from .. import ajax_util
+from ..forms import ItemRemoveForm, VendorItemForm, VendorBoxForm, remove_item_from_receipt as _remove_item_from_receipt
+from ..fields import ItemPriceField
+from ..models import (
     Box,
     Clerk,
     Event,
@@ -48,17 +48,49 @@ from .models import (
     UIText,
     Receipt,
 )
-from .stats import ItemCountData, ItemEurosData
-from .util import get_form
-from .utils import (
+from ..stats import ItemCountData, ItemEurosData
+from ..util import get_form
+from ..utils import (
     barcode_view,
     is_vendor_open,
     is_registration_closed_for_users,
     require_vendor_open,
 )
-from .templatetags.kirppu_tags import get_dataurl
+from ..templatetags.kirppu_tags import get_dataurl
 from .vendors import get_multi_vendor_values
 import pubcode
+
+__all__ = [
+    "index",
+    "MobileRedirect",
+    "item_add",
+    "item_hide",
+    "item_to_not_printed",
+    "item_to_printed",
+    "item_update_price",
+    "item_update_name",
+    "item_update_type",
+    "all_to_print",
+    "box_add",
+    "box_hide",
+    "box_print",
+    "box_content",
+    "get_items",
+    "get_boxes",
+    "get_clerk_codes",
+    "get_counter_commands",
+    "get_boxes_codes",
+    "checkout_view",
+    "overseer_view",
+    "stats_view",
+    "type_stats_view",
+    "statistical_stats_view",
+    "vendor_view",
+    "accept_terms",
+    "remove_item_from_receipt",
+    "lost_and_found_list",
+    "kirppu_csrf_failure",
+]
 
 
 def index(request):

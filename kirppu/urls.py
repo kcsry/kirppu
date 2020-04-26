@@ -28,12 +28,12 @@ from .views import (
     statistical_stats_view,
     lost_and_found_list,
 )
-from .frontpage import front_page
+from .views.frontpage import front_page
 from .checkout_api import AJAX_FUNCTIONS, checkout_js
-from .mobile import index as mobile_index, logout as mobile_logout
-from .vendors import change_vendor, create_vendor
-from .accounting import accounting_receipt_view
-from .item_dump import dump_items_view
+from .views.mobile import index as mobile_index, logout as mobile_logout
+from .views.vendors import change_vendor, create_vendor
+from .views.accounting import accounting_receipt_view
+from .views.item_dump import dump_items_view
 
 __author__ = 'jyrkila'
 

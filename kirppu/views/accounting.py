@@ -10,7 +10,13 @@ from django.utils.translation import ugettext_lazy as _, pgettext_lazy, gettext
 from django.utils import timezone
 
 from .csv_utils import csv_streamer_view, strip_generator
-from .models import Event, EventPermission, Item, Receipt, ReceiptExtraRow, ReceiptItem, decimal_to_transport
+from ..models import Event, EventPermission, Item, Receipt, ReceiptExtraRow, ReceiptItem, decimal_to_transport
+
+__all__ = [
+    "accounting_receipt_view",
+    "accounting_receipt",
+]
+
 
 COLUMNS = (
     _("Event number"),

@@ -8,11 +8,17 @@ from django.urls import reverse
 from django.utils.http import is_safe_url
 from django.views.decorators.http import require_http_methods
 
-from .forms import PersonCreationForm
-from .models import Event, EventPermission, Vendor
-from .util import get_form
+from ..forms import PersonCreationForm
+from ..models import Event, EventPermission, Vendor
+from ..util import get_form
 
 __author__ = 'codez'
+
+__all__ = [
+    "get_multi_vendor_values",
+    "change_vendor",
+    "create_vendor",
+]
 
 
 def get_multi_vendor_values(request, event):
