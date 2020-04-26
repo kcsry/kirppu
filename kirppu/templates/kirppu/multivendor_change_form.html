@@ -6,7 +6,7 @@
             <label for="vendor-select" class="form-control-static">{% trans "Vendor:" %}</label>
             <div class="form-group">
                 <select id="vendor-select" name="vendor" class="form-control" onchange="return changeVendor();">
-                    <option value="{{ self_vendor.id }}"{% if self_vendor == current_vendor%} selected="selected"{% endif %}>{{ self_name }}</option>
+                    <option value="{{ self_vendor.id }}"{% if current_vendor is None or self_vendor == current_vendor %} selected="selected"{% endif %}>{{ self_name }}</option>
                     {% if multi_vendor %}
                     <optgroup label="{% trans "Behalf of" %}">
                     {% for vendor in multi_vendor %}

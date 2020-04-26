@@ -38,8 +38,8 @@ def get_multi_vendor_values(request, event):
         if user.is_staff and "user" in request.GET:
             raise NotImplementedError  # FIXME: Decide how this should work.
         permissions = EventPermission.get(event, request.user)
-        multi_vendor = Vendor.objects.filter(user=user, person__isnull=False)
-        self_vendor = Vendor.objects.filter(user=user, person__isnull=True).first()
+        multi_vendor = Vendor.objects.filter(user=user, person__isnull=False, event=event)
+        self_vendor = Vendor.objects.filter(user=user, person__isnull=True, event=event).first()
         can_create_vendor = permissions.can_create_sub_vendor
         can_switch_vendor = can_create_vendor or permissions.can_switch_sub_vendor
     else:
@@ -73,16 +73,21 @@ def change_vendor(request, event_slug):
     if not (permissions.can_create_sub_vendor or permissions.can_switch_sub_vendor):
         raise PermissionDenied
 
-    new_vendor_id = int(request.POST["vendor"])
-    new_vendor = get_object_or_404(Vendor, event=event, id=new_vendor_id, user=user)
-    if new_vendor.person:
-        request.session["vendor_id"] = new_vendor.id
+    vendor_id_str = request.POST["vendor"]
+    if vendor_id_str:
+        new_vendor_id = int(vendor_id_str)
+        new_vendor = get_object_or_404(Vendor, event=event, id=new_vendor_id, user=user)
     else:
+        # User is not a vendor even though they have persons.
+        new_vendor = Vendor.objects.filter(event=event, user=user, person__isnull=True).first()
+    if new_vendor is not None and new_vendor.person:
+        request.session["vendor_id"] = new_vendor.id
+    elif "vendor_id" in request.session:
         del request.session["vendor_id"]
 
-    ref = request.META["HTTP_REFERER"]
+    ref = request.META.get("HTTP_REFERER")
     if not (ref and is_safe_url(ref, allowed_hosts={request.get_host()})):
-        ref = reverse("kirppu:page")
+        ref = reverse("kirppu:page", kwargs={"event_slug": event_slug})
 
     return HttpResponseRedirect(ref)
 

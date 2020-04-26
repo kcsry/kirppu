@@ -5,7 +5,19 @@ import re
 
 from django.utils.timezone import now
 from kirppuauth.models import User
-from kirppu.models import Box, Clerk, Counter, Event, Item, ItemType, Receipt, ReceiptItem, Vendor
+from kirppu.models import (
+    Box,
+    Clerk,
+    Counter,
+    Event,
+    EventPermission,
+    Item,
+    ItemType,
+    Person,
+    Receipt,
+    ReceiptItem,
+    Vendor,
+)
 
 import factory.django
 
@@ -48,6 +60,11 @@ class EventFactory(Factory):
 
     registration_end = now() + timedelta(days=1)
     checkout_active = True
+
+
+class EventPermissionFactory(Factory):
+    class Meta:
+        model = EventPermission
 
 
 class VendorFactory(Factory):
@@ -100,6 +117,14 @@ class ItemFactory(Factory):
     code = factory.LazyFunction(lambda: Item.gen_barcode())
     name = factory.Faker("sentence", nb_words=2)
     itemtype = factory.SubFactory(ItemTypeFactory)
+
+
+class PersonFactory(Factory):
+    class Meta:
+        model = Person
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    phone = factory.Faker("phone_number")
 
 
 class ReceiptFactory(Factory):
