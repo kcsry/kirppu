@@ -12,7 +12,8 @@ try:
     from typing import Dict, List
 except ImportError:
     class _AbstractType(object):
-        def __getitem__(self, item): pass
+        def __getitem__(self, item):
+            pass
     Dict = _AbstractType()
     List = _AbstractType()
 
@@ -51,7 +52,7 @@ class PostgreDumpParser(object):
 
     @staticmethod
     def parse_COPY(line):
-        m = re.match("COPY (?P<table>[\w_]+) \((?P<columns>(?:\w+, )*\w+)\) FROM stdin;", line)
+        m = re.match(r"COPY (?P<table>[\w_]+) \((?P<columns>(?:\w+, )*\w+)\) FROM stdin;", line)
         if m is None:
             raise ValueError("Not understood copy: " + line)
 
@@ -91,6 +92,7 @@ class TypeConverter(object):
     @staticmethod
     def datetime(inp):
         return parse_datetime(inp) if inp != "\\N" else None
+
 
 ItemColumnTypes = {
     "hidden": "bool",
