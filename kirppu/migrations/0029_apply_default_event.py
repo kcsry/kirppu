@@ -18,6 +18,17 @@ FIELDS = {
 # noinspection PyPep8Naming
 def set_default_event(apps, schema_editor):
     db_alias = schema_editor.connection.alias
+
+    need_default_event = False
+    for model_name, _ in FIELDS.items():
+        mdl = apps.get_model("kirppu", model_name)
+        if mdl.objects.exists():
+            need_default_event = True
+            break
+
+    if not need_default_event:
+        return
+
     Event = apps.get_model("kirppu", "Event")
     if not Event.objects.using(db_alias).filter(id=1).exists():
         Event.objects.using(db_alias).create(

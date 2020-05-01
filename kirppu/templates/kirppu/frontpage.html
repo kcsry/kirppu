@@ -14,21 +14,21 @@
     <h2>{% trans "Coming events" %}</h2>
     <div class="row">
         {% for event in events %}
-            <div class="col-md-4">
+            <div class="col-md-4 events_event">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <a href="{{ event.get_absolute_url }}">{{ event.name }}</a>
+                        <a href="{{ event.get_absolute_url }}" data-currentevent="{{ event.slug }}">{{ event.name }}</a>
                     </div>
                     <div class="panel-body">
                         {% if event.fp_currently_ongoing %}
-                            <span class="glyphicon glyphicon-arrow-right text-success"> </span>
+                            <span class="glyphicon glyphicon-arrow-right text-success" data-ongoingevent="{{ event.slug }}"> </span>
                         {% endif %}
                         {{ event.start_date }}–{{ event.end_date }}
                     </div>
                 </div>
             </div>
         {% empty %}
-            <div><em>{% trans "No future events" %}</em></div>
+            <div id="events_no_future"><em>{% trans "No future events" %}</em></div>
         {% endfor %}
     </div>
     {% if old_events %}
@@ -38,7 +38,7 @@
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <a href="{{ event.get_absolute_url }}">{{ event.name }}</a>
+                        <a href="{{ event.get_absolute_url }}" data-oldevent="{{ event.slug }}">{{ event.name }}</a>
                     </div>
                     <div class="panel-body">
                         {{ event.start_date }}–{{ event.end_date }}
