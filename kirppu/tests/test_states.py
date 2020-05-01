@@ -3,10 +3,12 @@
 from http import HTTPStatus
 
 from django.test import Client, TestCase
+import factory
 
 from .factories import *
 from .api_access import Api
 from . import ResultMixin
+from ..models import Item, Receipt
 
 __author__ = 'codez'
 

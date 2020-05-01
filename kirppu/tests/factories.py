@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta
 from decimal import Decimal
 import re
 
-from django.utils.timezone import now
+from django.utils.timezone import now, timedelta
 from kirppuauth.models import User
 from kirppu.models import (
     Box,
@@ -24,6 +23,21 @@ import factory.django
 Factory = factory.django.DjangoModelFactory
 
 __author__ = 'codez'
+
+__all__ = [
+    "UserFactory",
+    "EventFactory",
+    "EventPermissionFactory",
+    "VendorFactory",
+    "CounterFactory",
+    "ClerkFactory",
+    "ItemTypeFactory",
+    "ItemFactory",
+    "PersonFactory",
+    "ReceiptFactory",
+    "ReceiptItemFactory",
+    "BoxFactory",
+]
 
 
 class UserFactory(Factory):
@@ -53,7 +67,8 @@ class EventFactory(Factory):
     class Meta:
         model = Event
 
-    slug = factory.LazyFunction(lambda: re.sub(r"\W", "", factory.Faker("sentence", nb_words=5).generate({}).lower())[:50])
+    slug = factory.LazyFunction(
+        lambda: re.sub(r"\W", "", factory.Faker("sentence", nb_words=5).generate({}).lower())[:50])
     name = factory.LazyAttribute(lambda a: a.slug)
     start_date = (now() + timedelta(days=2)).date()
     end_date = (now() + timedelta(days=3)).date()

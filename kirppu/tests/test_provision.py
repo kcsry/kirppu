@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from decimal import Decimal
 import textwrap
 
 from django.test import Client, override_settings
@@ -9,6 +10,7 @@ from kirppu.provision import Provision
 from .factories import *
 from .api_access import Api
 from . import ResultMixin
+from ..models import Item, Receipt
 
 __author__ = 'codez'
 
