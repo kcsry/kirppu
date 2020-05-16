@@ -158,6 +158,14 @@ class ReceiptItemFactory(Factory):
 
 
 class BoxFactory(Factory):
+    """
+    Can be used in two forms:
+        BoxFactory(vendor=..., item_count=...)
+        BoxFactory(adopt=True, items=...)
+
+    First creates random items for given vendor. Second adopts the items into the Box.
+    Both return newly created Box instance.
+    """
     class Meta:
         model = Box
 

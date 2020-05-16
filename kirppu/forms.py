@@ -431,6 +431,8 @@ class VendorItemForm(forms.Form):
 class VendorBoxForm(VendorItemForm):
     description = StripField(max_length=256)
     name = None
+    tag_type = None
+    suffixes = None
     count = forms.IntegerField(min_value=1)
     bundle_size = forms.IntegerField(min_value=1)
 

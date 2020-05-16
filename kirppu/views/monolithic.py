@@ -107,7 +107,7 @@ class MobileRedirect(RedirectView):
 @require_vendor_open
 def item_add(request, event):
     if not Vendor.has_accepted(request, event):
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest("Missing acceptance of terms.")
     vendor = Vendor.get_or_create_vendor(request, event)
     form = VendorItemForm(request.POST, event)
     if not form.is_valid():
@@ -128,11 +128,15 @@ def item_add(request, event):
         item_cnt += 1
 
         suffixed_name = (name + u" " + suffix).strip() if suffix else name
-        item = Item.new(
-            name=suffixed_name,
-            vendor=vendor,
-            **data
-        )
+        try:
+            item = Item.new(
+                name=suffixed_name,
+                vendor=vendor,
+                **data
+            )
+        except ValidationError as e:
+            return HttpResponseBadRequest(" ".join(e.messages))
+
         item_dict = item.as_public_dict()
         item_dict['barcode_dataurl'] = get_dataurl(item.code, 'png')
         response.append(item_dict)
@@ -288,7 +292,7 @@ def box_add(request, event):
         raise Http404()
 
     if not Vendor.has_accepted(request, event):
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest("Missing acceptance of terms.")
     vendor = Vendor.get_vendor(request, event)
     form = VendorBoxForm(request.POST, event)
     if not form.is_valid():
