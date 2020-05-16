@@ -97,7 +97,7 @@ class StatesTest(TestCase, ResultMixin):
 
     def test_fail_reserve_without_receipt(self):
         ret = self.api.item_reserve(code=self.items[0].code)
-        self.assertEqual(ret.status_code, HTTPStatus.BAD_REQUEST.value)
+        self.assertEqual(HTTPStatus.BAD_REQUEST, ret.status_code)
 
     def test_normal_item_receipt(self):
         item_code = self.items[0].code
@@ -113,7 +113,7 @@ class StatesTest(TestCase, ResultMixin):
 
         db_item = Item.objects.get(code=item_code)
         self.assertEqual(Item.SOLD, db_item.state)
-        self.assertEqual(finished_receipt["status"], Receipt.FINISHED)
+        self.assertEqual(Receipt.FINISHED, finished_receipt["status"])
 
     def test_double_reservation(self):
         # Note: This tests only two subsequent requests.
@@ -124,12 +124,12 @@ class StatesTest(TestCase, ResultMixin):
         self.assertSuccess(self.api.item_reserve(code=item_code))
 
         expected_failure = self.api.item_reserve(code=item_code)
-        self.assertEqual(HTTPStatus.LOCKED.value, expected_failure.status_code)
+        self.assertEqual(HTTPStatus.LOCKED, expected_failure.status_code)
 
     def test_normal_box_receipt(self):
         box = BoxFactory(adopt=True, items=self.items)
         box_checkin = self.assertResult(self.api.item_checkin(code=box.representative_item.code),
-                                        expect=HTTPStatus.ACCEPTED.value).json()
+                                        expect=HTTPStatus.ACCEPTED).json()
         self.assertSuccess(self.api.box_checkin(code=box.representative_item.code,
                                                 box_info=box_checkin["box"]["box_number"]))
 
@@ -141,14 +141,14 @@ class StatesTest(TestCase, ResultMixin):
 
         finished_receipt = self.assertSuccess(self.api.receipt_finish(id=receipt["id"])).json()
 
-        self.assertEqual(finished_receipt["status"], Receipt.FINISHED)
+        self.assertEqual(Receipt.FINISHED, finished_receipt["status"])
 
     def test_box_over_reserve(self):
         reserve_count = 3
 
         box = BoxFactory(vendor=VendorFactory(event=self.event), item_count=reserve_count - 1)
         box_checkin = self.assertResult(self.api.item_checkin(code=box.representative_item.code),
-                                        expect=HTTPStatus.ACCEPTED.value).json()
+                                        expect=HTTPStatus.ACCEPTED).json()
         self.assertSuccess(self.api.box_checkin(code=box.representative_item.code,
                                                 box_info=box_checkin["box"]["box_number"]))
 
