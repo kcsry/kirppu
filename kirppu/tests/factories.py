@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
-import re
 
 from django.utils.timezone import now, timedelta
 from kirppuauth.models import User
@@ -44,7 +43,7 @@ class UserFactory(Factory):
     class Meta:
         model = User
 
-    username = factory.LazyAttribute(lambda a: "{}{}".format(a.last_name, a.first_name).lower())
+    username = factory.Faker("user_name")
     phone = factory.Faker("phone_number")
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
@@ -67,9 +66,8 @@ class EventFactory(Factory):
     class Meta:
         model = Event
 
-    slug = factory.LazyFunction(
-        lambda: re.sub(r"\W", "", factory.Faker("sentence", nb_words=5).generate({}).lower())[:50])
-    name = factory.LazyAttribute(lambda a: a.slug)
+    slug = factory.Faker("slug")
+    name = factory.LazyAttribute(lambda a: a.slug.replace("-", " ").title())
     start_date = (now() + timedelta(days=2)).date()
     end_date = (now() + timedelta(days=3)).date()
 
@@ -140,6 +138,7 @@ class PersonFactory(Factory):
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
     phone = factory.Faker("phone_number")
+    email = factory.Faker("email")
 
 
 class ReceiptFactory(Factory):

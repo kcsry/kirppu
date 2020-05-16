@@ -24,7 +24,7 @@ class Api(object):
         from kirppu.checkout_api import AJAX_FUNCTIONS
 
         def gen(method, view):
-            url = reverse(view, kwargs={"event_slug": event})
+            url = reverse(view, kwargs={"event_slug": event.slug if hasattr(event, "slug") else event})
 
             def callback(**data):
                 _print(color(36, "---> " + method), color(36, url), repr(data))
