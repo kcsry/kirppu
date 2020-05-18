@@ -123,7 +123,7 @@ def ajax_func(original, method='POST', params=None, defaults=None, staff_overrid
                         kwargs[param] = request_data[param]
                 except KeyError:
                     if i < defaults_start:
-                        return HttpResponseBadRequest()
+                        return HttpResponseBadRequest("Incomplete request")
                     kwargs[param] = defaults[i - defaults_start]
 
             try:

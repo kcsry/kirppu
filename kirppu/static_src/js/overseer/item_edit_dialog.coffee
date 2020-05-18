@@ -81,7 +81,7 @@ class @ItemEditDialog
                 <div class="col-sm-10">
                   <select id="item-edit-type-input"
                           class="form-control"
-                          disabled/>
+                          disabled></select>
                 </div>
               </div>
               <div class="form-group">
@@ -91,7 +91,7 @@ class @ItemEditDialog
                 </label>
                 <div class="col-sm-10">
                   <select id="item-edit-state-input"
-                          class="form-control"/>
+                          class="form-control"></select>
                 </div>
               </div>
               <div class="form-group">
