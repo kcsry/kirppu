@@ -9,3 +9,7 @@ table .bool {
 td address {
     margin-bottom: 0.2ex;
 }
+
+button.btn-minwidth {
+    min-width: 6em;
+}

@@ -158,16 +158,16 @@ export default function render({CURRENCY, item_types, item_states}) {
                          role="alert"
                          className="alert alert-danger alert-off"/>
                     <div className="modal-footer">
-                        <button className="btn btn-default"
+                        <button className="btn btn-default btn-minwidth"
                                 data-dismiss="modal">
                             {gettext("Cancel")}
                         </button>
                         <button id="item-edit-print-button"
-                                className="btn btn-primary">
+                                className="btn btn-primary btn-minwidth">
                             {gettext("Print")}
                         </button>
                         <button id="item-edit-save-button"
-                                className="btn btn-primary"
+                                className="btn btn-primary btn-minwidth"
                                 disabled>
                             {gettext("Save")}
                         </button>

@@ -60,8 +60,8 @@ export default function render({item_types, item_states, price_step, CURRENCY}) 
                 </div>
             </div>
             <div className="col-sm-offset-2">
-                <button type="submit" className="btn btn-primary col-sm-1">{gettext("Search")}</button>
-                <button type="reset" className="btn btn-default col-sm-1">{gettext("Reset")}</button>
+                <button type="submit" className="btn btn-primary btn-minwidth">{gettext("Search")}</button>
+                <button type="reset" className="btn btn-default btn-minwidth">{gettext("Reset")}</button>
             </div>
         </form>
     )
