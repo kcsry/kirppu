@@ -5,7 +5,7 @@ class @VendorInfo
     @_title = title
     return
 
-  render: -> Templates.render("vendor_info",
+  render: -> Template.vendor_info(
     vendor: @_vendor,
     title: @_title,
     text:

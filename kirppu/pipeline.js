@@ -41,6 +41,7 @@ module.exports.js = {
             "../node_modules/jquery/dist/jquery.js",
             "../node_modules/bootstrap/dist/js/bootstrap.js",
             "js/csrf.coffee",
+            "../node_modules/redom/dist/redom.js"
         ],
         "output_filename": "general.js",
         "compress": true,
@@ -159,13 +160,10 @@ module.exports.jst = {
     "checkout_templates": {
         "source_filenames": [
             "jst/item_report_table.jinja2",
-            "jst/box_check_in_dialog.jinja2",
             "jst/box_report_table.jinja2",
             "jst/box_sell_allocation_dialog.jinja2",
-            "jst/vendor_info.jinja2",
             "jst/item_receipt_table.jinja2",
             "jst/item_receipt_table_row.jinja2",
-            "jst/item_search_form.jinja2",
             "jst/progress_bar.jinja2",
             "jst/receipt_list_table_simple.jinja2",
             "jst/receipt_list_table_compensations.jinja2",
@@ -176,6 +174,18 @@ module.exports.jst = {
             "jst/vendor_report_item_table.jinja2",
         ],
         "output_filename": "checkout_templates.js"
+    }
+};
+
+module.exports.rollup = {
+    "checkout_templates": {
+        "output_filename": "jst/templates.js",
+        "source_filename": "jst/index.js",
+        "watch": [
+            "jst/*.js",
+            "jst/*.jsx"
+        ],
+        "output_name": "Template"
     }
 };
 

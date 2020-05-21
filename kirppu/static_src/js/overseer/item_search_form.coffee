@@ -8,8 +8,8 @@ class @ItemSearchForm
     @action = action
     price_step = 0.5
 
-    form = Templates.render("item_search_form",
-      CURRENCY: CURRENCY.html
+    form = Template.item_search_form(
+      CURRENCY: CURRENCY.raw
       price_step: price_step
       item_types: ItemSearchForm.itemtypes
       item_states: ItemSearchForm.itemstates

@@ -77,7 +77,7 @@ class @ItemCheckInMode extends ItemCheckoutMode
     dlg = new Dialog()
     dlg.title.text(gettext("Mark the box number"))
     bundle_size = data.box.bundle_size
-    body = $ Templates.render("box_check_in_dialog",
+    body = $ Template.box_check_in_dialog(
       item: data
       text:
         description: gettext("description")

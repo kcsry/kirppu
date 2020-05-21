@@ -5,6 +5,8 @@ const coffee = require("gulp-coffee");
 const fs = require("fs");
 const patch = require("gulp-apply-patch");
 const path = require("path");
+const rollup = require("rollup");
+const rollup_sucrase = require("@rollup/plugin-sucrase");
 const uglify = require("gulp-uglify");
 const minify = require("gulp-cssnano");
 const nunjucks = require("gulp-nunjucks");
@@ -41,7 +43,7 @@ const cssHeader = (ctx) => `/* ================ ${ctx.index}: ${ctx.original} ==
  * @returns {Array} Prefixed source files.
  */
 const srcPrepend = function(def) {
-    return def.source_filenames.map(function (n) {
+    function doit(n) {
         const resultName = path.join(SRC, n);
         try {
             fs.statSync(resultName);
@@ -50,7 +52,11 @@ const srcPrepend = function(def) {
             log(colors.red("File not found (or error): ") + n);
         }
         return resultName;
-    })
+    }
+    if (typeof(def) == "string") {
+        return doit(def)
+    }
+    return def.source_filenames.map(doit)
 };
 
 /**
@@ -154,6 +160,29 @@ gulp.task("messages", function() {
         });
 });
 
+const rollupTasks = Object.entries(pipeline.rollup).map(function([name, def]) {
+    const taskName = "rollup:" + name;
+    gulp.task(taskName, function() {
+        return rollup.rollup({
+            input: srcPrepend(def.source_filename),
+            plugins: [
+                rollup_sucrase({
+                    jsxPragma: 'redom.el',
+                    transforms: ['jsx'],
+                    production: shouldCompress,
+                })
+            ]
+        }).then(bundle => {
+            return bundle.write({
+                file: DEST + "/" + def.output_filename,
+                name: def.output_name,
+                format: 'iife'
+            });
+        });
+    });
+    return taskName;
+});
+
 const staticTasks = Object.entries(pipeline.static).map(function([name, def]) {
     const taskName = "static:" + name;
     gulp.task(taskName, function() {
@@ -175,10 +204,33 @@ gulp.task("pipeline", gulp.series([]
     .concat(jsTasks)
     .concat(cssTasks)
     .concat(jstTasks)
+    .concat(rollupTasks)
     .concat(staticTasks)
 ));
 
 gulp.task("default", gulp.series("pipeline"));
+
+/**
+ * Simple wildcard pattern matcher.
+ */
+const simpleWildcard = function(pattern, file) {
+    if (pattern) {
+        if (Array.isArray(pattern)) {
+            for (const element of pattern) {
+                if (simpleWildcard(element, file)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return new RegExp(pattern
+            .replace(".", "\.")
+            .replace("?", ".")
+            .replace("*", ".*")
+        ).exec(file) != null
+    }
+    return false
+}
 
 /**
  * Find name of pipeline task by source filename.
@@ -191,9 +243,9 @@ const findTask = function(haystack, file) {
     const trimStartDots = /^\.+/;
     const cleanedFile = file.replace(trimStartDots, "");
     const result = Object.entries(haystack).find(([group, def]) =>
-        def.source_filenames.find((fn) =>
+        def.source_filenames?.find((fn) =>
             cleanedFile.endsWith(fn.replace(trimStartDots, ""))
-        )
+        ) || simpleWildcard(def.watch, file)
     );
     return result ? result[0] : null;
 };
