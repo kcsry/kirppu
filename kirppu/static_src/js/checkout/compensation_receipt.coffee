@@ -41,7 +41,7 @@ class @CompensationReceipt extends CheckoutMode
 
     # TODO: Add subtotal if receipt.extras
 
-    table = Templates.render("item_report_table",
+    table = Template.item_report_table(
       caption: gettext("Compensated Items")
       items: receipt.items
       sum: receipt.total

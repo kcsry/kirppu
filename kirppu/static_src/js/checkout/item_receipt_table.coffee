@@ -10,12 +10,12 @@ class @ItemReceiptTable
       , options
     )
 
-    @_table = Templates.render("item_receipt_table", options)
+    @_table = Template.item_receipt_table(options)
     @_table = $(@_table)
     @body = @_table.find("tbody")
 
   createRow: (index, code, name, price=null, rounded=false) ->
-    row = Templates.render("item_receipt_table_row",
+    row = Template.item_receipt_table_row(
       index: index
       code: code
       name: name
@@ -24,7 +24,7 @@ class @ItemReceiptTable
     return $(row)
 
   row: (args) ->
-    row = Templates.render("item_receipt_table_row", args)
+    row = Template.item_receipt_table_row(args)
     return $(row)
 
   render: () -> @_table

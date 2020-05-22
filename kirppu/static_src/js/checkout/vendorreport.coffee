@@ -129,7 +129,7 @@ class @VendorReport extends CheckoutMode
     for table_name, table of tables
       matchingItems = table.filter(items)
 
-      rendered_table = Templates.render("vendor_report_item_table",
+      rendered_table = Template.vendor_report_item_table(
          id: table_name
          caption: table.title()
          items: matchingItems
@@ -159,7 +159,7 @@ class @VendorReport extends CheckoutMode
         count.compensated += box.items_compensated
         sum.compensated += box.items_compensated * unit_price
 
-      rendered_table = Templates.render("box_report_table",
+      rendered_table = Template.box_report_table(
         caption: gettext("Boxes")
         items: boxes
         counts: count
@@ -186,7 +186,7 @@ class @VendorReport extends CheckoutMode
     dlg.title.text(gettext("Compensation receipts"))
 
     # TODO: customized Dialog class for listing things?
-    table = $ Templates.render("receipt_list_table_compensations",
+    table = $ Template.receipt_list_table_compensations(
       items: @_compensations
     )
 

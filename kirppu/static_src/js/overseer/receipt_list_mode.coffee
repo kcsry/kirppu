@@ -33,7 +33,7 @@ class @ReceiptFindMode extends CheckoutMode
 
       Api.receipt_get(id: receiptId).then(
         (data) =>
-          result = Templates.render("receipt_info", receipt: data)
+          result = Template.receipt_info(receipt: data)
           dialog.body.append(result)
 
         (jqXHR) =>

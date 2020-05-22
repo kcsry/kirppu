@@ -24,6 +24,11 @@ export function yesNo(bValue, choices) {
     return choices[Math.min(YES_NO_INDICES[sValue], choices.length - 1)]
 }
 
+const titlePattern = /((?:^|\s)\w)/g
+export function title(str) {
+    return str.replace(titlePattern, (m) => m.toUpperCase())
+}
+
 export function dateTime(value) {
     return DateTimeFormatter.datetime(value)
 }

@@ -71,7 +71,7 @@ class @VendorCompensation extends CheckoutMode
 
 
     if @compensableItems.length > 0
-      table = Templates.render("item_report_table",
+      table = Template.item_report_table(
         caption: gettext("Sold Items")
         items: rows
         sum: compensableSum + provisionAmount
@@ -108,7 +108,7 @@ class @VendorCompensation extends CheckoutMode
 
 
   _createProgress: (max) ->
-    @buttonForm.empty().append(Templates.render("progress_bar", {
+    @buttonForm.empty().append(Template.progress_bar({
       max: max
     }))
     @_progressMax = max

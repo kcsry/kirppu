@@ -138,7 +138,7 @@ class @CounterMode extends ItemCheckoutMode
         receipt = jqXHR.responseJSON.receipt
         dialog = new Dialog()
         dialog.title.text(gettext("Continue suspended receipt?"))
-        table = Templates.render("receipt_info", receipt: receipt)
+        table = Template.receipt_info(receipt: receipt)
         dialog.body.append(table)
         dialog.addPositive().text(gettext("Continue")).click(() =>
           console.log("Continuing receipt #{receipt.id}")
@@ -366,7 +366,7 @@ class @CounterMode extends ItemCheckoutMode
 
     dialog = new Dialog()
     dialog.title.text(gettext("Suspend receipt?"))
-    form = Templates.render("receipt_suspend_form")
+    form = Template.receipt_suspend_form()
     dialog.body.append(form)
 
     dialog.addPositive().text(gettext("Suspend")).click(() =>
@@ -486,7 +486,7 @@ class BoxReservationOperation
 
     dialog = new Dialog()
     dialog.title.text(gettext("Confirm box allocation"))
-    table = Templates.render("box_sell_allocation_dialog",
+    table = Template.box_sell_allocation_dialog(
       item: box
       request: requestBox
       text:

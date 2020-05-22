@@ -52,7 +52,7 @@ class @ClerkLoginMode extends CheckoutMode
       "%s Multiple receipts active").replace("%s", icon))
 
     info = $("<div>").text(gettext("Please select receipt, which you want to continue."))
-    table = $ Templates.render("receipt_list_table_simple",
+    table = $ Template.receipt_list_table_simple(
       items: receipts
     )
 
