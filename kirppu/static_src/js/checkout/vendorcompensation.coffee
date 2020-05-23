@@ -12,7 +12,7 @@ class @VendorCompensation extends CheckoutMode
     @switcher.setMenuEnabled(false)
     @cfg.uiRef.body.append(new VendorInfo(@vendor).render())
 
-    @buttonForm = $('<form class="hidden-print">').append(@abortButton())
+    @buttonForm = $('<form class="hidden-print">').append(@buttons(abort: true))
     @cfg.uiRef.body.append(@buttonForm)
 
     @itemDiv = $('<div>')
@@ -29,25 +29,15 @@ class @VendorCompensation extends CheckoutMode
     @switcher.setMenuEnabled(true)
     super
 
-  confirmButton: ->
-    $('<input type="button" class="btn btn-success">')
-      .attr('value', gettext('Confirm'))
-      .click(@onConfirm)
-
-  abortButton: ->
-    $('<input type="button" class="btn btn-default">')
-      .attr('value', gettext('Cancel'))
-      .click(@onCancel)
-
-  continueButton: (type="primary", clickHandler=@onCancel) =>
-    $('<input type="button" class="btn btn-' + type + '">')
-      .attr('value', gettext('Continue'))
-      .click(clickHandler)
-
-  retryButton: ->
-    $('<input type="button" class="btn btn-primary">')
-      .attr('value', gettext('Retry'))
-      .click(@onRetryFailed)
+  buttons: (cfg) ->
+    t = @
+    cbs =
+      onConfirm: if cfg.confirm then t.onConfirm
+      onAbort: if cfg.abort then t.onCancel
+      onContinue: if cfg.continue then t.onCancel else (if cfg.skip then t.onSkipFailed)
+      continueWarn: if cfg.skip then true
+      onRetry: if cfg.retry then t.onRetryFailed
+    Template.vendor_compensation_buttons(cbs)
 
   onGotItems: (items) =>
     @compensableItems = items.items
@@ -78,11 +68,11 @@ class @VendorCompensation extends CheckoutMode
         extra_col: true
       )
       @itemDiv.empty().append(table)
-      @buttonForm.empty().append(@confirmButton(), @abortButton())
+      @buttonForm.empty().append(@buttons(confirm: true, abort: true))
 
     else
       @itemDiv.empty().append($('<em>').text(gettext('No compensable items')))
-      @buttonForm.empty().append(@continueButton())
+      @buttonForm.empty().append(@buttons(continue: true))
 
   onCancel: => @switcher.switchTo(VendorReport, @vendor)
 
@@ -155,7 +145,7 @@ class @VendorCompensation extends CheckoutMode
   _onLoopDone: () =>
     if @_loopResult.length > 0
       # Some items failed. Give options to retry or continue/skip.
-      @buttonForm.append(@retryButton(), @continueButton("warning", @onSkipFailed))
+      @buttonForm.append(@buttons(retry: true, skip: true))
       errorList = $("<ul>")
       for item in @_loopResult
         text = item.error.text
@@ -208,7 +198,7 @@ class @VendorCompensation extends CheckoutMode
       .done((receiptCopy) =>
         if receiptCopy.total != sum
           safeAlert("Totals do not match: server said #{displayPrice(receiptCopy.total)}, below is #{displayPrice(sum)}")
-          @buttonForm.empty().append(@continueButton())
+          @buttonForm.empty().append(@buttons(continue: true))
         else
           @switcher.switchTo(CompensationReceipt, @vendor, receiptCopy.id, true)
       )

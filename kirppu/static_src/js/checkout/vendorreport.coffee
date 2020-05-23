@@ -72,40 +72,15 @@ class @VendorReport extends CheckoutMode
   enter: ->
     super
     @cfg.uiRef.body.append(new VendorInfo(@vendor).render())
-    compensateButton = $('<input type="button">')
-      .addClass('btn btn-primary')
-      .attr('value', gettext('Compensate…'))
-      .click(@onCompensate)
-    checkoutButton = $('<input type="button">')
-      .addClass('btn btn-primary')
-      .attr('value', gettext('Return Items…'))
-      .click(@onReturn)
-    abandonButton = $('<input type="button">')
-      .addClass('btn btn-primary')
-      .attr('value', gettext('Abandon All Items Currently On Display…'))
-      .click(@onAbandon)
-    compensationsButton = $('<input type="button">')
-      .addClass('btn btn-default')
-      .attr('value', gettext('Compensation receipts…'))
-      .click(@onShowCompensations)
-    mobileCode = $('<input type="button">')
-      .addClass('btn btn-default')
-      .attr('value', gettext('Mobile code…'))
-      .click(@onCreateMobileCode)
-
-    @cfg.uiRef.body.append(
-      $('<form class="hidden-print">').append(
-        compensateButton,
-        " ",
-        checkoutButton,
-        " ",
-        abandonButton,
-        " ",
-        compensationsButton,
-        " ",
-        mobileCode,
-      )
+    buttons = Template.vendor_report_buttons(
+      onCompensate: @onCompensate,
+      onReturn: @onReturn,
+      onAbandon: @onAbandon,
+      onShowCompensations: @onShowCompensations,
+      onCreateMobileCode: @onCreateMobileCode
     )
+    $("input", buttons).attr("disabled", "disabled")
+    @cfg.uiRef.body.append(buttons)
 
     Api.item_list(
       vendor: @vendor.id
@@ -116,6 +91,7 @@ class @VendorReport extends CheckoutMode
         Api.receipt_compensated(
           vendor: @vendor.id
         ).done((compensations) =>
+          $("input", buttons).removeAttr("disabled")
           @onGotItems(items, boxes, compensations)
         )
       )

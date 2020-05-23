@@ -10,6 +10,8 @@ import receipt_info from "./receipt_info.jsx";
 import {receipt_list_table_compensations, receipt_list_table_simple} from "./receipt_list_table.jsx";
 import receipt_suspend_form from "./receipt_suspend_form.jsx";
 import {receipt_table, receipt_table_row} from "./receipt_table.jsx";
+import vendor_compensation_buttons from "./vendor_compensation_buttons.jsx";
+import vendor_report_buttons from "./vendor_report_buttons.jsx";
 import vendor_info from './vendor_info.jsx';
 import vendor_report_item_table from "./vendor_report_item_table.jsx";
 
@@ -29,6 +31,8 @@ const Template = {
     receipt_suspend_form: receipt_suspend_form,
     receipt_table: receipt_table,
     receipt_table_row: receipt_table_row,
+    vendor_compensation_buttons: vendor_compensation_buttons,
+    vendor_report_buttons: vendor_report_buttons,
     vendor_info: vendor_info,
     vendor_report_item_table: vendor_report_item_table,
 }
