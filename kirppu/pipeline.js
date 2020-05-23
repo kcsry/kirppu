@@ -119,9 +119,6 @@ module.exports.js = {
             "js/jquery.cookie-1.4.1-0.js",
             "../node_modules/moment/moment.js",
             "../node_modules/moment/locale/fi.js",
-            "../node_modules/nunjucks/browser/nunjucks-slim.js",
-            "js/nunjucks-helpers.coffee",
-            "js/nunjucks_trans_runtime.js",
         ],
         "output_filename": "checkout_comp.js",
         "compress": true
@@ -153,14 +150,6 @@ module.exports.js = {
             "js/stats.coffee",
         ],
         "output_filename": "stats.js"
-    }
-};
-
-module.exports.jst = {
-    "checkout_templates": {
-        "source_filenames": [
-        ],
-        "output_filename": "checkout_templates.js"
     }
 };
 

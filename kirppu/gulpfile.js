@@ -9,8 +9,6 @@ const rollup = require("rollup");
 const rollup_sucrase = require("@rollup/plugin-sucrase");
 const uglify = require("gulp-uglify");
 const minify = require("gulp-cssnano");
-const nunjucks = require("gulp-nunjucks");
-const nunjucks_compiler = require("nunjucks");
 
 const args = require("minimist")(process.argv.slice(2));
 const withColor = (c) => (s) => `\x1b[${ c }m${ s }\x1b[39m`;
@@ -21,8 +19,6 @@ const colors = {
 };
 const log = require("fancy-log");
 const noop = require("through2");
-
-const trans = require("./nunjucks_trans");
 
 
 const pipeline = require("./pipeline");
@@ -108,58 +104,6 @@ const cssTasks = Object.entries(pipeline.css).map(function([name, def]) {
     return taskName;
 });
 
-const makeNunjucks = function(opts) {
-    // Strip some newlines/whitespace from {%%} tags. Sadly, does not strip whitespace from html.
-    const nunjucksEnv = nunjucks_compiler.configure({trimBlocks: true, lstripBlocks: true});
-    const transExt = new trans.Trans(opts);
-    nunjucksEnv.addExtension("Trans", transExt);
-    return {
-        env: nunjucksEnv,
-        trans: transExt,
-    };
-};
-
-const nunjucksEnv = makeNunjucks().env;
-
-const jstTasks = Object.entries(pipeline.jst).map(function([name, def]) {
-    const taskName = "jst:" + name;
-    const nameFn = function(file) {
-        // VinylFS 1.1.0 has stem-helper.
-        // Fallback-re for older VFS that should get the basename without extension.
-        // Fallback to original relative result if the re fails for some reason.
-        return file.stem || (/.*\/(.+)\.[^.]+$/.exec(file.path) || [file.path, file.relative])[1];
-    };
-    gulp.task(taskName, function() {
-        return gulp.src(srcPrepend(def))
-            .pipe(gif(/\.jinja2?$/, nunjucks.precompile({
-                env: nunjucksEnv,
-                name: nameFn
-            }), noop.obj()))
-            .on('error', handleError)
-            .pipe(concat(def.output_filename, {process: fileHeader(jsHeader)}))
-            .pipe(gif(shouldCompress, uglify()))
-            .pipe(gulp.dest(DEST + "/jst/"));
-    });
-    return taskName;
-});
-
-const extractNunjucks = makeNunjucks({output: "./template-strings.js"});
-gulp.task("messages", function() {
-    const srcs = [];
-    for (const def of Object.values(pipeline.jst)) {
-        Array.prototype.push.apply(srcs, srcPrepend(def));
-    }
-
-    return gulp.src(srcs)
-        .pipe(gif(/\.jinja2?$/, nunjucks.precompile({
-            env: extractNunjucks.env
-        }), noop.obj()))
-        .on('error', handleError)
-        .on('end', function() {
-            extractNunjucks.trans.close();
-        });
-});
-
 const rollupTasks = Object.entries(pipeline.rollup).map(function([name, def]) {
     const taskName = "rollup:" + name;
     gulp.task(taskName, function() {
@@ -203,7 +147,6 @@ const staticTasks = Object.entries(pipeline.static).map(function([name, def]) {
 gulp.task("pipeline", gulp.series([]
     .concat(jsTasks)
     .concat(cssTasks)
-    .concat(jstTasks)
     .concat(rollupTasks)
     .concat(staticTasks)
 ));
