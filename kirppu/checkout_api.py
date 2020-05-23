@@ -530,15 +530,26 @@ def compensable_items(request, event, vendor):
 @ajax_func('^box/list$', method='GET')
 def box_list(request, vendor):
     out_boxes = []
-    boxes = Box.objects.filter(item__vendor__id=vendor, item__hidden=False).distinct()
+    boxes = (
+        Box.objects
+        .filter(item__vendor__id=vendor, item__hidden=False)
+        .select_related("representative_item", "representative_item__itemtype")
+        .annotate(
+            count=Count("item"),
+            brought=Count("item", Q(item__state__in=(Item.BROUGHT, Item.STAGED, Item.SOLD, Item.RETURNED))),
+            sold=Count("item", Q(item__state=Item.SOLD)),
+            compensated=Count("item", Q(item__state=Item.COMPENSATED)),
+            returnable=Count("item", Q(item__state__in=(Item.BROUGHT, Item.STAGED))),
+        )
+        .distinct()
+    )
     for box in boxes:
-        data = box.as_dict()
-        items = box.get_items()
-        data["items_brought_total"] = items.filter(state__in=(Item.BROUGHT, Item.STAGED, Item.SOLD, Item.RETURNED))\
-            .count()
-        data["items_sold"] = items.filter(state=Item.SOLD).count()
-        data["items_compensated"] = items.filter(state=Item.COMPENSATED).count()
-        data["items_returnable"] = items.filter(state__in=(Item.BROUGHT, Item.STAGED)).count()
+        data = box.as_dict(exclude=("item_count",))  # item_count is already resolved more efficiently.
+        data["item_count"] = box.count
+        data["items_brought_total"] = box.brought
+        data["items_sold"] = box.sold
+        data["items_compensated"] = box.compensated
+        data["items_returnable"] = box.returnable
         out_boxes.append(data)
     return out_boxes
 

@@ -41,13 +41,16 @@ def model_dict_fn(*args, **kwargs):
         fields[plain_key] = plain_key
     fields.update(kwargs)
 
-    def model_dict(self):
+    def model_dict(self, exclude=None):
         """
         Get model fields as dictionary (for JSON/AJAX usage). Fields returned:
         {0}
         """
+        exclude = exclude or ()
         ret = {}
         for key, value in fields.items():
+            if key in exclude:
+                continue
             if callable(value):
                 ret[key] = value(self)
             elif value is None:
