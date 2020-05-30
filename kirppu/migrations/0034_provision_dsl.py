@@ -1,6 +1,7 @@
 import logging
 from functools import partial
-from django.db import migrations
+from django.db import migrations, models
+import kirppu.models
 
 logger = logging.getLogger(__name__)
 
@@ -38,4 +39,9 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(_fwd, _rev),
+        migrations.AlterField(
+            model_name='event',
+            name='provision_function',
+            field=models.TextField(blank=True, help_text='Lisp function body that gets sold_and_compensated queryset as a global and must return a null or decimal number.', null=True, validators=[kirppu.models._validate_provision_function]),
+        ),
     ]
