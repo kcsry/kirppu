@@ -1,7 +1,7 @@
 export default function render({onConfirm, onAbort, onContinue, continueWarn, onRetry}) {
     const btns = [
         onConfirm &&
-        <input type="button" className={"btn btn-success"}
+        <input type="button" className={"btn " + (continueWarn ? "btn-warning" : "btn-success")}
                value={gettext('Confirm')}
                onclick={onConfirm}
         />

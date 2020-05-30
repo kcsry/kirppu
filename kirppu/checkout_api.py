@@ -501,8 +501,6 @@ def compensable_items(request, event, vendor):
     )
 
     items_for_compensation = vendor_items.filter(state=Item.SOLD)
-    if not items_for_compensation:
-        return {"items": []}
 
     r = dict(items=[i.as_dict() for i in items_for_compensation])
 
@@ -647,16 +645,19 @@ def item_compensate_start(request, event, vendor):
         raise AjaxError(RET_CONFLICT, _(u"Already compensating"))
 
     vendor_id = int(vendor)
-    if not Vendor.objects.filter(pk=vendor_id, event=event).exists():
+    vendor_list = list(Vendor.objects.filter(pk=vendor_id, event=event))
+    if not vendor_list:
         raise AjaxError(RET_BAD_REQUEST)
 
     clerk = Clerk.objects.get(pk=request.session["clerk"])
     counter = Counter.objects.get(pk=request.session["counter"])
 
-    receipt = Receipt()
-    receipt.clerk = clerk
-    receipt.counter = counter
-    receipt.type = Receipt.TYPE_COMPENSATION
+    receipt = Receipt(
+        clerk=clerk,
+        counter=counter,
+        type=Receipt.TYPE_COMPENSATION,
+        vendor=vendor_list[0]
+    )
     receipt.save()
 
     request.session["compensation"] = (receipt.pk, vendor_id)
@@ -1000,7 +1001,7 @@ def receipt_pending(request):
 def receipt_compensated(request, vendor):
     receipts = Receipt.objects.filter(
         type=Receipt.TYPE_COMPENSATION,
-        receiptitem__item__vendor_id=int(vendor),
+        vendor_id=int(vendor)
     ).distinct().order_by("start_time")
 
     return [receipt.as_dict() for receipt in receipts]

@@ -4,7 +4,7 @@ from typing import Optional
 
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, QuerySet
 
 from .models import ReceiptExtraRow, Receipt, Item, ReceiptItem
 from .provision_dsl import run
@@ -13,7 +13,7 @@ __author__ = 'codez'
 
 
 class Provision(object):
-    def __init__(self, vendor_id, provision_function, receipt=None):
+    def __init__(self, vendor_id: int, provision_function: str, receipt=None):
         self._vendor_id = vendor_id
 
         self._vendor_items = vendor_items = Item.objects.filter(vendor__id=vendor_id)
@@ -30,38 +30,34 @@ class Provision(object):
         self._total_compensation_items = total_compensation_items
         self._receipt = receipt
 
-        self._sub_total = None
+        # Provision to be paid from current SOLD items.
         self._provision_result = None
+        # Provision to be paid extra from COMPENSATED items, i.e. fixing a mistake in calculation.
         self._provision_fix_result = None
 
         self._provision_function = provision_function
 
-        if not total_compensation_items:
-            self._provision = None
-        else:
-            self._provision = self.run_function(
-                self._provision_function,
-                total_compensation_items
-            )
+        # Total value of provision calculated from SOLD/receipt + COMPENSATED items.
+        self._total_provision = self._run_function()
 
-            if self._provision is not None:
-                if receipt is None:
-                    self._sum_for_compensation = \
-                        vendor_items.filter(state=Item.SOLD).aggregate(sum=Sum("price"))["sum"]
-                else:
-                    self._sum_for_compensation = \
-                        ReceiptItem.objects.filter(receipt=receipt, action=ReceiptItem.ADD) \
-                                           .aggregate(sum=Sum("item__price"))["sum"]
-                if self._sum_for_compensation is None:
-                    self._sum_for_compensation = Decimal(0)
+        if self.has_provision:
+            if receipt is None:
+                self._sum_for_compensation = \
+                    vendor_items.filter(state=Item.SOLD).aggregate(sum=Sum("price"))["sum"]
+            else:
+                self._sum_for_compensation = \
+                    ReceiptItem.objects.filter(receipt=receipt, action=ReceiptItem.ADD) \
+                                       .aggregate(sum=Sum("item__price"))["sum"]
+            if self._sum_for_compensation is None:
+                self._sum_for_compensation = Decimal(0)
 
     @property
     def has_provision(self):
-        return self._provision is not None
+        return self._total_provision is not None and self._total_provision != Decimal(0)
 
     @classmethod
     def run_function(cls, provision_function, sold_and_compensated) -> Optional[Decimal]:
-        if provision_function is None or provision_function == "":
+        if provision_function is None or provision_function.strip() in ("", "null", "0"):
             return None
         if not getattr(settings, "KIRPPU_ALLOW_PROVISION_FUNCTIONS", False):
             raise SuspiciousOperation("Provision functions are not allowed.")
@@ -71,6 +67,12 @@ class Provision(object):
         assert _r is None or isinstance(_r, Decimal), "Value returned from function must be null or a number"
         return _r
 
+    def _run_function(self, items: Optional[QuerySet] = None) -> Optional[Decimal]:
+        q = items
+        if items is None:
+            q = self._total_compensation_items
+        return self.run_function(self._provision_function, q)
+
     def _calculate_provision_information(self):
         """
 
@@ -78,39 +80,53 @@ class Provision(object):
         :rtype: (ReceiptExtraRow, ReceiptExtraRow)
         """
         extras = ReceiptExtraRow.objects.filter(
-            type=ReceiptExtraRow.TYPE_PROVISION,
+            type__in=(ReceiptExtraRow.TYPE_PROVISION, ReceiptExtraRow.TYPE_PROVISION_FIX),
             receipt__type=Receipt.TYPE_COMPENSATION,
             receipt__receiptitem__item__vendor_id=self._vendor_id,
         ).distinct()
         extras = extras.aggregate(extras_value=Sum("value"))
         previous_provisions = extras["extras_value"] or Decimal(0)
 
-        provision_now = -min(self._provision + previous_provisions, self._sum_for_compensation)
-        previous_items = self._vendor_items.filter(state=Item.COMPENSATED)
+        # [      Sold      ][ Compensated ]
+        # [provision_result]
+        # [         provision(All)        ]
+
+        # fix = fn(Compensated) - sum(receipts.provision*)
+        # provision(Sold) = provision(All) - fn(Compensated)
+
+        compensated_items = self._vendor_items.filter(state=Item.COMPENSATED)
         if self._receipt:
             # Due no state for staged for compensation, exclude current receipt from fix calculations.
-            previous_items = previous_items.exclude(receipt=self._receipt)
-        old_target_provision = self.run_function(self._provision_function, previous_items)
-        provision_fixup_value = -(old_target_provision + previous_provisions)
+            compensated_items = compensated_items.exclude(receipt=self._receipt)
+        fn_compensated = self._run_function(compensated_items)
 
-        assert provision_now <= provision_fixup_value, str(provision_now) + " " + str(provision_fixup_value)
-        self._provision_result = (provision_now - provision_fixup_value).quantize(Decimal(".01"))
-        self._provision_fix_result = provision_fixup_value.quantize(Decimal(".01"))
+        self._provision_fix_result = fn_compensated + previous_provisions  # previous_provisions is a negative value.
+        self._provision_result = self._total_provision - fn_compensated
 
-    @property
-    def sub_total(self):
-        if self._sub_total is None:
-            self._sub_total = self._vendor_items.aggregate(sum=Sum("price"))["sum"]
-        return self._sub_total
+        if not compensated_items.exists() and self._provision_fix_result != Decimal(0):
+            self._provision_result += self._provision_fix_result
+            self._provision_fix_result = Decimal(0)
+
+        # We present numbers in negative as the values are used in "how much would be given to vendor" context.
+        self._provision_result = -self._provision_result
+        self._provision_fix_result = -self._provision_fix_result
+
+    def _ensure_result(self):
+        if self._provision_result is None and self.has_provision:
+            self._calculate_provision_information()
 
     @property
     def provision(self):
-        if self._provision_result is None and self.has_provision:
-            self._calculate_provision_information()
+        """Provision to be paid (negative) from current SOLD/receipt items."""
+        self._ensure_result()
         return self._provision_result
 
     @property
     def provision_fix(self):
-        if self._provision_fix_result is None and self.has_provision:
-            self._calculate_provision_information()
+        """Fix value to be paid (negative) due rounding errors or function adjustment."""
+        self._ensure_result()
         return self._provision_fix_result
+
+    def __str__(self):
+        return "Provision(result={}, fix={}, total={})".format(
+            self.provision, self.provision_fix, self._total_provision)

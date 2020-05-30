@@ -138,3 +138,16 @@ kbd.shortcut {
         transform: rotate(360deg);
     }
 }
+
+.warn-blink {
+    animation: warn-blink 0.5s steps(2, start) 20;
+}
+
+@keyframes warn-blink {
+    from {
+        color: #e82121;
+    }
+    to {
+        color: #333333;
+    }
+}

@@ -1,10 +1,21 @@
 import {dateTime, yesNo, title} from "./helpers";
 
 function Total({sum, extra_col, hide_status}) {
+    let price
+    if (sum < 0 && !hide_status) {
+        price = [
+            <span className="glyphicon glyphicon-warning-sign warn-blink"
+                  title={gettext("Vendor must pay!")}/>
+            , " "
+            , displayPrice(sum)
+        ]
+    } else {
+        price = displayPrice(sum)
+    }
     return (
-        <tr>
+        <tr className={sum < 0 ? "danger" : ""}>
             <th colSpan="3">{gettext("Total:")}</th>
-            <th className="receipt_price numeric">{displayPrice(sum)}</th>
+            <th className="receipt_price numeric">{price}</th>
             {!hide_status && <th/>}
             {!hide_status && <th/>}
             {extra_col && <th className="receipt_extra_col"/>}

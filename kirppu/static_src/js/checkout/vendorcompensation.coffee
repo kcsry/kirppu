@@ -35,7 +35,7 @@ class @VendorCompensation extends CheckoutMode
       onConfirm: if cfg.confirm then t.onConfirm
       onAbort: if cfg.abort then t.onCancel
       onContinue: if cfg.continue then t.onCancel else (if cfg.skip then t.onSkipFailed)
-      continueWarn: if cfg.skip then true
+      continueWarn: if cfg.skip or cfg.warn then true
       onRetry: if cfg.retry then t.onRetryFailed
     Template.vendor_compensation_buttons(cbs)
 
@@ -45,7 +45,7 @@ class @VendorCompensation extends CheckoutMode
 
     rows = @compensableItems.slice()
     compensableSum = @compensableItems.reduce(((acc, item) -> acc + item.price), 0)
-    provisionAmount = 0
+    @provisionAmount = 0
     if @compensableExtras?
       rows.push(
         action: "EXTRA"
@@ -55,20 +55,19 @@ class @VendorCompensation extends CheckoutMode
       )
       rows = rows.concat(@compensableExtras)
       for i in @compensableExtras
-        provisionAmount += i.value
-    else
-      provisionAmount = 0
+        @provisionAmount += i.value
 
 
-    if @compensableItems.length > 0
+    if rows.length > 0
+      total = compensableSum + @provisionAmount
       table = Template.item_report_table(
-        caption: gettext("Sold Items")
+        caption: if total >= 0 then gettext("Sold Items") else gettext("Balance Reconciliation")
         items: rows
-        sum: compensableSum + provisionAmount
+        sum: total
         extra_col: true
       )
       @itemDiv.empty().append(table)
-      @buttonForm.empty().append(@buttons(confirm: true, abort: true))
+      @buttonForm.empty().append(@buttons(confirm: true, abort: true, warn: total < 0))
 
     else
       @itemDiv.empty().append($('<em>').text(gettext('No compensable items')))
@@ -78,10 +77,10 @@ class @VendorCompensation extends CheckoutMode
 
   onConfirm: =>
     nItems = @compensableItems.length
-    if nItems == 0
+    if nItems == 0 and @provisionAmount == 0
       console.error("What? Nothing to compensate?")
       return
-    @_createProgress(nItems)
+    @_createProgress(Math.max(nItems, 1))
 
     # Add table row indices for items (needed to point to the rows at UI).
     for i, index in @compensableItems
@@ -90,7 +89,11 @@ class @VendorCompensation extends CheckoutMode
     Api.item_compensate_start(vendor: @vendor.id)
       .done(=>
         @_loopResult = []
-        @_loopBack(@compensableItems)
+        if nItems > 0
+          @_loopBack(@compensableItems)
+        else
+          @_setProgress(1)
+          @_onLoopDone()
       )
       .fail((jqXHR) =>
         safeAlert("Failed to start compensation: #{jqXHR.status}: #{jqXHR.responseText}")

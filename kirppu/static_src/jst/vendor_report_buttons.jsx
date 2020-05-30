@@ -8,7 +8,7 @@ export default function render({
     return (
         <form className="hidden-print">
             <input type="button" className="btn btn-primary"
-                   value={gettext('Compensate…')}
+                   value={gettext('Balance Reconciliation…')}
                    onclick={onCompensate}
             />
             {" "}

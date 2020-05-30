@@ -1067,6 +1067,9 @@ class Receipt(models.Model):
     end_time = models.DateTimeField(null=True, blank=True)
     type = models.CharField(choices=TYPES, max_length=16, default=TYPE_PURCHASE)
 
+    # Relevant only for vendor-specific receipts, i.e. TYPE_COMPENSATION.
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, null=True, blank=True)
+
     def items_list(self):
         return [
             self._item_dict(row)
@@ -1128,6 +1131,12 @@ class Receipt(models.Model):
         permissions = (
             ("view_accounting", "View accounting data"),
         )
+        constraints = [
+            models.CheckConstraint(check=(
+                models.Q(type="COMPENSATION", vendor__isnull=False)) | (
+                ~models.Q(type="COMPENSATION") & models.Q(vendor__isnull=True)),
+                name="vendor_id_nullity")
+        ]
 
 
 class ReceiptExtraRow(models.Model):

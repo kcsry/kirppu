@@ -139,8 +139,7 @@ class AccountingWriter(object):
 
     def _write_compensation(self, receipt: Receipt):
         rows = receipt.receiptitem_set.all()
-        assert rows.count() > 0
-        common_vendor = list(rows)[0].item.vendor_id
+        common_vendor = receipt.vendor_id
         if any(common_vendor != r.item.vendor_id for r in rows):
             raise ValueError("Invalid receipt configuration")
 
