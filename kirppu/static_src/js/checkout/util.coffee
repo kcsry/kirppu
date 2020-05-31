@@ -58,7 +58,7 @@ stillBlinking = false
 @safeAlert = (message, blink=true) ->
   if UtilSound.error?
     UtilSound.error.play()
-  safeDisplay(CheckoutConfig.uiRef.errorText, message, if blink then CheckoutConfig.settings.alertBlinkCount else 0)
+  safeDisplay(CheckoutConfig.uiRef.errorText, message, blink)
 
 
 # Display safe alert warning message.
@@ -66,7 +66,7 @@ stillBlinking = false
 # @param message [String] Message to display.
 # @param blink [Boolean, optional] If true (default), container is blinked.
 @safeWarning = (message, blink=false) ->
-  safeDisplay(CheckoutConfig.uiRef.warningText, message, if blink then 1 else 0)
+  safeDisplay(CheckoutConfig.uiRef.warningText, message, blink)
 
 
 @fixToUppercase = (code) ->
@@ -81,8 +81,8 @@ stillBlinking = false
 #
 # @param textRef [jQuery] Div reference for the message.
 # @param message [String] The message.
-# @param blinkCount [Integer, optional] Number of blinks, if any.
-safeDisplay = (textRef, message, blinkCount=0) ->
+# @param blinkCount [Boolean] If true, container is blinked.
+safeDisplay = (textRef, message, blink) ->
   body = CheckoutConfig.uiRef.container
   text = textRef
   cls = "alert-blink"
@@ -92,21 +92,17 @@ safeDisplay = (textRef, message, blinkCount=0) ->
   else
     text.text(message)
   text.removeClass("alert-off")
-  return unless blinkCount > 0
+  return if blink == false
 
-  body.addClass(cls)
-  blinksToGo = blinkCount * 2  # *2 because every other step is a blink removal step.
-  timeout = 150
+  listener = () ->
+    body.removeClass(cls)
+    stillBlinking = false
+    return
+  body.one("animationend", listener)
+
   stillBlinking = true
-
-  timeCb = () ->
-    body.toggleClass(cls)
-    if --blinksToGo > 0
-      setTimeout(timeCb, timeout)
-    else
-      stillBlinking = false
-      body.removeClass(cls)
-  setTimeout(timeCb, timeout)
+  body.addClass(cls)
+  return
 
 # Remove safe alert message, if the alert has been completed.
 @safeAlertOff = ->

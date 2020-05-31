@@ -40,7 +40,6 @@ class Config
     quickPayExtra: ""
     counterCode: null
     clerkName: null
-    alertBlinkCount: 4
     purchaseMax: 400
 
   # Check existence of uiId values and bind their references to uiRef.
