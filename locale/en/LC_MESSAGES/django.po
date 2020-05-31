@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019.
+# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-15 20:49+0300\n"
-"PO-Revision-Date: 2019-10-15 20:49+0300\n"
+"POT-Creation-Date: 2020-05-31 16:14+0300\n"
+"PO-Revision-Date: 2020-05-31 16:14+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,59 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 19.04.3\n"
-
-msgid "Event number"
-msgstr "Event number"
-
-msgid "Timestamp"
-msgstr "Timestamp"
-
-msgid "Vendor"
-msgstr "Vendor"
-
-msgid "Event type"
-msgstr "Event type"
-
-msgctxt "Substantive, change in value or balance"
-msgid "Change"
-msgstr "Change"
-
-msgid "Vendor balance"
-msgstr "Vendor balance"
-
-msgid "Total balance"
-msgstr "Total balance"
-
-msgid "SALE"
-msgstr "SALE"
-
-msgid "PAYOUT"
-msgstr "PAYOUT"
-
-msgid "COMMISSION"
-msgstr "COMMISSION"
-
-msgid "COMMISSION FIX"
-msgstr "COMMISSION FIX"
-
-msgid "FORFEIT"
-msgstr "FORFEIT"
-
-msgid "accounting"
-msgstr "accounting"
-
-msgid "Payout difference:"
-msgstr "Payout difference:"
-
-msgid "In Items"
-msgstr "In Items"
-
-msgid "In Receipts"
-msgstr "In Receipts"
-
-msgid "Forfeit difference:"
-msgstr "Forfeit difference:"
+"X-Generator: Lokalize 19.12.3\n"
 
 msgid "User"
 msgstr "User "
@@ -75,7 +23,6 @@ msgstr "User "
 msgid "Person"
 msgstr "Person"
 
-#| msgid "Event:"
 msgid "Event"
 msgstr "Event"
 
@@ -110,7 +57,6 @@ msgstr "Access code set for '{0}' in '{1}'"
 msgid "Clerk {name} added into {event}."
 msgstr "Clerk {name} added into {event}."
 
-#| msgid "Add %(name)s from SSO provider"
 msgid "Add clerk from SSO provider"
 msgstr "Add clerk from SSO provider"
 
@@ -125,6 +71,9 @@ msgstr "Add unbound clerk"
 
 msgid "Re-generate bar codes for items"
 msgstr "Re-generate bar codes for items"
+
+msgid "Vendor"
+msgstr "Vendor"
 
 msgid "Item"
 msgstr "Item"
@@ -298,63 +247,6 @@ msgstr "Item must have a type."
 msgid "Invalid item type."
 msgstr "Invalid item type."
 
-msgid "Vendor id"
-msgstr "Vendor id"
-
-msgid "Barcode"
-msgstr "Barcode"
-
-msgid "Price"
-msgstr "Price"
-
-msgid "Brought"
-msgstr "Brought"
-
-msgid "Sold"
-msgstr "Sold"
-
-msgid "Compensated / Returned"
-msgstr "Compensated / Returned"
-
-msgid "Name"
-msgstr "Name"
-
-msgid "items"
-msgstr "items"
-
-msgid "Returnable Items"
-msgstr "Returnable Items"
-
-msgid "Compensable Items"
-msgstr "Compensable Items"
-
-msgid "Compensated Items"
-msgstr "Compensated Items"
-
-msgid "Other Items"
-msgstr "Other Items"
-
-msgid "Not brought to event"
-msgstr "Not brought to event"
-
-msgid "Access key must be given"
-msgstr "Access key must be given"
-
-msgid "You are trying too much. Try again later."
-msgstr "You are trying too much. Try again later."
-
-msgid "Invalid access key"
-msgstr "Invalid access key"
-
-msgid "Unregistered vendor."
-msgstr "Unregistered vendor."
-
-msgid "provision:"
-msgstr "provision:"
-
-msgid "This location is not in use."
-msgstr "This location is not in use."
-
 msgid "first name"
 msgstr "first name"
 
@@ -364,12 +256,15 @@ msgstr "last name"
 msgid "email address"
 msgstr "email address"
 
+#| msgid ""
+#| "Python function body that gets sold_and_compensated queryset as argument "
+#| "and must call result() with None or Decimal argument."
 msgid ""
-"Python function body that gets sold_and_compensated queryset as argument and "
-"must call result() with None or Decimal argument."
+"Lisp function body that gets sold_and_compensated queryset as a global and "
+"must return a null or decimal number."
 msgstr ""
-"Python function body that gets sold_and_compensated queryset as argument and "
-"must call result() with None or Decimal argument."
+"Lisp function body that gets sold_and_compensated queryset as a global and "
+"must return a null or decimal number."
 
 msgid ""
 "Amount of unsold Items a Vendor can have in the Event. If blank, no limit is "
@@ -384,7 +279,6 @@ msgstr "Visible"
 msgid "Not listed in front page"
 msgstr "Not listed in front page"
 
-#| msgid "Provision"
 msgid "Permissions"
 msgstr "Permissions"
 
@@ -399,6 +293,9 @@ msgstr "Is enabled?"
 
 msgid "Value cannot be negative"
 msgstr "Value cannot be negative"
+
+msgid "Price"
+msgstr "Price"
 
 msgid "Item count"
 msgstr "Item count"
@@ -417,6 +314,9 @@ msgstr "Brought to event"
 
 msgid "Staged for selling"
 msgstr "Staged for selling"
+
+msgid "Sold"
+msgstr "Sold"
 
 msgid "Missing"
 msgstr "Missing"
@@ -784,7 +684,6 @@ msgstr "Site administration"
 msgid "Coming events"
 msgstr "Coming events"
 
-#| msgid "Not brought to event"
 msgid "No future events"
 msgstr "No future events"
 
@@ -828,6 +727,9 @@ msgstr "Printed and deleted"
 msgid "Printed, not brought"
 msgstr "Printed, not brought"
 
+msgid "Brought"
+msgstr "Brought"
+
 #, python-format
 msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgstr "%(brought)s (%(broughtOfRegistered)s%% of registered)"
@@ -870,6 +772,9 @@ msgstr "99.7th percentile"
 
 msgid "Lost and found"
 msgstr "Lost and found"
+
+msgid "Name"
+msgstr "Name"
 
 msgid "Code"
 msgstr "Code"
@@ -974,6 +879,9 @@ msgstr "Registered boxes"
 msgid "description"
 msgstr "description"
 
+msgid "items"
+msgstr "items"
+
 msgid "unit price"
 msgstr "unit price"
 
@@ -1006,6 +914,9 @@ msgstr "total:"
 msgid "No items"
 msgstr "No items"
 
+msgid "Unregistered vendor."
+msgstr "Unregistered vendor."
+
 msgid "View as text"
 msgstr "View as text"
 
@@ -1023,6 +934,94 @@ msgstr "Or log in regularly?"
 
 msgid "Image extension not supported"
 msgstr "Image extension not supported"
+
+msgid "Event number"
+msgstr "Event number"
+
+msgid "Timestamp"
+msgstr "Timestamp"
+
+msgid "Event type"
+msgstr "Event type"
+
+msgctxt "Substantive, change in value or balance"
+msgid "Change"
+msgstr "Change"
+
+msgid "Vendor balance"
+msgstr "Vendor balance"
+
+msgid "Total balance"
+msgstr "Total balance"
+
+msgid "SALE"
+msgstr "SALE"
+
+msgid "PAYOUT"
+msgstr "PAYOUT"
+
+msgid "COMMISSION"
+msgstr "COMMISSION"
+
+msgid "COMMISSION FIX"
+msgstr "COMMISSION FIX"
+
+msgid "FORFEIT"
+msgstr "FORFEIT"
+
+msgid "accounting"
+msgstr "accounting"
+
+msgid "Payout difference:"
+msgstr "Payout difference:"
+
+msgid "In Items"
+msgstr "In Items"
+
+msgid "In Receipts"
+msgstr "In Receipts"
+
+msgid "Forfeit difference:"
+msgstr "Forfeit difference:"
+
+msgid "Vendor id"
+msgstr "Vendor id"
+
+msgid "Barcode"
+msgstr "Barcode"
+
+msgid "Compensated / Returned"
+msgstr "Compensated / Returned"
+
+msgid "Returnable Items"
+msgstr "Returnable Items"
+
+msgid "Compensable Items"
+msgstr "Compensable Items"
+
+msgid "Compensated Items"
+msgstr "Compensated Items"
+
+msgid "Other Items"
+msgstr "Other Items"
+
+msgid "Not brought to event"
+msgstr "Not brought to event"
+
+msgid "Access key must be given"
+msgstr "Access key must be given"
+
+msgid "You are trying too much. Try again later."
+msgstr "You are trying too much. Try again later."
+
+msgid "Invalid access key"
+msgstr "Invalid access key"
+
+msgid "provision:"
+msgstr "provision:"
+
+msgid "This location is not in use."
+msgstr "This location is not in use."
 
 #, python-format
 msgid ""

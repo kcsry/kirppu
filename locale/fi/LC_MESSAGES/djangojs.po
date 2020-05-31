@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2017, 2018, 2019.
+# Jyrki Launonen, 2014, 2015, 2017, 2018, 2019, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-05 20:32+0300\n"
-"PO-Revision-Date: 2019-09-05 20:33+0300\n"
+"POT-Creation-Date: 2020-05-31 16:14+0300\n"
+"PO-Revision-Date: 2020-05-31 16:18+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 19.04.3\n"
+"X-Generator: Lokalize 19.12.3\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -340,14 +340,11 @@ msgstr "%d, kassalla: %c"
 msgid "Vendor Compensation"
 msgstr "Myyjän Hyvitys"
 
-msgid "Confirm"
-msgstr "Vahvista"
-
-msgid "Retry"
-msgstr "Yritä uudelleen"
-
 msgid "Sold Items"
 msgstr "Myydyt tavarat"
+
+msgid "Balance Reconciliation"
+msgstr "Tilin tasaus"
 
 msgid "No compensable items"
 msgstr "Ei hyvitettäviä tavaroita"
@@ -385,26 +382,6 @@ msgstr "Raportti myyjän tavaroista"
 
 msgid "Search terms separated by space"
 msgstr "Hakuehdot välilyönnillä erotettuna"
-
-#| msgid "Compensate"
-msgid "Compensate…"
-msgstr "Anna rahat…"
-
-#| msgid "Return Items"
-msgid "Return Items…"
-msgstr "Palauta tavaroita…"
-
-#| msgid "Abandon All Items Currently On Display"
-msgid "Abandon All Items Currently On Display…"
-msgstr "Hylkää kaikki näytteillä olevat tavarat…"
-
-#| msgid "Compensation receipts"
-msgid "Compensation receipts…"
-msgstr "Hyvityskuitit…"
-
-#| msgid "Mobile code"
-msgid "Mobile code…"
-msgstr "Mobiilikoodi…"
 
 msgid "Boxes"
 msgstr "Laatikot"
@@ -498,18 +475,6 @@ msgstr "eurot"
 msgid "No data"
 msgstr "Ei tietoja"
 
-msgid "#"
-msgstr "#"
-
-msgid "abandoned"
-msgstr "hylätty"
-
-msgid "Total:"
-msgstr "Yhteensä:"
-
-msgid "No items."
-msgstr "Ei tavaroita."
-
 msgid "brought"
 msgstr "tuotuja"
 
@@ -525,8 +490,59 @@ msgstr "palautettavia"
 msgid "No boxes."
 msgstr "Ei laatkoita."
 
+msgid "Total:"
+msgstr "Yhteensä:"
+
+#| msgid "Sold Items"
+msgid "Edit Item"
+msgstr "Muokkaa tavaraa"
+
+msgid "Name"
+msgstr "Nimi"
+
+msgid "Code"
+msgstr "Koodi"
+
 msgid "Vendor"
 msgstr "Myyjä"
+
+msgid "Vendor has requested a price change."
+msgstr "Myyjä on pyytänyt hinnan muutosta."
+
+#| msgid "price"
+msgid "Price"
+msgstr "Hinta"
+
+msgid "Type"
+msgstr "Tyyppi"
+
+#| msgid "abandoned"
+msgid "Abandoned"
+msgstr "Hylätty"
+
+msgid "Yes"
+msgstr "Kyllä"
+
+msgid "No"
+msgstr "Ei"
+
+msgid "Print"
+msgstr "Tulosta"
+
+msgid "Save"
+msgstr "Tallenna"
+
+msgid "#"
+msgstr "#"
+
+msgid "Vendor must pay!"
+msgstr "Myyjän on maksettava!"
+
+msgid "abandoned"
+msgstr "hylätty"
+
+msgid "No items."
+msgstr "Ei tavaroita."
 
 msgid "Name / Bar code"
 msgstr "Nimi / Viivakoodi"
@@ -543,15 +559,12 @@ msgstr "Vähimmäishinta"
 msgid "Maximum price"
 msgstr "Enimmäishinta"
 
-msgid "Type"
-msgstr "Tyyppi"
-
 msgid ""
 "To select/deselect multiple values, press <kbd>Ctrl</kbd>, <kbd>Command</"
 "kbd> or <kbd>Shift</kbd> keys while clicking items."
 msgstr ""
-"Paina <kbd>Ctrl</kbd>, <kbd>Command</kbd> tai <kbd>Shift</kbd>-painiketta"
-" klikatessa valitaksesi useamman arvon."
+"Paina <kbd>Ctrl</kbd>, <kbd>Command</kbd> tai <kbd>Shift</kbd>-painiketta "
+"klikatessa valitaksesi useamman arvon."
 
 msgid "State"
 msgstr "Tila"
@@ -565,6 +578,12 @@ msgstr "Etsi"
 msgid "Reset"
 msgstr "Tyhjennä"
 
+msgid "Notes"
+msgstr "Huomiot"
+
+msgid "Items"
+msgstr "Tavarat"
+
 msgid "began"
 msgstr "alkoi"
 
@@ -577,20 +596,39 @@ msgstr "hyvitetty"
 msgid "clerk (counter)"
 msgstr "kassahenkilö (kassa)"
 
-msgid "Notes"
-msgstr "Huomiot"
-
-msgid "Items"
-msgstr "Tavarat"
-
 msgid "Note for suspend"
 msgstr "Huomio keskeytykseen"
+
+msgid "Confirm"
+msgstr "Vahvista"
+
+msgid "Retry"
+msgstr "Yritä uudelleen"
+
+msgid "Balance Reconciliation…"
+msgstr "Tilin tasaus…"
+
+msgid "Return Items…"
+msgstr "Palauta tavaroita…"
+
+msgid "Abandon All Items Currently On Display…"
+msgstr "Hylkää kaikki näytteillä olevat tavarat…"
+
+msgid "Compensation receipts…"
+msgstr "Hyvityskuitit…"
+
+msgid "Mobile code…"
+msgstr "Mobiilikoodi…"
+
+msgid "Expected total:"
+msgstr "Odotettu summa:"
 
 msgid "item type"
 msgstr "tavaran tyyppi"
 
-msgid "Expected total:"
-msgstr "Odotettu summa:"
+#~| msgid "Compensate"
+#~ msgid "Compensate…"
+#~ msgstr "Anna rahat…"
 
 #~ msgid "Someone else's item!"
 #~ msgstr "Jonkun toisen tavara!"

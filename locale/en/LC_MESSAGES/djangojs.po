@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2017, 2018, 2019.
+# Jyrki Launonen, 2014, 2015, 2017, 2018, 2019, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-05 20:32+0300\n"
-"PO-Revision-Date: 2019-09-05 20:32+0300\n"
+"POT-Creation-Date: 2020-05-31 16:14+0300\n"
+"PO-Revision-Date: 2020-05-31 16:15+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 19.04.3\n"
+"X-Generator: Lokalize 19.12.3\n"
 
 msgid ""
 "This box has been already printed. Are you sure you want to print it again?"
@@ -341,14 +341,11 @@ msgstr "%d, cashier: %c"
 msgid "Vendor Compensation"
 msgstr "Vendor Compensation"
 
-msgid "Confirm"
-msgstr "Confirm"
-
-msgid "Retry"
-msgstr "Retry"
-
 msgid "Sold Items"
 msgstr "Sold Items"
+
+msgid "Balance Reconciliation"
+msgstr "Balance Reconciliation"
 
 msgid "No compensable items"
 msgstr "No compensable items"
@@ -386,26 +383,6 @@ msgstr "Item Report"
 
 msgid "Search terms separated by space"
 msgstr "Search terms separated by space"
-
-#| msgid "Compensate"
-msgid "Compensate…"
-msgstr "Compensate…"
-
-#| msgid "Return Items"
-msgid "Return Items…"
-msgstr "Return Items…"
-
-#| msgid "Abandon All Items Currently On Display"
-msgid "Abandon All Items Currently On Display…"
-msgstr "Abandon All Items Currently On Display…"
-
-#| msgid "Compensation receipts"
-msgid "Compensation receipts…"
-msgstr "Compensation receipts…"
-
-#| msgid "Mobile code"
-msgid "Mobile code…"
-msgstr "Mobile code…"
 
 msgid "Boxes"
 msgstr "Boxes"
@@ -499,18 +476,6 @@ msgstr "euros"
 msgid "No data"
 msgstr "No data"
 
-msgid "#"
-msgstr "#"
-
-msgid "abandoned"
-msgstr "abandoned"
-
-msgid "Total:"
-msgstr "Total:"
-
-msgid "No items."
-msgstr "No items."
-
 msgid "brought"
 msgstr "brought"
 
@@ -526,8 +491,59 @@ msgstr "returnable"
 msgid "No boxes."
 msgstr "No boxes."
 
+msgid "Total:"
+msgstr "Total:"
+
+#| msgid "Sold Items"
+msgid "Edit Item"
+msgstr "Edit Item"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Code"
+msgstr "Code"
+
 msgid "Vendor"
 msgstr "Vendor"
+
+msgid "Vendor has requested a price change."
+msgstr "Vendor has requested a price change."
+
+#| msgid "price"
+msgid "Price"
+msgstr "Price"
+
+msgid "Type"
+msgstr "Type"
+
+#| msgid "abandoned"
+msgid "Abandoned"
+msgstr "Abandoned"
+
+msgid "Yes"
+msgstr "Yes"
+
+msgid "No"
+msgstr "No"
+
+msgid "Print"
+msgstr "Print"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "#"
+msgstr "#"
+
+msgid "Vendor must pay!"
+msgstr "Vendor must pay!"
+
+msgid "abandoned"
+msgstr "abandoned"
+
+msgid "No items."
+msgstr "No items."
 
 msgid "Name / Bar code"
 msgstr "Name / Bar code"
@@ -543,9 +559,6 @@ msgstr "Minimum price"
 
 msgid "Maximum price"
 msgstr "Maximum price"
-
-msgid "Type"
-msgstr "Type"
 
 msgid ""
 "To select/deselect multiple values, press <kbd>Ctrl</kbd>, <kbd>Command</"
@@ -566,6 +579,12 @@ msgstr "Search"
 msgid "Reset"
 msgstr "Reset"
 
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Items"
+msgstr "Items"
+
 msgid "began"
 msgstr "began"
 
@@ -578,20 +597,39 @@ msgstr "compensated at"
 msgid "clerk (counter)"
 msgstr "clerk (counter)"
 
-msgid "Notes"
-msgstr "Notes"
-
-msgid "Items"
-msgstr "Items"
-
 msgid "Note for suspend"
 msgstr "Note for suspend"
+
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Retry"
+msgstr "Retry"
+
+msgid "Balance Reconciliation…"
+msgstr "Balance Reconciliation…"
+
+msgid "Return Items…"
+msgstr "Return Items…"
+
+msgid "Abandon All Items Currently On Display…"
+msgstr "Abandon All Items Currently On Display…"
+
+msgid "Compensation receipts…"
+msgstr "Compensation receipts…"
+
+msgid "Mobile code…"
+msgstr "Mobile code…"
+
+msgid "Expected total:"
+msgstr "Expected total:"
 
 msgid "item type"
 msgstr "item type"
 
-msgid "Expected total:"
-msgstr "Expected total:"
+#~| msgid "Compensate"
+#~ msgid "Compensate…"
+#~ msgstr "Compensate…"
 
 #~ msgid "Someone else's item!"
 #~ msgstr "Someone else's item!"

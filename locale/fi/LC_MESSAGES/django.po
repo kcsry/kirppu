@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019.
+# Jyrki Launonen, 2014, 2015, 2016, 2017, 2018, 2019, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-15 20:49+0300\n"
-"PO-Revision-Date: 2019-10-15 20:52+0300\n"
+"POT-Creation-Date: 2020-05-31 16:14+0300\n"
+"PO-Revision-Date: 2020-05-31 16:16+0300\n"
 "Last-Translator: Jyrki Launonen\n"
 "Language-Team: Finnish <>\n"
 "Language: fi\n"
@@ -15,59 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 19.04.3\n"
-
-msgid "Event number"
-msgstr "Tapahtumanumero"
-
-msgid "Timestamp"
-msgstr "Aikaleima"
-
-msgid "Vendor"
-msgstr "Myyjä"
-
-msgid "Event type"
-msgstr "Tapahtuman tyyppi"
-
-msgctxt "Substantive, change in value or balance"
-msgid "Change"
-msgstr "Muutos"
-
-msgid "Vendor balance"
-msgstr "Myyjän saldo"
-
-msgid "Total balance"
-msgstr "Yhteissaldo"
-
-msgid "SALE"
-msgstr "MYYNTI"
-
-msgid "PAYOUT"
-msgstr "HYVITYS"
-
-msgid "COMMISSION"
-msgstr "PALVELUMAKSU"
-
-msgid "COMMISSION FIX"
-msgstr "PALVELUMAKSUN KORJAUS"
-
-msgid "FORFEIT"
-msgstr "MENETYS"
-
-msgid "accounting"
-msgstr "kirjanpito"
-
-msgid "Payout difference:"
-msgstr "Eroavaisuus hyvityksissä:"
-
-msgid "In Items"
-msgstr "Tavaroissa"
-
-msgid "In Receipts"
-msgstr "Kuiteissa"
-
-msgid "Forfeit difference:"
-msgstr "Eroavaisuus menetyksissä:"
+"X-Generator: Lokalize 19.12.3\n"
 
 msgid "User"
 msgstr "Käyttäjä"
@@ -75,7 +23,6 @@ msgstr "Käyttäjä"
 msgid "Person"
 msgstr "Henkilö"
 
-#| msgid "Event:"
 msgid "Event"
 msgstr "Tapahtuma"
 
@@ -112,7 +59,6 @@ msgstr "Käyttötunniste asetettu '{0}':lle tapahtumassa '{1}'"
 msgid "Clerk {name} added into {event}."
 msgstr "Kassahenkilö {name} lisättiin tapahtumaan {event}."
 
-#| msgid "Add %(name)s from SSO provider"
 msgid "Add clerk from SSO provider"
 msgstr "Lisää kassahenkilö SSO-tarjoajalta"
 
@@ -127,6 +73,9 @@ msgstr "Lisää irrallinen kassahenkilö"
 
 msgid "Re-generate bar codes for items"
 msgstr "Luo tavaroiden viivakoodit uudelleen"
+
+msgid "Vendor"
+msgstr "Myyjä"
 
 msgid "Item"
 msgstr "Tavara"
@@ -300,63 +249,6 @@ msgstr "Tavaralla täytyy olla tyyppi."
 msgid "Invalid item type."
 msgstr "Virheellinen tavaran tyyppi."
 
-msgid "Vendor id"
-msgstr "Myyjä"
-
-msgid "Barcode"
-msgstr "Viivakoodi"
-
-msgid "Price"
-msgstr "Hinta"
-
-msgid "Brought"
-msgstr "Tuotu tapahtumaan"
-
-msgid "Sold"
-msgstr "Myyty"
-
-msgid "Compensated / Returned"
-msgstr "Hyvitetty / Palautettu"
-
-msgid "Name"
-msgstr "Nimi"
-
-msgid "items"
-msgstr "tavarat"
-
-msgid "Returnable Items"
-msgstr "Palautettavat tavarat"
-
-msgid "Compensable Items"
-msgstr "Hyvitettävät tavarat"
-
-msgid "Compensated Items"
-msgstr "Hyvitetyt tavarat"
-
-msgid "Other Items"
-msgstr "Muut tavarat"
-
-msgid "Not brought to event"
-msgstr "Tuomatta tapahtumaan"
-
-msgid "Access key must be given"
-msgstr "Koodiavain on annettava"
-
-msgid "You are trying too much. Try again later."
-msgstr "Olet yrittänyt liian monta kertaa. Yritä myöhemmin uudelleen."
-
-msgid "Invalid access key"
-msgstr "Virheellinen koodiavain"
-
-msgid "Unregistered vendor."
-msgstr "Rekisteröimätön myyjä."
-
-msgid "provision:"
-msgstr "provisio:"
-
-msgid "This location is not in use."
-msgstr "Tämä sivu ei ole käytössä."
-
 msgid "first name"
 msgstr "etunimi"
 
@@ -366,13 +258,15 @@ msgstr "sukunimi"
 msgid "email address"
 msgstr "sähköposti"
 
+#| msgid ""
+#| "Python function body that gets sold_and_compensated queryset as argument "
+#| "and must call result() with None or Decimal argument."
 msgid ""
-"Python function body that gets sold_and_compensated queryset as argument and "
-"must call result() with None or Decimal argument."
+"Lisp function body that gets sold_and_compensated queryset as a global and "
+"must return a null or decimal number."
 msgstr ""
-"Python-funktion vartalo joka saa parametrina sold_and_compensated "
-"kyselyjoukon ja jonka on kutsuttava result()-funktiota None tai Decimal-"
-"instanssi parametrinaan."
+"Lisp-funktio joka saa globaalina muuttujana sold_and_compensated "
+"kyselyjoukon ja jonka on palautettava null tai desimaalinumero."
 
 msgid ""
 "Amount of unsold Items a Vendor can have in the Event. If blank, no limit is "
@@ -387,7 +281,6 @@ msgstr "Näkyvillä"
 msgid "Not listed in front page"
 msgstr "Ei listattuna etusivulla"
 
-#| msgid "Provision"
 msgid "Permissions"
 msgstr "Oikeudet"
 
@@ -402,6 +295,9 @@ msgstr "Käytössä?"
 
 msgid "Value cannot be negative"
 msgstr "Arvo ei voi olla negatiivinen"
+
+msgid "Price"
+msgstr "Hinta"
 
 msgid "Item count"
 msgstr "Tavaramäärä"
@@ -420,6 +316,9 @@ msgstr "Tuotu tapahtumaan"
 
 msgid "Staged for selling"
 msgstr "Varattu myytäväksi"
+
+msgid "Sold"
+msgstr "Myyty"
 
 msgid "Missing"
 msgstr "Puuttuu"
@@ -786,7 +685,6 @@ msgstr "Sivuston hallinta"
 msgid "Coming events"
 msgstr "Tulevat tapahtumat"
 
-#| msgid "Not brought to event"
 msgid "No future events"
 msgstr "Ei tulevia tapahtumia"
 
@@ -830,6 +728,9 @@ msgstr "Tulostettu ja poistettu"
 msgid "Printed, not brought"
 msgstr "Tulostettu, tuomatta"
 
+msgid "Brought"
+msgstr "Tuotu tapahtumaan"
+
 #, python-format
 msgid "%(brought)s (%(broughtOfRegistered)s%% of registered)"
 msgstr "%(brought)s (%(broughtOfRegistered)s%% rekisteröidyistä)"
@@ -872,6 +773,9 @@ msgstr "99.7. persentiili"
 
 msgid "Lost and found"
 msgstr "Löytötavara"
+
+msgid "Name"
+msgstr "Nimi"
 
 msgid "Code"
 msgstr "Koodi"
@@ -976,6 +880,9 @@ msgstr "Rekisteröidyt laatikot"
 msgid "description"
 msgstr "kuvaus"
 
+msgid "items"
+msgstr "tavarat"
+
 msgid "unit price"
 msgstr "yksikköhinta"
 
@@ -1008,6 +915,9 @@ msgstr "yhteensä:"
 msgid "No items"
 msgstr "Ei tavaroita"
 
+msgid "Unregistered vendor."
+msgstr "Rekisteröimätön myyjä."
+
 msgid "View as text"
 msgstr "Näytä tekstinä"
 
@@ -1025,6 +935,94 @@ msgstr "Tai kirjaudu tavallisesti?"
 
 msgid "Image extension not supported"
 msgstr "Kuvatyyppi ei ole tuettu"
+
+msgid "Event number"
+msgstr "Tapahtumanumero"
+
+msgid "Timestamp"
+msgstr "Aikaleima"
+
+msgid "Event type"
+msgstr "Tapahtuman tyyppi"
+
+msgctxt "Substantive, change in value or balance"
+msgid "Change"
+msgstr "Muutos"
+
+msgid "Vendor balance"
+msgstr "Myyjän saldo"
+
+msgid "Total balance"
+msgstr "Yhteissaldo"
+
+msgid "SALE"
+msgstr "MYYNTI"
+
+msgid "PAYOUT"
+msgstr "HYVITYS"
+
+msgid "COMMISSION"
+msgstr "PALVELUMAKSU"
+
+msgid "COMMISSION FIX"
+msgstr "PALVELUMAKSUN KORJAUS"
+
+msgid "FORFEIT"
+msgstr "MENETYS"
+
+msgid "accounting"
+msgstr "kirjanpito"
+
+msgid "Payout difference:"
+msgstr "Eroavaisuus hyvityksissä:"
+
+msgid "In Items"
+msgstr "Tavaroissa"
+
+msgid "In Receipts"
+msgstr "Kuiteissa"
+
+msgid "Forfeit difference:"
+msgstr "Eroavaisuus menetyksissä:"
+
+msgid "Vendor id"
+msgstr "Myyjä"
+
+msgid "Barcode"
+msgstr "Viivakoodi"
+
+msgid "Compensated / Returned"
+msgstr "Hyvitetty / Palautettu"
+
+msgid "Returnable Items"
+msgstr "Palautettavat tavarat"
+
+msgid "Compensable Items"
+msgstr "Hyvitettävät tavarat"
+
+msgid "Compensated Items"
+msgstr "Hyvitetyt tavarat"
+
+msgid "Other Items"
+msgstr "Muut tavarat"
+
+msgid "Not brought to event"
+msgstr "Tuomatta tapahtumaan"
+
+msgid "Access key must be given"
+msgstr "Koodiavain on annettava"
+
+msgid "You are trying too much. Try again later."
+msgstr "Olet yrittänyt liian monta kertaa. Yritä myöhemmin uudelleen."
+
+msgid "Invalid access key"
+msgstr "Virheellinen koodiavain"
+
+msgid "provision:"
+msgstr "provisio:"
+
+msgid "This location is not in use."
+msgstr "Tämä sivu ei ole käytössä."
 
 #, python-format
 msgid ""
