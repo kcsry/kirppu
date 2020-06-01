@@ -3,12 +3,13 @@ class @VendorFindMode extends CheckoutMode
 
   constructor: (args..., query) ->
     super
-    @vendorList = new VendorList()
+    @vendorTable = Template.vendor_list()
+    @vendorList = $(@vendorTable.querySelector("tbody"))
     @query = query
 
   enter: ->
     super
-    @cfg.uiRef.body.append(@vendorList.render())
+    @cfg.uiRef.body.append(@vendorTable)
 
     if @query?
       @onSearchVendor(@query)
@@ -24,23 +25,22 @@ class @VendorFindMode extends CheckoutMode
 
   onSearchVendor: (query) =>
     if query.trim() == ""
-      @vendorList.body.empty()
+      @vendorList.empty()
     else
       Api.vendor_find(q: query).done(@onVendorsFound)
 
   onVendorsFound: (vendors) =>
-    @vendorList.body.empty()
+    @vendorList.empty()
     if vendors.length == 1
       @switcher.switchTo(VendorReport, vendors[0])
       return
 
     for vendor_, index_ in vendors
       ((vendor, index) =>
-        @vendorList.append(
-          vendor,
-          index + 1,
-          (=> @switcher.switchTo(VendorReport, vendor)),
-        )
+        @vendorList.append(Template.vendor_list_item(
+          vendor: vendor,
+          index: index + 1,
+          action: (=> @switcher.switchTo(VendorReport, vendor)),
+        ))
       )(vendor_, index_)
     return
-

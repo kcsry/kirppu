@@ -3,7 +3,8 @@ class @ItemFindMode extends CheckoutMode
 
   constructor: ->
     super
-    @itemList = new ItemFindList()
+    @itemTable = Template.item_find_table()
+    @itemList = $(@itemTable.querySelector("tbody"))
     @searchForm = new ItemSearchForm(@doSearch)
     @search = null
 
@@ -15,7 +16,7 @@ class @ItemFindMode extends CheckoutMode
     super
     @cfg.uiRef.body.empty()
     @cfg.uiRef.body.append(@searchForm.render())
-    @cfg.uiRef.body.append(@itemList.render())
+    @cfg.uiRef.body.append(@itemTable)
     @searchForm.searchInput.focus()
 
   glyph: -> "search"
@@ -34,17 +35,17 @@ class @ItemFindMode extends CheckoutMode
     Api.item_search(@search).done(@onItemsFound)
 
   onItemsFound: (items) =>
-    @itemList.body.empty()
+    @itemList.empty()
     for item_, index_ in items
       ((item, index) =>
-        @itemList.append(
-          item,
-          index + 1,
-          @onItemClick,
-        )
+        @itemList.append(Template.item_find_table_item(
+          item: item
+          index: index + 1
+          onClick: @onItemClick
+        ))
       )(item_, index_)
     if items.length == 0
-      @itemList.no_results()
+      @itemList.append(Template.item_find_table_no_results())
     if @_focusInSearch
       @searchForm.searchInput.select()
     return

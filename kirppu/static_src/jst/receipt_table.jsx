@@ -1,4 +1,3 @@
-// In print receipt.
 
 export function receipt_table({caption, vendor, code, item, price}) {
     return (

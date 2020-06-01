@@ -7,12 +7,13 @@ class LostAndFound extends CheckoutMode
 
   constructor: (args...) ->
     super(args...)
-    @list = new LostAndFoundTable()
+    @table = Template.lost_and_found_table()
+    @list = $(@table.querySelector("tbody"))
 
   enter: ->
     super
     @cfg.uiRef.codeForm.removeClass("hidden")
-    @cfg.uiRef.body.append(@list.render())
+    @cfg.uiRef.body.append(@table)
 
   exit: ->
     @cfg.uiRef.codeForm.addClass("hidden")
@@ -23,7 +24,7 @@ class LostAndFound extends CheckoutMode
   ]
 
   onMarked: (item) =>
-    @list.append(item)
+    @list.append(Template.lost_and_found_table_item(item: item))
 
   onResultError: (jqXHR) =>
     if jqXHR.status == 404
