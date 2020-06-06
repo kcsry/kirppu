@@ -235,3 +235,14 @@ def short_description(text):
         fn.short_description = text
         return fn
     return wrap
+
+
+def datetime_iso_human(dt):
+    """Kind of ISO format, but slightly more readable, perhaps."""
+    if dt is None:
+        return None
+    return (timezone.template_localtime(dt)
+            .isoformat(timespec="milliseconds")
+            .replace("T", " T ")
+            .replace("+", " +")
+            )

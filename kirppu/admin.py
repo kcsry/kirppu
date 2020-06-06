@@ -41,6 +41,7 @@ from .models import (
 )
 
 from .util import get_form
+from .utils import datetime_iso_human
 
 __author__ = 'jyrkila'
 
@@ -489,10 +490,14 @@ class ItemAdmin(admin.ModelAdmin):
     )
 
 
+_receipt_item_link = RefLinkAccessor("item", ugettext("Item"))
+
+
 class ReceiptItemAdmin(admin.TabularInline):
     model = ReceiptItem
     ordering = ["add_time"]
-    readonly_fields = ["item", "price_str"]
+    exclude = ["item"]
+    readonly_fields = [_receipt_item_link, "action", "price_str"]
 
     @with_description(Item._meta.get_field("price").verbose_name)
     def price_str(self, instance: ReceiptItem):
@@ -506,7 +511,7 @@ class ReceiptExtraAdmin(admin.TabularInline):
 class ReceiptNoteAdmin(admin.TabularInline):
     model = ReceiptNote
     ordering = ["timestamp"]
-    readonly_fields = ["clerk", "text"]
+    readonly_fields = ["clerk", "text", "timestamp"]
 
 
 @admin.register(Receipt)
@@ -516,8 +521,8 @@ class ReceiptAdmin(admin.ModelAdmin):
         ReceiptExtraAdmin,
         ReceiptNoteAdmin,
     ]
-    ordering = ["clerk", "-start_time"]
-    list_display = ["__str__", "status", "total", "counter", "end_time"]
+    ordering = ["-start_time"]
+    list_display = ["__str__", "status", "total", "counter", "end_time_str"]
     list_filter = [
         ("type", admin.ChoicesFieldListFilter),
         "clerk",
@@ -526,7 +531,8 @@ class ReceiptAdmin(admin.ModelAdmin):
     ]
     search_fields = ["items__code", "items__name"]
     actions = ["re_calculate_total"]
-    readonly_fields = ["start_time_str"]
+    exclude = ["end_time"]
+    readonly_fields = ["start_time_str", "end_time_str"]
 
     @with_description("Re-calculate total sum of receipt")
     def re_calculate_total(self, request, queryset):
@@ -539,7 +545,11 @@ class ReceiptAdmin(admin.ModelAdmin):
 
     @with_description(Receipt._meta.get_field("start_time").verbose_name)
     def start_time_str(self, instance: Receipt):
-        return str(instance.start_time)
+        return datetime_iso_human(instance.start_time)
+
+    @with_description(Receipt._meta.get_field("end_time").verbose_name)
+    def end_time_str(self, instance: Receipt):
+        return datetime_iso_human(instance.end_time)
 
 
 @admin.register(ItemStateLog)
@@ -547,7 +557,7 @@ class ItemStateLogAdmin(admin.ModelAdmin):
     model = ItemStateLog
     ordering = ["-id"]
     search_fields = ['item__code', 'clerk__user__username']
-    list_display = ['id', 'time',
+    list_display = ['id', 'time_str',
                     RefLinkAccessor("item", ugettext("Item")),
                     'old_state', 'new_state',
                     RefLinkAccessor("clerk", ugettext("Clerk")),
@@ -562,7 +572,7 @@ class ItemStateLogAdmin(admin.ModelAdmin):
 
     @with_description(ItemStateLog._meta.get_field("time").verbose_name)
     def time_str(self, instance: ItemStateLog):
-        return str(instance.time)
+        return datetime_iso_human(instance.time)
 
 
 class BoxItemAdmin(admin.TabularInline):

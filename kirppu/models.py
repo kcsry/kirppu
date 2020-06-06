@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.module_loading import import_string
 from django.conf import settings
 
-from .utils import model_dict_fn, format_datetime, short_description
+from .utils import model_dict_fn, format_datetime, short_description, datetime_iso_human
 
 from .util import (
     number_to_hex,
@@ -1123,7 +1123,7 @@ class Receipt(models.Model):
     def __str__(self):
         return "{type}: {start} / {clerk}".format(
             type=self.get_type_display(),
-            start=str(self.start_time),
+            start=datetime_iso_human(self.start_time),
             clerk=str(self.clerk),
         )
 
