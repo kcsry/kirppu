@@ -13,7 +13,7 @@ class @CompensationReceipt extends CheckoutMode
   enter: ->
     super
     @cfg.uiRef.codeForm.hide()
-    @cfg.uiRef.body.append(new VendorInfo(@vendor).render())
+    @cfg.uiRef.body.append(Template.vendor_info(vendor: @vendor))
 
     @buttonForm = $('<form class="hidden-print">').append(@continueButton())
     @cfg.uiRef.body.append(@buttonForm)

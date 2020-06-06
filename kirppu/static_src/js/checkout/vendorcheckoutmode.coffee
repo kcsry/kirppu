@@ -72,7 +72,7 @@ class @VendorCheckoutMode extends ItemCheckoutMode
           .attr('value', gettext('Open Report'))
           .click(=> @switcher.switchTo(VendorReport, vendor))
       )
-      @cfg.uiRef.body.prepend(new VendorInfo(vendor).render())
+      @cfg.uiRef.body.prepend(Template.vendor_info(vendor: vendor))
       if not @vendorId?
         @vendorId = vendor.id
         next()

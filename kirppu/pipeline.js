@@ -79,7 +79,6 @@ module.exports.js = {
             "js/checkout/item_receipt_table.coffee",
             "js/overseer/item_search_form.coffee",
             "js/overseer/item_edit_dialog.coffee",
-            "js/checkout/vendorinfo.coffee",
             "js/checkout/receiptsum.coffee",
             "js/checkout/printreceipttable.coffee",
 

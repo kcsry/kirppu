@@ -53,7 +53,7 @@ class @ItemEditDialog
     do @updatePriceTag
 
     @dialog.find('#item-edit-vendor-info').empty().append(
-      new VendorInfo(item.vendor, title=false).render()
+      Template.vendor_info(vendor: item.vendor, title: false)
     )
     @nameInput.val(item.name)
     @codeInput.val(item.code)

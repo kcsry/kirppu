@@ -10,7 +10,7 @@ class @VendorCompensation extends CheckoutMode
     super
     @cfg.uiRef.codeForm.hide()
     @switcher.setMenuEnabled(false)
-    @cfg.uiRef.body.append(new VendorInfo(@vendor).render())
+    @cfg.uiRef.body.append(Template.vendor_info(vendor: @vendor))
 
     @buttonForm = $('<form class="hidden-print">').append(@buttons(abort: true))
     @cfg.uiRef.body.append(@buttonForm)

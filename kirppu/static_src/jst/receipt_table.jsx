@@ -1,14 +1,14 @@
 
-export function receipt_table({caption, vendor, code, item, price}) {
+export function receipt_table({caption}) {
     return (
         <table className="table table-striped table-hover table-condensed">
             {caption && <caption className="h3">{caption}</caption>}
             <thead>
             <tr>
-                <th className="receipt_vendor_id">{vendor}</th>
-                <th className="receipt_code">{code}</th>
-                <th className="receipt_item">{item}</th>
-                <th className="receipt_price">{price}</th>
+                <th className="receipt_vendor_id">{gettext("vendor")}</th>
+                <th className="receipt_code">{gettext("code")}</th>
+                <th className="receipt_item">{gettext("item")}</th>
+                <th className="receipt_price">{gettext("price")}</th>
             </tr>
             </thead>
             <tbody/>

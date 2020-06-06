@@ -1,3 +1,4 @@
+import {dateTime} from "./helpers";
 
 function Row({title, value, classes}) {
     return (
@@ -8,15 +9,17 @@ function Row({title, value, classes}) {
     )
 }
 
-export default function render({text, vendor, title}) {
+export default function render({vendor, title=true}) {
     return (
         <div className="vendor-info-box">
             {title && <h3>{gettext("Vendor")}</h3>}
-            <Row title={text.name} value={vendor.name}/>
-            <Row title={text.email} value={vendor.email} classes="hidden-print"/>
-            <Row title={text.phone} value={vendor.phone} classes="hidden-print"/>
-            <Row title={text.id} value={vendor.id}/>
-            <Row title={text.terms_accepted_str} value={vendor.terms_accepted_str}/>
+            <Row title={gettext("name")} value={vendor.name}/>
+            <Row title={gettext("email")} value={vendor.email} classes="hidden-print"/>
+            <Row title={gettext("phone")} value={vendor.phone} classes="hidden-print"/>
+            <Row title={gettext("id")} value={vendor.id}/>
+            <Row title={gettext("terms accepted?")} value={
+                vendor.terms_accepted ? dateTime(vendor.terms_accepted) : ""
+            }/>
         </div>
     )
 }

@@ -71,7 +71,7 @@ class @VendorReport extends CheckoutMode
 
   enter: ->
     super
-    @cfg.uiRef.body.append(new VendorInfo(@vendor).render())
+    @cfg.uiRef.body.append(Template.vendor_info(vendor: @vendor))
     buttons = Template.vendor_report_buttons(
       onCompensate: @onCompensate,
       onReturn: @onReturn,

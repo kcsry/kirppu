@@ -1,16 +1,7 @@
 class @PrintReceiptTable
-  @strCode: gettext("code")
-  @strItem: gettext("item")
-  @strPrice: gettext("price")
-  @strVendor: gettext("vendor")
-
   constructor: (caption=null)->
     @table = $ Template.receipt_table(
       caption: caption
-      vendor: @constructor.strVendor
-      code: @constructor.strCode
-      item: @constructor.strItem
-      price: @constructor.strPrice
     )
     @body = $("tbody", @table)
 
