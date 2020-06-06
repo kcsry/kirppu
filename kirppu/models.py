@@ -200,6 +200,12 @@ class EventPermission(models.Model):
         return cls(**args)
 
 
+class ClerkPrefetchManager(models.Manager):
+    """Manager for "default" use so that admin doesn't need to always fetch user information separately."""
+    def get_queryset(self):
+        return super().get_queryset().select_related("user")
+
+
 class Clerk(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
@@ -212,7 +218,11 @@ class Clerk(models.Model):
         validators=[RegexValidator("^[0-9a-fA-F]{14}$", message="Must be 14 hex chars.")]
     )
 
+    prefetch_manager = ClerkPrefetchManager()
+    objects = models.Manager()
+
     class Meta:
+        default_manager_name = "prefetch_manager"
         constraints = (
             # user may be null if access_key is set in case of "unbound Clerk object".
             # access_key may be null if the clerk object has been disabled for user.

@@ -4,9 +4,10 @@ from django.core.exceptions import PermissionDenied
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin, messages
-from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE
-from django.db import IntegrityError, transaction
+from django.contrib.admin.options import get_content_type_for_model
+from django.contrib.admin.views.main import ChangeList
+from django.db import IntegrityError, models, transaction
 from django.urls import reverse, path
 from django.utils.encoding import force_text
 from django.utils.html import escape, format_html
@@ -170,6 +171,7 @@ class VendorAdmin(admin.ModelAdmin):
     list_select_related = (
         "event",
         "user",
+        "person",
     )
 
     @staticmethod
@@ -533,6 +535,7 @@ class ReceiptAdmin(admin.ModelAdmin):
     actions = ["re_calculate_total"]
     exclude = ["end_time"]
     readonly_fields = ["start_time_str", "end_time_str"]
+    list_select_related = ["clerk", "clerk__user", "counter"]
 
     @with_description("Re-calculate total sum of receipt")
     def re_calculate_total(self, request, queryset):
@@ -593,7 +596,13 @@ class BoxAdmin(admin.ModelAdmin):
     inlines = [
         BoxItemAdmin,
     ]
-    readonly_fields = ['representative_item', 'get_item_type_for_display', 'get_item_adult_for_display', 'bundle_size']
+    readonly_fields = [
+        'representative_item',
+        'get_item_type_for_display',
+        'get_item_adult_for_display',
+        'bundle_size',
+        'get_item_count',
+    ]
     search_fields = ['box_number', 'description', 'representative_item__code']
     ordering = ['box_number']
     list_display = [
@@ -601,7 +610,7 @@ class BoxAdmin(admin.ModelAdmin):
         'description',
         'code',
         'get_price',
-        'get_item_count',
+        '_list_item_count',
         'bundle_size',
         RefLinkAccessor("get_vendor", ugettext("Vendor")),
     ]
@@ -615,6 +624,20 @@ class BoxAdmin(admin.ModelAdmin):
     list_filter = (
         "representative_item__vendor__event",
     )
+
+    class BoxChangeList(ChangeList):
+        def get_queryset(self, request):
+            qs = super().get_queryset(request)
+            # Pre-calculate item count so it is not needed to be calculated per row afterwards.
+            # _list_item_count is used to access this, as list_display must point to concrete fields or functions.
+            return qs.annotate(item_count=models.Count("item", models.Q(item__hidden=False)))
+
+    def get_changelist(self, request, **kwargs):
+        return self.BoxChangeList
+
+    @with_description(ugettext("Item count"))
+    def _list_item_count(self, instance):
+        return instance.item_count
 
 
 @admin.register(TemporaryAccessPermit)
