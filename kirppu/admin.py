@@ -494,7 +494,7 @@ class ReceiptItemAdmin(admin.TabularInline):
     ordering = ["add_time"]
     readonly_fields = ["item", "price_str"]
 
-    @with_description(Item._meta.get_field("price").name)
+    @with_description(Item._meta.get_field("price").verbose_name)
     def price_str(self, instance: ReceiptItem):
         return instance.item.price
 
@@ -537,7 +537,7 @@ class ReceiptAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    @with_description(Receipt._meta.get_field("start_time").name)
+    @with_description(Receipt._meta.get_field("start_time").verbose_name)
     def start_time_str(self, instance: Receipt):
         return str(instance.start_time)
 
@@ -560,7 +560,7 @@ class ItemStateLogAdmin(admin.ModelAdmin):
         "old_state", "new_state", "clerk", "counter",
     )
 
-    @with_description(ItemStateLog._meta.get_field("time").name)
+    @with_description(ItemStateLog._meta.get_field("time").verbose_name)
     def time_str(self, instance: ItemStateLog):
         return str(instance.time)
 
