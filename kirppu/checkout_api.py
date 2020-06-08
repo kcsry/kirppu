@@ -42,6 +42,7 @@ from .models import (
     Box,
     TemporaryAccessPermit,
     TemporaryAccessPermitLog,
+    decimal_to_transport
 )
 from .fields import ItemPriceField
 from .forms import remove_item_from_receipt
@@ -353,31 +354,70 @@ def item_search(request, event, query, code, vendor, min_price, max_price, item_
         item_dict['vendor'] = item.vendor.as_dict()
         results.append(item_dict)
 
-    box_item_counts = dict(
+    box_item_details = dict()
+    box_item_detail_query = (
         Item.objects
-            .filter(*box_clauses, box__isnull=False)
-            .values("box")
+            .filter(*box_clauses, box__isnull=False, vendor__event=event)
+            .values("box", "price", "state")
             .annotate(item_count=Count("id"))
-            .values_list("box", "item_count")
+            .values_list("box", "item_count", "price", "state")
     )
+    box_item_counts = dict()
+    for entry in box_item_detail_query:
+        box_id = entry[0]
+        count_prices = box_item_details.setdefault(box_id, list())
+        count_prices.append(
+            {
+                "count": entry[1],
+                "price": decimal_to_transport(entry[2]),
+                "state": entry[3],
+            }
+        )
+        box_item_counts[box_id] = entry[1] + box_item_counts.get(box_id, 0)
 
-    for item in (
-        Item.objects
-        .filter(*box_clauses, box__representative_item__id=F("pk"), vendor__event=event)
-        .select_related("box", "itemtype", "vendor", "vendor__user")
-        .all()
-    ):
-        item_dict = item.as_dict()
-        item_dict['name'] = item.box.description
-        item_dict['vendor'] = item.vendor.as_dict()
-        item_dict['box'] = {
-            "box_number": item.box.box_number,
-            "bundle_size": item.box.bundle_size,
-            "item_count": box_item_counts[item.box_id],
-        }
-        results.append(item_dict)
+    if box_item_counts:
+        for item in (
+            Item.objects
+            .filter(*box_clauses, box__representative_item__id=F("pk"), vendor__event=event)
+            .select_related("box", "itemtype", "vendor", "vendor__user")
+            .all()
+        ):
+            item_dict = item.as_dict()
+            details = box_item_details[item.box_id]
+            box_item_states = {g["state"] for g in details}
+            for k, v in Box.ITEM_SET_REDUCED_STATE.items():
+                if v(box_item_states):
+                    item_dict["state"] = k
+                    item_dict["state_display"] = Item(state=k).get_state_display()
+                    break
+            else:
+                item_dict["state"] = "??"
+                item_dict["state_display"] = "??: " + str(box_item_states)
+                logger.error("No matching group for states: %s", str(box_item_states))
+
+            item_dict['name'] = item.box.description
+            item_dict['vendor'] = item.vendor.as_dict()
+            item_dict['box'] = {
+                "box_number": item.box.box_number,
+                "bundle_size": item.box.bundle_size,
+                "item_count": box_item_counts[item.box_id],
+                "item_prices": details,
+            }
+            results.append(item_dict)
 
     return results
+
+
+def _box_prices(box: Box) -> list:
+    price_counts = box.item_set.values("price", "state").annotate(count=Count("id"))
+    return list(
+        {
+            "count": p["count"],
+            "price": decimal_to_transport(p["price"]),
+            "state": p["state"],
+        }
+        for p in price_counts
+    )
 
 
 @ajax_func('^item/edit$', method='POST', overseer=True, atomic=True)
@@ -392,7 +432,12 @@ def item_edit(request, event, code, price, state):
 
     item = _get_item_or_404(code, for_update=True, event=event)
     if item.box_id is not None:
-        raise AjaxError(RET_CONFLICT, "Changing box details is not implemented.")
+        return _box_edit(request, item.box, price, state)
+    else:
+        return _item_edit(request, item, price, state)
+
+
+def _item_edit(request, item, price, state):
     updates = set()
 
     if price != item.price:
@@ -440,6 +485,30 @@ def item_edit(request, event, code, price, state):
 
     item_dict = item.as_dict()
     item_dict['vendor'] = item.vendor.as_dict()
+    return item_dict
+
+
+def _box_edit(request, box, price, state):
+    if box.item_set.filter(state=Item.STAGED).exists():
+        raise AjaxError(RET_LOCKED, _("Some box items are currently staged and cannot be changed."))
+    available_items = box.item_set.filter(state__in=(Item.ADVERTISED, Item.BROUGHT))
+    any_item = available_items.first()
+    if any_item is None:
+        raise AjaxError(RET_BAD_REQUEST, _("Nothing left to change"))
+    if any(i.price != any_item.price for i in available_items):
+        raise AjaxError(RET_CONFLICT, "Available box item prices are in conflicting state")
+
+    if price != any_item.price:
+        available_items.update(price=price)
+
+    representative = box.representative_item
+    item_dict = representative.as_dict()
+    item_dict['vendor'] = representative.vendor.as_dict()
+    item_dict['box'] = {
+        "box_number": box.box_number,
+        "bundle_size": box.bundle_size,
+        "item_prices": _box_prices(box),
+    }
     return item_dict
 
 
@@ -537,20 +606,43 @@ def box_list(request, vendor):
         .select_related("representative_item", "representative_item__itemtype")
         .annotate(
             count=Count("item"),
-            brought=Count("item", Q(item__state__in=(Item.BROUGHT, Item.STAGED, Item.SOLD, Item.RETURNED))),
-            sold=Count("item", Q(item__state=Item.SOLD)),
-            compensated=Count("item", Q(item__state=Item.COMPENSATED)),
+            brought=Count("item", Q(item__state__in=(
+                Item.BROUGHT, Item.STAGED, Item.SOLD, Item.COMPENSATED, Item.RETURNED))),
             returnable=Count("item", Q(item__state__in=(Item.BROUGHT, Item.STAGED))),
         )
         .distinct()
     )
+    box_detail_data = (
+        Box.objects
+        .filter(item__vendor__id=vendor, item__hidden=False)
+        .values("id", "item__price")
+        .annotate(
+            sold=Count("item", Q(item__state=Item.SOLD)),
+            compensated=Count("item", Q(item__state=Item.COMPENSATED)),
+        )
+        .distinct()
+    )
+    box_details = {}
+    for detail in box_detail_data:
+        box_details.setdefault(detail["id"], []).append(detail)
+
     for box in boxes:
-        data = box.as_dict(exclude=("item_count",))  # item_count is already resolved more efficiently.
+        # item_count is already resolved more efficiently.
+        # item_price may be multi-valued.
+        data = box.as_dict(exclude=("item_count", "item_price"))
+        details = box_details[box.id]
         data["item_count"] = box.count
         data["items_brought_total"] = box.brought
-        data["items_sold"] = box.sold
-        data["items_compensated"] = box.compensated
         data["items_returnable"] = box.returnable
+
+        for detail in details:
+            stat = {
+                "items_sold": detail["sold"],
+                "items_compensated": detail["compensated"],
+            }
+            price = decimal_to_transport(detail["item__price"])
+            data.setdefault("counts", {})[price] = stat
+
         out_boxes.append(data)
     return out_boxes
 

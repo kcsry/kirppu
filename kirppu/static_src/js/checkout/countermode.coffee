@@ -216,13 +216,20 @@ class @CounterMode extends ItemCheckoutMode
         @_create_box_arg(box)
       ).then(
         (data) =>
-          @_receipt.total += data.item_price * data.changed
+          @_receipt.total += data.items.reduce(
+            (acc, cur) => acc + cur.price,
+            0
+          )
 
           if Math.abs(data.total - @_receipt.total) >= 1
             console.error("Inconsistency: " + @_receipt.total + " != " + data.total)
 
-          for _ in data.item_codes
-            @_addRow(data)
+          for item in data.items
+            box_item =
+              box_number: data.box_number
+              description: data.description
+              price: item.price
+            @_addRow(box_item)
           @notifySuccess()
 
         (jqXHR) =>
@@ -268,13 +275,20 @@ class @CounterMode extends ItemCheckoutMode
         @_create_box_arg(box)
       ).then(
         (data) =>
-          @_receipt.total -= data.item_price * data.changed
+          @_receipt.total -= data.items.reduce(
+            (acc, cur) => acc + cur.price,
+            0
+          )
 
           if Math.abs(data.total - @_receipt.total) >= 1
             console.error("Inconsistency: " + @_receipt.total + " != " + data.total)
 
-          for _ in data.item_codes
-            @_addRow(data, true)
+          for item in data.items
+            box_item =
+              box_number: data.box_number
+              description: data.description
+              price: item.price
+            @_addRow(box_item, true)
           @notifySuccess()
 
         (jqXHR) =>

@@ -527,6 +527,17 @@ class Box(models.Model):
         __extend=as_public_dict
     )
 
+    # Functions to determine common state for box item_set states.
+    # ResultState : Callable(item_set->state_set)
+    ITEM_SET_REDUCED_STATE = {
+        "AD": lambda s: s == {"AD"},
+        "BR": lambda s: s == {"BR"},
+        "ST": lambda s: "ST" in s,
+        "SO": lambda s: "SO" in s and "ST" not in s,
+        "CO": lambda s: "CO" in s and "ST" not in s and "SO" not in s and "RE" not in s,
+        "RE": lambda s: "RE" in s and "ST" not in s and "SO" not in s,
+    }
+
     @property
     def code(self):
         return self.representative_item.code

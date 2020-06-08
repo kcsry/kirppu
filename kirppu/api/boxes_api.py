@@ -10,7 +10,7 @@ from .common import (
 from ..ajax_util import AjaxError, RET_BAD_REQUEST, RET_CONFLICT
 from ..checkout_api import ajax_func
 from ..forms import remove_item_from_receipt
-from ..models import Item, ItemStateLog, ReceiptItem
+from ..models import Item, ItemStateLog, ReceiptItem, decimal_to_transport
 
 __author__ = 'codez'
 
@@ -91,7 +91,14 @@ def box_item_reserve(request, event, box_number, box_item_count="1"):
     # Must force id-list to ensure stability.
     # Otherwise the "list" is considered as a subquery which may not be stable.
     candidates = list(box.item_set.select_for_update()
-                      .filter(state=Item.BROUGHT)[:box_item_count].values_list("pk", flat=True))
+                      .filter(state=Item.BROUGHT)[:box_item_count + 1].values_list("pk", flat=True))
+
+    # Avoid representative item, as it is needed for representing all available items.
+    # Reserve it only when it is last item to be reserved.
+    representative_item_id = box.representative_item_id
+    if len(candidates) == box_item_count + 1:
+        candidates = [c for c in candidates if c != representative_item_id]
+
     if len(candidates) == box_item_count:
         items = Item.objects.filter(pk__in=candidates)
         rows = [
@@ -109,12 +116,19 @@ def box_item_reserve(request, event, box_number, box_item_count="1"):
         receipt.calculate_total()
         receipt.save(update_fields=("total",))
 
+        result_items = [
+            {
+                "code": entry["code"],
+                "price": decimal_to_transport(entry["price"]),
+            }
+            for entry in items.values("code", "price")
+        ]
         ret = box.as_dict()
+        del ret["item_price"]  # item_price assumes representative item has same price as ones being reserved.
         ret.update(
-            price=ret["item_price"],
             total=receipt.total_cents,
             changed=box_item_count,
-            item_codes=list(items.values_list("code", flat=True)),
+            items=result_items,
             item_name=box.representative_item.name,
         )
         return ret
@@ -133,23 +147,36 @@ def box_item_release(request, event, box_number, box_item_count="1"):
         raise AjaxError(RET_BAD_REQUEST, "No active receipt found")
     receipt = get_receipt(receipt_id, for_update=True)
 
-    box_items = receipt.items.select_for_update().filter(receiptitem__action=ReceiptItem.ADD, box=box)[:box_item_count]
-    if box_items.count() != box_item_count:
+    box_items = list(receipt.items.select_for_update().filter(receiptitem__action=ReceiptItem.ADD, box=box).distinct())
+    if len(box_items) < box_item_count:
         raise AjaxError(RET_CONFLICT,
-                        _("Only {} items of {} available for removal.").format(box_items.count(), box_item_count))
+                        _("Only {} items of {} available for removal.").format(len(box_items), box_item_count))
 
-    ret = box.as_dict()
-    item_codes = list()
+    representative_item_id = box.representative_item_id
+    items = list()
+
+    # Firstly remove representative item, if possible.
+    box_items = sorted(box_items, key=lambda i: 0 if i.pk == representative_item_id else 1)
+
+    # Remove items until enough are removed.
     for box_item in box_items:
+        if len(items) == box_item_count:
+            break
         removal_entry = remove_item_from_receipt(request, box_item, receipt, update_receipt=False)
-        item_codes.append(removal_entry.item.code)
+        items.append({
+            "code": removal_entry.item.code,
+            "price": decimal_to_transport(removal_entry.item.price),
+        })
+
     receipt.calculate_total()
     receipt.save(update_fields=("total",))
 
+    ret = box.as_dict()
+    del ret["item_price"]  # item_price assumes representative item has same price as ones being reserved.
     ret.update(
         total=receipt.total_cents,
         changed=box_item_count,
-        item_codes=item_codes,
+        items=items,
         item_name=box.representative_item.name
     )
     return ret

@@ -327,7 +327,7 @@ def remove_item_from_receipt(request, item_or_code, receipt_id, update_receipt=T
         .order_by("-add_time")
 
     if len(last_added_item) == 0:
-        raise ValueError(u"Item is not added to receipt.")
+        raise ValueError("Item {} is not added to receipt.".format(item))
     assert len(last_added_item) == 1, "Receipt content conflict."
 
     last_added_item = last_added_item[0]

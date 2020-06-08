@@ -97,7 +97,6 @@ class TableContents(object):
     def __init__(self, spec):
         self.spec = spec
         self.items = []
-        self.boxes = set()
         self.pre_sum_line = ()
         self.sum = Decimal(0)
 
@@ -184,18 +183,20 @@ def _data_view(request, event, permit):
         .order_by("name") \
         .only("id", "hidden", "price", "state", "code", "name", "box__id")
 
-    box_extras = {
-        "items_%s" % key: models.Count(models.Case(models.When(item__state__in=table.states, then=1),
-                                                   output_field=models.IntegerField()))
-        for key, table in TABLES.items()
-    }
+    box_objects = (
+        Box.objects
+        .filter(item__vendor=vendor)
+        .values("pk", "item__price", "item__state")
+        .annotate(item_count=Count("item"),
+                  box_code=models.F("representative_item__code"),
+                  description=models.F("description"))
+    )
 
-    box_objects = Box.objects \
-        .filter(item__vendor=vendor) \
-        .select_related("representative_item") \
-        .annotate(item_count=Count("item"), **box_extras)
-
-    boxes = {box.pk: box for box in box_objects}
+    boxes = {(box["pk"], box["item__state"], box["item__price"]): box for box in box_objects}
+    box_total_items = {}
+    for key, box in boxes.items():
+        pk = box["pk"]
+        box_total_items[pk] = box_total_items.get(pk, 0) + box["item_count"]
 
     currency_length = len(format_price(Decimal(0))) - 1
 
@@ -214,13 +215,14 @@ def _data_view(request, event, permit):
 
                 if item.box is not None:
                     pk = item.box.pk
-                    if pk not in table.boxes:
-                        table.boxes.add(pk)
-                        box = boxes[pk]
-                        row = _box(box, candidate)
+                    key = pk, item.state, item.price
+                    box = boxes.get(key)
+                    if box is not None:
+                        del boxes[key]
+                        row = _box(box, box_total_items[pk])
 
-                        price_multiplier = getattr(box, "items_%s" % candidate)
-                        price_value = box.representative_item.price
+                        price_multiplier = box["item_count"]
+                        price_value = box["item__price"]
                 else:
                     row = _item(item)
                     price_value = item.price
@@ -295,18 +297,18 @@ def _item(item):
     }
 
 
-def _box(box, table_key):
+def _box(box, total):
     """
-    :type box: Box
-    :type table_key: str
+    :type box: dict
+    :type total: int
     """
     return {
         "box": True,
-        "code": box.representative_item.code,
-        "price": box.representative_item.price_fmt,
-        "name": box.description,
-        "value": getattr(box, "items_%s" % table_key),
-        "total": box.item_count,
+        "code": box["box_code"],
+        "price": Item.price_fmt_for(box["item__price"]),
+        "name": box["description"],
+        "value": box["item_count"],
+        "total": total,
     }
 
 

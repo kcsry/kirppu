@@ -117,23 +117,25 @@ class @VendorReport extends CheckoutMode
 
     if boxes.length > 0
       sum =
-        brought: 0
         sold: 0
         compensated: 0
       count =
         brought: 0
         sold: 0
         compensated: 0
+        returnable: 0
 
       for box in boxes
-        unit_price = box.item_price
-
         count.brought += box.items_brought_total
-        sum.brought += box.items_brought_total * unit_price
-        count.sold += box.items_sold
-        sum.sold += box.items_sold * unit_price
-        count.compensated += box.items_compensated
-        sum.compensated += box.items_compensated * unit_price
+        count.returnable += box.items_returnable
+        for unit_price of box.counts
+          detail = box.counts[unit_price]
+
+          count.sold += detail.items_sold
+          sum.sold += detail.items_sold * unit_price
+
+          count.compensated += detail.items_compensated
+          sum.compensated += detail.items_compensated * unit_price
 
       rendered_table = Template.box_report_table(
         caption: gettext("Boxes")

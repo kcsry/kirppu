@@ -8,7 +8,7 @@ import factory
 from .factories import *
 from .api_access import Api
 from . import ResultMixin
-from ..models import Item, Receipt
+from ..models import Item, Receipt, ReceiptItem
 
 __author__ = 'codez'
 
@@ -156,3 +156,39 @@ class StatesTest(TestCase, ResultMixin):
 
         self.assertResult(self.api.box_item_reserve(box_number=box.box_number, box_item_count=reserve_count),
                           expect=HTTPStatus.CONFLICT)
+
+    def test_box_return_receipt(self):
+        """Reserving and releasing box items should avoid representative item,
+        as it is the one used to display item price.
+        Relevant when part of box items are sold, and price of rest of its items are changed."""
+        box = BoxFactory(adopt=True, items=self.items, box_number=1)
+        Item.objects.all().update(state=Item.BROUGHT)
+
+        representative_item_id = box.representative_item_id
+        receipt = self.assertSuccess(self.api.receipt_start()).json()
+
+        def check_count(n):
+            self.assertEqual(n, Item.objects.filter(state=Item.STAGED).count())
+            self.assertEqual(n, ReceiptItem.objects.filter(receipt__pk=receipt["id"], action=ReceiptItem.ADD).count())
+
+        self.assertSuccess(self.api.box_item_reserve(box_number=1, box_item_count=4))
+        self.assertEqual(4, Item.objects.filter(state=Item.STAGED).count())
+        # Representative item should not be added to the receipt first.
+        self.assertEqual(Item.BROUGHT, Item.objects.get(pk=representative_item_id).state)
+        self.assertSuccess(self.api.box_item_release(box_number=1, box_item_count=2))
+        self.assertEqual(2, Item.objects.filter(state=Item.STAGED).count())
+
+        # Representative item should be first to be released.
+        self.assertSuccess(self.api.box_item_reserve(box_number=1, box_item_count=8))
+        check_count(10)
+        self.assertEqual(Item.STAGED, Item.objects.get(pk=representative_item_id).state)
+        self.assertSuccess(self.api.box_item_release(box_number=1, box_item_count=1))
+        check_count(9)
+        self.assertEqual(Item.BROUGHT, Item.objects.get(pk=representative_item_id).state)
+
+        self.assertSuccess(self.api.box_item_reserve(box_number=1, box_item_count=1))
+        check_count(10)
+        self.assertEqual(Item.STAGED, Item.objects.get(pk=representative_item_id).state)
+        self.assertSuccess(self.api.box_item_release(box_number=1, box_item_count=2))
+        check_count(8)
+        self.assertEqual(Item.BROUGHT, Item.objects.get(pk=representative_item_id).state)

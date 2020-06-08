@@ -12,6 +12,34 @@ function Header() {
     )
 }
 
+function PriceList({itemPrices}) {
+    if (itemPrices.length === 0 || itemPrices[0].state === "AD") {
+        return <div/>
+    }
+    const unsold = itemPrices.filter((e) => e.state === "BR")
+    const sold = itemPrices.filter((e) => e.state === "ST" || e.state === "SO" || e.state === "CO")
+    const groups = unsold.concat(sold)
+    const names = {
+        BR: gettext("Unsold"),
+        ST: gettext("Sold"),
+        SO: gettext("Sold"),
+        CO: gettext("Sold"),
+    }
+    return (
+        <div>
+            <label className="col-sm-2 control-label">{gettext("Price details")}</label>
+            <div className="col-sm-8">
+                <table className="table table-condensed">
+                    <thead><tr><th>{gettext("State")}</th><th>{gettext("Count")}</th><th>{gettext("Price")}</th></tr></thead>
+                    <tbody>{
+                        groups.map((e) => <tr><td>{names[e.state]}</td><td>{e.count}</td><td>{displayPrice(e.price)}</td></tr>)
+                    }</tbody>
+                </table>
+            </div>
+        </div>
+    )
+}
+
 function Form({CURRENCY, item_types, item_states, item}) {
     return (
         <form className="form-horizontal">
@@ -40,6 +68,19 @@ function Form({CURRENCY, item_types, item_states, item}) {
                            value={item.code}
                            readOnly/>
                 </div>
+                {item.box && [
+                    <label htmlFor="item-edit-boxnumber"
+                           className="col-sm-3 control-label">
+                        {gettext("Box number")}
+                    </label>,
+                    <div className="col-sm-2">
+                        <input id="item-edit-boxnumber"
+                               type="number"
+                               className="form-control"
+                               value={item.box.box_number}
+                               readOnly/>
+                    </div>
+                ]}
             </div>
             <div className="form-group">
                 <label className="col-sm-2 control-label">{gettext("Vendor")}</label>
@@ -53,7 +94,8 @@ function Form({CURRENCY, item_types, item_states, item}) {
                         <label htmlFor="item-edit-price-confirm">
                             <input id="item-edit-price-confirm"
                                    type="checkbox"/>
-                            {gettext("Vendor has requested a price change.")}
+                            {gettext("Vendor has requested a price change.") +
+                            (item.box ? " " + gettext("Change will only affect unsold items.") : "")}
                         </label>
                     </div>
                 </div>
@@ -68,6 +110,7 @@ function Form({CURRENCY, item_types, item_states, item}) {
                         price_step="0.5" CURRENCY={CURRENCY} readOnly="true"/>
                 </div>
             </div>
+            {item.box && <PriceList className="form-group" itemPrices={item.box.item_prices} />}
             <div className="form-group">
                 <label htmlFor="item-edit-type-input"
                        className="col-sm-2 control-label">
@@ -90,6 +133,7 @@ function Form({CURRENCY, item_types, item_states, item}) {
                 <div className="col-sm-10">
                     <Options id="item-edit-state-input"
                              className="form-control"
+                             disabled={item.box}
                              list={item_states}
                              selection={item.state}
                     />
