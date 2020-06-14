@@ -322,6 +322,7 @@ def item_search(request, event, query, code, vendor, min_price, max_price, item_
         d = Q(box__description__icontains=part)
         if Item.is_item_barcode(part):
             p |= Q(code=part)
+            d |= Q(box__representative_item__code=part)
         name_clauses.append(p)
         description_clauses.append(d)
 
@@ -390,6 +391,8 @@ def item_edit(request, event, code, price, state):
         raise AjaxError(RET_BAD_REQUEST, 'Unknown state: {0}'.format(state))
 
     item = _get_item_or_404(code, for_update=True, event=event)
+    if item.box_id is not None:
+        raise AjaxError(RET_CONFLICT, "Changing box details is not implemented.")
     updates = set()
 
     if price != item.price:
@@ -991,10 +994,10 @@ def receipt_activate(request):
     return data
 
 
-@ajax_func('^receipt/pending', overseer=True)
+@ajax_func('^receipt/pending', overseer=True, method='GET')
 def receipt_pending(request):
     receipts = Receipt.objects.filter(status__in=(Receipt.PENDING, Receipt.SUSPENDED), type=Receipt.TYPE_PURCHASE)
-    return list(map(lambda i: i.as_dict(), receipts))
+    return [receipt.as_dict() for receipt in receipts]
 
 
 @ajax_func('^receipt/compensated', method='GET')
