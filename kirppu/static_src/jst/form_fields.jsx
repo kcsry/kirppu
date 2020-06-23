@@ -1,10 +1,10 @@
 
-export function Options({list, multiple}) {
+export function Options({list, multiple, selection}) {
     // multiple must be set here, otherwise the control will half-select first item by default.
     return (
         <select multiple={multiple} className="form-control">{
             list.map(t => {
-                return <option value={t.name}>{t.description}</option>
+                return <option value={t.name} selected={t.name === selection}>{t.description}</option>
             })
         }</select>
     )

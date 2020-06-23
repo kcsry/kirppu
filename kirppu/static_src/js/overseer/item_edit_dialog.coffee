@@ -6,23 +6,26 @@ class @ItemEditDialog
     @item = item
     @action = action
 
-    dialog = $(Template.item_edit_dialog(
+    @dialog = $(Template.item_edit_dialog_modal())
+    @dialog.on('shown.bs.modal', => do @onShown)
+    @dialog.on('hidden.bs.modal', => do @dialog.remove)
+    @setItem(item)
+
+  setItem: (item) =>
+    dialog = $(Template.item_edit_dialog_content(
       CURRENCY: CURRENCY.raw
       item_types: ItemSearchForm.itemtypes
       item_states: ItemSearchForm.itemstates
+      item: item
+      onPrint: @onPrint
     ))
+    @dialog.find(".modal-dialog").empty().append(dialog)
 
-    @typeInput = dialog.find('#item-edit-type-input')
-    @stateInput = dialog.find('#item-edit-state-input')
-    @nameInput = dialog.find('#item-edit-name-input')
-    @codeInput = dialog.find('#item-edit-code-input')
+    @form = dialog.find("form")[0]
     @priceInput = dialog.find('#item-edit-price-input')
-    @abandonedYes = dialog.find('#item-edit-abandoned-yes')
-    @abandonedNo = dialog.find('#item-edit-abandoned-no')
     @priceConfirm = dialog.find('#item-edit-price-confirm')
     @errorDiv = dialog.find('#item-edit-error')
     @saveButton = dialog.find('#item-edit-save-button')
-    @printButton = dialog.find('#item-edit-print-button')
 
     @priceConfirm.change(=>
       if @priceConfirm.prop('checked')
@@ -34,40 +37,25 @@ class @ItemEditDialog
 
     dialog.find('input').change(@onChange).on("keyup", @onChange)
     dialog.find('select').change(@onChange)
-    dialog.on('hidden.bs.modal', -> do dialog.remove)
-    dialog.on('shown.bs.modal', => do @onShown)
-    @dialog = dialog
 
     @priceTag = $('.item_template').clone()
       .removeClass('item_template')
       .addClass('item_short')
 
     @saveButton.click(@onSave)
-    @printButton.click(@onPrint)
 
-    @setItem(item)
-
-  setItem: (item) =>
     @item = item
 
     do @updatePriceTag
 
-    @dialog.find('#item-edit-vendor-info').empty().append(
-      Template.vendor_info(vendor: item.vendor, title: false)
-    )
-    @nameInput.val(item.name)
-    @codeInput.val(item.code)
     @priceInput.val(item.price.formatCents())
-    @typeInput.val(item.itemtype)
-    @stateInput.val(item.state)
-    if item.abandoned
-      @abandonedYes.prop('checked', true)
-    else
-      @abandonedNo.prop('checked', true)
 
     @priceConfirm.prop('checked', false)
     @priceConfirm.change()
     @saveButton.prop('disabled', true)
+
+    # Ensure we have any value for all required fields.
+    @getFormState()
     return
 
   updatePriceTag: =>
@@ -105,8 +93,7 @@ class @ItemEditDialog
       @errorDiv.addClass('alert-off')
 
   onChange: =>
-    # Enable or disable save button depending on wheter any values have
-    # been changed.
+    # Enable or disable save button depending on whether any values have been changed.
     if do @hasChanged
       @saveButton.prop('disabled', false)
     else
@@ -136,11 +123,17 @@ class @ItemEditDialog
     do frame.window.focus
     do frame.window.print
 
+  getFromForm: (id) =>
+    for i in @form.elements
+      if i.id == id
+        return i
+    return null
+
   getFormState: =>
     code: @item.code
 
-    name: @nameInput.val()
-    price: @priceInput.val()
-    itemtype: @typeInput.val()
-    state: @stateInput.val()
-    abandoned: @abandonedYes.prop('checked')
+    name: @getFromForm("item-edit-name-input").value
+    price: @getFromForm("item-edit-price-input").value
+    itemtype: @getFromForm("item-edit-type-input").value
+    state: @getFromForm("item-edit-state-input").value
+    abandoned: @getFromForm("item-edit-abandoned-yes").checked

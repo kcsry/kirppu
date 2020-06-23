@@ -1,4 +1,5 @@
 import {Options, PriceField} from './form_fields.jsx';
+import VendorInfo from './vendor_info.jsx';
 
 function Header() {
     return (
@@ -11,7 +12,7 @@ function Header() {
     )
 }
 
-function Form({CURRENCY, item_types, item_states}) {
+function Form({CURRENCY, item_types, item_states, item}) {
     return (
         <form className="form-horizontal">
             <div className="form-group">
@@ -23,6 +24,7 @@ function Form({CURRENCY, item_types, item_states}) {
                     <input id="item-edit-name-input"
                            type="text"
                            className="form-control"
+                           value={item.name}
                            readOnly/>
                 </div>
             </div>
@@ -35,12 +37,15 @@ function Form({CURRENCY, item_types, item_states}) {
                     <input id="item-edit-code-input"
                            type="text"
                            className="form-control receipt-code"
+                           value={item.code}
                            readOnly/>
                 </div>
             </div>
             <div className="form-group">
                 <label className="col-sm-2 control-label">{gettext("Vendor")}</label>
-                <div id="item-edit-vendor-info" className="col-sm-10"/>
+                <div className="col-sm-10">
+                    <VendorInfo vendor={item.vendor} title={false} />
+                </div>
             </div>
             <div className="form-group">
                 <div className="col-sm-10 col-sm-offset-2">
@@ -73,6 +78,7 @@ function Form({CURRENCY, item_types, item_states}) {
                              className="form-control"
                              disabled
                              list={item_types}
+                             selection={item.itemtype}
                     />
                 </div>
             </div>
@@ -85,6 +91,7 @@ function Form({CURRENCY, item_types, item_states}) {
                     <Options id="item-edit-state-input"
                              className="form-control"
                              list={item_states}
+                             selection={item.state}
                     />
                 </div>
             </div>
@@ -100,6 +107,7 @@ function Form({CURRENCY, item_types, item_states}) {
                                name="item-edit-abandoned-input"
                                type="radio"
                                value="true"
+                               checked={item.abandoned}
                                disabled/>
                         {gettext("Yes")}
                     </label>
@@ -109,6 +117,7 @@ function Form({CURRENCY, item_types, item_states}) {
                                name="item-edit-abandoned-input"
                                type="radio"
                                value="false"
+                               checked={!item.abandoned}
                                disabled/>
                         {gettext("No")}
                     </label>
@@ -142,37 +151,42 @@ function PrintFrame() {
 }
 
 
-export default function render({CURRENCY, item_types, item_states}) {
+export function item_edit_dialog_modal() {
     return (
         <div className="modal fade">
-            <div className="modal-dialog">
-                <div className="modal-content">
-                    <Header/>
-                    <div className="modal-body">
-                        <div className="container-fluid">
-                            <Form CURRENCY={CURRENCY} item_types={item_types} item_states={item_states}/>
-                            <PrintFrame/>
-                        </div>
-                    </div>
-                    <div id="item-edit-error"
-                         role="alert"
-                         className="alert alert-danger alert-off"/>
-                    <div className="modal-footer">
-                        <button className="btn btn-default btn-minwidth"
-                                data-dismiss="modal">
-                            {gettext("Cancel")}
-                        </button>
-                        <button id="item-edit-print-button"
-                                className="btn btn-primary btn-minwidth">
-                            {gettext("Print")}
-                        </button>
-                        <button id="item-edit-save-button"
-                                className="btn btn-primary btn-minwidth"
-                                disabled>
-                            {gettext("Save")}
-                        </button>
-                    </div>
+            <div className="modal-dialog"/>
+        </div>
+    )
+}
+
+export function item_edit_dialog_content({CURRENCY, item_types, item_states, item, onPrint}) {
+    return (
+        <div className="modal-content">
+            <Header/>
+            <div className="modal-body">
+                <div className="container-fluid">
+                    <Form CURRENCY={CURRENCY} item_types={item_types} item_states={item_states} item={item}/>
+                    <PrintFrame/>
                 </div>
+            </div>
+            <div id="item-edit-error"
+                 role="alert"
+                 className="alert alert-danger alert-off"/>
+            <div className="modal-footer">
+                <button className="btn btn-default btn-minwidth"
+                        data-dismiss="modal">
+                    {gettext("Cancel")}
+                </button>
+                <button id="item-edit-print-button"
+                        className="btn btn-primary btn-minwidth"
+                        onClick={onPrint}>
+                    {gettext("Print")}
+                </button>
+                <button id="item-edit-save-button"
+                        className="btn btn-primary btn-minwidth"
+                        disabled>
+                    {gettext("Save")}
+                </button>
             </div>
         </div>
     )
