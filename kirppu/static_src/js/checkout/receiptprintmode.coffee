@@ -49,7 +49,11 @@ class @ReceiptPrintMode extends CheckoutMode
     for item in receiptData.items
       if item.action != "ADD"
         continue
-      row = PrintReceiptTable.createRow(item.vendor, item.code, item.name, item.price, false)
+      if item.box_number?
+        code = "#" + item.box_number
+      else
+        code = item.code
+      row = PrintReceiptTable.createRow(item.vendor, code, item.name, item.price, false)
       @receipt.body.append(row)
 
     sellStr = dPrintF(@constructor.strSell,

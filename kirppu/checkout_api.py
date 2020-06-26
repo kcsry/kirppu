@@ -569,12 +569,20 @@ def compensable_items(request, event, vendor):
         Item.objects
         .filter(vendor__id=vendor)
         .select_related("itemtype")
+        .annotate(box_number=F("box__box_number"), box_code=F("box__representative_item__code"))
         .order_by("name")
     )
 
     items_for_compensation = vendor_items.filter(state=Item.SOLD)
 
-    r = dict(items=[i.as_dict() for i in items_for_compensation])
+    def format_dict(item):
+        i = item.as_dict()
+        if item.box_id is not None:
+            i["box_number"] = item.box_number
+            i["box_code"] = item.box_code
+        return i
+
+    r = dict(items=[format_dict(i) for i in items_for_compensation])
 
     provision = Provision(vendor_id=vendor, provision_function=event.provision_function)
     if provision.has_provision:

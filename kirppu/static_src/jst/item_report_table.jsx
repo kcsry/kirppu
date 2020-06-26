@@ -28,8 +28,8 @@ function Row({item, index, hide_status, extra_col}) {
         return (
             <tr className={"table_row_" + (index + 1) + (item.state === "ST" ? " bg-warning" : "")}>
                 <td className="receipt_index numeric">{index + 1}</td>
-                <td className="receipt_code">{item.code}</td>
-                <td className="receipt_item">{item.name}</td>
+                <td className="receipt_code">{item.box_number ? item.box_code + "/#" + item.box_number : item.code}</td>
+                <td className="receipt_item">{item.description ? item.description : item.name}</td>
                 <td className="receipt_price numeric">{displayPrice(item.price)}</td>
                 {!hide_status && <td className="receipt_status">{item.state_display}</td>}
                 {!hide_status && <td className="receipt_abandoned">{title(yesNo(item.abandoned))}</td>}

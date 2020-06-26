@@ -189,6 +189,7 @@ def _data_view(request, event, permit):
         .values("pk", "item__price", "item__state")
         .annotate(item_count=Count("item"),
                   box_code=models.F("representative_item__code"),
+                  box_number=models.F("box_number"),
                   description=models.F("description"))
     )
 
@@ -305,6 +306,7 @@ def _box(box, total):
     return {
         "box": True,
         "code": box["box_code"],
+        "number": box["box_number"],
         "price": Item.price_fmt_for(box["item__price"]),
         "name": box["description"],
         "value": box["item_count"],

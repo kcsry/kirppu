@@ -21,7 +21,7 @@ function items(items) {
             {items.map((item, index) =>
             <tr>
                 <td className="numeric">{item.action === "DEL" && "-"}{index + 1}</td>
-                <td className="receipt_code">{item.code}</td>
+                <td className="receipt_code">{item.box_number ? "#" + item.box_number : item.code}</td>
                 <td>{item.name}</td>
                 <td className="numeric">{item.action === "DEL" && "-"}{displayPrice(item.price)}</td>
             </tr>

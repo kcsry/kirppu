@@ -61,7 +61,7 @@
             /><label class="glyphicon" for="cb_{{ item.code }}"></label></td>
             {% endif %}
             <td class="index">{{ forloop.counter }}</td>
-            <td class="code">{{ item.code }}</td>
+            <td class="code">{{ item.code }}{% if item.number %}/#{{ item.number }}{% endif %}</td>
             <td class="name">{{ item.name }}{% if item.box %} <span class="label label-info">{{ item.value }} / {{ item.total }}</span>{% endif %}</td>
             <td class="price">{{ item.price }}</td>
         </tr>

@@ -1094,7 +1094,11 @@ class Receipt(models.Model):
     def items_list(self):
         return [
             self._item_dict(row)
-            for row in self.receiptitem_set.select_related("item", "item__itemtype", "item__box").order_by("add_time")
+            for row in self.receiptitem_set.select_related("item", "item__itemtype")
+                .annotate(box_number=F("item__box__box_number"),
+                          box_code=F("item__box__representative_item__code"),
+                          box_description=F("item__box__description"))
+                .order_by("add_time")
         ]
 
     @staticmethod
@@ -1102,8 +1106,9 @@ class Receipt(models.Model):
         r = row.as_dict()
         if row.item.box_id is not None:
             r.update(dict(
-                box_number=row.item.box.box_number,
-                description=row.item.box.description,
+                box_number=row.box_number,
+                box_code=row.box_code,
+                description=row.box_description,
             ))
         return r
 
