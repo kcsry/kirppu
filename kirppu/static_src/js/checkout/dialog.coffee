@@ -54,6 +54,13 @@ class @Dialog
     else
       button.prop("disabled", "disabled")
 
+  removeSpinner: ->
+    @body.find(".spinner").remove()
+
+  addSpinner: ->
+    spinner = $("<span>").addClass("glyphicon glyphicon-repeat spinner text-info")
+    @body.append(spinner)
+
   # Display the dialog. This will append added buttons to `buttons`-container.
   # @param modalArgs [optional] Arguments for BootStrap `modal()`.
   show: (modalArgs=keyboard:false) ->

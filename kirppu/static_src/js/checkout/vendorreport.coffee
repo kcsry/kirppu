@@ -88,19 +88,13 @@ class @VendorReport extends CheckoutMode
       Api.box_list(
         vendor: @vendor.id
       ).done((boxes) =>
-        Api.receipt_compensated(
-          vendor: @vendor.id
-        ).done((compensations) =>
-          $("input", buttons).removeAttr("disabled")
-          @onGotItems(items, boxes, compensations)
-        )
+        $("input", buttons).removeAttr("disabled")
+        @onGotItems(items, boxes)
       )
     )
 
-  onGotItems: (items, boxes, compensations) =>
+  onGotItems: (items, boxes) =>
     @switcher.setPrintable()
-
-    @_compensations = compensations
 
     for table_name, table of tables
       matchingItems = table.filter(items)
@@ -162,13 +156,27 @@ class @VendorReport extends CheckoutMode
   onShowCompensations: =>
     dlg = new Dialog()
     dlg.title.text(gettext("Compensation receipts"))
+    dlg.addNegative().text(gettext("Close")).addClass("btn-primary")
+    dlg.addSpinner()
+    dlg.show()
 
-    # TODO: customized Dialog class for listing things?
-    table = $ Template.receipt_list_table_compensations(
-      items: @_compensations
+    Api.receipt_compensated(
+      vendor: @vendor.id
+    ).done((compensations) =>
+      dlg.removeSpinner()
+      @onGotCompensations(dlg, compensations)
+    ).fail((jqXHR) ->
+      dlg.removeSpinner()
+      msg = "Receipt list failed (#{jqXHR.status}): #{jqXHR.responseText}"
+      dlg.body.append($("<div>").text(msg))
     )
 
-    dlg.addNegative().text(gettext("Close")).addClass("btn-primary")
+  onGotCompensations: (dlg, compensations) =>
+    # TODO: customized Dialog class for listing things?
+    table = $ Template.receipt_list_table_compensations(
+      items: compensations
+    )
+
     buttonPositive = dlg.addPositive().text(gettext("Show"))
 
     $("tbody tr", table).click(() ->
@@ -181,16 +189,15 @@ class @VendorReport extends CheckoutMode
       selected = $("tbody", table).find(".success")
       index = selected.data("index")
       selected_id = selected.data("id")
-      receipt_id = @_compensations[index].id
+      receipt_id = compensations[index].id
       if receipt_id != selected_id
         throw new "ID mismatch!"
       @switcher.switchTo(CompensationReceipt, @vendor, receipt_id)
     )
 
     dlg.setEnabled(buttonPositive, false)
-
+    dlg.buttons.append(buttonPositive)  # Dialog is already shown so we need to add the button manually into view.
     dlg.body.append(table)
-    dlg.show()
 
   onCreateMobileCode: =>
     dlg = new Dialog()
