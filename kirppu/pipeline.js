@@ -105,6 +105,8 @@ module.exports.js = {
             "js/overseer/receipt_list_mode.coffee",
 
             "js/capslock_detect.coffee",
+
+            "js/checkout/badged_selection.coffee",
         ],
         "output_filename": "checkout.js",
     },

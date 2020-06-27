@@ -38,6 +38,10 @@ td.receipt_code {
 .receipt_count {
     width: 9em;
 }
+.badged_index {
+    width: 2em;
+    text-align: center;
+}
 
 tr.receipt_tr_clickable:hover {
     text-decoration: underline;

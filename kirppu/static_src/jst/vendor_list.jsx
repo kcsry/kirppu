@@ -4,7 +4,7 @@ export function vendor_list() {
     return (
         <ResultTable head={
             <tr>
-                <th className="receipt_index">#</th>
+                <th className="badged_index">#</th>
                 <th className="receipt_username">{gettext("username")}</th>
                 <th className="receipt_vendor_id">{gettext("id")}</th>
                 <th className="receipt_name">{gettext("name")}</th>
@@ -25,7 +25,7 @@ function formatVendor(vendor) {
 
 export function vendor_list_item({vendor, index, action}) {
     const cols = [
-        <td>{index}</td>,
+        <td className="badged_index">{index}</td>,
         <td>{formatVendor(vendor)}</td>
     ]
     for (const a of ['id', 'name', 'email', 'phone']) {
