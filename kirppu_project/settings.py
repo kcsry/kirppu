@@ -3,7 +3,7 @@
 from decimal import Decimal
 from email.utils import getaddresses
 import os.path
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import environ
 
@@ -66,7 +66,7 @@ TIME_ZONE = 'Europe/Helsinki'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'fi'
 
-_LANGUAGES = env.str("LANGUAGES", "").split(",")
+_LANGUAGES = env.str("LANGUAGES", "fi,en").split(",")
 
 LANGUAGES = tuple(lang for lang in (
     ('fi', _("Finnish")),

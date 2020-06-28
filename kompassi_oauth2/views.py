@@ -1,6 +1,6 @@
 from django import VERSION
 from django.http import HttpResponse
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import View
 from django.shortcuts import redirect, resolve_url
 from django.conf import settings
@@ -21,7 +21,7 @@ def get_session(request, **kwargs):
 
 def get_redirect_url(request, redirect_to, fallback):
     # Ensure the user-originating redirection url is safe.
-    if not is_safe_url(url=redirect_to, allowed_hosts={request.get_host()}):
+    if not url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts={request.get_host()}):
         redirect_to = resolve_url(fallback)
     return redirect_to
 

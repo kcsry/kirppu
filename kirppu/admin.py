@@ -9,9 +9,9 @@ from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.admin.views.main import ChangeList
 from django.db import IntegrityError, models, transaction
 from django.urls import reverse, path
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import escape, format_html
-from django.utils.translation import ugettext_lazy as ugettext, ngettext
+from django.utils.translation import gettext_lazy as gettext, ngettext
 
 from .forms import (
     ClerkGenerationForm,
@@ -139,11 +139,11 @@ Admin UI list column that displays user name with link to the user model itself.
 :return: Contents for the field.
 :rtype: unicode
 """
-_user_link = RefLinkAccessor("user", ugettext(u"User"))
+_user_link = RefLinkAccessor("user", gettext(u"User"))
 
-_person_link = RefLinkAccessor("person", ugettext(u"Person"))
+_person_link = RefLinkAccessor("person", gettext(u"Person"))
 
-_event_link = RefLinkAccessor("event", ugettext("Event"))
+_event_link = RefLinkAccessor("event", gettext("Event"))
 
 
 @admin.register(EventPermission)
@@ -216,8 +216,8 @@ class ClerkEditLink(FieldAccessor):
             )
 
 
-_clerk_id_link = ClerkEditLink("id", ugettext("ID"))
-_clerk_access_code_link = ClerkEditLink("access_code_str", ugettext("Access code"))
+_clerk_id_link = ClerkEditLink("id", gettext("ID"))
+_clerk_access_code_link = ClerkEditLink("access_code_str", gettext("Access code"))
 
 
 # noinspection PyMethodMayBeStatic
@@ -237,14 +237,14 @@ class ClerkAdmin(admin.ModelAdmin):
         else:
             return _clerk_id_link, _user_link, _clerk_access_code_link, 'is_enabled', 'event'
 
-    @with_description(ugettext(u"Generate missing Clerk access codes"))
+    @with_description(gettext(u"Generate missing Clerk access codes"))
     def _gen_clerk_code(self, request, queryset):
         for clerk in queryset:
             if not clerk.is_valid_code:
                 clerk.generate_access_key()
                 clerk.save(update_fields=["access_key"])
 
-    @with_description(ugettext(u"Delete Clerk access codes"))
+    @with_description(gettext(u"Delete Clerk access codes"))
     def _del_clerk_code(self, request, queryset):
         for clerk in queryset:
             while True:
@@ -258,14 +258,14 @@ class ClerkAdmin(admin.ModelAdmin):
 
     def _move_error(self, request, error):
         if error == "count":
-            msg = ugettext(u"Must select exactly one 'unbound' and one 'bound' Clerk for this operation")
+            msg = gettext(u"Must select exactly one 'unbound' and one 'bound' Clerk for this operation")
         elif error == "event":
-            msg = ugettext("Must select unbound and bound rows from same Event")
+            msg = gettext("Must select unbound and bound rows from same Event")
         else:
             msg = "Unknown error key: " + error
         self.message_user(request, msg, messages.ERROR)
 
-    @with_description(ugettext(u"Move unused access code to existing Clerk."))
+    @with_description(gettext(u"Move unused access code to existing Clerk."))
     @transaction.atomic
     def _move_clerk_code(self, request, queryset):
         if len(queryset) != 2:
@@ -296,7 +296,7 @@ class ClerkAdmin(admin.ModelAdmin):
         unbound.delete()
         bound.save(update_fields=["access_key"])
 
-        self.message_user(request, ugettext(u"Access code set for '{0}' in '{1}'").format(bound.user, bound.event.name))
+        self.message_user(request, gettext(u"Access code set for '{0}' in '{1}'").format(bound.user, bound.event.name))
 
     def get_form(self, request, obj=None, **kwargs):
         # Custom form for editing already created Clerks.
@@ -342,7 +342,7 @@ class ClerkAdmin(admin.ModelAdmin):
             self.log_addition(request, clerk, {"added": {}})
 
             msg = format_html(
-                ugettext("Clerk {name} added into {event}."),
+                gettext("Clerk {name} added into {event}."),
                 name=form.cleaned_data["user"],
                 event=form.cleaned_data["event"],
             )
@@ -351,7 +351,7 @@ class ClerkAdmin(admin.ModelAdmin):
             from django.http import HttpResponseRedirect
             return HttpResponseRedirect(reverse("admin:%s_%s_changelist" % (self.opts.app_label, self.opts.model_name)))
 
-        return self._get_custom_form(request, form, ugettext('Add clerk from SSO provider'))
+        return self._get_custom_form(request, form, gettext('Add clerk from SSO provider'))
 
     def bulk_add_unbound(self, request):
         if not self.has_add_permission(request):
@@ -372,7 +372,7 @@ class ClerkAdmin(admin.ModelAdmin):
             from django.http import HttpResponseRedirect
             return HttpResponseRedirect(reverse("admin:%s_%s_changelist" % (self.opts.app_label, self.opts.model_name)))
 
-        return self._get_custom_form(request, form, ugettext('Add unbound clerk'))
+        return self._get_custom_form(request, form, gettext('Add unbound clerk'))
 
     def _get_custom_form(self, request, form, title):
         from django.contrib.admin.helpers import AdminForm, AdminErrorList
@@ -386,7 +386,7 @@ class ClerkAdmin(admin.ModelAdmin):
         inline_formsets = []
         context = dict(
             self.admin_site.each_context(request),
-            title=force_text(title),
+            title=force_str(title),
             media=media,
             adminform=admin_form,
             is_popup=False,
@@ -401,13 +401,13 @@ class ClerkAdmin(admin.ModelAdmin):
         # noinspection PyProtectedMember
         change_message = json.dumps([{
             'added': {
-                'name': force_text(added_object._meta.verbose_name),
-                'object': force_text(added_object),
+                'name': force_str(added_object._meta.verbose_name),
+                'object': force_str(added_object),
             }
         } for added_object in objects])
 
         from .util import shorten_text
-        object_repr = ", ".join([shorten_text(force_text(added_object), 5) for added_object in objects])
+        object_repr = ", ".join([shorten_text(force_str(added_object), 5) for added_object in objects])
 
         return LogEntry.objects.create(
             user_id=request.user.pk,
@@ -421,20 +421,20 @@ class ClerkAdmin(admin.ModelAdmin):
         # noinspection PyProtectedMember
         change_message = [{
             'changed': {
-                'name': force_text(target._meta.verbose_name),
-                'object': force_text(target),
+                'name': force_str(target._meta.verbose_name),
+                'object': force_str(target),
                 'fields': ["access_key"],
             },
             'deleted': {
-                'name': force_text(unbound._meta.verbose_name),
-                'object': force_text(unbound)
+                'name': force_str(unbound._meta.verbose_name),
+                'object': force_str(unbound)
             }
         }]
         return LogEntry.objects.log_action(
             user_id=request.user.pk,
             content_type_id=get_content_type_for_model(target).pk,
             object_id=target.pk,
-            object_repr=force_text(target),
+            object_repr=force_str(target),
             action_flag=CHANGE,
             change_message=change_message,
         )
@@ -468,7 +468,7 @@ class ItemTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    @with_description(ugettext(u"Re-generate bar codes for items"))
+    @with_description(gettext(u"Re-generate bar codes for items"))
     def _regen_barcode(self, request, queryset):
         for item in queryset:
             item.code = Item.gen_barcode()
@@ -482,7 +482,7 @@ class ItemAdmin(admin.ModelAdmin):
                 s[name] = (func, name, desc)
         return s
 
-    list_display = ('name', 'code', 'price', 'state', RefLinkAccessor('vendor', ugettext("Vendor")))
+    list_display = ('name', 'code', 'price', 'state', RefLinkAccessor('vendor', gettext("Vendor")))
     ordering = ('vendor', 'name')
     search_fields = ['name', 'code']
     list_select_related = ("vendor", "vendor__user")
@@ -492,7 +492,7 @@ class ItemAdmin(admin.ModelAdmin):
     )
 
 
-_receipt_item_link = RefLinkAccessor("item", ugettext("Item"))
+_receipt_item_link = RefLinkAccessor("item", gettext("Item"))
 
 
 class ReceiptItemAdmin(admin.TabularInline):
@@ -561,9 +561,9 @@ class ItemStateLogAdmin(admin.ModelAdmin):
     ordering = ["-id"]
     search_fields = ['item__code', 'clerk__user__username']
     list_display = ['id', 'time_str',
-                    RefLinkAccessor("item", ugettext("Item")),
+                    RefLinkAccessor("item", gettext("Item")),
                     'old_state', 'new_state',
-                    RefLinkAccessor("clerk", ugettext("Clerk")),
+                    RefLinkAccessor("clerk", gettext("Clerk")),
                     'counter']
     list_select_related = (
         "clerk", "counter", "item", "clerk__user",
@@ -612,7 +612,7 @@ class BoxAdmin(admin.ModelAdmin):
         'get_price',
         '_list_item_count',
         'bundle_size',
-        RefLinkAccessor("get_vendor", ugettext("Vendor")),
+        RefLinkAccessor("get_vendor", gettext("Vendor")),
     ]
     list_display_links = ['box_number', 'description']
     list_select_related = (
@@ -635,7 +635,7 @@ class BoxAdmin(admin.ModelAdmin):
     def get_changelist(self, request, **kwargs):
         return self.BoxChangeList
 
-    @with_description(ugettext("Item count"))
+    @with_description(gettext("Item count"))
     def _list_item_count(self, instance):
         return instance.item_count
 
@@ -646,7 +646,7 @@ class TemporaryAccessPermitAdmin(admin.ModelAdmin):
     readonly_fields = ("vendor", "creator", "short_code")
     list_display = (
         "__str__",
-        RefLinkAccessor("vendor", ugettext("Vendor")),
+        RefLinkAccessor("vendor", gettext("Vendor")),
     )
 
 
@@ -656,7 +656,7 @@ class TemporaryAccessPermitLogAdmin(admin.ModelAdmin):
     readonly_fields = ("permit", "timestamp", "action", "address", "peer")
     list_display = (
         "__str__",
-        RefLinkAccessor("permit", ugettext("Permit")),
+        RefLinkAccessor("permit", gettext("Permit")),
         "timestamp",
         "action",
     )

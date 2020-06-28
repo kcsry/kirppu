@@ -6,7 +6,7 @@ from django.http import Http404
 from django.http.response import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.shortcuts import render
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 

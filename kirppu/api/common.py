@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.http import Http404
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from ..ajax_util import AjaxError, RET_BAD_REQUEST, RET_CONFLICT
 from ..models import Box, Item, Receipt

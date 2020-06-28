@@ -17,7 +17,7 @@ from django.shortcuts import (
     get_object_or_404,
     render,
 )
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils.timezone import now
 from ipware.ip import get_ip
 

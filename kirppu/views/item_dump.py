@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Max, TextField
 from django.db.models.functions import Length, Cast
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _, gettext
+from django.utils.translation import gettext_lazy as _, gettext
 
 from .csv_utils import csv_streamer_view
 from ..models import Event, EventPermission, Item

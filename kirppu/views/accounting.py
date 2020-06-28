@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _, pgettext_lazy, gettext
+from django.utils.translation import gettext_lazy as _, pgettext_lazy, gettext
 from django.utils import timezone
 
 from .csv_utils import csv_streamer_view, strip_generator

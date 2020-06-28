@@ -1,10 +1,10 @@
+from functools import lru_cache
 import json
 import re
 
 from django import template
 from django.conf import settings
-from django.utils.encoding import force_text
-from django.utils.lru_cache import lru_cache
+from django.utils.encoding import force_str
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
@@ -28,7 +28,7 @@ def load_text(context, id_):
                 u' color: black;'
                 u' border: 1px solid gray;">'
                 u'Missing text {0}.</span>'.format(
-                    force_text(id_)
+                    force_str(id_)
                 )
             )
         return u""

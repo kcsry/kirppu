@@ -3,7 +3,7 @@ from functools import wraps
 from django.core.exceptions import PermissionDenied
 import django.forms
 from django.http.response import HttpResponseForbidden, HttpResponseBadRequest
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils import timezone
 
 __author__ = 'jyrkila'
@@ -117,11 +117,11 @@ class ButtonWidget(StaticTextWidget):
 
     def render(self, name, value, attrs=None, renderer=None):
         from django.utils.html import format_html
-        from django.utils.encoding import force_text
+        from django.utils.encoding import force_str
 
         return format_html(u'<button type="button" onclick="{0}">{1}</button>'.format(
             self._click,
-            force_text(self._static_text or value or u""),
+            force_str(self._static_text or value or u""),
         ))
 
 

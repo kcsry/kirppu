@@ -5,7 +5,7 @@ from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponseBadRequest, Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_http_methods
 
 from ..forms import PersonCreationForm
@@ -86,7 +86,7 @@ def change_vendor(request, event_slug):
         del request.session["vendor_id"]
 
     ref = request.META.get("HTTP_REFERER")
-    if not (ref and is_safe_url(ref, allowed_hosts={request.get_host()})):
+    if not (ref and url_has_allowed_host_and_scheme(ref, allowed_hosts={request.get_host()})):
         ref = reverse("kirppu:page", kwargs={"event_slug": event_slug})
 
     return HttpResponseRedirect(ref)

@@ -26,7 +26,7 @@ from django.shortcuts import (
 )
 from django.utils import timezone
 from django.utils.formats import localize
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.views.csrf import csrf_failure as django_csrf_failure
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
