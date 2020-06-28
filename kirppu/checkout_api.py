@@ -58,6 +58,7 @@ from .ajax_util import (
     RET_ACCEPTED,
     RET_BAD_REQUEST,
     RET_CONFLICT,
+    RET_FORBIDDEN,
     RET_AUTH_FAILED,
     RET_LOCKED,
 )
@@ -291,6 +292,19 @@ def counter_validate(request, event, code=None, key=None):
         "name": counter.name,
         "key": counter.private_key,
     }
+
+
+@ajax_func('^counter/list$', clerk=False, counter=False, ignore_session=True)
+def counter_list(request, event, code):
+    if not settings.KIRPPU_COUNTER_LIST:
+        raise AjaxError(404, "Api is not enabled")
+    try:
+        if Clerk.by_code(code, event=event) is None:
+            raise AjaxError(RET_FORBIDDEN)
+    except ValueError:
+        raise AjaxError(RET_BAD_REQUEST)
+    counters = Counter.objects.filter(event=event, private_key__isnull=True).values_list("name", flat=True)
+    return list(counters)
 
 
 @ajax_func('^item/find$', method='GET')

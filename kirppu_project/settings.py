@@ -356,6 +356,9 @@ KIRPPU_EXHAUST_SHORT_CODE_ON_LOGOUT = env.bool("KIRPPU_EXHAUST_SHORT_CODE_ON_LOG
 KIRPPU_SHORT_CODE_LENGTH = 5
 KIRPPU_MOBILE_LOGIN_RATE_LIMIT = "5/m"
 
+# Show list of unused counters using clerk code without registering the counter?
+KIRPPU_COUNTER_LIST = env.bool("KIRPPU_COUNTER_LIST", default=False)
+
 CSRF_FAILURE_VIEW = "kirppu.views.kirppu_csrf_failure"
 
 
