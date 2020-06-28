@@ -21,7 +21,7 @@ class @VendorFindMode extends CheckoutMode
 
   glyph: -> "user"
   title: -> gettext("Vendor Search")
-  inputPlaceholder: -> gettext("Search vendor")
+  inputPlaceholder: -> gettext("Search terms separated by space")
 
   actions: -> [
     ["", @onSearchVendor]
