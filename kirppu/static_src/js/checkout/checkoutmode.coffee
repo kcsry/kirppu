@@ -49,6 +49,9 @@ class @CheckoutMode
   # Called after switching out of this mode.
   exit: ->
 
+  # Return whether automatic focus regain for input field should be done.
+  autoFocus: -> true
+
   # Return an dictionary of mode command prefixes and their "names" in Arrays.
   # Base class returns dictionary like {logout: [":exit", "Log out"]}. Then, after
   # base class constructor has been run, the prefixes can be accessed in

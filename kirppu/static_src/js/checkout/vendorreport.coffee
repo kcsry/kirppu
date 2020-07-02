@@ -63,6 +63,7 @@ class @VendorReport extends CheckoutMode
 
   title: -> gettext("Item Report")
   inputPlaceholder: -> gettext("Search terms separated by space")
+  autoFocus: -> false
 
   actions: -> [
     ["", (query) => @switcher.switchTo(VendorFindMode, query)]

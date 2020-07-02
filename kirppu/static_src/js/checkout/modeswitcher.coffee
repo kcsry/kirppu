@@ -20,6 +20,9 @@ class @ModeSwitcher
   # Map of entry point names to CheckoutModes.
   @entryPoints = {}
 
+  # Global autofocus enable/disable.
+  @autoFocus = true
+
   # Register entry point with name.
   #
   # @param name [String] Name of the entry point.
@@ -39,6 +42,8 @@ class @ModeSwitcher
 
     # Function for regaining focus after dialog closing.
     regainFocus = () =>
+      return unless ModeSwitcher.autoFocus && @_currentMode != null && @_currentMode.autoFocus()
+
       timeoutFocus = () => @cfg.uiRef.codeInput.focus()
       # The actual focusing needs to be done after the event has been processed so that the focus can actually be set.
       setTimeout(timeoutFocus, 0)
