@@ -19,6 +19,7 @@ class @CounterValidationMode extends CheckoutMode
 
   title: -> gettext("Locked")
   subtitle: -> gettext("Need to validate counter.")
+  inputPlaceholder: -> gettext("Counter identifier")
 
   enter: ->
     super
@@ -29,7 +30,7 @@ class @CounterValidationMode extends CheckoutMode
     code = $.cookie(@constructor.COOKIE)
     if code?
       data = JSON.parse(b64_to_utf8(code))
-      @validate(data["counter"])
+      @reValidate(data["counter"])
 
   actions: -> [[
     @cfg.settings.counterPrefix, @validate
@@ -40,8 +41,13 @@ class @CounterValidationMode extends CheckoutMode
       code: code
     ).then(@onResultSuccess, @onResultError)
 
+  reValidate: (key) =>
+    Api.counter_validate(
+      key: key
+    ).then(@onResultSuccess, @onResultError)
+
   onResultSuccess: (data) =>
-    code = data["counter"]
+    code = data["key"]
     name = data["name"]
     @cfg.settings.counterCode = code
     @cfg.settings.counterName = name

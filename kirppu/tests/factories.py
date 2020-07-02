@@ -95,6 +95,7 @@ class CounterFactory(Factory):
     event = factory.SubFactory(EventFactory)
     identifier = factory.Sequence(lambda n: "counter_{}".format(n))
     name = factory.LazyAttribute(lambda a: a.identifier.capitalize())
+    private_key = "secret"
 
 
 class ClerkFactory(Factory):

@@ -93,7 +93,7 @@ class StatesTest(TestCase, ResultMixin):
         self.clerk = ClerkFactory(event=self.event)
 
         self.api = Api(client=self.client, event=self.event)
-        self.api.clerk_login(code=self.clerk.get_code(), counter=self.counter.identifier)
+        self.assertSuccess(self.api.clerk_login(code=self.clerk.get_code(), counter=self.counter.private_key))
 
     def test_fail_reserve_without_receipt(self):
         ret = self.api.item_reserve(code=self.items[0].code)

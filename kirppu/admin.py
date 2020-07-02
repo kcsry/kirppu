@@ -473,7 +473,17 @@ class ClerkAdmin(admin.ModelAdmin):
 
 @admin.register(Counter)
 class CounterAdmin(admin.ModelAdmin):
-    list_display = ("name", "identifier", "event")
+    list_display = ("name", "identifier", "event", "is_in_use", "is_locked")
+    actions = ("lock_counter", "reset_use")
+
+    @with_description(gettext("Lock Counter"))
+    def lock_counter(self, request, queryset):
+        for counter in queryset:
+            counter.assign_private_key(for_lock=True)
+
+    @with_description(gettext("Reset Counter usage status"))
+    def reset_use(self, request, queryset):
+        queryset.update(private_key=None)
 
 
 admin.site.register(ReceiptExtraRow)

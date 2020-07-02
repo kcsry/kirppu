@@ -195,8 +195,10 @@ def item_mode_change(request, code, from_, to, message_if_not_first=None):
 
 @ajax_func('^clerk/login$', clerk=False, counter=False)
 def clerk_login(request, event, code, counter):
+    if counter is not None and any(c not in Counter.PRIVATE_KEY_ALPHABET for c in counter):
+        raise AjaxError(RET_BAD_REQUEST, "Invalid key")
     try:
-        counter_obj = Counter.objects.get(event=event, identifier=counter)
+        counter_obj = Counter.objects.get(event=event, private_key=counter)
     except Counter.DoesNotExist:
         raise AjaxError(RET_AUTH_FAILED, _(u"Counter has gone missing."))
 
@@ -233,6 +235,7 @@ def clerk_login(request, event, code, counter):
     request.session["clerk"] = clerk.pk
     request.session["clerk_token"] = clerk.access_key
     request.session["counter"] = counter_obj.pk
+    request.session["counter_key"] = counter_obj.private_key
     request.session["event"] = event.pk
     return clerk_data
 
@@ -253,25 +256,41 @@ def clerk_logout_fn(request):
 
     :param request: Active request, for session access.
     """
-    for key in ["clerk", "clerk_token", "counter", "event", "receipt"]:
+    for key in ["clerk", "clerk_token", "counter", "counter_key", "event", "receipt"]:
         request.session.pop(key, None)
 
 
 @ajax_func('^counter/validate$', clerk=False, counter=False, ignore_session=True)
-def counter_validate(request, event, code):
+def counter_validate(request, event, code=None, key=None):
     """
     Validates the counter identifier and returns its exact form, if it is
     valid.
+    Either `code` or `key` must be given, `code` being the counter identifier code,
+    and `key` being the private key used after first validation has been done.
     """
+    if code is None and key is None:
+        raise AjaxError(RET_BAD_REQUEST, "Either code or key must be given")
+    if key is not None and any(c not in Counter.PRIVATE_KEY_ALPHABET for c in key):
+        raise AjaxError(RET_BAD_REQUEST, "Invalid key")
+
     try:
-        counter = Counter.objects.get(event=event, identifier__iexact=code)
+        if key is None:
+            counter = Counter.objects.get(event=event, identifier__iexact=code)
+            if counter.private_key is not None:
+                raise AjaxError(RET_CONFLICT, "Requested counter is already in use.")
+            counter.assign_private_key()
+        else:
+            counter = Counter.objects.get(event=event, private_key=key)
         clerk_logout_fn(request)
     except Counter.DoesNotExist:
         raise AjaxError(RET_AUTH_FAILED)
 
-    return {"counter": counter.identifier,
-            "event_name": event.name,
-            "name": counter.name}
+    return {
+        "counter": counter.identifier,
+        "event_name": event.name,
+        "name": counter.name,
+        "key": counter.private_key,
+    }
 
 
 @ajax_func('^item/find$', method='GET')

@@ -1,11 +1,12 @@
 from decimal import Decimal
 import random
+import string
 import typing
 import warnings
 
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import MinLengthValidator, MinValueValidator, RegexValidator
-from django.db import models, transaction
+from django.db import models, transaction, IntegrityError
 from django.db.models import F, Sum
 import django.http
 from django.urls import reverse
@@ -1106,6 +1107,8 @@ class UIText(models.Model):
 
 
 class Counter(models.Model):
+    PRIVATE_KEY_ALPHABET = string.ascii_letters + string.digits
+
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     identifier = models.CharField(
         max_length=32,
@@ -1119,6 +1122,48 @@ class Counter(models.Model):
         null=False,
         help_text=_(u"Common name of the counter")
     )
+    private_key = models.CharField(
+        max_length=32,
+        blank=True,
+        null=True,
+        default=None,
+        unique=True,
+    )
+
+    def assign_private_key(self, for_lock=False):
+        length = self._meta.get_field("private_key").max_length
+
+        if for_lock:
+            # Make space for lock character.
+            length -= 1
+
+        retries = -1
+        while retries < 10:
+            retries += 1
+            candidate = "".join(random.choice(self.PRIVATE_KEY_ALPHABET) for _ in range(length))
+            if for_lock:
+                candidate = "!" + candidate
+
+            if Counter.objects.filter(private_key=candidate).exists():
+                continue
+            self.private_key = candidate
+            try:
+                self.save(update_fields=("private_key",))
+            except IntegrityError:
+                pass
+            else:
+                return
+        raise KeyError("Retry-limit reached")
+
+    @short_description(_("Is in use?"))
+    def is_in_use(self):
+        return self.private_key is not None and not self.private_key.startswith("!")
+    is_in_use.boolean = True
+
+    @short_description(_("Is locked?"))
+    def is_locked(self):
+        return self.private_key is not None and self.private_key.startswith("!")
+    is_locked.boolean = True
 
     class Meta:
         unique_together = (

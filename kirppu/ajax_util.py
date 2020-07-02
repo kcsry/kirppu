@@ -150,16 +150,22 @@ def get_counter(request):
 
     Raise AjaxError if session is invalid or counter is not found.
     """
-    if "counter" not in request.session:
+    if "counter" not in request.session or "counter_key" not in request.session:
         raise AjaxError(RET_UNAUTHORIZED, _(u"Not logged in."))
 
     counter_id = request.session["counter"]
+    counter_key = request.session["counter_key"]
     try:
         counter_object = Counter.objects.get(pk=counter_id)
     except Counter.DoesNotExist:
         raise AjaxError(
             RET_UNAUTHORIZED,
             _(u"Counter has gone missing."),
+        )
+    if counter_object.private_key != counter_key:
+        raise AjaxError(
+            RET_UNAUTHORIZED,
+            _("Unauthorized")
         )
 
     return counter_object
