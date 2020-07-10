@@ -12,8 +12,8 @@ def migrate_forwards(apps, schema_editor):
     Item = apps.get_model("kirppu", "Item")
     db_alias = schema_editor.connection.alias
 
-    for box in Box.objects.select_for_update().all():
-        representative_item = Item.objects.filter(box=box.id).all()[:1][0]
+    for box in Box.objects.using(db_alias).select_for_update().all():
+        representative_item = Item.objects.using(db_alias).filter(box=box.id).all()[:1][0]
         box.representative_item = representative_item
         box.save(
             force_update=True,

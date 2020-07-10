@@ -7,7 +7,7 @@ def detect_provision(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     Receipt = apps.get_model("kirppu", "Receipt")
     compensations = (
-        Receipt.objects
+        Receipt.objects.using(db_alias)
         .filter(type="COMPENSATION")
         .annotate(src_vendor=models.F("receiptitem__item__vendor_id"))
     )

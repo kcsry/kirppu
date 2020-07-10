@@ -22,7 +22,7 @@ def set_default_event(apps, schema_editor):
     need_default_event = False
     for model_name, _ in FIELDS.items():
         mdl = apps.get_model("kirppu", model_name)
-        if mdl.objects.exists():
+        if mdl.objects.using(db_alias).exists():
             need_default_event = True
             break
 
