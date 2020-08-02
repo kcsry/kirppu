@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # Django settings for kirppu project.
 from decimal import Decimal
+from email.utils import getaddresses
 import os.path
-import re
 from django.utils.translation import ugettext_lazy as _
 
 import environ
@@ -36,10 +36,7 @@ def get_debug_setting(name: str, cast=None, default=environ.Env.NOTSET):
 
 DEBUG = env.bool('DEBUG', default=False)
 
-ADMINS = [
-    re.match(r"^\s*(.+?)\s*<(.+)>\s*$", entry).groups()
-    for entry in env.list("ADMINS", default=[])
-]
+ADMINS = getaddresses(env.list("ADMINS", default=[]))
 
 if env.str("EMAIL_HOST", None) is not None:
     EMAIL_HOST = env.str("EMAIL_HOST")
