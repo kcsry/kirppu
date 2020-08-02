@@ -925,6 +925,8 @@ def vendor_view(request, event_slug):
         boxes = []
         boxed_items = Item.objects.none()
 
+    box_info = boxed_items.aggregate(sum=models.Sum("price"), count=models.Count("id"))
+
     context = {
         'event': event,
         'user': user,
@@ -936,8 +938,8 @@ def vendor_view(request, event_slug):
 
         'boxes': boxes,
         'boxes_count': len(boxes),
-        'boxes_total_price': boxed_items.aggregate(sum=models.Sum("price"))["sum"],
-        'boxes_item_count': boxed_items.count(),
+        'boxes_total_price': box_info["sum"],
+        'boxes_item_count': box_info["count"],
         'boxes_printed': len(list(filter(lambda i: i.is_printed(), boxes))),
 
         'profile_url': settings.PROFILE_URL,

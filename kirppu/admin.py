@@ -119,7 +119,8 @@ class EventAdmin(admin.ModelAdmin):
         form = super().get_form(request, obj, change, **kwargs)
         field = form.base_fields["provision_function"]
         text = field.help_text
-        text += format_html(' <a href="' + reverse("admin:kirppu_lisp_help") + '" target="_blank">View help</a>')
+        text += format_html(' <a href="' + reverse("admin:kirppu_lisp_help") + '" target="_blank">' + escape(
+            force_str(gettext("View help."))) + '</a>')
         field.help_text = text
         return form
 
