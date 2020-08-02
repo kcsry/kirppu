@@ -13,10 +13,11 @@ __author__ = 'codez'
 
 
 class Provision(object):
-    def __init__(self, vendor_id: int, provision_function: str, receipt=None):
+    def __init__(self, vendor_id: int, provision_function: str, receipt=None, database=None):
         self._vendor_id = vendor_id
+        self._database = database or "default"
 
-        self._vendor_items = vendor_items = Item.objects.filter(vendor__id=vendor_id)
+        self._vendor_items = vendor_items = Item.objects.using(self._database).filter(vendor__id=vendor_id)
 
         # Amount of total provision based on sold (=sold/compensated) items.
         if receipt is None:
@@ -46,7 +47,7 @@ class Provision(object):
                     vendor_items.filter(state=Item.SOLD).aggregate(sum=Sum("price"))["sum"]
             else:
                 self._sum_for_compensation = \
-                    ReceiptItem.objects.filter(receipt=receipt, action=ReceiptItem.ADD) \
+                    ReceiptItem.objects.using(self._database).filter(receipt=receipt, action=ReceiptItem.ADD) \
                                        .aggregate(sum=Sum("item__price"))["sum"]
             if self._sum_for_compensation is None:
                 self._sum_for_compensation = Decimal(0)
@@ -79,7 +80,7 @@ class Provision(object):
         :return: Provision value for current items and provision fix for total.
         :rtype: (ReceiptExtraRow, ReceiptExtraRow)
         """
-        extras = ReceiptExtraRow.objects.filter(
+        extras = ReceiptExtraRow.objects.using(self._database).filter(
             type__in=(ReceiptExtraRow.TYPE_PROVISION, ReceiptExtraRow.TYPE_PROVISION_FIX),
             receipt__type=Receipt.TYPE_COMPENSATION,
             receipt__receiptitem__item__vendor_id=self._vendor_id,

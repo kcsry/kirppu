@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _, gettext
 
 from .csv_utils import csv_streamer_view
-from ..models import Event, EventPermission, Item
+from ..models import Event, EventPermission, Item, RemoteEvent
 
 __all__ = [
     "dump_items_view",
@@ -35,7 +35,7 @@ def dump_items_view(request, event_slug):
         raise PermissionDenied
 
     as_text = request.GET.get("txt") is not None
-
+    event = event.get_real_event()
     return csv_streamer_view(
         request,
         lambda output: item_dump(output, event, as_text),
@@ -86,8 +86,8 @@ class TextWriter(object):
             self._output.write("\n")
 
 
-def item_dump(output, event, as_text):
-    items = Item.objects.filter(vendor__event=event)
+def item_dump(output, event: typing.Union[Event, RemoteEvent], as_text):
+    items = Item.objects.using(event.get_real_database_alias()).filter(vendor__event=event)
 
     if as_text:
         straight_column_names = [c[1] for c in COLUMNS if isinstance(c[1], str)]

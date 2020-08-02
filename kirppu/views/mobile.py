@@ -18,7 +18,7 @@ from ratelimit.utils import is_ratelimited
 
 from ..models import Box, Event, Item, Receipt, ReceiptExtraRow, TemporaryAccessPermit, TemporaryAccessPermitLog, Vendor
 from ..provision import Provision
-from ..templatetags.kirppu_login import logout_url
+from ..templatetags.kirppu_login import login_url, logout_url
 from ..templatetags.kirppu_tags import format_price
 from ..util import first, shorten_text
 
@@ -155,12 +155,17 @@ def _login_view(request, event):
     })
 
 
-def _data_view(request, event, permit):
+def _data_view(request, event: Event, permit):
+    original_event = event
     if permit:
         vendor = permit.vendor
+        database = "default"
+        default_database = True
     else:
+        database = event.get_real_database_alias()
+        default_database = database == "default"
         try:
-            vendor = Vendor.get_vendor(request, event=event)
+            vendor = Vendor.get_vendor(request, event=event.get_real_event())
         except Vendor.DoesNotExist:
             vendor = None
         if vendor is None:
@@ -170,14 +175,16 @@ def _data_view(request, event, permit):
                 "tables": {},
                 "CURRENCY": settings.KIRPPU_CURRENCY,
                 "event": event,
+                "event_slug": original_event.slug,
                 "vendor": request.user,
             })
 
-    if not vendor.mobile_view_visited:
+    if default_database and not vendor.mobile_view_visited:
         vendor.mobile_view_visited = True
         vendor.save(update_fields=("mobile_view_visited",))
 
     items = Item.objects \
+        .using(database) \
         .filter(vendor=vendor, hidden=False) \
         .select_related("box") \
         .order_by("name") \
@@ -185,6 +192,7 @@ def _data_view(request, event, permit):
 
     box_objects = (
         Box.objects
+        .using(database)
         .filter(item__vendor=vendor)
         .values("pk", "item__price", "item__state")
         .annotate(item_count=Count("item"),
@@ -237,14 +245,14 @@ def _data_view(request, event, permit):
     if event.provision_function:
         compensable = tables["compensable"]
         if compensable.items:
-            provision = Provision(vendor_id=vendor.id, provision_function=event.provision_function)
+            provision = Provision(vendor_id=vendor.id, provision_function=event.provision_function, database=database)
             to_be_provision = provision.provision + provision.provision_fix
             compensable.pre_sum_line = (_("provision:"), to_be_provision)
             compensable.sum += to_be_provision
 
         compensated = tables["compensated"]
         if compensated.items:
-            current_provision = ReceiptExtraRow.objects.filter(
+            current_provision = ReceiptExtraRow.objects.using(database).filter(
                 type__in=(ReceiptExtraRow.TYPE_PROVISION, ReceiptExtraRow.TYPE_PROVISION_FIX),
                 receipt__type=Receipt.TYPE_COMPENSATION,
                 receipt__items__vendor=vendor,
@@ -276,7 +284,7 @@ def _data_view(request, event, permit):
             signature = None
 
         return render(request, "kirppu/vendor_status.txt", {
-            "event": event,
+            "event_slug": original_event.slug,
             "tables": tables,
             "price_width": max_price_width,
             "vendor": vendor.id,
@@ -284,6 +292,7 @@ def _data_view(request, event, permit):
         }, content_type="text/plain; charset=utf-8")
     return render(request, "kirppu/vendor_status.html", {
         "event": event,
+        "event_slug": original_event.slug,
         "tables": tables,
         "CURRENCY": settings.KIRPPU_CURRENCY,
         "vendor": vendor.id,
@@ -346,6 +355,9 @@ def index(request, event_slug):
 
     if request.user.is_authenticated:
         return _data_view(request, event, None)
+    elif event.source_db:
+        # If data comes from external database, allow visibility only via real login.
+        return HttpResponseRedirect(login_url(reverse(request.path)))
     else:
         permit = _is_permit_valid(request)
         if permit:

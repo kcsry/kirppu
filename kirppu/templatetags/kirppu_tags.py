@@ -1,6 +1,8 @@
 from functools import lru_cache
 import json
 import re
+import typing
+import warnings
 
 from django import template
 from django.conf import settings
@@ -9,17 +11,26 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 import pubcode
-from ..models import UIText, UserAdapter
+from ..models import UIText, UserAdapter, Event, RemoteEvent
 from ..text_engine import mark_down
 
 register = template.Library()
 
 
+def _get_ui_text_query(context, id_):
+    event = context["event"]  # type: Event
+    source_event = context.get("source_event")  # type: typing.Union[Event, RemoteEvent]
+    if source_event is None:
+        warnings.warn("Missing source_event value when getting text " + id_)
+        source_event = event
+    database = source_event.get_real_database_alias()
+    return UIText.objects.using(database).filter(event=source_event)
+
+
 @register.simple_tag(takes_context=True)
 def load_text(context, id_):
     try:
-        event = context["event"]
-        md = UIText.objects.get(event=event, identifier=id_).text
+        md = _get_ui_text_query(context, id_).get(identifier=id_).text
         return mark_safe(mark_down(md, context))
     except UIText.DoesNotExist:
         if settings.DEBUG:
@@ -45,8 +56,12 @@ def load_texts(context, id_, wrap=None):
     :type wrap: str | unicode | None
     :return: str | unicode
     """
-    event = context["event"]
-    texts = UIText.objects.filter(event=event, identifier__startswith=id_).order_by("identifier").values_list("text", flat=True)
+    texts = (
+        _get_ui_text_query(context, id_)
+        .filter(identifier__startswith=id_)
+        .order_by("identifier")
+        .values_list("text", flat=True)
+    )
     if not texts:
         return u""
 

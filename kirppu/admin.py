@@ -112,8 +112,18 @@ class RefLinkAccessor(FieldAccessor):
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "start_date", "end_date", "registration_end", "checkout_active")
     ordering = ("-start_date", "name")
+
+    def get_list_display(self, request):
+        list_display = ["name", "slug", "start_date", "end_date", "registration_end", "checkout_active"]
+        if settings.KIRPPU_EXTRA_DATABASES or settings.KIRPPU_EXTRA_EVENTS:
+            return list_display + ["source_db"]
+        return list_display
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is not None:
+            return ("source_db",)
+        return ()
 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
@@ -122,7 +132,27 @@ class EventAdmin(admin.ModelAdmin):
         text += format_html(' <a href="' + reverse("admin:kirppu_lisp_help") + '" target="_blank">' + escape(
             force_str(gettext("View help."))) + '</a>')
         field.help_text = text
+
+        if obj is None:
+            from django import forms
+            source_dbs = [(e, e) for e in Event.get_source_event_list()]
+            source_dbs.insert(0, (None, "(default)"))
+            form.base_fields["source_db"] = forms.ChoiceField(
+                choices=source_dbs,
+                required=False,
+                help_text=gettext("Setting a value other than default enables mobile view."
+                                  " The event is otherwise made unusable."))
         return form
+
+    def save_form(self, request, form, change):
+        i = form.instance  # type: Event
+        if i.source_db == "":
+            i.source_db = None
+        elif i.source_db is not None:
+            i.mobile_view_visible = True
+            i.checkout_active = False
+
+        return super().save_form(request, form, change)
 
     def get_urls(self):
         urls = super().get_urls()

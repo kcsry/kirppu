@@ -1164,22 +1164,27 @@ def item_mark_lost(request, event, code):
 
 
 @ajax_func('^stats/sales_data$', method='GET', staff_override=True)
-def stats_sales_data(request, event, prices="false"):
-    formatter = stats.SalesData(event=event, as_prices=prices == "true")
+def stats_sales_data(request, event: Event, prices="false"):
+    source_event = event.get_real_event()
+    formatter = stats.SalesData(event=source_event, as_prices=prices == "true")
     log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
 @ajax_func('^stats/registration_data$', method='GET', staff_override=True)
-def stats_registration_data(request, event, prices="false"):
-    formatter = stats.RegistrationData(event=event, as_prices=prices == "true")
+def stats_registration_data(request, event: Event, prices="false"):
+    source_event = event.get_real_event()
+    formatter = stats.RegistrationData(event=source_event, as_prices=prices == "true")
     log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')
 
 
 @ajax_func('^stats/group_sales$', method='GET', staff_override=True)
-def stats_group_sales_data(request, event, type_id, prices="false"):
-    item_type = ItemType.objects.get(event=event, id=int(type_id))
-    formatter = stats.SalesData(event=event, as_prices=prices == "true", extra_filter=dict(item__itemtype=item_type))
+def stats_group_sales_data(request, event: Event, type_id, prices="false"):
+    source_event = event.get_real_event()
+    database = event.get_real_database_alias()
+    item_type = ItemType.objects.using(database).get(event=source_event, id=int(type_id))
+    formatter = stats.SalesData(event=source_event, as_prices=prices == "true",
+                                extra_filter=dict(item__itemtype=item_type))
     log_generator = stats.iterate_logs(formatter)
     return StreamingHttpResponse(log_generator, content_type='text/csv')

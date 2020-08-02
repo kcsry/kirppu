@@ -3,6 +3,7 @@
 from decimal import Decimal
 from email.utils import getaddresses
 import os.path
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import gettext_lazy as _
 
 import environ
@@ -48,6 +49,20 @@ if env.str("DEFAULT_FROM_EMAIL", None) is not None:
 DATABASES = {
     'default': env.db(default='sqlite:///db.sqlite3'),
 }
+
+# Set KIRPPU_EXTRA_DATABASES="other_event=sqlite:///foobar.sqlite,another_event=sqlite:///barbaz.sqlite" to add
+# extra single-event databases available for readonly Events.
+# Multi-event databases need additionally to configure the source mapping with KIRPPU_EXTRA_EVENTS,
+# like KIRPPU_EXTRA_EVENTS="event_name@db_name,other_name@db_name" where db_name must
+# be present in KIRPPU_EXTRA_DATABASES.
+_extra_databases = dict(e.split("=", maxsplit=1) for e in env.list("KIRPPU_EXTRA_DATABASES", default=[]))
+KIRPPU_EXTRA_DATABASES = [k for k in _extra_databases if k not in DATABASES]
+for k in KIRPPU_EXTRA_DATABASES:
+    DATABASES[k] = env.db_url_config(_extra_databases[k])
+KIRPPU_EXTRA_EVENTS = dict(e.split("@", maxsplit=1) for e in env.list("KIRPPU_EXTRA_EVENTS", default=[]))
+if set(KIRPPU_EXTRA_EVENTS.values()) - set(DATABASES.keys()):
+    raise ImproperlyConfigured("Some KIRPPU_EXTRA_EVENTS databases were not found in KIRPPU_EXTRA_DATABASES.")
+
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -180,7 +195,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'kirppuauth',
-    'kirppu',
+    'kirppu.apps.KirppuApp',
 )
 
 AUTH_USER_MODEL = 'kirppuauth.User'

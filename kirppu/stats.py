@@ -8,7 +8,7 @@ from django.db import models
 from django.db.models import F
 from django.utils.translation import gettext as _
 
-from .models import Item, ItemType, ItemStateLog
+from .models import Event, Item, ItemType, ItemStateLog
 
 __author__ = 'codez'
 
@@ -64,10 +64,13 @@ class ItemCollectionData(object):
     GROUP_ITEM_TYPE = "itemtype"
     GROUP_VENDOR = "vendor"
 
-    def __init__(self, group_by, event):
+    def __init__(self, group_by, event: Event):
         self._group_by = group_by
         self._event = event
-        self._raw_data = self._populate(Item.objects.filter(vendor__event=self._event).values(group_by))
+        self._raw_data = self._populate(Item.objects
+                                        .using(self._event.get_real_database_alias())
+                                        .filter(vendor__event=self._event)
+                                        .values(group_by))
 
         if group_by == self.GROUP_ITEM_TYPE:
             self._init_for_item_type()
@@ -98,7 +101,11 @@ class ItemCollectionData(object):
         # Fill possible gaps and order correctly.
         self._data = OrderedDict(
             (key, data.get(key, self._DEFAULT_VALUES))
-            for key in ItemType.objects.filter(event=self._event).order_by("order").values_list("id", flat=True)
+            for key in ItemType.objects
+                               .using(self._event.get_real_database_alias())
+                               .filter(event=self._event)
+                               .order_by("order")
+                               .values_list("id", flat=True)
         )
 
         # Append calculated sum row.
@@ -258,7 +265,7 @@ class ItemEurosRow(ItemCollectionRow):
 class GraphLog(object):
     unix_epoch = datetime(1970, 1, 1, tzinfo=pytz.utc)
 
-    def __init__(self, event, as_prices=False, extra_filter=None):
+    def __init__(self, event: Event, as_prices=False, extra_filter=None):
         self._event = event
         self._as_prices = as_prices
         self._filter = extra_filter or dict()
@@ -285,7 +292,7 @@ class RegistrationData(GraphLog):
     advertised_status = (Item.ADVERTISED,)
 
     def _create_query(self):
-        return ItemStateLog.objects.filter(new_state=Item.ADVERTISED)
+        return ItemStateLog.objects.using(self._event.get_real_database_alias()).filter(new_state=Item.ADVERTISED)
 
     def get_log_str(self, bucket_time, balance):
         entry_time = self.datetime_to_js_time(bucket_time)
@@ -303,7 +310,7 @@ class SalesData(GraphLog):
     compensated_status = (Item.COMPENSATED, Item.RETURNED)
 
     def _create_query(self):
-        return ItemStateLog.objects.exclude(new_state=Item.ADVERTISED)
+        return ItemStateLog.objects.using(self._event.get_real_database_alias()).exclude(new_state=Item.ADVERTISED)
 
     def get_log_str(self, bucket_time, balance):
         entry_time = self.datetime_to_js_time(bucket_time)

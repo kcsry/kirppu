@@ -34,12 +34,17 @@ def get_multi_vendor_values(request, event):
     can_create_vendor = False
     can_switch_vendor = False
 
+    database = event.get_real_database_alias()
+    source_event = event.get_real_event()
+
     if event.multiple_vendors_per_user and user.is_authenticated:
         if user.is_staff and "user" in request.GET:
             raise NotImplementedError  # FIXME: Decide how this should work.
-        permissions = EventPermission.get(event, request.user)
-        multi_vendor = Vendor.objects.filter(user=user, person__isnull=False, event=event)
-        self_vendor = Vendor.objects.filter(user=user, person__isnull=True, event=event).first()
+        user_query = event.get_user_query(user)
+        permissions = EventPermission.get(event, user)
+        multi_vendor = Vendor.objects.using(database).filter(person__isnull=False, event=source_event, **user_query)
+        self_vendor = Vendor.objects.using(database).filter(person__isnull=True, event=source_event, **user_query)\
+            .first()
         can_create_vendor = permissions.can_create_sub_vendor
         can_switch_vendor = can_create_vendor or permissions.can_switch_sub_vendor
     else:
@@ -47,7 +52,7 @@ def get_multi_vendor_values(request, event):
         self_vendor = None
 
     if user.is_authenticated:
-        vendor = Vendor.get_vendor(request, event)
+        vendor = Vendor.get_vendor(request, source_event)
     else:
         vendor = None
 

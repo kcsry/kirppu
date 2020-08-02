@@ -1,9 +1,13 @@
-import random
 from decimal import Decimal
+import random
+import typing
+import warnings
+
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import MinLengthValidator, MinValueValidator, RegexValidator
 from django.db import models, transaction
 from django.db.models import F, Sum
+import django.http
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -129,6 +133,8 @@ class Event(models.Model):
         help_text=_("Amount of unsold Items a Vendor can have in the Event. If blank, no limit is imposed."),
         validators=[MinValueValidator(1)],
     )
+    # Link to another database.
+    source_db = models.CharField(blank=True, max_length=250, null=True, unique=True)
 
     VISIBILITY_VISIBLE = 0
     VISIBILITY_NOT_LISTED = 1
@@ -141,8 +147,91 @@ class Event(models.Model):
     def __str__(self):
         return self.name
 
+    def require_default_db(self):
+        if self.source_db or self._remote_event is not None:
+            raise django.http.Http404()
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        instance._db_alias = db
+        return instance
+
+    _db_alias = None  # assigned in Event.from_db
+    _remote_event = None  # assigned in get_real_event.
+
     def get_absolute_url(self):
         return reverse("kirppu:vendor_view", kwargs={"event_slug": self.slug})
+
+    def get_real_event(self) -> typing.Union["Event", "RemoteEvent"]:
+        """Get actual instance for remote Event, or self if this is not a remote Event."""
+        assert self._db_alias == "default"  # Recursion should not be allowed.
+
+        if self._remote_event is not None:
+            return self._remote_event
+
+        event = None
+        if self.source_db:
+            if ":" in self.source_db:
+                db, name = self.source_db.split(":")
+                event = RemoteEvent.objects.using(db).get(slug=name)
+            else:
+                # Assumption based on 0029_apply_default_event.
+                event = RemoteEvent.objects.using(self.source_db).get(slug="default")
+            self._remote_event = event
+        else:
+            event = self
+
+        return event
+
+    def get_real_database_alias(self):
+        if self.source_db:
+            if ":" in self.source_db:
+                db, _ = self.source_db.split(":")
+            else:
+                db = self.source_db
+            return db
+        else:
+            return self._db_alias
+
+    def get_user_query(self, user):
+        if self.source_db:
+            return {"user__username": user.username}
+        else:
+            assert self._db_alias == "default"
+            return {"user": user}
+
+    @staticmethod
+    def get_source_event_list():
+        dbs = settings.KIRPPU_EXTRA_DATABASES
+        events = settings.KIRPPU_EXTRA_EVENTS
+        event_dbs = set(events.values())
+        result = []
+        for db in dbs:
+            if db not in event_dbs:
+                result.append(db)
+        for event, db in events.items():
+            result.append(db + ":" + event)
+        return result
+
+
+class RemoteEvent(Event):
+    """Event instance from "EXTRA_DATABASES"."""
+    class Meta:
+        proxy = True
+
+    def get_absolute_url(self):
+        raise ValueError("Remote event cannot be referred.")
+
+    def get_real_database_alias(self):
+        return self._db_alias
+
+    def get_real_event(self) -> "RemoteEvent":
+        self._remote_event = self
+        return self
+
+    def get_user_query(self, user):
+        return {"user__username": user.username}
 
 
 class EventPermission(models.Model):
@@ -185,14 +274,17 @@ class EventPermission(models.Model):
         return ", ".join(enabled_names)
 
     @classmethod
-    def get(cls, event, user):
+    def get(cls, event: Event, user):
         if user.is_authenticated:
             try:
+                # TODO: What to do if both default proxy and external event define permissions?
                 return cls.objects.get(event=event, user=user)
             except cls.DoesNotExist:
                 args = dict(event=event, user=user)
         else:
             args = dict(event=event)
+
+        # Create a dummy EventPermission from defaults.
         fields = cls._meta.get_fields()
         for field in fields:
             if not field.is_relation and field.default != models.fields.NOT_PROVIDED:
@@ -418,21 +510,27 @@ class Vendor(models.Model):
         return str(self.user) if self.person is None else str(self.person)
 
     @classmethod
-    def get_vendor(cls, request, event):
+    def get_vendor(cls, request, event: typing.Union[Event, RemoteEvent]):
         """
         Get the Vendor for the given user.
 
         :param request: Request object, or object with `session` (dict with user_id-key and value)
          and `user` (User instance) attributes.
+        :param event: Event to get Vendor from. Should be the actual event (and not one that has source_db set).
         :return: A Vendor, or None.
         :rtype: Vendor|None
         """
         if event.multiple_vendors_per_user and "vendor_id" in request.session:
             match = {"id": request.session["vendor_id"]}
         else:
-            match = {"user": request.user, "person__isnull": True}
+            match = event.get_user_query(request.user)
+            match["person__isnull"] = True
         try:
-            return cls.objects.get(event=event, **match)
+            database = event.get_real_database_alias()
+            source_event = event.get_real_event()
+            if source_event != event:
+                warnings.warn("Wrong event given to get_vendor", stacklevel=2)
+            return cls.objects.using(database).get(event=source_event, **match)
         except cls.DoesNotExist:
             return None
 

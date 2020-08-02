@@ -431,28 +431,29 @@ def _vendor_menu_contents(request, event):
 
     items = [
         fill(_(u"Home"), "kirppu:vendor_view"),
-        fill(_(u"Item list"), "kirppu:page"),
     ]
 
-    if event.use_boxes:
-        items.append(fill(_(u"Box list"), "kirppu:vendor_boxes"))
+    if not event.source_db:
+        items.append(fill(_(u"Item list"), "kirppu:page"))
+        if event.use_boxes:
+            items.append(fill(_(u"Box list"), "kirppu:vendor_boxes"))
 
     if event.mobile_view_visible:
         items.append(fill(_("Mobile"), "kirppu:mobile"))
 
     manage_sub = []
     permissions = EventPermission.get(event, request.user)
-    if request.user.is_staff or UserAdapter.is_clerk(request.user, event):
+    if not event.source_db and (request.user.is_staff or UserAdapter.is_clerk(request.user, event)):
         manage_sub.append(fill(_(u"Checkout commands"), "kirppu:commands"))
         if event.checkout_active:
             manage_sub.append(fill(_(u"Checkout"), "kirppu:checkout_view"))
             if event.use_boxes:
                 manage_sub.append(fill(_("Box codes"), "kirppu:box_codes"))
 
-    if request.user.is_staff or permissions.can_see_clerk_codes:
+    if not event.source_db and (request.user.is_staff or permissions.can_see_clerk_codes):
         manage_sub.append(fill(_(u"Clerk codes"), "kirppu:clerks"))
 
-    if request.user.is_staff or permissions.can_see_accounting:
+    if not event.source_db and (request.user.is_staff or permissions.can_see_accounting):
         manage_sub.append(fill(_(u"Lost and Found"), "kirppu:lost_and_found"))
 
     if request.user.is_staff\
@@ -495,6 +496,8 @@ def get_items(request, event_slug, bar_type):
     """
 
     event = get_object_or_404(Event, slug=event_slug)
+    event.require_default_db()
+
     user = request.user
     if user.is_staff and "user" in request.GET:
         user = get_object_or_404(get_user_model(), username=request.GET["user"])
@@ -549,6 +552,7 @@ def get_boxes(request, event_slug):
     :return: HttpResponse or HttpResponseBadRequest
     """
     event = get_object_or_404(Event, slug=event_slug)
+    event.require_default_db()
     if not event.use_boxes:
         raise Http404()
 
@@ -752,12 +756,18 @@ def _statistics_access(fn):
 
 @ensure_csrf_cookie
 @_statistics_access
-def stats_view(request, event):
+def stats_view(request, event: Event):
     """Stats view."""
+    original_event = event
+    event = event.get_real_event()
     ic = ItemCountData(ItemCountData.GROUP_ITEM_TYPE, event=event)
     ie = ItemEurosData(ItemEurosData.GROUP_ITEM_TYPE, event=event)
     sum_name = _("Sum")
-    item_types = ItemType.objects.filter(event=event).order_by("order").values_list("id", "title")
+    item_types = (ItemType.objects
+                  .using(event.get_real_database_alias())
+                  .filter(event=event)
+                  .order_by("order")
+                  .values_list("id", "title"))
 
     number_of_items = [
         ic.data_set(item_type, type_name)
@@ -790,6 +800,7 @@ def stats_view(request, event):
 
     context = {
         'event': event,
+        'event_slug': original_event.slug,
         'number_of_items': number_of_items,
         'number_of_euros': number_of_euros,
         'vendor_item_data_counts': vendor_item_data_counts,
@@ -803,11 +814,13 @@ def stats_view(request, event):
 
 @ensure_csrf_cookie
 @_statistics_access
-def type_stats_view(request, event, type_id):
-    item_type = get_object_or_404(ItemType, event=event, id=int(type_id))
+def type_stats_view(request, event: Event, type_id):
+    original_event = event
+    event = event.get_real_event()
+    item_type = get_object_or_404(ItemType.objects.using(event.get_real_database_alias()), event=event, id=int(type_id))
 
     return render(request, "kirppu/type_stats.html", {
-        "event": event,
+        "event": original_event,
         "type_id": item_type.id,
         "type_title": item_type.title,
     })
@@ -838,12 +851,15 @@ def _float_array(array):
 
 @ensure_csrf_cookie
 @_statistics_access
-def statistical_stats_view(request, event):
+def statistical_stats_view(request, event: Event):
+    original_event = event
+    event = event.get_real_event()
+    database = event.get_real_database_alias()
     brought_states = (Item.BROUGHT, Item.STAGED, Item.SOLD, Item.COMPENSATED, Item.RETURNED)
 
-    _items = Item.objects.filter(vendor__event=event)
-    _vendors = Vendor.objects.filter(event=event)
-    _boxes = Box.objects.filter(representative_item__vendor__event=event)
+    _items = Item.objects.using(database).filter(vendor__event=event)
+    _vendors = Vendor.objects.using(database).filter(event=event)
+    _boxes = Box.objects.using(database).filter(representative_item__vendor__event=event)
 
     registered = _items.count()
     deleted = _items.filter(hidden=True).count()
@@ -888,7 +904,7 @@ def statistical_stats_view(request, event):
     compensations = [float(e) for e in compensations]
 
     purchases = list(
-        Receipt.objects.filter(counter__event=event, status=Receipt.FINISHED, type=Receipt.TYPE_PURCHASE)
+        Receipt.objects.using(database).filter(counter__event=event, status=Receipt.FINISHED, type=Receipt.TYPE_PURCHASE)
         .order_by("total")
         .values_list("total", flat=True)
     )
@@ -896,7 +912,7 @@ def statistical_stats_view(request, event):
     general["purchases"] = len(purchases)
 
     return render(request, "kirppu/general_stats.html", {
-        "event": event,
+        "event": original_event,
         "compensations": _float_array(compensations),
         "purchases": _float_array(purchases),
         "general": general,
@@ -912,13 +928,15 @@ def vendor_view(request, event_slug):
     """
     event = get_object_or_404(Event, slug=event_slug)
     user = request.user
+    source_event = event.get_real_event()
 
     vendor_data = get_multi_vendor_values(request, event)
     if user.is_authenticated:
-        vendor = Vendor.get_vendor(request, event)
-        items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=True)
-        boxes = Box.objects.filter(item__vendor=vendor, item__hidden=False).distinct()
-        boxed_items = Item.objects.filter(vendor=vendor, hidden=False, box__isnull=False)
+        database = source_event.get_real_database_alias()
+        vendor = vendor_data["current_vendor"]
+        items = Item.objects.using(database).filter(vendor=vendor, hidden=False, box__isnull=True)
+        boxes = Box.objects.using(database).filter(item__vendor=vendor, item__hidden=False).distinct()
+        boxed_items = Item.objects.using(database).filter(vendor=vendor, hidden=False, box__isnull=False)
     else:
         vendor = None
         items = []
@@ -929,6 +947,7 @@ def vendor_view(request, event_slug):
 
     context = {
         'event': event,
+        'source_event': source_event,
         'user': user,
         'items': items,
 
@@ -954,6 +973,8 @@ def vendor_view(request, event_slug):
 @require_http_methods(["POST"])
 def accept_terms(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
+    event.require_default_db()
+
     vendor = Vendor.get_or_create_vendor(request, event)
     if vendor.terms_accepted is None:
         vendor.terms_accepted = timezone.now()
@@ -996,6 +1017,7 @@ def remove_item_from_receipt(request, event_slug):
 @login_required
 def lost_and_found_list(request, event_slug):
     event = Event.objects.get(slug=event_slug)
+    event.require_default_db()
     if not EventPermission.get(event, request.user).can_see_accounting:
         raise PermissionDenied
     items = Item.objects \

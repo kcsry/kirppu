@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 import csv
+import typing
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -10,7 +11,16 @@ from django.utils.translation import gettext_lazy as _, pgettext_lazy, gettext
 from django.utils import timezone
 
 from .csv_utils import csv_streamer_view, strip_generator
-from ..models import Event, EventPermission, Item, Receipt, ReceiptExtraRow, ReceiptItem, decimal_to_transport
+from ..models import (
+    Event,
+    EventPermission,
+    Item,
+    Receipt,
+    ReceiptExtraRow,
+    ReceiptItem,
+    RemoteEvent,
+    decimal_to_transport,
+)
 
 __all__ = [
     "accounting_receipt_view",
@@ -48,6 +58,7 @@ def accounting_receipt_view(request, event_slug):
     if not EventPermission.get(event, request.user).can_see_accounting:
         raise PermissionDenied
 
+    event = event.get_real_event()
     return csv_streamer_view(
         request,
         lambda output: accounting_receipt(output, event, generator=True),
@@ -56,13 +67,14 @@ def accounting_receipt_view(request, event_slug):
 
 
 @strip_generator
-def accounting_receipt(output, event):
+def accounting_receipt(output, event: typing.Union[Event, RemoteEvent]):
     writer = csv.writer(output)
     writer.writerow(str(c) for c in COLUMNS)
     # Used here and later for buffer streaming and clearing in case of StringIO.
     yield
 
     receipts = (Receipt.objects
+                .using(event.get_real_database_alias())
                 .filter(clerk__event=event, status=Receipt.FINISHED)
                 .prefetch_related("receiptitem_set", "receiptitem_set__item", "extra_rows")
                 .order_by("end_time")
@@ -75,9 +87,16 @@ def accounting_receipt(output, event):
     impl.finish()
     yield
 
-    items_paid_out = Item.objects.filter(vendor__event=event, state=Item.COMPENSATED).aggregate(sum=Sum("price"))
+    items_paid_out = (Item.objects
+                      .using(event.get_real_database_alias())
+                      .filter(vendor__event=event, state=Item.COMPENSATED)
+                      .aggregate(sum=Sum("price"))
+                      )
     items_paid_out = decimal_to_transport(items_paid_out["sum"] or 0)
-    items_forfeited = Item.objects.filter(vendor__event=event, state=Item.SOLD).aggregate(sum=Sum("price"))
+    items_forfeited = (Item.objects
+                       .using(event.get_real_database_alias())
+                       .filter(vendor__event=event, state=Item.SOLD)
+                       .aggregate(sum=Sum("price")))
     items_forfeited = decimal_to_transport(items_forfeited["sum"] or 0)
 
     # Basic sanity checking. Does not really give a straight explanation of why something is amiss.
