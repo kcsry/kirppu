@@ -1,6 +1,7 @@
 from collections import namedtuple
 from functools import wraps
 import json
+import typing
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -401,20 +402,25 @@ def box_content(request, event_slug, box_id, bar_type):
     return render(request, "kirppu/app_boxes_content.html", render_params)
 
 
-def _vendor_menu_contents(request, event):
+class MenuItem(typing.NamedTuple):
+    name: typing.Optional[str]
+    url: typing.Optional[str]
+    active: typing.Optional[bool]
+    sub_items: typing.Optional[typing.List["MenuItem"]]
+
+
+def _vendor_menu_contents(request, event: Event) -> typing.List[MenuItem]:
     """
     Generate menu for Vendor views.
     Returned tuple contains entries for the menu, each entry containing a
     name, url, and flag indicating whether the entry is currently active
     or not.
 
-    :param event:
+    :param event: The event.
     :param request: Current request being processed.
     :return: List of menu items containing name, url and active fields.
-    :rtype: tuple[MenuItem,...]
     """
     active = request.resolver_match.view_name
-    menu_item = namedtuple("MenuItem", "name url active sub_items")
 
     def fill(name, func, sub=None, query=None, is_global=False):
         if not is_global:
@@ -427,7 +433,7 @@ def _vendor_menu_contents(request, event):
             link += "?" + "&".join(
                 quote(k, safe="") + (("=" + quote(v, safe="")) if v else "")
                 for k, v in query.items())
-        return menu_item(name, link, func == active, sub)
+        return MenuItem(name, link, func == active, sub)
 
     items = [
         fill(_(u"Home"), "kirppu:vendor_view"),
@@ -474,7 +480,7 @@ def _vendor_menu_contents(request, event):
         accounting_sub = [
             fill(_("View"), "kirppu:accounting"),
             fill(_("Download"), "kirppu:accounting", query={"download": ""}),
-            menu_item(None, None, None, None),
+            MenuItem(None, None, None, None),
             fill(_("View items"), "kirppu:item_dump", query={"txt": ""}),
             fill(_("View items (CSV)"), "kirppu:item_dump"),
         ]
