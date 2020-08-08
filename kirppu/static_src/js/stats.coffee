@@ -4,7 +4,7 @@
 # @param x [Array[Number]] X values to get "Y" values for.
 # @param mean [Number] Mean value of data.
 # @param std [Number] Standard deviation of data.
-# @return [Array[Number]] Normal distribution Y values (0..1) matching x values.
+# @return [Array[Number]] Normal distribution Y values (0..1) matching x values.
 normalDist = (x, mean, std) ->
   normDist = []
   if x.length >= 2 and std != 0

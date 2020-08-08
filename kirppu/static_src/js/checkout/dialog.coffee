@@ -31,7 +31,7 @@ class @Dialog
 
   # Add a button to the dialog that will dismiss the dialog when clicked.
   # @params clazz Initial btn-class to set to the button.
-  # @return [$] Button object.
+  # @return [$] Button object.
   addDismissButton: (clazz) ->
     btn = @_button(clazz)
     @_buttonList.push(btn)
@@ -39,7 +39,7 @@ class @Dialog
 
   # Add a button to the dialog.
   # @params clazz Initial btn-class to set to the button.
-  # @return [$] Button object.
+  # @return [$] Button object.
   addButton: (clazz) ->
     btn = $("""<button type="button" class="btn btn-#{clazz}">""")
     @_buttonList.push(btn)
