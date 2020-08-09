@@ -99,6 +99,9 @@ def item_dump(output, event: typing.Union[Event, RemoteEvent], as_text):
             (max_lengths["max_" + c[1]] if isinstance(c[1], str) else 1) or 0
             for c in COLUMNS
         ]
+        # Last column doesn't need trailing padding as line is changed after that.
+        column_widths[-1] = 0
+
         writer = TextWriter(output, column_widths)
         writer.write_staggered(str(c[0]) for c in COLUMNS)
     else:
