@@ -5,7 +5,7 @@ import django.db.models.manager
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('kirppu', '0035_add_vendor_to_receipt'),
+        ('kirppu', '0036_add_receipt_vendor_constraint'),
     ]
 
     operations = [

@@ -4,7 +4,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('kirppu', '0036_adjust_clerk_managers'),
+        ('kirppu', '0037_adjust_clerk_managers'),
     ]
 
     operations = [

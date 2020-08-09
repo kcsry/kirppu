@@ -135,6 +135,7 @@
     },
     {
         "fields": {
+            "event": 1,
             "user": 1,
             "access_key": "0000000000AAAA"
         },
@@ -145,6 +146,7 @@
         "pk": 1,
         "model": "kirppu.counter",
         "fields": {
+            "event": 1,
             "identifier": "dev_counter",
             "name": "Dev Counter"
         }
