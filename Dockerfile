@@ -2,9 +2,10 @@ FROM python:3.6
 WORKDIR /usr/src/app
 
 RUN (echo "Package: *" && echo "Pin: origin deb.nodesource.com" && echo "Pin-Priority: 600") > /etc/apt/preferences.d/nodesource && \
-    curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
     apt-get -y install nodejs gettext && \
-    mkdir -p /usr/src/app/kirppu
+    mkdir -p /usr/src/app/kirppu && \
+    bash -xc 'node --version && npm --version'
 
 COPY requirements.txt requirements-oauth.txt requirements-production.txt /usr/src/app/
 RUN pip install --no-cache-dir -r requirements.txt -r requirements-oauth.txt -r requirements-production.txt
