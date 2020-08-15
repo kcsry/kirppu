@@ -357,7 +357,7 @@ def index(request, event_slug):
         return _data_view(request, event, None)
     elif event.source_db:
         # If data comes from external database, allow visibility only via real login.
-        return HttpResponseRedirect(login_url(reverse(request.path)))
+        return HttpResponseRedirect(login_url(reverse("kirppu:mobile", kwargs={"event_slug": event_slug})))
     else:
         permit = _is_permit_valid(request)
         if permit:
