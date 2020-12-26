@@ -812,6 +812,7 @@ def stats_view(request, event: Event):
         'vendor_item_data_counts': vendor_item_data_counts,
         'vendor_item_data_euros': vendor_item_data_euros,
         'vendor_item_data_row_size': vendor_item_data_row_size,
+        'vendor_item_data_order': json.dumps(ItemCountData.columns()),
         'CURRENCY': settings.KIRPPU_CURRENCY["raw"],
     }
 

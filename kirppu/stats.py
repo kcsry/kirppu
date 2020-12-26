@@ -138,6 +138,11 @@ class ItemCollectionData(object):
     def _populate(self, query):
         raise NotImplementedError()
 
+    @classmethod
+    def columns(cls):
+        # XXX: This assumes subclasses of ItemCollectionRow follow these orders.
+        return ["name"] + list(cls.PROPERTIES) + list(cls.ABANDONED_PROPERTIES)
+
     def __repr__(self):
         return "{}({}, {})".format(self.__class__.__name__, self._group_by, self._data)
 
