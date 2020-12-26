@@ -501,7 +501,7 @@ class UITextAdmin(admin.ModelAdmin):
 @admin.register(ItemType)
 class ItemTypeAdmin(admin.ModelAdmin):
     ordering = ["event", "order"]
-    list_display = ["title", "order", "event", "key"]
+    list_display = ["title", "order", "event"]
     list_editable = ["order"]
     list_filter = ("event",)
     list_display_links = ["title"]

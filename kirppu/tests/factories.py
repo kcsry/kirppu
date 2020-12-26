@@ -118,7 +118,6 @@ class ItemTypeFactory(Factory):
     class Meta:
         model = ItemType
     event = factory.SubFactory(EventFactory)
-    key = factory.Sequence(lambda n: "type_{}".format(n))
     order = factory.Sequence(lambda n: n)
     title = factory.Faker("sentence", nb_words=2)
 

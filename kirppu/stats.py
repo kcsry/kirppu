@@ -34,8 +34,8 @@ class ItemCollectionData(object):
     The query that is run will yield two-dimensional result (actually with all states, but no empty group_by's):
 
         [
-        {'staged': 1, 'sum': 5, 'advertised': 3, 'sold': 1, 'itemtype': 'manga-english'},
-        {'staged': 0, 'sum': 2, 'advertised': 0, 'sold': 2, 'itemtype': 'other'},
+        {'staged': 1, 'sum': 5, 'advertised': 3, 'sold': 1, 'itemtype': 2},
+        {'staged': 0, 'sum': 2, 'advertised': 0, 'sold': 2, 'itemtype': 5},
         ...
         ]
     """

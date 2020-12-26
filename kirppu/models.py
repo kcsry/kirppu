@@ -824,13 +824,11 @@ class Box(models.Model):
 
 class ItemType(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    key = models.CharField(max_length=24)
     order = models.IntegerField()
     title = models.CharField(max_length=255)
 
     class Meta:
         unique_together = (
-            ("event", "key"),
             ("event", "order"),
         )
 
@@ -838,8 +836,7 @@ class ItemType(models.Model):
         return self.title
 
     def __repr__(self):
-        return u"ItemType(key={key}, order={order}, title={title})".format(
-            key=repr(self.key),
+        return u"ItemType(order={order}, title={title})".format(
             order=self.order,
             title=repr(self.title)
         )
@@ -847,7 +844,7 @@ class ItemType(models.Model):
     @classmethod
     def as_tuple(cls, event):
         query = cls.objects.filter(event=event)
-        return query.order_by("order").values_list("key", "title")
+        return query.order_by("order").values_list("id", "title")
 
 
 class Item(models.Model):
@@ -955,7 +952,7 @@ class Item(models.Model):
         price="price_cents",
         vendor="vendor_id",
         state_display="get_state_display",
-        itemtype=lambda self: self.itemtype.key,
+        itemtype="itemtype_id",
         itemtype_display="get_itemtype_display",
         adult=lambda self: self.adult == Item.ADULT_YES,
     )

@@ -31,7 +31,7 @@ class PublicTest(TestCase, ResultMixin):
             price="1.25",
             tag_type="short",
             suffixes="",
-            item_type=self.type.key,
+            item_type=self.type.id,
             adult=False,
         )
         result = self.assertSuccess(self.client.post("/kirppu/{}/vendor/item/".format(self.event.slug),
@@ -44,7 +44,7 @@ class PublicTest(TestCase, ResultMixin):
         data = dict(
             description=factory.Faker("sentence", nb_words=3).generate({}),
             price="1.25",
-            item_type=self.type.key,
+            item_type=self.type.id,
             adult=False,
             count=4,
             bundle_size=1,
@@ -57,7 +57,7 @@ class PublicTest(TestCase, ResultMixin):
         data = dict(
             description=factory.Faker("sentence", nb_words=3).generate({}),
             price="1.25",
-            item_type=self.type.key,
+            item_type=self.type.id,
             adult=False,
             count=1,
             bundle_size=1,
@@ -70,7 +70,7 @@ class PublicTest(TestCase, ResultMixin):
         data = dict(
             description=factory.Faker("sentence", nb_words=3).generate({}),
             price="1.25",
-            item_type=self.type.key,
+            item_type=self.type.id,
             adult=False,
             count=1,
             bundle_size=2,

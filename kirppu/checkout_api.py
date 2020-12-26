@@ -338,7 +338,7 @@ def item_search(request, event, query, code, vendor, min_price, max_price, item_
 
     types = item_type.split()
     if types:
-        clauses.append(Q(itemtype__key__in=types))
+        clauses.append(Q(itemtype_id__in=types))
 
     code = code.strip()
     if code:
