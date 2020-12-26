@@ -140,8 +140,8 @@ class EventAdmin(admin.ModelAdmin):
             form.base_fields["source_db"] = forms.ChoiceField(
                 choices=source_dbs,
                 required=False,
-                help_text=gettext("Setting a value other than default enables mobile view."
-                                  " The event is otherwise made unusable."))
+                help_text=gettext("Setting a value other than default enables mobile view"
+                                  " and this event is otherwise made read-only."))
         return form
 
     def save_form(self, request, form, change):
