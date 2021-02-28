@@ -62,6 +62,15 @@ def box_checkin(request, event, code, box_info):
     if box_number != box.box_number:
         raise AjaxError(500, _("Unexpected box number conflict"))
 
+    left_count = None
+    if event.max_brought_items is not None:
+        count = 1 if event.box_as_single_brought_item else box.get_item_count()
+        brought_count = Item.get_brought_count(event, item.vendor)
+        if brought_count + count > event.max_brought_items:
+            raise AjaxError(RET_CONFLICT, _("Too many items brought, limit is %i!") % event.max_brought_items)
+        else:
+            left_count = event.max_brought_items - brought_count - count
+
     items = box.get_items().select_for_update()
     wrong_count = items.exclude(state=Item.ADVERTISED).count()
     if wrong_count > 0:
@@ -71,11 +80,14 @@ def box_checkin(request, event, code, box_info):
     ItemStateLog.objects.log_states(item_set=items, new_state=Item.BROUGHT, request=request)
     items.update(state=Item.BROUGHT)
 
-    return {
+    result = {
         "box": box.as_dict(),
         "changed": items.count(),
         "code": item.code,
     }
+    if left_count is not None:
+        result["_item_limit_left"] = left_count
+    return result
 
 
 @ajax_func("^box/item/reserve$", atomic=True)

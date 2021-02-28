@@ -699,11 +699,8 @@ def item_checkin(request, event, code):
 
     left_count = None
     if event.max_brought_items is not None:
-        count = 1
-        if item.box is not None:
-            count = item.box.get_item_count()
-
-        brought_count = Item.objects.filter(vendor=item.vendor, state=Item.BROUGHT).count()
+        count = 1 if event.box_as_single_brought_item or item.box is None else item.box.get_item_count()
+        brought_count = Item.get_brought_count(event, item.vendor)
         if brought_count + count > event.max_brought_items:
             raise AjaxError(RET_CONFLICT, _("Too many items brought, limit is %i!") % event.max_brought_items)
         else:

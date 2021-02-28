@@ -7,7 +7,7 @@ import warnings
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import MinLengthValidator, MinValueValidator, RegexValidator
 from django.db import models, transaction, IntegrityError
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Q
 import django.http
 from django.urls import reverse
 from django.utils import timezone
@@ -133,6 +133,11 @@ class Event(models.Model):
         null=True,
         help_text=_("Amount of unsold Items a Vendor can have in the Event. If blank, no limit is imposed."),
         validators=[MinValueValidator(1)],
+    )
+    box_as_single_brought_item = models.BooleanField(
+        default=False,
+        help_text=_("Should a box be considered a single item when counting max brought"
+                    " items instead of considering its contents individually."),
     )
     # Link to another database.
     source_db = models.CharField(blank=True, max_length=250, null=True, unique=True)
@@ -1071,6 +1076,14 @@ class Item(models.Model):
         :rtype: bool
         """
         return text.isalnum() and text.isupper() and len(text) == cls.CODE_BITS / 5
+
+    @classmethod
+    def get_brought_count(cls, event: Event, vendor: Vendor):
+        if event.box_as_single_brought_item:
+            return Item.objects.filter(vendor=vendor, state=Item.BROUGHT).filter(
+                Q(box__isnull=True) | Q(box__representative_item__id=F("pk"))).count()
+        else:
+            return Item.objects.filter(vendor=vendor, state=Item.BROUGHT).count()
 
 
 class UIText(models.Model):
