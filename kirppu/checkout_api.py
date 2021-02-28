@@ -1,5 +1,3 @@
-import functools
-import inspect
 import logging
 import random
 
@@ -50,11 +48,10 @@ from .forms import remove_item_from_receipt
 from . import ajax_util, stats
 from .ajax_util import (
     AjaxError,
-    AjaxFunc,
+    get_all_ajax_functions,
     get_counter,
     get_clerk,
     empty_as_none,
-    require_user_features,
     RET_ACCEPTED,
     RET_BAD_REQUEST,
     RET_CONFLICT,
@@ -63,6 +60,12 @@ from .ajax_util import (
     RET_LOCKED,
 )
 
+# Must be imported, for part to be included at all in the API.
+# noinspection PyUnresolvedReferences
+from . import api
+
+
+ajax_func = ajax_util.ajax_func_factory("checkout")
 logger = logging.getLogger(__name__)
 
 
@@ -80,81 +83,13 @@ def raise_if_item_not_available(item):
     return None
 
 
-# Registry for ajax functions. Maps function names to AjaxFuncs.
-AJAX_FUNCTIONS = {}
-
-
-def _register_ajax_func(func):
-    AJAX_FUNCTIONS[func.name] = func
-
-
-def ajax_func(url, method='POST', counter=True, clerk=True, overseer=False, atomic=False,
-              staff_override=False, ignore_session=False):
-    """
-    Decorate a function with some common logic.
-    The names of the function being decorated are required to be present in the JSON object
-    that is passed to the function, and they are automatically decoded and passed to those
-    arguments.
-
-    :param url: URL RegEx this function is served in.
-    :type url: str
-    :param method: HTTP Method required. Default is POST.
-    :type method: str
-    :param counter: Is registered Counter required? Default: True.
-    :type counter: bool
-    :param clerk: Is logged in Clerk required? Default: True.
-    :type clerk: bool
-    :param overseer: Is overseer permission required for Clerk? Default: False.
-    :type overseer: bool
-    :param atomic: Should this function run in atomic transaction? Default: False.
-    :type atomic: bool
-    :param staff_override: Whether this function can be called without checkout being active.
-    :type staff_override: bool
-    :param ignore_session: Whether Event stored in session data should be ignored for the call.
-    :return: Decorated function.
-    """
-
-    def decorator(func):
-        # Get argspec before any decoration.
-        spec = inspect.getfullargspec(func)
-
-        wrapped = require_user_features(counter, clerk, overseer, staff_override=staff_override)(func)
-
-        fn = ajax_util.ajax_func(
-            func,
-            method,
-            spec.args[1:],
-            spec.defaults,
-            staff_override=staff_override,
-            ignore_session=ignore_session,
-        )(wrapped)
-        if atomic:
-            fn = transaction.atomic(fn)
-
-        # Copy name etc from original function to wrapping function.
-        # The wrapper must be the one referred from urlconf.
-        fn = functools.wraps(wrapped)(fn)
-        _register_ajax_func(AjaxFunc(fn, url, method))
-
-        return fn
-    return decorator
-
-
-# Must be after ajax_func to ensure circular import works. Must be imported, for part to be included at all in the API.
-# noinspection PyUnresolvedReferences
-from .api import (
-    boxes_api,
-    receipt as receipt_api,
-)
-
-
 def checkout_js(request, event_slug):
     """
     Render the JavaScript file that defines the AJAX API functions.
     """
     event = get_object_or_404(Event, slug=event_slug)
     context = {
-        'funcs': AJAX_FUNCTIONS.items(),
+        'funcs': get_all_ajax_functions(),
         'api_name': 'Api',
         'event': event,
     }

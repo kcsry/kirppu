@@ -7,12 +7,14 @@ from .common import (
     item_state_conflict as _item_state_conflict,
     get_receipt,
 )
-from ..ajax_util import AjaxError, RET_BAD_REQUEST, RET_CONFLICT
-from ..checkout_api import ajax_func
+from ..ajax_util import ajax_func_factory, AjaxError, RET_BAD_REQUEST, RET_CONFLICT
 from ..forms import remove_item_from_receipt
 from ..models import Item, ItemStateLog, ReceiptItem, decimal_to_transport
 
 __author__ = 'codez'
+
+
+ajax_func = ajax_func_factory("checkout")
 
 
 def _parse_item_count(inp, minimum=1):
