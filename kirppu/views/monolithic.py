@@ -527,6 +527,7 @@ def get_items(request, event_slug, bar_type):
 
     render_params = {
         'event': event,
+        'source_event': event.get_real_event(),
         'items': items,
         'printed_items': printed_items,
         'bar_type': bar_type,
@@ -581,6 +582,7 @@ def get_boxes(request, event_slug):
 
     render_params = {
         'event': event,
+        'source_event': event.get_real_event(),
         'boxes': boxes,
         'box_name_placeholder': box_name_placeholder,
 
