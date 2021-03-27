@@ -102,9 +102,6 @@ def ajax_func(original, method='POST', params=None, defaults=None, staff_overrid
 
         @functools.wraps(func)
         def wrapper(request, event_slug, **kwargs):
-            #if not request.is_ajax():
-            #    return HttpResponseBadRequest("Invalid requester")
-
             # Prevent access if checkout is not active.
             event = get_object_or_404(Event, slug=event_slug)
             if not staff_override and not event.checkout_active:

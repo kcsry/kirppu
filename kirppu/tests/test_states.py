@@ -3,7 +3,7 @@
 from http import HTTPStatus
 
 from django.test import Client, TestCase
-import factory
+import faker
 
 from .factories import *
 from .api_access import Api
@@ -27,7 +27,7 @@ class PublicTest(TestCase, ResultMixin):
 
     def test_register_item(self):
         data = dict(
-            name=factory.Faker("sentence", nb_words=3).generate({}),
+            name=faker.Faker().sentence(nb_words=3),
             price="1.25",
             tag_type="short",
             suffixes="",
@@ -42,7 +42,7 @@ class PublicTest(TestCase, ResultMixin):
 
     def test_register_box(self):
         data = dict(
-            description=factory.Faker("sentence", nb_words=3).generate({}),
+            description=faker.Faker().sentence(nb_words=3),
             price="1.25",
             item_type=self.type.id,
             adult=False,
@@ -55,7 +55,7 @@ class PublicTest(TestCase, ResultMixin):
 
     def test_register_box_with_single_item(self):
         data = dict(
-            description=factory.Faker("sentence", nb_words=3).generate({}),
+            description=faker.Faker().sentence(nb_words=3),
             price="1.25",
             item_type=self.type.id,
             adult=False,
@@ -68,7 +68,7 @@ class PublicTest(TestCase, ResultMixin):
 
     def test_register_single_bundle_box(self):
         data = dict(
-            description=factory.Faker("sentence", nb_words=3).generate({}),
+            description=faker.Faker().sentence(nb_words=3),
             price="1.25",
             item_type=self.type.id,
             adult=False,

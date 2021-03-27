@@ -1052,7 +1052,7 @@ def lost_and_found_list(request, event_slug):
 
 
 def kirppu_csrf_failure(request, reason=""):
-    if request.is_ajax() or request.META.get("HTTP_ACCEPT", "") == "text/json":
+    if request.META.get("HTTP_ACCEPT", "") in ("text/json", "application/json"):
         # TODO: Unify the response to match requested content type.
         return HttpResponseForbidden(
             _("CSRF verification failed. Request aborted."),

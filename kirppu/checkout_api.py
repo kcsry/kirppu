@@ -17,7 +17,7 @@ from django.shortcuts import (
 )
 from django.utils.translation import gettext as _
 from django.utils.timezone import now
-from ipware.ip import get_ip
+from ipware.ip import get_client_ip
 
 from .api.common import (
     get_item_or_404 as _get_item_or_404,
@@ -848,7 +848,7 @@ def vendor_token_create(request, vendor_id):
         TemporaryAccessPermitLog.objects.create(
             permit=permit,
             action=TemporaryAccessPermitLog.ACTION_INVALIDATE,
-            address=get_ip(request),
+            address=get_client_ip(request),
             peer="{0}/{1}".format(clerk.user.username, clerk.pk),
         )
     old_permits.update(state=TemporaryAccessPermit.STATE_INVALIDATED)
@@ -866,7 +866,7 @@ def vendor_token_create(request, vendor_id):
             TemporaryAccessPermitLog.objects.create(
                 permit=permit,
                 action=TemporaryAccessPermitLog.ACTION_ADD,
-                address=get_ip(request),
+                address=get_client_ip(request),
                 peer="{0}/{1}".format(clerk.user.username, clerk.pk),
             )
             break

@@ -2,13 +2,12 @@ import json
 
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
-from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE
 from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.admin.views.main import ChangeList
 from django.db import IntegrityError, models, transaction
-from django.urls import reverse, path
+from django.urls import reverse, path, re_path
 from django.utils.encoding import force_str
 from django.utils.html import escape, format_html
 from django.utils.translation import gettext_lazy as gettext, ngettext
@@ -358,8 +357,8 @@ class ClerkAdmin(admin.ModelAdmin):
     def get_urls(self):
         info = self.opts.app_label, self.opts.model_name
         return super(ClerkAdmin, self).get_urls() + [
-            url(r'^add/bulk_unbound$', self.bulk_add_unbound, name="%s_%s_bulk" % info),
-            url(r'^add/sso$', self.add_from_sso, name="%s_%s_sso" % info),
+            re_path(r'^add/bulk_unbound$', self.bulk_add_unbound, name="%s_%s_bulk" % info),
+            re_path(r'^add/sso$', self.add_from_sso, name="%s_%s_sso" % info),
         ]
 
     def add_from_sso(self, request):
