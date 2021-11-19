@@ -2,7 +2,7 @@
 
 from http import HTTPStatus
 
-from django.test import Client, TestCase
+from django.test import TestCase
 import faker
 
 from .factories import *
@@ -15,7 +15,6 @@ __author__ = 'codez'
 
 class PublicTest(TestCase, ResultMixin):
     def setUp(self):
-        self.client = Client()
         self.event = EventFactory()
         self.vendor = VendorFactory(event=self.event)
         self.type = ItemTypeFactory(event=self.event)
@@ -82,9 +81,6 @@ class PublicTest(TestCase, ResultMixin):
 
 class StatesTest(TestCase, ResultMixin):
     def setUp(self):
-
-        self.client = Client()
-
         self.event = EventFactory()
         self.vendor = VendorFactory(event=self.event)
         self.items = ItemFactory.create_batch(10, vendor=self.vendor)
