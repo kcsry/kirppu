@@ -126,12 +126,15 @@ class StatesTest(TestCase, ResultMixin):
         expected_failure = self.api.item_reserve(code=item_code)
         self.assertEqual(HTTPStatus.LOCKED, expected_failure.status_code)
 
-    def test_normal_box_receipt(self):
-        box = BoxFactory(adopt=True, items=self.items)
+    def _register_box_brought(self, box):
         box_checkin = self.assertResult(self.api.item_checkin(code=box.representative_item.code),
                                         expect=HTTPStatus.ACCEPTED).json()
         self.assertSuccess(self.api.box_checkin(code=box.representative_item.code,
                                                 box_info=box_checkin["box"]["box_number"]))
+        return box
+
+    def test_normal_box_receipt(self):
+        box = self._register_box_brought(BoxFactory(adopt=True, items=self.items))
 
         receipt = self.assertSuccess(self.api.receipt_start()).json()
         reserve_count = 3
@@ -143,14 +146,20 @@ class StatesTest(TestCase, ResultMixin):
 
         self.assertEqual(Receipt.FINISHED, finished_receipt["status"])
 
+    def test_double_box_reserve(self):
+        # Note: This tests only two subsequent requests. Simultaneous access would behave differently.
+        box = self._register_box_brought(BoxFactory(adopt=True, items=self.items))
+        receipt = self.assertSuccess(self.api.receipt_start()).json()
+        self.assertSuccess(self.api.box_item_reserve(box_number=box.box_number, box_item_count=3))
+        self.assertSuccess(self.api.box_item_reserve(box_number=box.box_number, box_item_count=3))
+        self.assertEqual(6, Item.objects.filter(box=box, state=Item.STAGED).count())
+
     def test_box_over_reserve(self):
         reserve_count = 3
 
-        box = BoxFactory(vendor=VendorFactory(event=self.event), item_count=reserve_count - 1)
-        box_checkin = self.assertResult(self.api.item_checkin(code=box.representative_item.code),
-                                        expect=HTTPStatus.ACCEPTED).json()
-        self.assertSuccess(self.api.box_checkin(code=box.representative_item.code,
-                                                box_info=box_checkin["box"]["box_number"]))
+        box = self._register_box_brought(
+            BoxFactory(vendor=VendorFactory(event=self.event), item_count=reserve_count - 1)
+        )
 
         receipt = self.assertSuccess(self.api.receipt_start()).json()
 
