@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.9
 WORKDIR /usr/src/app
 
 RUN (echo "Package: *" && echo "Pin: origin deb.nodesource.com" && echo "Pin-Priority: 600") > /etc/apt/preferences.d/nodesource && \
