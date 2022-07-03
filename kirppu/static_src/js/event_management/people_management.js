@@ -1,4 +1,9 @@
 (function() {
+    // Signup link
+    $("#copylink").on("click", function(e) {
+        e.preventDefault();
+    })
+
     // People management
     const config = JSON.parse(document.getElementById("config").innerText);
     const data = JSON.parse(document.getElementById("data").innerText);
@@ -50,6 +55,7 @@
 
         const changePayload = {
             id: id,
+            action: "update",
             expect: originalValues,
             values: changeValues
         };
@@ -110,4 +116,100 @@
         let btn = edits[idx];
         btn.onclick = actions.edit;
     }
+})();
+
+(function() {
+    const config = JSON.parse(document.getElementById("config").innerText);
+    const body = document.getElementById("signup-body");
+    const signupData = JSON.parse(document.getElementById("signups").innerText);
+
+    const actions = {
+        showDialog: null,
+        sendSignupResolution: null,
+    };
+
+    actions.showDialog = (info) => {
+        const dlg = $(Template.accept_person_dialog(info, signupData.cols))
+        const selections = {
+            accept: null,
+        };
+        const buttons = dlg.find("button[data-action]");
+        buttons.on("click", function() {
+            const action = $(this).data("action");
+            if (action === "accept") {
+                actions.sendSignupResolution(dlg, {
+                    action: "accept",
+                    username: info.username,
+                    accept: selections.accept,
+                })
+            } else if (action === "reject") {
+                actions.sendSignupResolution(dlg, {
+                    action: "reject",
+                    username: info.username,
+                })
+            }
+            // ignore "close"
+        });
+        const accept = buttons.filter("[data-action=accept]");
+
+        dlg.find("#accept-no").on("click", () => {
+            accept.attr("disabled", "disabled");
+            selections.accept = "no";
+        }).click()  // Default selection.
+        dlg.find("#accept-clerk").on("click", () => {
+            accept.removeAttr("disabled");
+            selections.accept = "clerk";
+        })
+        dlg.find("#accept-perm").on("click", () => {
+            accept.removeAttr("disabled");
+            selections.accept = "permissions";
+        })
+
+        $("#body").append(dlg);
+        dlg.on("hidden.bs.modal", () => {
+            dlg.remove();
+        });
+        dlg.modal()
+    }
+
+    const signupTable = $(Template.signup_table(
+        signupData.cols,
+        signupData.data,
+        actions.showDialog,
+    ))
+
+    actions.sendSignupResolution = (dlg, changePayload) => {
+        const changeBlob = new Blob([JSON.stringify(changePayload)], {type: "application/json"})
+
+        fetch(config.postUrl, {
+            method: "POST",
+            body: changeBlob,
+            headers: {
+                "X-CSRFToken": config.csrfToken,
+            }
+        }).then((response) => {
+            if (response.ok) {
+                dlg.modal("hide");
+                response.json().then((newData) => {
+                    // Update the signup row.
+                    const signupData = newData.signup;
+                    const newRow = Template.signup_row(signupData, actions.showDialog)
+                    const oldRow = $("tbody > tr", signupTable).filter(function() {
+                        const u = $(this).data("username");
+                        console.log(u);
+                        return u === signupData.username;
+                    }).first();
+                    oldRow.replaceWith(newRow);
+                    // TODO: Maybe update the json content.
+                });
+                // TODO: Add row to persons
+                // TODO: Remove from top?
+            } else {
+                console.log(response);
+                alert("Accept failed")
+            }
+        })
+    }
+
+    $(body).append(signupTable);
 })();

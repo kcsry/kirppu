@@ -11,8 +11,10 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
+from django.utils import timezone
 
-from ..models import Clerk, Event, EventPermission, UserAdapter
+from utils import format_datetime
+from ..models import AccessSignup, Clerk, Event, EventPermission, UserAdapter
 
 
 def _requirements(request, **kwargs):
@@ -75,6 +77,19 @@ class PersonInfo:
         )}
 
 
+def make_signup_data(signup: AccessSignup):
+    targets = [int(t) for t in signup.target_set.split(",")]
+    return {
+        "name": "%s (%s)" % (UserAdapter.full_name(signup.user), signup.user.username),
+        "username": signup.user.username,
+        "save_time": format_datetime(signup.update_time),
+        "resolution_time": format_datetime(signup.resolution_time) if signup.resolution_time is not None else None,
+        "resolution_accepted": signup.resolution_accepted,
+        "message": signup.message,
+        "cols": [t.value in targets for t in AccessSignup.Target]
+    }
+
+
 class PeopleManagement(View):
     template_name = "kirppu/people_management.html"
 
@@ -86,6 +101,7 @@ class PeopleManagement(View):
     def get(self, request, event, *args, **kwargs):
         permissions = EventPermission.objects.select_related("user").filter(event=event)
         clerks = Clerk.objects.select_related("user").filter(event=event)
+        signups = AccessSignup.objects.select_related("user").filter(event=event)
 
         infos: typing.Dict[int, PersonInfo] = {}
 
@@ -115,10 +131,25 @@ class PeopleManagement(View):
             for info in sorted(infos.values(), key=lambda item: item.user.username)
         ]
 
+        signup_cols = [
+            target.label
+            for target in AccessSignup.Target
+        ]
+        signup_data = [make_signup_data(s) for s in signups]
+
+        signup_url = reverse("kirppu:signup", kwargs={"event_slug": event.slug})
+        if event.access_signup_token:
+            signup_url += "?token=" + event.access_signup_token
+
         return render(request, self.template_name, {
             "event_slug": event.slug,
             "available_clerks": available_clerks,
             "info_data": info_data,
+            "signup_data": {
+                "cols": signup_cols,
+                "data": signup_data,
+            },
+            "signup_url": signup_url,
         })
 
     @staticmethod
@@ -141,6 +172,15 @@ class PeopleManagement(View):
     def post(self, request, event, *args, **kwargs):
         data = json.loads(request.body.decode(request.encoding or "utf-8"))
 
+        action = data["action"]
+        if action == "update":
+            return self._handle_post_update(request, event, data)
+        if action == "accept":
+            return self._handle_post_accept(request, event, data)
+        if action == "reject":
+            return self._handle_post_reject(request, event, data)
+
+    def _handle_post_update(self, request, event, data):
         user_id = data["id"]
         user = get_user_model().objects.get(id=user_id)
         expect = data["expect"]
@@ -258,3 +298,56 @@ class PeopleManagement(View):
             setattr(obj, obj_key, values[dict_key])
             return True
         return False
+
+    @transaction.atomic
+    def _handle_post_accept(self, request, event, data):
+        accept_type = data["accept"]
+        username = data["username"]
+        user = get_user_model().objects.get(username=username)
+
+        signup_info = AccessSignup.objects.get(event=event, user_id=user.pk)
+        signup_info.resolution_accepted = True
+        signup_info.resolution_time = timezone.now()
+        signup_info.save(update_fields=["resolution_accepted", "resolution_time"], no_update_time=True)
+
+        info = PersonInfo(user)
+        if accept_type == "clerk":
+            clerk, _ = Clerk.objects.get_or_create(event=event, user_id=user.pk)
+            self._make_clerk_info(info, clerk)
+        elif accept_type == "permission":
+            perm, _ = EventPermission.objects.get_or_create(event=event, user_id=user.pk)
+            self._make_permission_info(info, perm)
+        else:
+            raise ValueError("Accept value of {} is not valid".format(accept_type))
+
+        signup_data = make_signup_data(signup_info)
+
+        return HttpResponse(
+            json.dumps({
+                "person": info.as_dict(),
+                "signup": signup_data,
+            }),
+            status=200,
+            content_type="application/json",
+        )
+
+    @transaction.atomic
+    def _handle_post_reject(self, request, event, data):
+        username = data["username"]
+        user = get_user_model().objects.get(username=username)
+
+        signup_info = AccessSignup.objects.get(event=event, user_id=user.pk)
+        signup_info.resolution_accepted = False
+        signup_info.resolution_time = timezone.now()
+        signup_info.save(update_fields=["resolution_accepted", "resolution_time"], no_update_time=True)
+
+        signup_data = make_signup_data(signup_info)
+
+        return HttpResponse(
+            json.dumps({
+                "person": None,
+                "signup": signup_data,
+            }),
+            status=200,
+            content_type="application/json",
+        )

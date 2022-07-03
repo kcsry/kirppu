@@ -155,6 +155,7 @@ module.exports.js = {
     },
     'people_management': {
         "source_filenames": [
+            "js/checkout/datetime_formatter.coffee",
             "js/event_management/people_management.js",
         ],
         "output_filename": "people_management.js"

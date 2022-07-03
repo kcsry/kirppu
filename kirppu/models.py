@@ -1,4 +1,5 @@
 from decimal import Decimal
+import enum
 import random
 import string
 import typing
@@ -149,6 +150,8 @@ class Event(models.Model):
         (VISIBILITY_NOT_LISTED, _("Not listed in front page")),
     )
     visibility = models.SmallIntegerField(choices=VISIBILITY, default=VISIBILITY_VISIBLE)
+    access_signup = models.BooleanField(default=False)
+    access_signup_token = models.CharField(blank=True, default="", max_length=128)
 
     def __str__(self):
         return self.name
@@ -479,7 +482,7 @@ class Clerk(models.Model):
 
         :param count: Count of unbound Clerks to generate, default 1.
         :type count: int
-        :param commit: If `True` the item(s) are saved instead of just returned in the list.
+        :param commit: If `True` the item(s) are saved instead of just returned in a list.
         :type commit: bool
         :return: List of generated rows.
         :rtype: list[Clerk]
@@ -492,6 +495,49 @@ class Clerk(models.Model):
                 item.save()
             ids.append(item)
         return ids
+
+
+class AccessSignup(models.Model):
+    class Target(int, enum.Enum):
+        def __new__(cls, value: int, label):
+            obj = int.__new__(cls, value)
+            obj._value_ = value
+            obj.label = label
+            return obj
+        CLERK = 1, _("Clerk")
+        OVERSEER = 2, _("Overseer")
+        STATS = 3, _("Statistics")
+        ACCOUNTING = 4, _("Accounting")
+
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    creation_time = models.DateTimeField()
+    update_time = models.DateTimeField()
+    resolution_time = models.DateTimeField(null=True)
+    resolution_accepted = models.BooleanField(default=False)
+    # Comma-separated list of Target values.
+    target_set = models.CharField(max_length=255)
+    message = models.TextField(max_length=500)
+
+    def __str__(self):
+        return "%s / %s" % (self.event.name, self.user.username)
+
+    def save(self, no_update_time: bool = False, **kwargs):
+        now = timezone.now()
+        if self.creation_time is None:
+            self.creation_time = now
+        updates = kwargs.pop("update_fields", None)
+        if not no_update_time:
+            self.update_time = now
+            if updates is not None:
+                updates = list(updates)
+                updates.append("update_time")
+        super().save(update_fields=updates, **kwargs)
+
+    class Meta:
+        unique_together = (
+            ("event", "user"),
+        )
 
 
 class Vendor(models.Model):

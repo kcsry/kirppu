@@ -6,6 +6,9 @@ th.thin-table-head {
     width: 3em;
     white-space: nowrap;
 }
+th.thin-table-head.thinner-table-head {
+    height: 9em;
+}
 th.thin-table-head.thin-table-head-separate {
     width: 5em;
 }

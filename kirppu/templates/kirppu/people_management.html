@@ -4,6 +4,7 @@
 {{ block.super }}
             <link href="{% static "kirppu/css/event_management.css" %}" rel="stylesheet">
             <script src="{% static "kirppu/jst/templates.js" %}"></script>
+            <script src="{% static "kirppu/js/checkout_comp.js" %}"></script>
 {% endblock %}
 
 {% block title %}{% trans "People management" %} – {{ block.super }}{% endblock %}
@@ -14,8 +15,30 @@
 
 {% block body %}
     <div class="row">
-        <div class="col-xs-5 col-xs-offset-1">
+        <div class="col-xs-10 col-xs-offset-1">
             <h2>{% trans "People management" %}</h2>
+            <a id="copylink" href="{{ signup_url }}">{% trans "Link to signup" %}</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+            <h3>{% trans "Signups" %}</h3>
+            <div class="panel panel-warning">
+                <div class="panel-heading">Note</div>
+                <div class="panel-body">After accepting a signup(s), reload the page for it to appear in Current people.</div>
+            </div>
+        </div>
+    </div>
+    <script type="application/json" id="signups">{{ signup_data|json }}</script>
+    <div class="row" style="margin-bottom: 2em;">
+        <div class="col-xs-10 col-xs-offset-1" id="signup-body">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-5 col-xs-offset-1">
+            <h3>{% trans "Current people" %}</h3>
         </div>
     </div>
     <script type="application/json" id="data">{{ info_data|json }}</script>
