@@ -73,7 +73,7 @@ class UserAdapterBase(object):
 
 
 # The actual class is found by string in settings.
-UserAdapter = import_string(settings.KIRPPU_USER_ADAPTER)
+UserAdapter: UserAdapterBase = import_string(settings.KIRPPU_USER_ADAPTER)
 
 
 class Person(models.Model):
@@ -244,6 +244,7 @@ class EventPermission(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    can_manage_event = models.BooleanField(default=False)
     can_see_clerk_codes = models.BooleanField(default=False)
     can_see_statistics = models.BooleanField(default=False)
     can_see_accounting = models.BooleanField(default=False)
@@ -253,6 +254,7 @@ class EventPermission(models.Model):
     can_create_sub_vendor = models.BooleanField(default=False)
 
     _short_mapping = (
+        (can_manage_event, "Manage"),
         (can_see_clerk_codes, "CCodes"),
         (can_see_statistics, "STAT"),
         (can_see_accounting, "ACC"),
@@ -398,12 +400,12 @@ class Clerk(models.Model):
         return "----------------"
 
     @classmethod
-    def by_code(cls, code, **query):
+    def by_code(cls, code: str, include_unbound: bool = False, **query):
         """
         Return the Clerk instance with the given hex code.
 
         :param code: Raw code string from access card.
-        :type code: str
+        :param include_unbound: If `True`, unbound Clerk object is returned. Otherwise, a `None` is returned.
         :return: The corresponding Clerk or None if access token is invalid.
         :rtype: Clerk | None
         :raises: ValueError if not a valid Clerk access code.
@@ -428,7 +430,7 @@ class Clerk(models.Model):
             clerk = cls.objects.get(access_key=access_key_hex, **query)
         except cls.DoesNotExist:
             return None
-        if clerk.user is None:
+        if not include_unbound and clerk.user is None:
             return None
         return clerk
 

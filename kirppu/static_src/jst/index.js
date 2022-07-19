@@ -9,6 +9,7 @@ import item_report_table from "./item_report_table.jsx";
 import item_search_form from './item_search_form.jsx';
 import {lost_and_found_table, lost_and_found_table_item} from "./lost_and_found_table.jsx";
 import {overseer_receipt_table, overseer_receipt_table_item, overseer_receipt_table_no_results} from "./overseer_receipt_table.jsx";
+import {person_info_table, PersonRow} from "./people_management.jsx";
 import progress_bar from "./progress_bar.jsx";
 import receipt_info from "./receipt_info.jsx";
 import {receipt_list_table_compensations, receipt_list_table_simple} from "./receipt_list_table.jsx";
@@ -39,6 +40,8 @@ const Template = {
     overseer_receipt_table: overseer_receipt_table,
     overseer_receipt_table_item: overseer_receipt_table_item,
     overseer_receipt_table_no_results: overseer_receipt_table_no_results,
+    person_info_table: person_info_table,
+    PersonRow: PersonRow,
     progress_bar: progress_bar,
     receipt_info: receipt_info,
     receipt_list_table_compensations: receipt_list_table_compensations,
