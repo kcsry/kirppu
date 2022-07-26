@@ -23,7 +23,7 @@ class KompassiOAuth2AuthenticationBackend(BaseBackend):
         response.raise_for_status()
         kompassi_user = response.json()
 
-        user, created = User.objects.get_or_create(
+        user, created = User.objects.update_or_create(
             username=kompassi_user['username'],
             defaults=user_defaults_from_kompassi(kompassi_user)
         )
