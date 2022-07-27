@@ -693,7 +693,8 @@ def get_boxes_codes(request, event_slug, bar_type):
 
     return render(request, "kirppu/boxes_list.html", {
         "bar_type": bar_type,
-        "boxes": vm
+        "boxes": vm,
+        "event": event,
     })
 
 
