@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import base64
+import itertools
 import re
 import typing
 
@@ -11,6 +13,11 @@ from django.template.context import Context, RequestContext
 __all__ = [
     "mark_down",
 ]
+
+
+# Also check customtexts_front.js that does the reverse with these.
+EMAIL_CLASS = "yv8k02zi"
+EMAIL_KEY = "yJrx6Rvvyn39u4La"
 
 
 def insert_before_or_append(the_list: typing.List[str], before: str, item: str):
@@ -86,8 +93,14 @@ class CustomTagRenderer(mistune.HTMLRenderer):
         super().__init__()
         self._context = context
 
-    def email(self, address):
-        html = "<code>" + self.text(address).replace("@", " <em>at</em> ") + "</code>"
+    @staticmethod
+    def email(address):
+        enc = bytes(
+            ord(a) ^ ord(k)
+            for a, k in zip(address.replace("@", " <em>at</em> "), itertools.cycle(EMAIL_KEY))
+        )
+        safe = base64.b64encode(enc).decode().rstrip("=")
+        html = '<code class="%s">' % EMAIL_CLASS + safe + "</code>"
         return html
 
     @staticmethod
