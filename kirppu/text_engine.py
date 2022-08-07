@@ -115,6 +115,9 @@ class CustomTagRenderer(mistune.HTMLRenderer):
         return html
 
     def template(self, text, template_name):
+        if self._context is None:
+            import warnings
+            warnings.warn("No context when trying to render a template %s" % template_name)
         context = self._context if self._context is None or isinstance(self._context, dict) else self._context.flatten()
         return loader.render_to_string(template_name, context)
 
@@ -132,3 +135,34 @@ def mark_down(text, context: typing.Optional[typing.Union[RequestContext, Contex
     )
     return m(text)
 
+
+def main():
+    text = """
+# Heading
+
+## Subheading
+
+### Sub-subheading
+
+- Un-ordered list item
+  - Sub-item
+
+1. Ordered list item
+
+*emphasis*
+
+**strong**
+
+[Link title](https://...)
+
+Email address: <email>email@example.org</email>
+
+A glyph: <glyph volume-off />
+
+<alertbox danger>Alert text content</alertbox>
+    """
+    print(mark_down(text))
+
+
+if __name__ == '__main__':
+    main()

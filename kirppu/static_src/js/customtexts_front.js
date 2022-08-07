@@ -10,6 +10,7 @@
                 for (let i = 0; i < str.length; i++) {
                     dec += String.fromCodePoint(str.codePointAt(i) ^ KEY.codePointAt(i % KEY.length));
                 }
+                $(this).removeClass(CLS);
                 this.innerHTML = dec;
             } catch (e) {
                 this.innerText = "<error>";
