@@ -1097,21 +1097,18 @@ class Item(models.Model):
         return self.state != Item.ADVERTISED
 
     @staticmethod
-    def get_item_by_barcode(data, **kwargs):
+    def get_item(**kwargs):
         """
         Get Item by barcode.
-
-        :param data: Barcode data scanned from product
-        :type data: str
 
         :rtype: Item
         :raise Item.DoesNotExist: If no Item matches the code.
         """
-        return Item.objects.annotate(vendor_event=F("vendor__event__id")).get(code=data, **kwargs)
+        return Item.objects.annotate(vendor_event=F("vendor__event__id")).get(**kwargs)
 
     @staticmethod
-    def get_item_by_barcode_for_update(data, **kwargs):
-        return Item.objects.annotate(vendor_event=F("vendor__event__id")).select_for_update().get(code=data, **kwargs)
+    def get_item_for_update(**kwargs):
+        return Item.objects.annotate(vendor_event=F("vendor__event__id")).select_for_update().get(**kwargs)
 
     @classmethod
     def is_item_barcode(cls, text):
