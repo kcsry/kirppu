@@ -34,6 +34,7 @@ from .models import (
     Counter,
     Event,
     EventPermission,
+    Account,
     ReceiptItem,
     ReceiptExtraRow,
     Vendor,
@@ -439,7 +440,10 @@ def _item_edit(request, item, price, state):
             ).values_list('receipt_id', flat=True)
 
             for receipt_id in receipt_ids:
-                remove_item_from_receipt(request, item, receipt_id)
+                receipt = Receipt.objects.get(pk=receipt_id)
+                remove_item_from_receipt(request, item, receipt)
+                account_id = receipt.dst_account_id
+                Account.objects.filter(pk=account_id).update(balance=F("balance") - price)
         else:
             raise AjaxError(
                 RET_BAD_REQUEST,
@@ -809,7 +813,19 @@ def item_compensate_end(request, event):
     receipt.status = Receipt.FINISHED
     receipt.end_time = now()
     receipt.calculate_total()
-    receipt.save(update_fields=("status", "end_time", "total"))
+
+    account_id = receipt.counter.default_store_location_id
+    total = receipt.total
+    receipt.src_account_id = account_id
+
+    receipt.save(update_fields=("status", "end_time", "total", "src_account"))
+
+    try:
+        Account.objects.filter(pk=account_id).update(balance=F("balance") - total)
+    except IntegrityError:
+        account_balance = Account.objects.get(pk=account_id).balance
+        raise AjaxError(RET_CONFLICT,
+                        _("Not enough money in account ({1}) to give out ({2})").format(account_balance, total))
 
     del request.session["compensation"]
 
@@ -1007,9 +1023,13 @@ def _get_active_receipt(request, id, allowed_states=(Receipt.PENDING,)):
 def receipt_finish(request, id):
     receipt, receipt_id = _get_active_receipt(request, id)
 
+    account_id = receipt.counter.default_store_location_id
     receipt.end_time = now()
     receipt.status = Receipt.FINISHED
-    receipt.save(update_fields=("end_time", "status"))
+    receipt.dst_account_id = account_id
+    receipt.save(update_fields=("end_time", "status", "dst_account"))
+
+    Account.objects.filter(pk=account_id).update(balance=F("balance") + receipt.total)
 
     receipt_items = Item.objects.select_for_update().filter(receipt=receipt, receiptitem__action=ReceiptItem.ADD)
     ItemStateLog.objects.log_states(item_set=receipt_items, new_state=Item.SOLD, request=request)

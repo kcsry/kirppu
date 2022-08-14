@@ -648,6 +648,41 @@ def validate_positive(value):
         raise ValidationError(_(u"Value cannot be negative"))
 
 
+# Monetary account, not related to user.
+class Account(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    name = models.CharField(max_length=256)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal(0))
+    allow_negative_balance = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "{self.name} ({self.event}): {self.balance}".format(self=self)
+
+    @property
+    def balance_cents(self):
+        return decimal_to_transport(self.balance)
+
+    @property
+    def name_balance(self):
+        currency = settings.KIRPPU_CURRENCY["raw"]
+        value = currency[0] + str(self.balance) + currency[1]
+        return "{} ({})".format(self.name, value)
+
+    as_dict = model_dict_fn(
+        "id",
+        "name",
+        "balance_cents",
+        "allow_negative_balance",
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(check=(
+                models.Q(allow_negative_balance=True) | models.Q(balance__gte=0)
+            ), name="balance_negativity")
+        ]
+
+
 class Box(models.Model):
 
     description = models.CharField(max_length=256)
@@ -1188,6 +1223,22 @@ class Counter(models.Model):
         default=None,
         unique=True,
     )
+    default_store_location = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        help_text=_("Where the cash will be stored to and received from when using this counter."),
+    )
+
+    def clean_fields(self, exclude=None):
+        super().clean_fields(exclude=exclude)
+        if self.default_store_location.event != self.event:
+            msg = _("Counter and default_store_location must be in same Event.")
+            if exclude and "default_store_location" in exclude:
+                raise ValidationError(msg)
+            else:
+                raise ValidationError({
+                    "default_store_location": msg,
+                })
 
     def assign_private_key(self, for_lock=False):
         length = self._meta.get_field("private_key").max_length
@@ -1275,10 +1326,12 @@ class Receipt(models.Model):
 
     TYPE_PURCHASE = "PURCHASE"
     TYPE_COMPENSATION = "COMPENSATION"
+    TYPE_TRANSFER = "TRANSFER"
 
     TYPES = (
         (TYPE_PURCHASE, _(u"Purchase")),
         (TYPE_COMPENSATION, _(u"Compensation")),
+        (TYPE_TRANSFER, _("Transfer")),
     )
 
     items = models.ManyToManyField(Item, through=ReceiptItem)
@@ -1292,6 +1345,12 @@ class Receipt(models.Model):
 
     # Relevant only for vendor-specific receipts, i.e. TYPE_COMPENSATION.
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, null=True, blank=True)
+
+    # Relevant only for TYPE_TRANSFER receipts.
+    src_account = models.ForeignKey(Account, on_delete=models.CASCADE,
+                                    related_name="src_receipts", null=True, blank=True)
+    dst_account = models.ForeignKey(Account, on_delete=models.CASCADE,
+                                    related_name="dst_receipts", null=True, blank=True)
 
     def items_list(self):
         return [
@@ -1329,12 +1388,20 @@ class Receipt(models.Model):
         id="pk",
         total="total_cents",
         status_display=lambda self: self.get_status_display(),
-        start_time=lambda self: format_datetime(self.start_time),
+        start_time=lambda self: format_datetime(self.start_time) if self.start_time is not None else None,
         end_time=lambda self: format_datetime(self.end_time) if self.end_time is not None else None,
         clerk=lambda self: self.clerk.as_dict(),
         counter=lambda self: self.counter.name,
         notes=lambda self: [note.as_dict() for note in self.receiptnote_set.order_by("timestamp")],
         type_display=lambda self: self.get_type_display(),
+    )
+
+    as_transfer_dict = model_dict_fn(
+        src_account=lambda self: self.src_account.name,
+        src_account_balance=lambda self: self.src_account.name_balance,
+        dst_account=lambda self: self.dst_account.name,
+        dst_account_balance=lambda self: self.dst_account.name_balance,
+        __extend=as_dict,
     )
 
     def calculate_total(self):
@@ -1362,8 +1429,11 @@ class Receipt(models.Model):
         constraints = [
             models.CheckConstraint(check=(
                 models.Q(type="COMPENSATION", vendor__isnull=False)) | (
-                ~models.Q(type="COMPENSATION") & models.Q(vendor__isnull=True)),
-                name="vendor_id_nullity")
+                ~models.Q(type="COMPENSATION") & models.Q(vendor__isnull=True)
+            ), name="vendor_id_nullity"),
+            models.CheckConstraint(check=(
+                ~models.Q(type="TRANSFER") | models.Q(src_account__isnull=False, dst_account__isnull=False)
+            ), name="account_id_nullity"),
         ]
 
 
@@ -1402,7 +1472,7 @@ class ReceiptNote(models.Model):
 
     as_dict = model_dict_fn(
         "text",
-        timestamp=lambda self: format_datetime(self.timestamp),
+        timestamp=lambda self: format_datetime(self.timestamp) if self.timestamp is not None else None,
         clerk=lambda self: self.clerk.as_dict(),
     )
 

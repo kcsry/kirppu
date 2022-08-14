@@ -1,3 +1,5 @@
+import {account_transfer_form, account_transfer_verify, account_transfers} from "./accounts.jsx";
+import {account_table} from "./live_accounts.jsx";
 import box_check_in_dialog from "./box_check_in_dialog.jsx";
 import box_report_table from "./box_report_table.jsx";
 import box_sell_allocation_dialog from "./box_sell_allocation_dialog.jsx";
@@ -24,6 +26,10 @@ import vendor_report_item_table from "./vendor_report_item_table.jsx";
 
 const Template = {
     accept_person_dialog: accept_person_dialog,
+    account_table: account_table,
+    account_transfer_form: account_transfer_form,
+    account_transfer_verify: account_transfer_verify,
+    account_transfers: account_transfers,
     box_check_in_dialog: box_check_in_dialog,
     box_report_table: box_report_table,
     box_sell_allocation_dialog: box_sell_allocation_dialog,

@@ -90,6 +90,8 @@ def accounting_menu(
             MenuItem.separator(),
             fill(_("View items"), "kirppu:item_dump", query={"txt": ""}),
             fill(_("View items (CSV)"), "kirppu:item_dump"),
+            MenuItem.separator(),
+            fill(_("Accounts"), "kirppu:live_accounts"),
         ]
 
 

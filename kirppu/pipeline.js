@@ -107,6 +107,8 @@ module.exports.js = {
 
             "js/number_test.coffee",
 
+            "js/overseer/accounts_mode.coffee",
+
             "js/overseer/lost_and_found.coffee",
 
             "js/overseer/receipt_list_mode.coffee",
@@ -160,6 +162,14 @@ module.exports.js = {
             "js/event_management/people_management.js",
         ],
         "output_filename": "people_management.js"
+    },
+    'accounts': {
+        "source_filenames": [
+            "js/checkout/datetime_formatter.coffee",
+            "js/checkout/checkout.coffee",
+            "js/accounts/live_accounts.js",
+        ],
+        "output_filename": "accounts.js"
     },
 };
 
