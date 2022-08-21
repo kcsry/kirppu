@@ -2,6 +2,7 @@ import box_check_in_dialog from "./box_check_in_dialog.jsx";
 import box_report_table from "./box_report_table.jsx";
 import box_sell_allocation_dialog from "./box_sell_allocation_dialog.jsx";
 import counter_list from "./counter_list.jsx";
+import dialog from "./dialog.jsx";
 import {item_edit_dialog_content, item_edit_dialog_modal} from './item_edit_dialog.jsx';
 import {item_find_table, item_find_table_item, item_find_table_no_results} from "./item_find_table.jsx";
 import {item_receipt_table, item_receipt_table_row} from './item_receipt_table.jsx';
@@ -27,6 +28,7 @@ const Template = {
     box_report_table: box_report_table,
     box_sell_allocation_dialog: box_sell_allocation_dialog,
     counter_list: counter_list,
+    dialog: dialog,
     item_edit_dialog_content: item_edit_dialog_content,
     item_edit_dialog_modal: item_edit_dialog_modal,
     item_find_table: item_find_table,

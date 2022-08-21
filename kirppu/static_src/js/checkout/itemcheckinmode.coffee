@@ -74,8 +74,6 @@ class @ItemCheckInMode extends ItemCheckoutMode
 
   _boxDialog: (data) =>
     # Accepted, but not done.
-    dlg = new Dialog()
-    dlg.title.text(gettext("Mark the box number"))
     bundle_size = data.box.bundle_size
     body = $ Template.box_check_in_dialog(
       item: data
@@ -89,16 +87,21 @@ class @ItemCheckInMode extends ItemCheckoutMode
         bundle_size: if bundle_size > 1 then ngettext("%i pc", "%i pcs", bundle_size).replace("%i", bundle_size) \
           else ""
     )
-    dlg.body.append(body)
 
-    dlg.addNegative().text(gettext("Cancel"))
-    dlg.addPositive().text(gettext("Accept")).click(() =>
-      Api.box_checkin(
-        code: data.code
-        box_info: data.box.box_number
-      ).then(
-        (data2, _, jqXHR) => @_onAddItem(data2, jqXHR.status, true)
-      , @onResultError)
+    dlg = new Dialog2(
+      titleText: gettext("Mark the box number")
+      body: body
+      buttons: [
+        {text: gettext("Cancel"), classes: "btn-default"},
+        {text: gettext("Accept"), classes: "btn-primary", click: =>
+          Api.box_checkin(
+            code: data.code
+            box_info: data.box.box_number
+          ).then(
+            (data2, _, jqXHR) => @_onAddItem(data2, jqXHR.status, true)
+          , @onResultError)
+        }
+      ]
     )
 
     dlg.show()
