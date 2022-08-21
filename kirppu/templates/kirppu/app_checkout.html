@@ -205,6 +205,12 @@
                         </tr>
                         </tbody>
                     </table>
+                    <hr/>
+                    <ul>
+                        <li>{% trans "Success:" %} <button class="btn btn-sm btn-link" onclick="UtilSound.success.play()"><span class="glyphicon glyphicon-volume-up"> </span></button></li>
+                        <li>{% trans "Question:" %} <button class="btn btn-sm btn-link" onclick="UtilSound.question.play()"><span class="text-info glyphicon glyphicon-volume-up"> </span></button></li>
+                        <li>{% trans "Error:" %} <button class="btn btn-sm btn-link" onclick="UtilSound.error.play()"><span class="text-info glyphicon glyphicon-volume-up"> </span></button></li>
+                    </ul>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">{% trans "Close" %}</button>
