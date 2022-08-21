@@ -11,10 +11,9 @@ class @ItemCheckInMode extends ItemCheckoutMode
 
   actions: -> [
     ['', (code) =>
+      return if code.trim() == ""
       code = fixToUppercase(code)
-      Api.item_checkin(
-        code: code
-      ).then(@onResultSuccess, @onResultError)
+      @_checkinItem(code)
     ]
     [@commands.logout, @onLogout]
   ]
@@ -23,15 +22,26 @@ class @ItemCheckInMode extends ItemCheckoutMode
     @cfg.uiRef.codeFormMessage.text("")
     @cfg.uiRef.codeFormMessage.parent().addClass("hidden")
 
+  _checkinItem: (code) =>
+    Api.item_checkin(
+      code: code
+      vendor: @currentVendor
+    ).then(@onResultSuccess, @onResultError)
+
   onResultSuccess: (data, _, jqXHR) =>
     if data.vendor != @currentVendor
       @currentVendor = data.vendor
       Api.vendor_get(id: @currentVendor).done((vendor) =>
-        vendorInfoRow = $('<tr><td colspan="4">')
-        $('td', vendorInfoRow).append(Template.vendor_info(vendor: vendor))
-        @receipt.body.prepend(vendorInfoRow)
-
-        @_onAddItem(data, jqXHR.status)
+        if vendor.missing_name or !vendor.email or !vendor.phone
+          # Insufficient info. Show question.
+          # Shall either reset currentVendor or call _checkinItem again.
+          @_vendorDialog(data, vendor)
+        else
+          # All ok. Add new vendor info and item checkin info.
+          vendorInfoRow = $('<tr><td colspan="4">')
+          $('td', vendorInfoRow).append(Template.vendor_info(vendor: vendor))
+          @receipt.body.prepend(vendorInfoRow)
+          @_onAddItem(data, jqXHR.status)
       ).fail(@onResultError)
     else
       @_onAddItem(data, jqXHR.status)
@@ -106,3 +116,22 @@ class @ItemCheckInMode extends ItemCheckoutMode
 
     dlg.show()
 
+  _vendorDialog: (item, vendor) =>
+    # Vendor info problem. Confirm.
+    body = $ Template.vendor_info(vendor: vendor)
+    item_info = $("<div>").text(item.code + " " + item.name)
+    tail = $("<div>")
+      .text(gettext("Vendor might not be identifiable from information above."))
+      .addClass("alert alert-info")
+
+    dlg = new Dialog2(
+      titleText: gettext("Insufficient vendor info")
+      body: [body, item_info, tail]
+      buttons: [
+        {text: gettext("Cancel"), classes: "btn-default", click: => @currentVendor = null},
+        {text: gettext("Accept"), classes: "btn-primary", click: => @_checkinItem(item.code)},
+      ]
+    )
+
+    safeWarning(null, true, true)
+    dlg.show()

@@ -99,6 +99,7 @@
     DateTimeFormatter.init();
     UtilSound.error = new Audio("{% static "kirppu/audio/error-buzzer.mp3" %}");
     UtilSound.success = new Audio("{% static "kirppu/audio/bleep.mp3" %}");
+    UtilSound.question = new Audio("{% static "kirppu/audio/question.mp3" %}");
 
 {% if auto_clerk %}
     ClerkLoginMode.autoClerk = "{{ auto_clerk }}";

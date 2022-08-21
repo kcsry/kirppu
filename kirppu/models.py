@@ -623,6 +623,7 @@ class Vendor(models.Model):
     _dict_by_user = model_dict_fn(
         username=lambda self: self.user.username,
         name=lambda self: "%s %s" % (self.user.first_name, self.user.last_name),
+        missing_name=lambda self: self.user.first_name.strip() == "" or self.user.last_name.strip() == "",
         email=lambda self: self.user.email,
         phone=lambda self: UserAdapter.phone(self.user),
         __extend=_base_dict
@@ -630,6 +631,7 @@ class Vendor(models.Model):
     _dict_by_person = model_dict_fn(
         owner=lambda self: self.user.username,
         name=lambda self: self.person.full_name(),
+        missing_name=lambda self: self.user.first_name.strip() == "" or self.user.last_name.strip() == "",
         email=lambda self: self.person.email,
         phone=lambda self: self.person.phone,
         __extend=_base_dict

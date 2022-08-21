@@ -180,6 +180,7 @@ module.exports.static = {
         "source_filenames": [
             "audio/bleep.mp3",
             "audio/error-buzzer.mp3",
+            "audio/question.mp3",
             "img/roller.gif"
         ]
     },

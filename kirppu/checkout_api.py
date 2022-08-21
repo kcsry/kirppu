@@ -1,5 +1,6 @@
 import logging
 import random
+import typing
 
 from django.conf import settings
 
@@ -627,13 +628,20 @@ def box_list(request, vendor):
 
 
 @ajax_func('^item/checkin$', atomic=True)
-def item_checkin(request, event, code):
+def item_checkin(request, event, code, vendor: int):
     item = _get_item_or_404(code, for_update=True, event=event)
     if not item.vendor.terms_accepted:
         raise AjaxError(500, _(u"Vendor has not accepted terms!"))
 
     if item.state != Item.ADVERTISED:
         _item_state_conflict(item)
+
+    if not vendor or item.vendor_id != int(vendor):
+        return JsonResponse(
+            item.as_dict(),
+            status=RET_ACCEPTED,
+            reason="NOT CHANGED",
+        )
 
     left_count = None
     if event.max_brought_items is not None:
@@ -809,7 +817,7 @@ def item_compensate_end(request, event):
 
 
 @ajax_func('^vendor/get$', method='GET')
-def vendor_get(request, event, id=None, code=None):
+def vendor_get(request, event, id: typing.Optional[int] = None, code: typing.Optional[str] = None):
     id = empty_as_none(id)
     code = empty_as_none(code)
 
