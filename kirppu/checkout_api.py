@@ -147,7 +147,7 @@ def clerk_login(request, event, code, counter):
         raise AjaxError(RET_AUTH_FAILED, _(u"No such clerk."))
 
     clerk_data = clerk.as_dict()
-    permissions = EventPermission.get(event, request.user)
+    permissions = EventPermission.get(event, clerk.user)
     oversee = permissions.can_perform_overseer_actions
     clerk_data['overseer_enabled'] = oversee
     clerk_data['stats_enabled'] = oversee or permissions.can_see_statistics
