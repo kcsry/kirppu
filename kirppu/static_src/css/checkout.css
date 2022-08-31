@@ -55,6 +55,14 @@ td.receipt_code {
     }
 }
 
+td.min-width {
+    width: 0;
+}
+td.erased {
+    color: #555;
+    text-decoration: line-through;
+}
+
 tr.receipt_tr_clickable:hover {
     text-decoration: underline;
     cursor: pointer;

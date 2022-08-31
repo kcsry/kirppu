@@ -5,6 +5,7 @@ import box_report_table from "./box_report_table.jsx";
 import box_sell_allocation_dialog from "./box_sell_allocation_dialog.jsx";
 import counter_list from "./counter_list.jsx";
 import dialog from "./dialog.jsx";
+import {AddVendorNote, insufficient_vendor_info, vendor_note_list} from "./vendor_notes.jsx";
 import {item_edit_dialog_content, item_edit_dialog_modal} from './item_edit_dialog.jsx';
 import {item_find_table, item_find_table_item, item_find_table_no_results} from "./item_find_table.jsx";
 import {item_receipt_table, item_receipt_table_row} from './item_receipt_table.jsx';
@@ -30,11 +31,13 @@ const Template = {
     account_transfer_form: account_transfer_form,
     account_transfer_verify: account_transfer_verify,
     account_transfers: account_transfers,
+    AddVendorNote: AddVendorNote,
     box_check_in_dialog: box_check_in_dialog,
     box_report_table: box_report_table,
     box_sell_allocation_dialog: box_sell_allocation_dialog,
     counter_list: counter_list,
     dialog: dialog,
+    insufficient_vendor_info: insufficient_vendor_info,
     item_edit_dialog_content: item_edit_dialog_content,
     item_edit_dialog_modal: item_edit_dialog_modal,
     item_find_table: item_find_table,
@@ -65,6 +68,7 @@ const Template = {
     vendor_list: vendor_list,
     vendor_list_item: vendor_list_item,
     vendor_info: vendor_info,
+    vendor_note_list: vendor_note_list,
     vendor_report_item_table: vendor_report_item_table,
 }
 

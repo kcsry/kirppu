@@ -38,6 +38,7 @@ from .models import (
     ReceiptItem,
     ReceiptExtraRow,
     Vendor,
+    VendorNote,
     ItemStateLog,
     Box,
     TemporaryAccessPermit,
@@ -632,10 +633,11 @@ def box_list(request, vendor):
 
 
 @ajax_func('^item/checkin$', atomic=True)
-def item_checkin(request, event, code, vendor: int):
+def item_checkin(request, event, code, vendor: int, note: typing.Optional[str] = None):
     item = _get_item_or_404(code, for_update=True, event=event)
     if not item.vendor.terms_accepted:
         raise AjaxError(500, _(u"Vendor has not accepted terms!"))
+    clerk = get_clerk(request)
 
     if item.state != Item.ADVERTISED:
         _item_state_conflict(item)
@@ -672,6 +674,15 @@ def item_checkin(request, event, code, vendor: int):
     result = item_mode_change(request, item, Item.ADVERTISED, Item.BROUGHT)
     if left_count is not None:
         result["_item_limit_left"] = left_count
+
+    if note:
+        the_note = VendorNote.objects.create(
+            vendor_id=item.vendor_id,
+            clerk=clerk,
+            text=note,
+        )
+        result["_note"] = the_note.as_dict()
+
     return result
 
 
@@ -846,7 +857,7 @@ def vendor_get(request, event, id: typing.Optional[int] = None, code: typing.Opt
         id = _get_item_or_404(code, event=event).vendor_id
 
     try:
-        vendor = Vendor.objects.get(pk=int(id))
+        vendor = Vendor.objects.get(pk=int(id), event=event)
     except (ValueError, Vendor.DoesNotExist):
         raise AjaxError(RET_BAD_REQUEST, _(u"Invalid vendor id"))
     else:

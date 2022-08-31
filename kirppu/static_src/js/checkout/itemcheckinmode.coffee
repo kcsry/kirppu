@@ -22,28 +22,35 @@ class @ItemCheckInMode extends ItemCheckoutMode
     @cfg.uiRef.codeFormMessage.text("")
     @cfg.uiRef.codeFormMessage.parent().addClass("hidden")
 
-  _checkinItem: (code) =>
+  _checkinItem: (code, note=null, vendorId=null) =>
+    requestVendorId = vendorId ? @currentVendor
     Api.item_checkin(
       code: code
-      vendor: @currentVendor
-    ).then(@onResultSuccess, @onResultError)
+      vendor: requestVendorId
+      note: note
+    ).then(
+      (data, _, jqXHR) => @onResultSuccess(data, requestVendorId, jqXHR),
+      @onResultError
+    )
 
-  onResultSuccess: (data, _, jqXHR) =>
-    if data.vendor != @currentVendor
-      @currentVendor = data.vendor
-      Api.vendor_get(id: @currentVendor).done((vendor) =>
+  onResultSuccess: (data, requestVendorId, jqXHR) =>
+    newVendor = data.vendor
+    if newVendor != requestVendorId
+      Api.vendor_get(id: newVendor).done((vendor) =>
         if vendor.missing_name or !vendor.email or !vendor.phone
           # Insufficient info. Show question.
           # Shall either reset currentVendor or call _checkinItem again.
           @_vendorDialog(data, vendor)
         else
           # All ok. Add new vendor info and item checkin info.
+          @currentVendor = newVendor
           vendorInfoRow = $('<tr><td colspan="4">')
           $('td', vendorInfoRow).append(Template.vendor_info(vendor: vendor))
           @receipt.body.prepend(vendorInfoRow)
           @_onAddItem(data, jqXHR.status)
       ).fail(@onResultError)
     else
+      @currentVendor = newVendor
       @_onAddItem(data, jqXHR.status)
 
   onResultError: (jqXHR) =>
@@ -58,6 +65,10 @@ class @ItemCheckInMode extends ItemCheckoutMode
       if data._item_limit_left?
         @cfg.uiRef.codeFormMessage.parent().removeClass("hidden")
         @cfg.uiRef.codeFormMessage.text(gettext("%s left in item quota").replace("%s", data._item_limit_left))
+
+      if data._note?
+        row = @createRow(@itemIndex, "*", data._note.text)
+        @receipt.body.prepend(row)
 
       if data.box?
         countText = if data.box.bundle_size > 1 then gettext("Box bundle count: %d") else gettext("Box item count: %d")
@@ -118,18 +129,22 @@ class @ItemCheckInMode extends ItemCheckoutMode
 
   _vendorDialog: (item, vendor) =>
     # Vendor info problem. Confirm.
-    body = $ Template.vendor_info(vendor: vendor)
-    item_info = $("<div>").text(item.code + " " + item.name)
-    tail = $("<div>")
-      .text(gettext("Vendor might not be identifiable from information above."))
-      .addClass("alert alert-info")
+    body = $ Template.insufficient_vendor_info(vendor, item)
+    enable_note = body.find("#enable_note")
+    note = body.find("#note")
 
     dlg = new Dialog2(
       titleText: gettext("Insufficient vendor info")
-      body: [body, item_info, tail]
+      body: body
       buttons: [
         {text: gettext("Cancel"), classes: "btn-default", click: => @currentVendor = null},
-        {text: gettext("Accept"), classes: "btn-primary", click: => @_checkinItem(item.code)},
+        {text: gettext("Accept"), classes: "btn-primary", click: =>
+          if enable_note.val()
+            theNote = note.val()
+          else
+            theNote = null
+          @_checkinItem(item.code, theNote, vendor.id)
+        },
       ]
     )
 

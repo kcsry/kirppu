@@ -1464,24 +1464,50 @@ class ReceiptExtraRow(models.Model):
         return "{}: {} ({})".format(self.get_type_display(), self.value, self.receipt)
 
 
-class ReceiptNote(models.Model):
+class AbstractNote(models.Model):
+    class Meta:
+        abstract = True
+
     timestamp = models.DateTimeField(auto_now_add=True)
     clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE)
     text = models.TextField()
-    receipt = models.ForeignKey(Receipt, on_delete=models.CASCADE)
 
-    as_dict = model_dict_fn(
+    _as_dict = model_dict_fn(
         "text",
         timestamp=lambda self: format_datetime(self.timestamp) if self.timestamp is not None else None,
         clerk=lambda self: self.clerk.as_dict(),
     )
 
+
+class ReceiptNote(AbstractNote):
+    receipt = models.ForeignKey(Receipt, on_delete=models.CASCADE)
+
     def __str__(self):
-        return "{0} / {1} @ {2}".format(
+        return "{0} / {1} @ r {2}".format(
             str(self.timestamp),
             str(self.clerk),
             str(self.receipt_id)
         )
+
+    as_dict = AbstractNote._as_dict
+
+
+class VendorNote(AbstractNote):
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    erased = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "{0} / {1} @ v {2}".format(
+            str(self.timestamp),
+            str(self.clerk),
+            str(self.vendor_id),
+        )
+
+    as_dict = model_dict_fn(
+        "id",
+        "erased",
+        __extend=AbstractNote._as_dict,
+    )
 
 
 class ItemStateLogManager(models.Manager):
