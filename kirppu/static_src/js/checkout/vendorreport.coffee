@@ -247,36 +247,27 @@ class @VendorReport extends CheckoutMode
     dlg.body.append(table)
 
   onCreateMobileCode: =>
-    dlg = new Dialog()
-    dlg.title.text(gettext("Mobile code"))
-
-    buttonClose = dlg.addNegative().text(gettext("Close"))
-    buttonCreate = dlg.addButton("warning").text(gettext("Create new code"))
-
-    codeDisplay = $("<div>").addClass("short-code-display")
-    bodyText = $("<p>").text(gettext("Creating a code will invalidate all old codes."))
-
-    body = $("<div>")
-    body.append(bodyText, codeDisplay)
-
-    buttonCreate.click(() =>
-      dlg.setEnabled(buttonCreate, false)
-      dlg.setEnabled(buttonClose, false)
+    onCreate = =>
+      dlg.setEnableAll(false)
       Api.vendor_token_create(
         vendor_id: @vendor.id
+        expiry: timeInput.val()
       ).then(
         (data) =>
           codeDisplay.text(data.code)
           setTimeout(
-            () => dlg.setEnabled(buttonClose),
+            () => dlg.setEnableAll(true),
             2000)
 
         (jqXHR) =>
-          dlg.setEnabled(buttonCreate)
-          dlg.setEnabled(buttonClose)
+          dlg.setEnableAll(true)
           bodyText.text(jqXHR.responseText)
       )
-    )
 
-    dlg.body.append(body)
+    tpl = $(Template.mobile_code_dialog(onCreate))
+    timeInput = tpl.find("#expiry-time")
+    codeDisplay = tpl.find(".short-code-display")
+    bodyText = tpl.find(".modal-body")
+
+    dlg = new Dialog2(null, tpl)
     dlg.show()

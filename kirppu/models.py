@@ -1593,8 +1593,9 @@ class ItemStateLog(models.Model):
         )
 
 
-def default_temporary_access_permit_expiry():
-    return timezone.now() + timezone.timedelta(minutes=settings.KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES)
+def default_temporary_access_permit_expiry(minutes: int = None):
+    minutes = minutes or settings.KIRPPU_SHORT_CODE_EXPIRATION_TIME_MINUTES
+    return timezone.now() + timezone.timedelta(minutes=minutes)
 
 
 class TemporaryAccessPermit(models.Model):

@@ -78,10 +78,13 @@ class @Dialog
 
 
 class @Dialog2
-  constructor: (obj) ->
+  constructor: (obj, tpl) ->
     @_dom = $("#dialog_template")
 
-    @_dialog = $(Template.dialog(obj))
+    if obj == null
+      @_dialog = $(tpl)
+    else
+      @_dialog = $(Template.dialog(obj))
     @_dialog.on("hidden.bs.modal", () =>
       @_dialog.remove()
     )
@@ -89,3 +92,9 @@ class @Dialog2
   show: (modalArgs=keyboard: false) ->
     @_dom.append(@container)
     @_dialog.modal(modalArgs)
+
+  setEnableAll: (enable) ->
+    $(".modal-footer button", @_dialog).each(() ->
+      this.disabled = !enable
+      return
+    )

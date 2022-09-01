@@ -1,4 +1,5 @@
 import logging
+import math
 import random
 import typing
 
@@ -43,7 +44,8 @@ from .models import (
     Box,
     TemporaryAccessPermit,
     TemporaryAccessPermitLog,
-    decimal_to_transport
+    decimal_to_transport,
+    default_temporary_access_permit_expiry,
 )
 from .fields import ItemPriceField
 from .forms import remove_item_from_receipt
@@ -899,7 +901,7 @@ def vendor_find(request, event, q):
 
 
 @ajax_func('^vendor/token/create$', method='POST', atomic=True)
-def vendor_token_create(request, vendor_id):
+def vendor_token_create(request, vendor_id, expiry: int = None):
     clerk = get_clerk(request)
     vendor = Vendor.objects.get(id=int(vendor_id))
 
@@ -913,7 +915,17 @@ def vendor_token_create(request, vendor_id):
         )
     old_permits.update(state=TemporaryAccessPermit.STATE_INVALIDATED)
 
-    numbers = settings.KIRPPU_SHORT_CODE_LENGTH
+    if expiry:
+        expiry = int(expiry)
+        if expiry < 10000:
+            numbers = round(math.log10(1700 * expiry))
+        else:
+            raise AjaxError(RET_BAD_REQUEST, "Reduce the expiry time")
+        numbers = max(numbers, settings.KIRPPU_SHORT_CODE_LENGTH)
+    else:
+        numbers = settings.KIRPPU_SHORT_CODE_LENGTH
+        expiry = None
+
     permit, code = None, None
     for retry in range(60):
         try:
@@ -921,6 +933,7 @@ def vendor_token_create(request, vendor_id):
             permit = TemporaryAccessPermit.objects.create(
                 vendor=vendor,
                 creator=clerk,
+                expiration_time=default_temporary_access_permit_expiry(expiry),
                 short_code=str(code),
             )
             TemporaryAccessPermitLog.objects.create(
