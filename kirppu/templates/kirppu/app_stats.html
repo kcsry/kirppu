@@ -1,4 +1,4 @@
-{% extends "kirppu/common.html" %}{% load i18n static %}
+{% extends "kirppu/common.html" %}{% load i18n static kirppu_tags %}
 
 {% block title %}{% trans "Stats" %} – {{ block.super }}{% endblock %}
 
@@ -244,7 +244,7 @@
     </table>
 
     <h2>{% trans "Vendors:" %}</h2>
-    <style type="text/css">
+    <style>
     @media print {
         #grouping_container button.active::before {
             content: "\02022  "
@@ -282,10 +282,10 @@
         {{ vendor_item_data_order|safe }}
     </script>
     <script type="application/json" id="stat_count">[{% for row in vendor_item_data_counts %}
-        ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}{% for col in row.abandoned %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
+        {{ row.row_obj|json }}{% if not forloop.last %},{% endif %}{% endfor %}
     ]</script>
     <script type="application/json" id="stat_euros">[{% for row in vendor_item_data_euros %}
-        ["{{ row.name|escapejs }}"{% for col in row.property_values %}, {{ col|safe }}{% endfor %}{% for col in row.abandoned %}, {{ col|safe }}{% endfor %}]{% if not forloop.last %},{% endif %}{% endfor %}
+        {{ row.row_obj|json }}{% if not forloop.last %},{% endif %}{% endfor %}
     ]</script>
 
     <script type="application/javascript"><!--
@@ -298,9 +298,9 @@
             const index_brought = indices.indexOf("brought");
             const index_staged = indices.indexOf("staged");
             const index_sold = indices.indexOf("sold");
-            const index_abandoned_brought = indices.indexOf("abandoned_brought");
-            const index_abandoned_staged = indices.indexOf("abandoned_staged");
-            const index_abandoned_sold = indices.indexOf("abandoned_sold");
+            const index_abandoned_brought = indices.indexOf("brought_abandoned");
+            const index_abandoned_staged = indices.indexOf("staged_abandoned");
+            const index_abandoned_sold = indices.indexOf("sold_abandoned");
             const map_abandoned = {};
             map_abandoned[index_brought] = index_abandoned_brought;
             map_abandoned[index_staged] = index_abandoned_staged;

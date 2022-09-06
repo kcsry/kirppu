@@ -41,7 +41,7 @@ class ItemCollectionData(object):
     """
 
     PROPERTIES = OrderedDict((
-        ('advertized', Item.ADVERTISED),
+        ('advertised', Item.ADVERTISED),
         ('brought', Item.BROUGHT),
         ('staged', Item.STAGED),
         ('sold', Item.SOLD),
@@ -180,6 +180,12 @@ class ItemCollectionRow(object):
 
     def fmt(self, value):
         raise NotImplementedError()
+
+    def row_obj(self):
+        r = [self.name]
+        r.extend(self.property_values)
+        r.extend(self.abandoned)
+        return r
 
 
 class ItemCountData(ItemCollectionData):
@@ -335,10 +341,10 @@ class SalesData(GraphLog):
 def iterate_logs(using):
     """ Iterate through ItemStateLog objects returning current sum of each type of object at each timestamp.
 
-    Example of returned CVS: js_time, advertized, brought, unsold, money, compensated
+    Example of returned CVS: js_time, advertised, brought, unsold, money, compensated
 
     js_time is milliseconds from unix_epoch.
-    advertized is the number of items registered to the event at any time.
+    advertised is the number of items registered to the event at any time.
     brought is the cumulative sum of all items brought to the event.
     unsold is the number of items physically at the event. Should approach zero by the end of the event.
     money is the number of sold items not yet redeemed by the seller. Should approach zero by the end of the event.
