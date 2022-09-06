@@ -802,14 +802,19 @@ def box_item_compensate(request, event, pk, box_code):
 
 @ajax_func('^item/compensate/end')
 def item_compensate_end(request, event):
-    if "compensation" not in request.session:
-        raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
-    receipt_pk, vendor_id = request.session["compensation"]
+    if "compensation" in request.session:
+        receipt_pk, vendor_id = request.session["compensation"]
+    else:
+        if not request.user.is_superuser or not ("receipt" in request.POST and "vendor" in request.POST):
+            raise AjaxError(RET_CONFLICT, _(u"No compensation started!"))
+        receipt_pk = int(request.POST["receipt"])
+        vendor_id = int(request.POST["vendor"])
 
     state = "init"
     try:
         with transaction.atomic():
-            receipt = Receipt.objects.select_for_update().get(pk=receipt_pk, type=Receipt.TYPE_COMPENSATION)
+            receipt = Receipt.objects.select_for_update().get(
+                pk=receipt_pk, type=Receipt.TYPE_COMPENSATION, status=Receipt.PENDING)
 
             provision = Provision(vendor_id=vendor_id, provision_function=event.provision_function, receipt=receipt)
             if provision.has_provision:
@@ -850,7 +855,8 @@ def item_compensate_end(request, event):
         else:
             raise
 
-    del request.session["compensation"]
+    if "compensation" in request.session:
+        del request.session["compensation"]
 
     return receipt.as_dict()
 
