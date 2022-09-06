@@ -10,8 +10,6 @@ from django.utils.translation import gettext as _
 
 from .models import Event, Item, ItemType, ItemStateLog
 
-__author__ = 'codez'
-
 __all__ = (
     "ItemCountData",
     "ItemEurosData",
@@ -48,6 +46,10 @@ class ItemCollectionData(object):
         ('returned', Item.RETURNED),
         ('compensated', Item.COMPENSATED),
         ('sum', None),
+    ))
+
+    HIDDEN_PROPERTIES = OrderedDict((
+        ("advertised_hidden", Item.ADVERTISED),
     ))
 
     ABANDONED_PROPERTIES = OrderedDict((
@@ -141,7 +143,7 @@ class ItemCollectionData(object):
     @classmethod
     def columns(cls):
         # XXX: This assumes subclasses of ItemCollectionRow follow these orders.
-        return ["name"] + list(cls.PROPERTIES) + list(cls.ABANDONED_PROPERTIES)
+        return ["name"] + list(cls.PROPERTIES) + list(cls.ABANDONED_PROPERTIES) + list(cls.HIDDEN_PROPERTIES)
 
     def __repr__(self):
         return "{}({}, {})".format(self.__class__.__name__, self._group_by, self._data)
@@ -178,6 +180,11 @@ class ItemCollectionRow(object):
         for property_name in ItemCollectionData.ABANDONED_PROPERTIES:
             yield self.fmt(self._data[property_name])
 
+    @property
+    def hidden(self):
+        for property_name in ItemCollectionData.HIDDEN_PROPERTIES:
+            yield self.fmt(self._data[property_name])
+
     def fmt(self, value):
         raise NotImplementedError()
 
@@ -185,23 +192,34 @@ class ItemCollectionRow(object):
         r = [self.name]
         r.extend(self.property_values)
         r.extend(self.abandoned)
+        r.extend(self.hidden)
         return r
+
+
+def _state_queries(props, aggregate, condition, result, field):
+    return {
+        key: aggregate(models.Case(models.When(
+            models.Q(state=p) & condition, then=result), output_field=field()))
+        for key, p in props.items()
+    }
 
 
 class ItemCountData(ItemCollectionData):
     def _populate(self, query):
         # Count items per state. query must be already made group_by with query.values.
         states = {
-            key: models.Count(models.Case(models.When(state=p, then=1), output_field=models.IntegerField()))
+            key: models.Count(models.Case(models.When(
+                models.Q(state=p, hidden=False) if p == Item.ADVERTISED else models.Q(state=p),
+                then=1), output_field=models.IntegerField()))
             for key, p in self.PROPERTIES.items()
             if p is not None
         }
-        abandoned = {
-            key: models.Count(models.Case(models.When(
-                models.Q(state=p) & models.Q(abandoned=True), then=1), output_field=models.IntegerField()))
-            for key, p in self.ABANDONED_PROPERTIES.items()
-        }
+        abandoned = _state_queries(
+            self.ABANDONED_PROPERTIES, models.Count, models.Q(abandoned=True), 1, models.IntegerField)
+        hidden = _state_queries(
+            self.HIDDEN_PROPERTIES, models.Count, models.Q(hidden=True), 1, models.IntegerField)
         states.update(abandoned)
+        states.update(hidden)
         # Return a result list that contains counts for all states, sum and the value for group_by per list item.
         return query.annotate(
             sum=models.Count("id"),
@@ -225,18 +243,18 @@ class ItemEurosData(ItemCollectionData):
     def _populate(self, query):
         # Count item prices per state. query must be already made group_by with query.values.
         states = {
-            key: models.Sum(models.Case(models.When(state=p, then=models.F("price")),
-                                        output_field=models.DecimalField()))
+            key: models.Sum(models.Case(models.When(
+                models.Q(state=p, hidden=False) if p == Item.ADVERTISED else models.Q(state=p),
+                then=models.F("price")), output_field=models.DecimalField()))
             for key, p in self.PROPERTIES.items()
             if p is not None
         }
-        abandoned = {
-            key: models.Sum(models.Case(models.When(
-                models.Q(state=p) & models.Q(abandoned=True),
-                then=models.F("price")), output_field=models.DecimalField()))
-            for key, p in self.ABANDONED_PROPERTIES.items()
-        }
+        abandoned = _state_queries(
+            self.ABANDONED_PROPERTIES, models.Sum, models.Q(abandoned=True), models.F("price"), models.DecimalField)
+        hidden = _state_queries(
+            self.HIDDEN_PROPERTIES, models.Sum, models.Q(hidden=True), models.F("price"), models.DecimalField)
         states.update(abandoned)
+        states.update(hidden)
         # Return a result list that contains prices for all states, sum and the value for group_by per list item.
         return query.annotate(
             sum=models.Sum("price"),
