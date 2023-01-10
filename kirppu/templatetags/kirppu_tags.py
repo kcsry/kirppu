@@ -28,7 +28,7 @@ def _get_ui_text_query(context, id_):
 
 
 @register.simple_tag(takes_context=True)
-def load_text(context: Context, id_: str) -> str:
+def load_text(context: template.Context, id_: str) -> str:
     try:
         md = _get_ui_text_query(context, id_).get(identifier=id_).text
         return mark_safe(mark_down(md, context))
@@ -46,7 +46,7 @@ def load_text(context: Context, id_: str) -> str:
 
 
 @register.simple_tag(takes_context=True)
-def load_texts(context: Context, id_: str, wrap: typing.Optional[str] = None) -> str:
+def load_texts(context: template.Context, id_: str, wrap: typing.Optional[str] = None) -> str:
     """
     Output multiple UIText values. If id is not found, only empty string is returned.
 
