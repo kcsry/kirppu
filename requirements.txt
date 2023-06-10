@@ -1,8 +1,0 @@
-django-environ~=0.10.0
-django-ipware~=5.0.0
-django-ratelimit~=4.0.0
-django~=3.2.19
-pillow~=9.0
-pubcode>=1.1.0
-pytz~=2023.3
-mistune~=2.0.4

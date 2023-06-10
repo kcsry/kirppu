@@ -7,8 +7,8 @@ RUN (echo "Package: *" && echo "Pin: origin deb.nodesource.com" && echo "Pin-Pri
     mkdir -p /usr/src/app/kirppu && \
     bash -xc 'node --version && npm --version'
 
-COPY requirements.txt requirements-oauth.txt requirements-production.txt /usr/src/app/
-RUN pip install --no-cache-dir -r requirements.txt -r requirements-oauth.txt -r requirements-production.txt
+COPY requirements-production.txt /usr/src/app/
+RUN pip install --no-cache-dir -r requirements-production.txt
 
 COPY . /usr/src/app
 RUN cd /usr/src/app/kirppu && \

@@ -67,7 +67,7 @@ from .ajax_util import (
 
 # Must be imported, for part to be included at all in the API.
 # noinspection PyUnresolvedReferences
-from . import api
+from . import api  # isort: skip
 
 
 ajax_func = ajax_util.ajax_func_factory("checkout")
