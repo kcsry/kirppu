@@ -248,7 +248,7 @@ def counter_list(request, event, code):
 
 
 @ajax_func('^item/find$', method='GET')
-def item_find(request, event, code):
+def item_find(request, event, code, available=None):
     item = _get_item_or_404(code, event=event)
     value = item.as_dict()
     if "available" in request.GET:
