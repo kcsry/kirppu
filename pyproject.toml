@@ -55,7 +55,7 @@ wrap_length = 120
 
 [tool.pytest.ini_options]
 addopts = "--tb=short"
-norecursedirs = "*.egg .* .git build dist node_modules* venv KirppuVenv* {arch} private"
+norecursedirs = "*.egg .* .git build dist node_modules* venv KirppuVenv* {arch} private kompassi*"
 DJANGO_SETTINGS_MODULE = "kirppu_project.settings"
 
 
