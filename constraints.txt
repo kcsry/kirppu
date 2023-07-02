@@ -18,7 +18,7 @@ coverage==7.2.7
     # via pytest-cov
 django==3.2.19
     # via kirppu (pyproject.toml)
-django-environ==0.4.5
+django-environ==0.10.0
     # via kirppu (pyproject.toml)
 django-ipware==3.0.7
     # via kirppu (pyproject.toml)
@@ -28,7 +28,7 @@ exceptiongroup==1.1.1
     # via pytest
 factory-boy==3.2.1
     # via kirppu (pyproject.toml)
-faker==18.11.0
+faker==18.11.2
     # via
     #   factory-boy
     #   kirppu (pyproject.toml)
@@ -54,7 +54,7 @@ pillow==9.5.0
     # via kirppu (pyproject.toml)
 pip-tools==6.13.0
     # via kirppu (pyproject.toml)
-pluggy==1.0.0
+pluggy==1.2.0
     # via pytest
 psycopg2==2.9.6
     # via kirppu (pyproject.toml)
