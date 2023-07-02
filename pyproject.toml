@@ -13,6 +13,7 @@ dependencies = [
     "pubcode~=1.1.0",
     "pytz~=2023.0",
     "mistune~=2.0.0",
+    "whitenoise~=6.5.0",
 ]
 
 

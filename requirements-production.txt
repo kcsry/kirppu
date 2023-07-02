@@ -54,6 +54,8 @@ typing-extensions
     # via asgiref
 urllib3
     # via requests
+whitenoise
+    # via kirppu (pyproject.toml)
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

@@ -81,6 +81,8 @@ typing-extensions
     # via asgiref
 wheel
     # via pip-tools
+whitenoise
+    # via kirppu (pyproject.toml)
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

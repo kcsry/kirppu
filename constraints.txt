@@ -95,12 +95,14 @@ tomli==2.0.1
     #   build
     #   coverage
     #   pytest
-typing-extensions==4.6.3
+typing-extensions==4.7.1
     # via asgiref
 urllib3==2.0.3
     # via requests
 wheel==0.40.0
     # via pip-tools
+whitenoise==6.5.0
+    # via kirppu (pyproject.toml)
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
