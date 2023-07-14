@@ -1392,7 +1392,7 @@ class Receipt(models.Model):
         end_time=lambda self: format_datetime(self.end_time) if self.end_time is not None else None,
         clerk=lambda self: self.clerk.as_dict(),
         counter=lambda self: self.counter.name,
-        notes=lambda self: [note.as_dict() for note in self.receiptnote_set.order_by("timestamp")],
+        notes=lambda self: [note.as_dict() for note in self.receiptnote_set.order_by("timestamp")] if self.pk else [],
         type_display=lambda self: self.get_type_display(),
     )
 

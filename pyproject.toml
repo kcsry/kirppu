@@ -6,9 +6,9 @@ requires-python = ">=3.10"
 
 dependencies = [
     "django-environ~=0.10.0",
-    "django-ipware~=4.0.0",
+    "django-ipware~=5.0.0",
     "django-ratelimit~=4.0.0",
-    "django~=4.0.0",
+    "django~=4.1.0",
     "pillow~=9.0",
     "pubcode~=1.1.0",
     "mistune~=2.0.0",
