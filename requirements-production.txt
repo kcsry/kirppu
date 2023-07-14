@@ -38,10 +38,6 @@ psycopg2
     # via kirppu (pyproject.toml)
 pubcode
     # via kirppu (pyproject.toml)
-pytz
-    # via
-    #   django
-    #   kirppu (pyproject.toml)
 requests
     # via
     #   kirppu (pyproject.toml)
