@@ -1231,7 +1231,8 @@ class Counter(models.Model):
 
     def clean_fields(self, exclude=None):
         super().clean_fields(exclude=exclude)
-        if self.default_store_location.event != self.event:
+        if (exclude is None or "default_store_location" not in exclude) \
+                and self.default_store_location.event != self.event:
             msg = _("Counter and default_store_location must be in same Event.")
             if exclude and "default_store_location" in exclude:
                 raise ValidationError(msg)
