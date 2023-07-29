@@ -1031,7 +1031,13 @@ class Item(models.Model):
         )
 
     def __str__(self):
-        return u"{name} ({code})".format(name=self.name, code=self.code)
+        if self.box_id is None:
+            code_or_box = self.code
+        else:
+            code_or_box = f"box {self.box.box_number or '?'}"
+            if self.code:
+                code_or_box += " / " + self.code
+        return f"{self.name} ({code_or_box})"
 
     as_dict = model_dict_fn(
         "code",
