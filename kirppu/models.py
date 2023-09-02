@@ -561,6 +561,10 @@ class Vendor(models.Model):
             (" / " + str(self.person)) if self.person is not None else ""))
 
     def __str__(self):
+        return self.printable_name + " id=" + str(self.id)
+
+    @property
+    def printable_name(self) -> str:
         return str(self.user) if self.person is None else str(self.person)
 
     @classmethod
@@ -923,7 +927,7 @@ class ItemType(models.Model):
         )
 
     def __str__(self):
-        return self.title
+        return self.title + " id=" + str(self.id)
 
     def __repr__(self):
         return u"ItemType(order={order}, title={title})".format(
