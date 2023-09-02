@@ -762,7 +762,7 @@ class Box(models.Model):
         :return: List of Item of objects
         :rtype: Array
         """
-        items = Item.objects.filter(box=self.id)
+        items = Item.objects.filter(box=self.id, hidden=False)
         return items
 
     def get_representative_item(self):
