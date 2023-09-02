@@ -938,8 +938,9 @@ def remove_item_from_receipt(request, event_slug):
             return HttpResponseRedirect(url.reverse('kirppu:remove_item_from_receipt',
                                                     kwargs={"event_slug": event.slug}))
 
-    return render(request, "kirppu/app_item_receipt_remove.html", {
-        'form': form,
+    return render(request, "kirppu/admin_edit.html", {
+        "title": "Remove item from receipt",
+        "form": form,
     })
 
 
