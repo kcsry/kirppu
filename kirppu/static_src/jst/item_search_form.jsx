@@ -59,7 +59,7 @@ export default function render({item_types, item_states, price_step, CURRENCY}) 
             <div className="form-group">
                 <label className="control-label col-sm-2">{gettext("Is a box?")}</label>
                 <label className="radio-inline">
-                    <input type="radio" id="show_box_na" name="is_box" value="" checked="checked"/>{gettext("Don't care")}
+                    <input type="radio" id="show_box_na" defaultChecked="defaultChecked" name="is_box" value="" checked="checked"/>{gettext("Don't care")}
                 </label>
                 <label className="radio-inline">
                     <input type="radio" name="is_box" value="yes"/>{gettext("Is a box")}
