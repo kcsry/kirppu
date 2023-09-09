@@ -450,6 +450,9 @@ def _item_edit(request, item, price, state):
                 remove_item_from_receipt(request, item, receipt)
                 account_id = receipt.dst_account_id
                 Account.objects.filter(pk=account_id).update(balance=F("balance") - price)
+        elif item.state == Item.RETURNED and state in Item.BROUGHT:
+            # Allow this.
+            pass
         else:
             raise AjaxError(
                 RET_BAD_REQUEST,
