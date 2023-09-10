@@ -67,6 +67,9 @@ def receipt_overseer_continue(request, receipt_id):
 
 
 def _receipt_continue(request, clerk: Clerk, counter: Counter, receipt: Receipt):
+    if receipt.clerk.event != clerk.event:
+        raise AjaxError(RET_BAD_REQUEST, "Wrong event")
+
     update_fields = ["status"]
     receipt.status = Receipt.PENDING
 
