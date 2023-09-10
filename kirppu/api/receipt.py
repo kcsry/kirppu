@@ -60,9 +60,12 @@ def receipt_overseer_continue(request, receipt_id):
     receipt = get_object_or_404(
         Receipt,
         pk=int(receipt_id),
-        status=Receipt.SUSPENDED,
         type=Receipt.TYPE_PURCHASE,
     )
+
+    if receipt.status != Receipt.SUSPENDED:
+        raise AjaxError(RET_CONFLICT, "Receipt is not suspended.")
+
     return _receipt_continue(request, clerk, counter, receipt)
 
 
