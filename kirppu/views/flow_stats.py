@@ -4,9 +4,10 @@ from datetime import timedelta
 import typing
 
 from django.contrib.auth.decorators import login_required
+from django.db import models
 from django.http import StreamingHttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.db import models
+from django.utils import timezone
 
 from ..models import Event, EventPermission, Item, ItemStateLog, Receipt
 
@@ -140,7 +141,8 @@ def make_row(bucket: datetime.datetime, balance: dict[str, int], previous_balanc
     delta = dot_sub(balance, previous_balance)
     return [
         index,
-        bucket.replace(tzinfo=None).isoformat(timespec="seconds"),
+        # First convert to local, then remove tz as csv datetime apparently don't expect tz info.
+        timezone.localtime(bucket).replace(tzinfo=None).isoformat(timespec="seconds"),
 
         balance["items_brought"],
         balance["items_sold"],
