@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import datetime
-from datetime import timedelta
 import typing
+from datetime import timedelta, datetime
 
 from django.contrib.auth.decorators import login_required
 from django.db import models
@@ -11,7 +10,6 @@ from django.utils import timezone
 
 from ..models import Event, EventPermission, Item, ItemStateLog, Receipt
 
-
 __all__ = [
     "flow_stats",
 ]
@@ -20,7 +18,7 @@ __all__ = [
 class Entry(typing.Protocol):
     old_state: str
     new_state: str
-    time: datetime.datetime
+    time: datetime
     vendor: int
     value: int
 
@@ -39,7 +37,7 @@ def csv_generator(generator):
 
 
 def flow_generator(event: Event):
-    receipts_q: typing.Iterable[datetime.datetime] = (
+    receipts_q: typing.Iterable[datetime] = (
         Receipt.objects
         .filter(type=Receipt.TYPE_PURCHASE, status=Receipt.FINISHED, clerk__event=event)
         .order_by("start_time")
@@ -68,7 +66,7 @@ def flow_generator(event: Event):
     previous_balance = balance.copy()
 
     bucket_index = 0
-    bucket_time: datetime.datetime | None = None
+    bucket_time: datetime | None = None
     bucket_td = timedelta(minutes=60)
 
     yield make_header()
@@ -116,7 +114,7 @@ def flow_generator(event: Event):
         dict_copy(balance, previous_balance)  # unused, but for symmetry.
 
 
-def truncate_to_hour(dt: datetime.datetime) -> datetime.datetime:
+def truncate_to_hour(dt: datetime) -> datetime:
     return dt.replace(minute=0, second=0, microsecond=0)
 
 
@@ -137,7 +135,7 @@ def make_header():
     ]
 
 
-def make_row(bucket: datetime.datetime, balance: dict[str, int], previous_balance: dict[str, int], index: int) -> list:
+def make_row(bucket: datetime, balance: dict[str, int], previous_balance: dict[str, int], index: int) -> list:
     delta = dot_sub(balance, previous_balance)
     return [
         index,
@@ -169,9 +167,9 @@ def dict_copy(src: dict[str, int], to: dict[str, int]):
 
 
 def iter_receipt_times(
-        receipts: list[datetime.datetime],
-        until: datetime.datetime,
-) -> tuple[int, list[datetime.datetime]]:
+        receipts: list[datetime],
+        until: datetime,
+) -> tuple[int, list[datetime]]:
     n = 0
     for index, entry in enumerate(receipts):
         if entry >= until:
