@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
 
+import factory.django
 from django.utils.timezone import now, timedelta
-from kirppuauth.models import User
+
 from kirppu.models import (
     Account,
     Box,
@@ -17,8 +18,7 @@ from kirppu.models import (
     ReceiptItem,
     Vendor,
 )
-
-import factory.django
+from kirppuauth.models import User
 
 Factory = factory.django.DjangoModelFactory
 
