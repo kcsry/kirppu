@@ -21,6 +21,12 @@ def remove_if_present(a_list: list[T], element: T):
         a_list.remove(element)
 
 
+def maybe_call(value):
+    if callable(value):
+        return value()
+    return value
+
+
 class BasePlugin:
     NAME: str
 
