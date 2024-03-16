@@ -20,81 +20,62 @@ EMAIL_CLASS = "yv8k02zi"
 EMAIL_KEY = "yJrx6Rvvyn39u4La"
 
 
-def insert_before_or_append(the_list: typing.List[str], before: str, item: str):
-    i = the_list.index(before)
-    if i >= 0:
-        the_list.insert(i, item)
-    else:
-        the_list.append(item)
+T = typing.TypeVar("T")
 
 
-def kirppu_plugin(md: mistune.Markdown):
-    md.inline.register_rule("email", r"<email>\s*([^<]*)\s*</email>", _make_email)
-    insert_before_or_append(md.inline.rules, "inline_html", "email")
-
-    md.inline.register_rule("glyph", r"<glyph \s*([\w-]+)\s*/>", _make_glyph)
-    insert_before_or_append(md.inline.rules, "inline_html", "glyph")
-
-    # register_rule makes wrong kind of lambda for _start rules.
-    md.block.rule_methods["alertbox_start"] = (
-        re.compile(r"<alertbox \s*(\w+)\s*>"),
-        lambda m, state, string: _make_alertbox(md.block, m, state, string)
-    )
-    insert_before_or_append(md.block.rules, "block_html", "alertbox_start")
-
-    md.block.register_rule("template", re.compile(r"<itemlist\s*/>"), _make_itemlist)
-    insert_before_or_append(md.block.rules, "block_html", "template")
+def remove_if_present(a_list: list[T], element: T):
+    if element in a_list:
+        a_list.remove(element)
 
 
-def _make_email(inline, m, state):
-    return "email", m.group(1)
+class BasePlugin:
+    NAME: str
 
-
-def _make_glyph(inline, m, state):
-    return "glyph", m.group(1)
-
-
-def _make_itemlist(block, m, state):
-    return {
-        "type": "template",
-        "text": "",
-        "params": ("kirppu/vendor_item_list.html",),
-    }
-
-
-def _make_alertbox(block, m, state, string: str):
-    end_tag = "</alertbox>"
-    block_end = string.find(end_tag, m.end())
-    box_type = m.group(1)
-
-    valid_types = {
-        "success",
-        "info",
-        "warning",
-        "danger"
-    }
-    if box_type not in valid_types:
-        raise ValueError(
-            "Invalid argument to alertbox: \"" + box_type + "\". Must have a single argument, any of: " + ", ".join(
-                valid_types)
-        )
-
-    text = string[m.end():block_end]
-    token = {
-        "type": "alertbox",
-        "params": (box_type,),
-        "text": text,
-    }
-    return token, block_end + len(end_tag)
-
-
-class CustomTagRenderer(mistune.HTMLRenderer):
-    def __init__(self, context: typing.Optional[typing.Union[RequestContext, Context]]):
-        super().__init__(escape=False)
-        self._context = context
+    def __call__(self, md: mistune.Markdown) -> None:
+        raise NotImplementedError
 
     @staticmethod
-    def email(address):
+    def render(renderer: mistune.BaseRenderer, *args, **kwargs) -> str:
+        # Function signature varies, see mistune.renderers.html.HTMLRenderer.render_token
+        raise NotImplementedError
+
+
+class InlinePlugin(BasePlugin):
+    def register_inline(self, md: mistune.Markdown, name: str, pattern: str, before: str = "inline_html") -> None:
+        md.inline.register(name, pattern, self.parse, before=before)
+        if md.renderer:
+            md.renderer.register(name, self.render)
+
+    @classmethod
+    def parse(cls, inline: mistune.InlineParser, m: re.Match, state: mistune.InlineState) -> int:
+        raise NotImplementedError
+
+
+class BlockPlugin(BasePlugin):
+    def register_block(self, md: mistune.Markdown, name: str, pattern: str, before: str = "raw_html") -> None:
+        md.block.register(name, pattern, self.parse, before=before)
+        if md.renderer:
+            md.renderer.register(name, self.render)
+
+    @classmethod
+    def parse(cls, block: mistune.BlockParser, m: re.Match, state: mistune.BlockState) -> int:
+        raise NotImplementedError
+
+
+class EmailPlugin(InlinePlugin):
+    NAME = "email"
+
+    def __call__(self, md: mistune.Markdown):
+        self.register_inline(md, self.NAME, r"<email>\s*(?P<email_text>[^<]*)\s*</email>")
+
+    @classmethod
+    def parse(cls, inline, m, state) -> int:
+        state.append_token({"type": cls.NAME, "raw": m.group("email_text")})
+        return m.end()
+
+    # noinspection PyMethodOverriding
+    @staticmethod
+    def render(renderer, address) -> str:
         enc = bytes(
             ord(a) ^ ord(k)
             for a, k in zip(address.replace("@", " <em>at</em> "), itertools.cycle(EMAIL_KEY))
@@ -103,18 +84,108 @@ class CustomTagRenderer(mistune.HTMLRenderer):
         html = '<code class="%s">' % EMAIL_CLASS + safe + "</code>"
         return html
 
+
+class GlyphPlugin(InlinePlugin):
+    NAME = "glyph"
+
+    def __call__(self, md: mistune.Markdown):
+        self.register_inline(md, self.NAME, r"<glyph \s*(?P<glyph_name>[\w-]+)\s*/>")
+
+    @classmethod
+    def parse(cls, inline, m, state) -> int:
+        state.append_token({"type": cls.NAME, "raw": m.group("glyph_name")})
+        return m.end()
+
+    # noinspection PyMethodOverriding
     @staticmethod
-    def glyph(glyph):
+    def render(renderer, glyph) -> str:
         html = '<span class="glyphicon glyphicon-%s"> </span>' % glyph
         return html
 
+
+class AlertBoxPlugin(BlockPlugin):
+    NAME = "alert_box"
+
+    ALERT_TYPES = {
+        "success",
+        "info",
+        "warning",
+        "danger"
+    }
+
+    def __call__(self, md: mistune.Markdown):
+        self.register_block(
+            md,
+            self.NAME,
+            r"<alertbox\s+(?P<alert_type>\w+)\s*>"
+            r"(?P<alert_text>[\s\S]*?)"
+            r"</alertbox>",
+            before="raw_html"
+        )
+
+    @classmethod
+    def parse(cls, block, m, state) -> int:
+        alert_box_type = m.group("alert_type")
+
+        if alert_box_type not in cls.ALERT_TYPES:
+            box_type_error = (
+                f"Invalid argument to alertbox: \"{alert_box_type}\"."
+                " Must have a single argument, any of: " + ", ".join(cls.ALERT_TYPES)
+            )
+            raise ValueError(box_type_error)
+
+        text = m.group("alert_text")
+
+        child_state = state.child_state(text)
+        rules: list[str] = list(block.rules)
+        rules.remove(cls.NAME)
+        remove_if_present(rules, TemplatePlugin.NAME)
+        block.parse(child_state, rules)
+
+        token = {
+            "type": cls.NAME,
+            "attrs": {"alert_box_type": alert_box_type},
+            "children": child_state.tokens,
+        }
+
+        state.append_token(token)
+        return m.end() + 1
+
+    # noinspection PyMethodOverriding
     @staticmethod
-    def alertbox(text, box_type):
-        html = '<div class="alert alert-%s" role="alert">' % box_type
+    def render(renderer, text, alert_box_type) -> str:
+        html = '<div class="alert alert-%s" role="alert">' % alert_box_type
         html += text + "</div>"
         return html
 
-    def template(self, text, template_name):
+
+class TemplatePlugin(BlockPlugin):
+    NAME = "template"
+
+    TEMPLATES = {
+        "itemlist": "kirppu/vendor_item_list.html",
+    }
+
+    def __init__(self, context: Context | RequestContext):
+        self._context = context
+
+    def __call__(self, md: mistune.Markdown):
+        templates = "|".join(self.TEMPLATES.keys())
+        self.register_block(md, self.NAME, r"<(?P<template_type>%s)\s*/>" % templates)
+
+    @classmethod
+    def parse(cls, block: mistune.BlockParser, m: re.Match, state: mistune.BlockState) -> int:
+        t_type = m.group("template_type")
+        template = cls.TEMPLATES[t_type]
+
+        state.append_token({
+            "type": cls.NAME,
+            "attrs": {"template_name": template},
+        })
+        return m.end() + 1
+
+    # noinspection PyMethodOverriding
+    def render(self, renderer: mistune.BaseRenderer, template_name: str) -> str:
         if self._context is None:
             import warnings
             warnings.warn("No context when trying to render a template %s" % template_name)
@@ -122,15 +193,17 @@ class CustomTagRenderer(mistune.HTMLRenderer):
         return loader.render_to_string(template_name, context)
 
 
-def mark_down(text, context: typing.Optional[typing.Union[RequestContext, Context]] = None):
+def mark_down(text, context: typing.Optional[typing.Union[RequestContext, Context]] = None) -> str:
     m = mistune.create_markdown(
         escape=False,
-        renderer=CustomTagRenderer(context),
         plugins=[
             'strikethrough',
             'footnotes',
             'table',
-            kirppu_plugin,
+            EmailPlugin(),
+            GlyphPlugin(),
+            AlertBoxPlugin(),
+            TemplatePlugin(context),
         ],
     )
     return m(text)
@@ -159,7 +232,7 @@ Email address: <email>email@example.org</email>
 
 A glyph: <glyph volume-off />
 
-<alertbox danger>Alert text content</alertbox>
+<alertbox danger>Alert *text* content</alertbox>
     """
     print(mark_down(text))
 
