@@ -3,6 +3,7 @@ from mistune import directives
 from django.template.context import Context, RequestContext
 
 from .alert_box import AlertBoxPlugin
+from .condition import ConditionPlugin
 from .monolithic import EmailPlugin, GlyphPlugin
 from .template import TemplatePlugin
 from .variables import VarPlugin, VarSetterPlugin
@@ -28,6 +29,7 @@ def mark_down(text, context: RequestContext | Context | dict | None = None) -> s
             GlyphPlugin(),
             AlertBoxPlugin(),
             TemplatePlugin(context),
+            ConditionPlugin(text_vars),
             VarPlugin(text_vars),
             directives.RSTDirective(
                 [
