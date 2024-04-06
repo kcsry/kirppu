@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 
-def mark_down(text, context: RequestContext | Context | dict | None = None) -> str:
+def mark_down(text, context: RequestContext | Context | dict | None = None, renderer="html") -> str | list[dict]:
     if context:
         text_vars = context.get("uiTextVars", {})
     else:
@@ -21,6 +21,7 @@ def mark_down(text, context: RequestContext | Context | dict | None = None) -> s
 
     m = mistune.create_markdown(
         escape=False,
+        renderer=renderer,
         plugins=[
             "strikethrough",
             "footnotes",
