@@ -4,7 +4,7 @@ import mistune
 from django.template import loader
 from django.template.context import Context, RequestContext
 
-from .base import BlockPlugin
+from .base import BlockPlugin, MtToken
 
 
 class TemplatePlugin(BlockPlugin):
@@ -29,10 +29,10 @@ class TemplatePlugin(BlockPlugin):
         template = cls.TEMPLATES[t_type]
 
         state.append_token(
-            {
-                "type": cls.NAME,
-                "attrs": {"template_name": template},
-            }
+            MtToken(
+                type=cls.NAME,
+                attrs={"template_name": template},
+            )
         )
         return m.end() + 1
 

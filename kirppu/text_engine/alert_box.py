@@ -2,7 +2,7 @@ import re
 
 import mistune
 
-from .base import BlockPlugin, remove_if_present
+from .base import BlockPlugin, MtToken, remove_if_present
 from .template import TemplatePlugin
 
 
@@ -47,11 +47,11 @@ class AlertBoxPlugin(BlockPlugin):
         remove_if_present(rules, TemplatePlugin.NAME)
         block.parse(child_state, rules)
 
-        token = {
-            "type": cls.NAME,
-            "attrs": {"alert_box_type": alert_box_type},
-            "children": child_state.tokens,
-        }
+        token = MtToken(
+            type=cls.NAME,
+            attrs={"alert_box_type": alert_box_type},
+            children=child_state.tokens,
+        )
 
         state.append_token(token)
         return m.end() + 1

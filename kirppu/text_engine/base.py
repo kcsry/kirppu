@@ -1,7 +1,16 @@
+from __future__ import annotations
+
 import typing
 import re
 
 import mistune
+
+
+class MtToken(typing.TypedDict, total=False):
+    type: typing.Required[str]
+    raw: str
+    attrs: dict[str, typing.Any]
+    children: list[MtToken]
 
 
 T = typing.TypeVar("T")

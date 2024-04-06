@@ -4,7 +4,7 @@ import re
 
 import mistune
 
-from .base import InlinePlugin
+from .base import InlinePlugin, MtToken
 
 # Also check customtexts_front.js that does the reverse with these.
 EMAIL_CLASS = "yv8k02zi"
@@ -23,7 +23,7 @@ class EmailPlugin(InlinePlugin):
     def parse(
         cls, inline: mistune.InlineParser, m: re.Match, state: mistune.InlineState
     ) -> int:
-        state.append_token({"type": cls.NAME, "raw": m.group("email_text")})
+        state.append_token(MtToken(type=cls.NAME, raw=m.group("email_text")))
         return m.end()
 
     # noinspection PyMethodOverriding
@@ -50,7 +50,7 @@ class GlyphPlugin(InlinePlugin):
     def parse(
         cls, inline: mistune.InlineParser, m: re.Match, state: mistune.InlineState
     ) -> int:
-        state.append_token({"type": cls.NAME, "raw": m.group("glyph_name")})
+        state.append_token(MtToken(type=cls.NAME, raw=m.group("glyph_name")))
         return m.end()
 
     # noinspection PyMethodOverriding
