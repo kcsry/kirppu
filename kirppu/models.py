@@ -115,6 +115,13 @@ class Event(models.Model):
     end_date = models.DateField()
 
     registration_end = models.DateTimeField(null=True, blank=True)
+    registration_disabled = models.BooleanField(
+        default=True,
+        help_text=_(
+            "When set, registration is disabled even if registration end is set."
+            " If not set, registration is enabled until registration end if that is set."
+        ),
+    )
     checkout_active = models.BooleanField(default=False)
     mobile_view_visible = models.BooleanField(default=False)
     multiple_vendors_per_user = models.BooleanField(default=False)
