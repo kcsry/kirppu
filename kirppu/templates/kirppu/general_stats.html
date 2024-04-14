@@ -36,6 +36,8 @@
 {% block body %}
 {% trans "Compensations" as tlCompensations %}
 {% trans "Purchases" as tlPurchases %}
+{% trans "Brought" as tlBrought %}
+{% trans "Items" as tlItems %}
 
     <h1>
         <span id="mode_glyph" class="glyphicon glyphicon glyphicon-signal"></span>
@@ -46,6 +48,7 @@
 
     <script type="application/json" data-id="compensations">{{ compensations }}</script>
     <script type="application/json" data-id="purchases">{{ purchases }}</script>
+    <script type="application/json" data-id="brought">{{ brought }}</script>
     <script type="application/json" data-id="config">{
         "stats": "general",
         "graphs": {
@@ -62,6 +65,15 @@
                 "numbers": "graph1_numbers",
                 "content": "purchases",
                 "bucket": 2
+            },
+            "brought": {
+                "graph": "graph3",
+                "legend": "graph3_legend",
+                "numbers": "graph3_numbers",
+                "content": "brought",
+                "unit": "",
+                "xlabel": {{ tlItems|json }},
+                "bucket": 5
             }
         },
         "CURRENCY": {{ CURRENCY|json }}
@@ -108,8 +120,16 @@
                     <div class="col-xs-9">{{ general.printedNotBrought }}</div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-3 info-key">{% trans "Brought" %}</div>
+                    <div class="col-xs-3 info-key">{% trans "Brought (with box items)" %}</div>
                     <div class="col-xs-9">{% blocktrans with brought=general.brought broughtOfRegistered=general.broughtOfRegistered|floatformat %}{{ brought }} ({{ broughtOfRegistered }}% of registered){% endblocktrans %}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3 info-key">{% trans "Brought items in boxes" %}</div>
+                    <div class="col-xs-9">{% blocktrans with count=general.broughtBoxItems percent=general.broughtBoxItemsOfRegistered|floatformat %}{{ count }} ({{ percent }}% of registered){% endblocktrans %}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3 info-key">{% trans "Brought boxes" %}</div>
+                    <div class="col-xs-9">{% blocktrans with count=general.broughtBoxes percent=general.broughtBoxesOfRegistered|floatformat %}{{ count }} ({{ percent }}% of registered){% endblocktrans %}</div>
                 </div>
                 <div class="row">
                     <div class="col-xs-3 info-key">{% trans "Sold" %}</div>
@@ -133,5 +153,6 @@
 
     {% include "kirppu/general_stats_graph.html" with id="graph1" title=tlPurchases %}
     {% include "kirppu/general_stats_graph.html" with id="graph2" title=tlCompensations %}
+    {% include "kirppu/general_stats_graph.html" with id="graph3" title=tlBrought %}
 
 {% endblock  %}
