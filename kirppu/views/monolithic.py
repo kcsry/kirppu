@@ -889,6 +889,7 @@ def vendor_view(request, event_slug):
         boxed_items = Item.objects.none()
 
     box_info = boxed_items.aggregate(sum=models.Sum("price"), count=models.Count("id"))
+    is_manager = request.user.is_superuser or EventPermission.get(event, request.user).can_manage_event
 
     context = {
         'event': event,
@@ -909,6 +910,7 @@ def vendor_view(request, event_slug):
         'profile_url': settings.PROFILE_URL,
         'menu': vendor_menu(request, event),
         'CURRENCY': settings.KIRPPU_CURRENCY,
+        "allow_preview": is_manager,
         "uiTextVars": ui_text_vars(event),
     }
     context.update(vendor_data)

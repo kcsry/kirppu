@@ -1216,6 +1216,9 @@ class UIText(models.Model):
         except UIText.DoesNotExist:
             return default
 
+    def get_absolute_url(self):
+        return reverse("kirppu:vendor_view", kwargs={"event_slug": self.event.slug}) + f"?preview={self.id}"
+
 
 class Counter(models.Model):
     PRIVATE_KEY_ALPHABET = string.ascii_letters + string.digits
