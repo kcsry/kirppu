@@ -37,7 +37,9 @@ User = settings.AUTH_USER_MODEL
 
 
 def decimal_to_transport(value):
-    return int(value * Item.FRACTION)
+    # round(): Database provides a rounded value anyway, so use the same
+    # to avoid having different value for database-rows and in-memory-rows (provision pre-calculation).
+    return int(round(value * Item.FRACTION))
 
 
 class UserAdapterBase(object):
