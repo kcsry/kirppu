@@ -1095,7 +1095,7 @@ class Item(models.Model):
         return self.price_fmt_for(self.price)
 
     @staticmethod
-    def price_fmt_for(value):
+    def price_fmt_for(value: Decimal) -> Decimal:
         # If value is exact integer, return only the integer part.
         int_value = value.to_integral_value()
         if int_value == value:
