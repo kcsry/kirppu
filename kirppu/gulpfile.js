@@ -18,7 +18,6 @@ const colors = {
     cyan: withColor(36)
 };
 const log = require("fancy-log");
-const noop = require("through2");
 
 
 const pipeline = require("./pipeline");
@@ -84,7 +83,7 @@ const jsTasks = Object.entries(pipeline.js).map(function([name, def]) {
     gulp.task(taskName, function() {
         return gulp.src(srcPrepend(def))
             .pipe(patch("patches/*.patch"))
-            .pipe(gif(/\.coffee$/, coffee(), noop.obj()))
+            .pipe(gif(/\.coffee$/, coffee()))
             .on('error', handleError)
             .pipe(concat(def.output_filename, {process: fileHeader(jsHeader)}))
             .pipe(gif(shouldCompress && def.compress, uglify()))
