@@ -8,7 +8,8 @@ const path = require("path");
 const rollup = require("rollup");
 const rollup_sucrase = require("@rollup/plugin-sucrase");
 const uglify = require("gulp-uglify");
-const minify = require("gulp-cssnano");
+const minify = require("gulp-postcss");
+const cssnano = require("cssnano");
 
 const args = require("minimist")(process.argv.slice(2));
 const withColor = (c) => (s) => `\x1b[${ c }m${ s }\x1b[39m`;
@@ -98,7 +99,7 @@ const cssTasks = Object.entries(pipeline.css).map(function([name, def]) {
         return gulp.src(srcPrepend(def))
             .pipe(concat(def.output_filename, {process: fileHeader(cssHeader)}))
             .on('error', handleError)
-            .pipe(gif(shouldCompress, minify()))
+            .pipe(gif(shouldCompress, minify([cssnano()])))
             .pipe(gulp.dest(DEST + "/css/"));
     });
     return taskName;
