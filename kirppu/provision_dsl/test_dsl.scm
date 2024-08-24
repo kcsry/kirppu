@@ -107,3 +107,15 @@
 ;TEST max va
 (max 3 4 5 6)
 ;= 6
+
+;TEST add va
+(+ 2 3 4)
+;= 9
+
+;TEST sub va
+(- 10 2 3)
+;= 5
+
+;TEST mul va
+(* 2 2 2 2)
+;= 16

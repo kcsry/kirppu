@@ -197,25 +197,44 @@ def ensure_args(fn, *types):
     return inner
 
 
+def ensure_arg_count(fn, count: int):
+    @functools.wraps(fn)
+    def inner(*args):
+        arg_count = len(args)
+        if arg_count > count:
+            raise Error("Too many arguments, %d, expected %d" % (arg_count, count), ErrorType.ARGUMENT_COUNT)
+        if arg_count < count:
+            raise Error("Too few arguments, %d, expected %d" % (arg_count, count), ErrorType.ARGUMENT_COUNT)
+        return fn(*args)
+    return inner
+
+
+def va_op(op: typing.Callable):
+    @functools.wraps(op)
+    def inner(*args):
+        return functools.reduce(op, args)
+    return inner
+
+
 def make_std_env():
     return {
-        "+": ensure_args(operator.add, decimal.Decimal, decimal.Decimal),
-        "-": ensure_args(operator.sub, decimal.Decimal, decimal.Decimal),
-        "*": ensure_args(operator.mul, decimal.Decimal, decimal.Decimal),
+        "+": ensure_args(va_op(operator.add), decimal.Decimal, decimal.Decimal, ...),
+        "-": ensure_args(va_op(operator.sub), decimal.Decimal, decimal.Decimal, ...),
+        "*": ensure_args(va_op(operator.mul), decimal.Decimal, decimal.Decimal, ...),
         "/": ensure_args(operator.truediv, decimal.Decimal, decimal.Decimal),
         "//": ensure_args(operator.floordiv, decimal.Decimal, decimal.Decimal),
-        "<": operator.lt,
-        ">": operator.gt,
-        "=": operator.eq,
-        "<=": operator.le,
-        ">=": operator.ge,
-        "!": operator.ne,
-        "not": operator.not_,
+        "<": ensure_arg_count(operator.lt, 2),
+        ">": ensure_arg_count(operator.gt, 2),
+        "=": ensure_arg_count(operator.eq, 2),
+        "<=": ensure_arg_count(operator.le, 2),
+        ">=": ensure_arg_count(operator.ge, 2),
+        "!": ensure_arg_count(operator.ne, 2),
+        "not": ensure_arg_count(operator.not_, 1),
         "null": None,
 
         "abs": ensure_args(abs, decimal.Decimal),
         "begin": lambda *x: x[-1],  # arguments are evaluated in evaluate.
-        "length": len,
+        "length": ensure_arg_count(len, 1),
         "max": ensure_args(max, decimal.Decimal, decimal.Decimal, ...),
         "min": ensure_args(min, decimal.Decimal, decimal.Decimal, ...),
         "round": ensure_args(round, decimal.Decimal),

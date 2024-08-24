@@ -132,7 +132,7 @@ class ProvisionDslSourceTestCase(unittest.TestCase, metaclass=SourceMetaClass):
 
     def test_wrong_argument_count(self):
         with self.assertRaises(Error) as e:
-            dsl.run("""(+ 1 2 3)""")
+            dsl.run("""(< 1 2 3)""")
         self.assertEqual(ErrorType.ARGUMENT_COUNT, e.exception.code, make_ex_str(e.exception))
 
     def test_parens_1(self):
