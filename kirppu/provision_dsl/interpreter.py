@@ -149,18 +149,47 @@ def atomize(token: str) -> typing.Union[decimal.Decimal, Symbol, Literal]:
         return Symbol(token)
 
 
+def list_index(t: list | tuple, v: typing.Any) -> int:
+    try:
+        return t.index(v)
+    except ValueError:
+        return -1
+
+
 def ensure_args(fn, *types):
+    vararg_pos = list_index(types, ...)
+    type_count = len(types)
+    assert type_count > 0, "Must have at least one type to ensure"
+
+    if vararg_pos >= 1:
+        type_count -= 1
+        assert vararg_pos == type_count, "In-the-middle varargs are not supported"
+    else:
+        vararg_pos = None
+
     @functools.wraps(fn)
     def inner(*args):
         arg_count = len(args)
-        type_count = len(types)
-        if arg_count > type_count:
+        if vararg_pos is None and arg_count > type_count:
             raise Error("Too many arguments, %d, expected %d" % (arg_count, type_count), ErrorType.ARGUMENT_COUNT)
         if arg_count < type_count:
             raise Error("Too few arguments, %d, expected %d" % (arg_count, type_count), ErrorType.ARGUMENT_COUNT)
-        for index, (arg, arg_type) in enumerate(zip(args, types), start=1):
+
+        arg_iter = iter(args)
+        type_iter = iter(types)
+        prev_type = None
+        current_type = next(type_iter)
+        for index, arg in enumerate(arg_iter, start=1):
+            arg_type = current_type
             if arg_type == decimal.Decimal:
                 arg_type = (int, decimal.Decimal)
+
+            if current_type is ...:
+                arg_type = prev_type
+            else:
+                prev_type = arg_type
+                current_type = next(type_iter, StopIteration)
+
             if not isinstance(arg, arg_type):
                 raise Error("Wrong type of argument given in index %d, got %s" % (index, type(arg)),
                             ErrorType.ARGUMENT_TYPE)
@@ -187,8 +216,8 @@ def make_std_env():
         "abs": ensure_args(abs, decimal.Decimal),
         "begin": lambda *x: x[-1],  # arguments are evaluated in evaluate.
         "length": len,
-        "max": ensure_args(max, decimal.Decimal, decimal.Decimal),
-        "min": ensure_args(min, decimal.Decimal, decimal.Decimal),
+        "max": ensure_args(max, decimal.Decimal, decimal.Decimal, ...),
+        "min": ensure_args(min, decimal.Decimal, decimal.Decimal, ...),
         "round": ensure_args(round, decimal.Decimal),
 
         "ceil": ensure_args(math.ceil, decimal.Decimal),
