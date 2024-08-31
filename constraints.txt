@@ -57,6 +57,8 @@ pluggy==1.5.0
     # via pytest
 psycopg==3.1.20
     # via kirppu (pyproject.toml)
+psycopg-c==3.1.20
+    # via psycopg
 pubcode==1.1.0
     # via kirppu (pyproject.toml)
 pyproject-hooks==1.1.0
